@@ -131,6 +131,7 @@ class FootballAgent {
 
         return responseText;
       } catch (err) {
+        console.error("❌ Gemini Chat Error:", err);
         const errMsg = err.message || '';
         const isModelError = errMsg.includes('not found') || errMsg.includes('404') || errMsg.includes('supported') || errMsg.includes('model');
         const isKeyError = errMsg.includes('key') || errMsg.includes('API_KEY') || errMsg.includes('400') || errMsg.includes('403') || errMsg.includes('unauthorized');
@@ -302,6 +303,7 @@ Provide: overall comparison, who wins in each key attribute, best league fit, ce
       const result = await this.geminiModel.generateContent(prompt);
       return result.response.text();
     } catch (err) {
+      console.error("❌ Gemini Comparison Error:", err);
       return this._demoComparison(p1, p2) + '\n\n*⚠️ AI Analysis unavailable due to API rate limits.*';
     }
   }
@@ -321,6 +323,7 @@ Provide: overall comparison, who wins in each key attribute, best league fit, ce
       const result = await this.geminiModel.generateContent(prompt);
       return result.response.text();
     } catch (err) {
+      console.error("❌ Gemini Predictions Error:", err);
       return this._demoPredictions() + '\n\n*⚠️ AI Predictions unavailable due to API rate limits.*';
     }
   }
