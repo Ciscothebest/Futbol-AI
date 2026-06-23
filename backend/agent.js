@@ -61,7 +61,7 @@ async function findRelevantPlayers(message, limit = 5) {
 class FootballAgent {
   constructor() {
     this.apiKey = process.env.GEMINI_API_KEY;
-    this.model = process.env.GEMINI_MODEL || 'gemini-2.0-flash-lite';
+    this.model = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
     this.sessions = new Map(); // sessionId -> history[]
     this.demoMode = !this.apiKey || this.apiKey === 'your_gemini_api_key_here';
 
@@ -136,9 +136,9 @@ class FootballAgent {
         const isModelError = errMsg.includes('not found') || errMsg.includes('404') || errMsg.includes('supported') || errMsg.includes('model');
         const isKeyError = errMsg.includes('key') || errMsg.includes('API_KEY') || errMsg.includes('400') || errMsg.includes('403') || errMsg.includes('unauthorized');
         
-        if (isModelError && this.model !== 'gemini-2.5-flash') {
-          console.warn(`⚠️ Model '${this.model}' failed. Falling back to stable 'gemini-2.5-flash'...`);
-          this.model = 'gemini-2.5-flash';
+        if (isModelError && this.model !== 'gemini-2.0-flash') {
+          console.warn(`⚠️ Model '${this.model}' failed. Falling back to stable 'gemini-2.0-flash'...`);
+          this.model = 'gemini-2.0-flash';
           this.geminiModel = this.genAI.getGenerativeModel({
             model: this.model,
             systemInstruction: SYSTEM_PROMPT,
@@ -233,9 +233,9 @@ class FootballAgent {
           const isModelError = errMsg.includes('not found') || errMsg.includes('404') || errMsg.includes('supported') || errMsg.includes('model');
           const isKeyError = errMsg.includes('key') || errMsg.includes('API_KEY') || errMsg.includes('400') || errMsg.includes('403') || errMsg.includes('unauthorized');
           
-          if (isModelError && this.model !== 'gemini-2.5-flash') {
-            console.warn(`⚠️ Model '${this.model}' failed in stream. Falling back to stable 'gemini-2.5-flash'...`);
-            this.model = 'gemini-2.5-flash';
+          if (isModelError && this.model !== 'gemini-2.0-flash') {
+            console.warn(`⚠️ Model '${this.model}' failed in stream. Falling back to stable 'gemini-2.0-flash'...`);
+            this.model = 'gemini-2.0-flash';
             this.geminiModel = this.genAI.getGenerativeModel({
               model: this.model,
               systemInstruction: SYSTEM_PROMPT,
