@@ -1,0 +1,10 @@
+{
+  "AllowMultiple": "false",
+  "Description": "\"Add my-club translations to TRANSLATIONS in app.js\"",
+  "EndLine": "14",
+  "Instruction": "\"Inject the translations for the My Club navigation and tactical dashboard labels into the TRANSLATIONS.es dictionary.\"",
+  "ReplacementContent": "\"const TRANSLATIONS = {\\n  es: {\\n    nav_home: 'Inicio', nav_my_club: 'Mi Club', nav_players: 'Jugadores', nav_chat: 'Chat IA',\\n    nav_compare: 'Comparar', nav_predictions: 'Predicciones',\\n    db_my_club: 'Mi Club', db_position: 'Posición', db_goals: 'Goles', db_xg: 'xG',\\n    db_matches: 'Partidos', db_next_matches: 'Próximos partidos', db_title_formation: 'Alineación Titular',\\n    db_btn_edit_formation: 'Editar alineación', db_alerts_title: 'Alertas IA',\\n    db_performance_title: 'Rendimiento reciente', db_chat_title: 'Chat IA',\\n    db_chat_placeholder: 'Pregunta algo sobre tu equipo...',\"",
+  "StartLine": "8",
+  "TargetContent": "\"const TRANSLATIONS = {\\n  es: {\\n    nav_home: 'Inicio', nav_players: 'Jugadores', nav_chat: 'Chat IA',\\n    nav_compare: 'Comparar', nav_predictions: 'Predicciones',\"",
+  "TargetFile": "\"c:\\\\Users\\\\franc\\\\.gemini\\\\antigravity\\\\scratch\\\\football-ai-platform\\\\frontend\\\\app.js\""
+}

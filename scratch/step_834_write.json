@@ -1,0 +1,12 @@
+{
+  "AllowMultiple": "false",
+  "Description": "\"Add renderMyClubDashboard trigger in applyTranslations function\"",
+  "EndLine": "228",
+  "Instruction": "\"Add check for section-my-club active class in applyTranslations\"",
+  "ReplacementContent": "\"  // Refresh featured grid labels if rendered\\n  if (allPlayers.length) {\\n    renderFeaturedPlayers();\\n    if (document.getElementById('section-players').classList.contains('active')) {\\n      renderPlayers();\\n    }\\n    if (document.getElementById('section-my-club')?.classList.contains('active')) {\\n      renderMyClubDashboard();\\n    }\\n  }\"",
+  "StartLine": "221",
+  "TargetContent": "\"  // Refresh featured grid labels if rendered\\n  if (allPlayers.length) {\\n    renderFeaturedPlayers();\\n    if (document.getElementById('section-players').classList.contains('active')) {\\n      renderPlayers();\\n    }\\n  }\"",
+  "TargetFile": "\"c:\\\\Users\\\\franc\\\\.gemini\\\\antigravity\\\\scratch\\\\football-ai-platform\\\\frontend\\\\app.js\"",
+  "toolAction": "\"Updating applyTranslations\"",
+  "toolSummary": "\"Apply translations update\""
+}

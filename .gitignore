@@ -1,0 +1,51 @@
+# Dependency directories
+node_modules/
+jspm_packages/
+web_modules/
+
+# Local environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Databases
+backend/database.sqlite
+backend/database.sqbpro
+*.sqlite
+*.db
+*.backup_*
+backend/updates.json
+backend/updates2.json
+
+# Large binaries and archives
+*.zip
+*.apk
+
+# Logs and system files
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+err.txt
+
+# Diagnostic/Test files
+backend/err.txt
+backend/fake.png
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# IDE settings
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

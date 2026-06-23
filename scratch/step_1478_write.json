@@ -1,0 +1,12 @@
+{
+  "AllowMultiple": "false",
+  "Description": "\"Ensure generateProceduralTeams uses resolved English country name in renderMyClubMatches\"",
+  "EndLine": "950",
+  "Instruction": "\"Update generateProceduralTeams parameter to getEnglishCountryName(countryName)\"",
+  "ReplacementContent": "\"  if (opponents.length < 3) {\\n    const fallbackOpponents = generateProceduralTeams(getEnglishCountryName(countryName)).filter(t => t !== clubName);\\n    opponents.push(...fallbackOpponents);\\n  }\"",
+  "StartLine": "946",
+  "TargetContent": "\"  if (opponents.length < 3) {\\n    const fallbackOpponents = generateProceduralTeams(countryName).filter(t => t !== clubName);\\n    opponents.push(...fallbackOpponents);\\n  }\"",
+  "TargetFile": "\"c:\\\\Users\\\\franc\\\\.gemini\\\\antigravity\\\\scratch\\\\football-ai-platform\\\\frontend\\\\app.js\"",
+  "toolAction": "\"Updating country name parameter in renderMyClubMatches\"",
+  "toolSummary": "\"Edit app.js\""
+}

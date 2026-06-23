@@ -1,0 +1,12 @@
+{
+  "AllowMultiple": "false",
+  "Description": "\"Update virtual player default league name fallback\"",
+  "EndLine": "621",
+  "Instruction": "\"Change leagueName initialization to use getLeagueNameFallback(countryName)\"",
+  "ReplacementContent": "\"  let leagueName = getLeagueNameFallback(countryName);\\n  if (window.allPlayers && window.allPlayers.length > 0) {\\n    const match = window.allPlayers.find(p => p.currentTeam === clubName);\\n    if (match && match.league) leagueName = match.league;\\n  }\"",
+  "StartLine": "615",
+  "TargetContent": "\"  let leagueName = \\\"Liga Profesional\\\";\\n  if (window.allPlayers && window.allPlayers.length > 0) {\\n    const match = window.allPlayers.find(p => p.currentTeam === clubName);\\n    if (match && match.league) leagueName = match.league;\\n  }\"",
+  "TargetFile": "\"c:\\\\Users\\\\franc\\\\.gemini\\\\antigravity\\\\scratch\\\\football-ai-platform\\\\frontend\\\\app.js\"",
+  "toolAction": "\"Replacing virtual player league fallback in app.js\"",
+  "toolSummary": "\"Edit app.js\""
+}

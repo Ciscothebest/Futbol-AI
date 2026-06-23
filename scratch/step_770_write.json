@@ -1,0 +1,12 @@
+{
+  "AllowMultiple": "false",
+  "Description": "\"Add English translations for the tactical dashboard and My Club section\"",
+  "EndLine": "68",
+  "Instruction": "\"Insert the missing English translations for nav_my_club, db_my_club, db_position, db_goals, db_xg, db_matches, db_next_matches, db_title_formation, db_btn_edit_formation, db_alerts_title, db_performance_title, db_chat_title, and db_chat_placeholder inside TRANSLATIONS.en\"",
+  "ReplacementContent": "\"  en: {\\n    nav_home: 'Home', nav_my_club: 'My Club', nav_players: 'Players', nav_chat: 'AI Chat',\\n    nav_compare: 'Compare', nav_predictions: 'Predictions',\\n    db_my_club: 'My Club', db_position: 'Position', db_goals: 'Goals', db_xg: 'xG',\\n    db_matches: 'Matches', db_next_matches: 'Upcoming Matches', db_title_formation: 'Starting XI',\\n    db_btn_edit_formation: 'Edit Formation', db_alerts_title: 'AI Alerts',\\n    db_performance_title: 'Recent Performance', db_chat_title: 'AI Chat',\\n    db_chat_placeholder: 'Ask something about your team...',\\n    chat_agent_name: 'FutbolAI Agent',\"",
+  "StartLine": "65",
+  "TargetContent": "\"  en: {\\n    nav_home: 'Home', nav_players: 'Players', nav_chat: 'AI Chat',\\n    nav_compare: 'Compare', nav_predictions: 'Predictions',\\n    chat_agent_name: 'FutbolAI Agent',\"",
+  "TargetFile": "\"c:\\\\Users\\\\franc\\\\.gemini\\\\antigravity\\\\scratch\\\\football-ai-platform\\\\frontend\\\\app.js\"",
+  "toolAction": "\"Editing file\"",
+  "toolSummary": "\"File edit\""
+}

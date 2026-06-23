@@ -1,0 +1,12 @@
+{
+  "AllowMultiple": "false",
+  "Description": "\"Prevent Spanish league leakage for unmapped countries by calling generateProceduralTeams directly\"",
+  "EndLine": "921",
+  "Instruction": "\"Remove the Spain default fallback and call generateProceduralTeams if matchedKey is not found\"",
+  "ReplacementContent": "\"    const matchedKey = Object.keys(staticLeagues).find(k => k.toLowerCase() === resolvedCountry.toLowerCase() || resolvedCountry.toLowerCase().includes(k.toLowerCase()));\\n    teams = matchedKey ? staticLeagues[matchedKey] : generateProceduralTeams(resolvedCountry);\\n  }\"",
+  "StartLine": "918",
+  "TargetContent": "\"    const matchedKey = Object.keys(staticLeagues).find(k => k.toLowerCase() === resolvedCountry.toLowerCase() || resolvedCountry.toLowerCase().includes(k.toLowerCase())) || \\\"Spain\\\";\\n    teams = staticLeagues[matchedKey] || generateProceduralTeams(resolvedCountry);\\n  }\"",
+  "TargetFile": "\"c:\\\\Users\\\\franc\\\\.gemini\\\\antigravity\\\\scratch\\\\football-ai-platform\\\\frontend\\\\app.js\"",
+  "toolAction": "\"Preventing Spanish leakage in getOtherTeamsInLeague\"",
+  "toolSummary": "\"Edit app.js\""
+}

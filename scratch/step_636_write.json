@@ -1,0 +1,9 @@
+{
+  "CodeContent": "\"const fs = require('fs');\\nconst path = require('path');\\n\\nconst appPath = path.join(__dirname, '../frontend/app.js');\\nconst appJs = fs.readFileSync(appPath, 'utf8');\\n\\nconst queries = ['initDashboard', 'goToSection', 'section-home', 'active', 'user-profile', 'onboardingComplete'];\\n\\nqueries.forEach(q => {\\n  console.log(`=== Matches for \\\"${q}\\\": ===`);\\n  const lines = appJs.split('\\\\n');\\n  lines.forEach((line, idx) => {\\n    if (line.toLowerCase().includes(q.toLowerCase())) {\\n      console.log(`${idx + 1}: ${line.trim()}`);\\n    }\\n  });\\n});\\n\"",
+  "Description": "\"Create search-app.js to inspect app.js search matches\"",
+  "IsArtifact": "false",
+  "Overwrite": "true",
+  "TargetFile": "\"c:\\\\Users\\\\franc\\\\.gemini\\\\antigravity\\\\scratch\\\\football-ai-platform\\\\scratch\\\\search-app.js\"",
+  "toolAction": "\"Creating search-app.js\"",
+  "toolSummary": "\"Create app search script\""
+}

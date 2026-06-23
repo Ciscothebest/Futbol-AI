@@ -1,0 +1,12 @@
+{
+  "AllowMultiple": "false",
+  "Description": "\"Add renderMyClubDashboard trigger in goToSection function\"",
+  "EndLine": "518",
+  "Instruction": "\"Add check for my-club in goToSection\"",
+  "ReplacementContent": "\"function goToSection(name) {\\n  document.querySelectorAll('.nav-item').forEach(b => {\\n    b.classList.toggle('active', b.dataset.section === name);\\n  });\\n  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));\\n  document.getElementById(`section-${name}`)?.classList.add('active');\\n\\n  if (name === 'my-club') renderMyClubDashboard();\\n  if (name === 'players') renderPlayers();\\n  if (name === 'predictions' && !predictionsLoaded) loadPredictions();\\n}\"",
+  "StartLine": "507",
+  "TargetContent": "\"function goToSection(name) {\\n  document.querySelectorAll('.nav-item').forEach(b => {\\n    b.classList.toggle('active', b.dataset.section === name);\\n  });\\n  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));\\n  document.getElementById(`section-${name}`)?.classList.add('active');\\n\\n  if (name === 'players') renderPlayers();\\n  if (name === 'predictions' && !predictionsLoaded) loadPredictions();\\n}\"",
+  "TargetFile": "\"c:\\\\Users\\\\franc\\\\.gemini\\\\antigravity\\\\scratch\\\\football-ai-platform\\\\frontend\\\\app.js\"",
+  "toolAction": "\"Updating goToSection\"",
+  "toolSummary": "\"Go to section update\""
+}

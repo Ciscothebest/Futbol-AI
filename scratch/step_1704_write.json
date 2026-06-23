@@ -1,0 +1,12 @@
+{
+  "AllowMultiple": "false",
+  "Description": "\"Render 'undefined' for any slot on the pitch map that does not have a real player registered in the database, while keeping virtual player logic active for detail modals.\"",
+  "EndLine": "1229",
+  "Instruction": "\"Modify renderFieldPlayers to identify if a player is virtual and display 'undefined' on the pitch map instead of their virtual generated name.\"",
+  "ReplacementContent": "\"    let isVirtual = false;\\n    if (!matchedPlayer) {\\n      matchedPlayer = getDeterministicVirtualPlayer(clubName, slot.roleEs, i);\\n      isVirtual = true;\\n    }\\n    \\n    usedPlayerIds.add(matchedPlayer.id);\\n    \\n    let nodeEl = document.getElementById(`field-player-node-${i}`);\\n    if (!nodeEl) {\\n      nodeEl = document.createElement('div');\\n      nodeEl.id = `field-player-node-${i}`;\\n      nodeEl.className = 'field-player-node';\\n      container.appendChild(nodeEl);\\n    }\\n    \\n    nodeEl.style.left = `${slot.left}%`;\\n    nodeEl.style.top = `${slot.top}%`;\\n    \\n    const displayName = isVirtual ? 'undefined' : (matchedPlayer.name ? matchedPlayer.name.split(' ').pop() : (matchedPlayer.nickname || slot.roleEs));\\n    nodeEl.innerHTML = `\\n      <div class=\\\"field-player-circle\\\">${slot.roleEs}</div>\\n      <div class=\\\"field-player-name\\\">${displayName}</div>\\n    `;\"",
+  "StartLine": "1206",
+  "TargetContent": "\"    if (!matchedPlayer) {\\n      matchedPlayer = getDeterministicVirtualPlayer(clubName, slot.roleEs, i);\\n    }\\n    \\n    usedPlayerIds.add(matchedPlayer.id);\\n    \\n    let nodeEl = document.getElementById(`field-player-node-${i}`);\\n    if (!nodeEl) {\\n      nodeEl = document.createElement('div');\\n      nodeEl.id = `field-player-node-${i}`;\\n      nodeEl.className = 'field-player-node';\\n      container.appendChild(nodeEl);\\n    }\\n    \\n    nodeEl.style.left = `${slot.left}%`;\\n    nodeEl.style.top = `${slot.top}%`;\\n    \\n    const displayName = matchedPlayer.name ? matchedPlayer.name.split(' ').pop() : (matchedPlayer.nickname || slot.roleEs);\\n    nodeEl.innerHTML = `\\n      <div class=\\\"field-player-circle\\\">${slot.roleEs}</div>\\n      <div class=\\\"field-player-name\\\">${displayName}</div>\\n    `;\"",
+  "TargetFile": "\"c:\\\\Users\\\\franc\\\\.gemini\\\\antigravity\\\\scratch\\\\football-ai-platform\\\\frontend\\\\app.js\"",
+  "toolAction": "\"Replacing renderFieldPlayers fallback logic\"",
+  "toolSummary": "\"Replace renderFieldPlayers virtual fallback\""
+}

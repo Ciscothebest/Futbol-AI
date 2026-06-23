@@ -1,0 +1,1651 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>FutbolAI — Inteligencia Artificial del Fútbol Mundial</title>
+  <meta name="description"
+    content="Plataforma de inteligencia artificial especializada en jugadores de fútbol a nivel mundial. Consulta estadísticas, compara jugadores y obtén predicciones con IA." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+  <link rel="stylesheet" href="styles.css?v=4.1" />
+  <link rel="stylesheet" href="profile.css?v=2.0" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script>
+    // Si ya tiene sesión, ocultamos la landing al cargar
+    window.onload = () => {
+      if (localStorage.getItem('scout_ai_token')) {
+        document.getElementById('landing-screen').style.display = 'none';
+        // Aquí se activaría el dashboard o el onboarding según el estado del usuario
+      }
+    };
+  </script>
+</head>
+
+<body>
+  <!-- ──────────────── LANDING SCREEN (RESTAURADA) ──────────────── -->
+  <div id="landing-screen" class="landing-screen">
+    <div class="lnd-hero-bg">
+      <div class="lnd-grid-overlay"></div>
+      <div class="lnd-orb lnd-orb-1"></div>
+      <div class="lnd-orb lnd-orb-2"></div>
+    </div>
+    
+    <div class="lnd-hero-inner">
+      <div class="lnd-hero-content">
+        <h1 class="lnd-h1">
+          EL NUEVO ESTÁNDAR<br/>
+          DEL SCOUTING<br/>
+          TÁCTICO
+        <h1 class="lnd-h1">EL NUEVO ESTÁNDAR<br/>DEL SCOUTING TÁCTICO</h1>
+        <p class="lnd-hero-sub">Analiza jugadores y consulta decisiones con IA</p>
+        <div class="lnd-hero-btns">
+          <button class="lnd-cta-primary" onclick="showRegister()">Registrarse ↗</button>
+          <button class="lnd-cta-secondary" onclick="showLogin()">Iniciar sesión <span>▶</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. ONBOARDING SCREEN (Nuevo usuario) -->
+  <div id="onboarding-screen" class="onboarding-screen" style="display: none;">
+    <!-- Capa de rejilla táctica (Radar Effect) -->
+    <div class="tactical-radar-grid"></div>
+
+    <!-- HEADER AREA (Clean of map interference) -->
+    <div class="onboarding-header-hud">
+      <nav class="onboarding-nav-glass">
+        <div style="font-size: 18px; font-weight: 700; letter-spacing: 1px;">
+          <span style="color: #00f0ff; text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);">SCOUT AI</span>
+        </div>
+
+        <div class="lang-selector-container">
+          <button class="btn-lang">
+            <img src="https://flagcdn.com/w20/es.png" alt="ES" style="width: 18px; border-radius: 2px;">
+            ES ▾
+          </button>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 12px; font-size: 13px; color: #64748b;">
+          <span id="onboarding-step-text" style="margin-right: 8px;">Paso 1 de 3</span>
+          <div class="step-dot active" id="dot-step-1"></div>
+          <div class="step-dot" id="dot-step-2"></div>
+          <div class="step-dot" id="dot-step-3"></div>
+        </div>
+      </nav>
+
+      <div class="onboarding-header-text">
+        <h1 id="onboarding-header-title" style="font-size: 38px; margin-top: 0px;">¿Qué ligas quieres explorar?</h1>
+        <p id="onboarding-header-subtitle">Selecciona los países con ligas profesionales que más te interesan.</p>
+      </div>
+    </div>
+
+    <!-- STEP 1: MAP SELECTION -->
+    <div id="onboarding-step1-container" class="onboarding-step-container map-viewport-hud-container">
+      <div id="map"></div>
+      
+      <div class="country-tooltip" id="tooltip">
+          <div class="tt-name" id="tt-name">España</div>
+          <div class="tt-info" id="tt-info">La Liga · 20 equipos</div>
+          <button class="btn-ver-liga" onclick="selectCountry()">Ver liga</button>
+      </div>
+
+      <!-- FLOATING BOTTOM PANEL - Ahora DENTRO del visor -->
+      <div class="onboarding-footer-hud floating">
+          <div class="footer-hud-container">
+              <div class="footer-hud-left-tags">
+                  <div class="chips-container" id="chips-container">
+                      <span id="chip-empty" class="chip-empty">Ningún país seleccionado</span>
+                  </div>
+              </div>
+              
+              <div class="footer-hud-center-info">
+                  <div class="footer-hint" id="footer-hint">0 ligas seleccionadas</div>
+              </div>
+
+              <div class="footer-hud-right-actions">
+                  <button class="btn-onboarding-continue-glow" id="btn-onboarding-continue" disabled onclick="goToStep2()">Continuar →</button>
+                  <a href="#" class="skip-link" onclick="initDashboard()">Saltar por ahora</a>
+              </div>
+          </div>
+      </div>
+    </div>
+
+    <!-- STEP 2: CLUB SELECTION -->
+    <div id="onboarding-step2-container" class="onboarding-step-container" style="display: none; flex: 1; width: 95%; max-width: 1400px; margin: 0 auto 20px; position: relative; z-index: 1; background: rgba(2, 8, 22, 0.4); border-radius: 15px; overflow: hidden; border: 1px solid rgba(0, 240, 255, 0.15); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);">
+      <div class="club-selection-layout" style="display: flex; height: 100%; width: 100%; padding: 25px 25px 110px 25px; gap: 25px; box-sizing: border-box;">
+        
+        <!-- Left Side: Country Info Card -->
+        <div class="country-info-panel" style="flex: 1; max-width: 320px; background: rgba(10, 20, 35, 0.6); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 12px; padding: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;">
+          <div class="country-flag-glow" style="width: 140px; height: 95px; border-radius: 8px; overflow: hidden; box-shadow: 0 0 25px rgba(0, 240, 255, 0.2); border: 2px solid rgba(0, 240, 255, 0.3); margin-bottom: 25px; display: flex; align-items: center; justify-content: center; background: #070e1b;">
+            <img id="step2-country-flag" src="https://flagcdn.com/w160/es.png" alt="Flag" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
+          <h2 id="step2-country-name" style="font-size: 24px; font-weight: 800; color: #fff; margin-bottom: 8px; text-shadow: 0 0 10px rgba(0,240,255,0.3); text-align: center;">España</h2>
+          <span id="step2-league-name" style="font-size: 14px; font-weight: 600; color: #00f0ff; letter-spacing: 1px; text-transform: uppercase; background: rgba(0, 240, 255, 0.1); padding: 4px 14px; border-radius: 20px; border: 1px solid rgba(0, 240, 255, 0.2); text-align: center;">La Liga</span>
+        </div>
+
+        <!-- Right Side: Clubs Grid -->
+        <div class="clubs-grid-panel" style="flex: 3; display: flex; flex-direction: column; background: rgba(7, 14, 27, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 20px; position: relative;">
+          
+          <div id="clubs-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; flex: 1; overflow-y: auto; padding-right: 8px;">
+            <!-- Club Cards injected here -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- STEP 2 FLOATING BOTTOM PANEL -->
+      <div class="onboarding-footer-hud step2-footer" style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 1000px; background: rgba(10, 20, 30, 0.95); border: 1px solid rgba(0, 240, 255, 0.3); border-radius: 15px; padding: 12px 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); z-index: 1000;">
+        <div class="footer-hud-container" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+          <div class="footer-hud-left-tags">
+            <div id="step2-selected-club-chip" class="selected-country-tag" style="display: none; background: rgba(0, 240, 255, 0.1); border: 1px solid #00f0ff; color: #00f0ff; padding: 8px 16px; border-radius: 30px; font-weight: 600; gap: 8px;">
+              <span id="step2-selected-club-name">Madrid FC</span>
+              <span class="remove" onclick="deselectClub()" style="cursor: pointer; font-size: 16px; margin-left: 4px;">×</span>
+            </div>
+            <span id="step2-no-club-hint" style="color: rgba(255,255,255,0.4); font-size: 14px;">Ningún club seleccionado</span>
+          </div>
+
+          <div class="footer-hud-right-actions" style="flex-direction: row; gap: 15px; align-items: center;">
+            <a href="#" class="skip-link" onclick="goToStep1()" style="color: #64748b;">← Atrás</a>
+            <button class="btn-onboarding-continue-glow" id="btn-confirmar-club" disabled onclick="goToStep3()">Confirmar club →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3: SUBSCRIPTION TIERS -->
+    <div id="onboarding-step3-container" class="onboarding-step-container" style="display: none; flex: 1; width: 95%; max-width: 1400px; margin: 0 auto 20px; position: relative; z-index: 1; background: transparent; border-radius: 15px;">
+      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; padding: 20px; box-sizing: border-box;">
+        
+        <h2 id="step3-title" style="font-size: 36px; font-weight: 800; color: #fff; margin-bottom: 10px; text-shadow: 0 0 10px rgba(255,255,255,0.2); text-align: center;">¿Cuál es tu plan?</h2>
+        <p id="step3-subtitle" style="font-size: 16px; color: rgba(255,255,255,0.6); margin-bottom: 40px; text-align: center;">Tu experiencia se adaptará según tu suscripción elegida.</p>
+
+        <!-- Tiers Grid -->
+        <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; width: 100%; max-width: 1200px;">
+          
+          <!-- Gratis Tier -->
+          <div class="tier-card" id="tier-card-gratis" onclick="selectTier('Gratis', this)" style="flex: 1; min-width: 200px; max-width: 260px; background: rgba(10, 20, 35, 0.6); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 16px; padding: 30px 20px; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+            <div class="tier-check" style="position: absolute; top: 15px; right: 15px; background: #00f0ff; color: #000; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; opacity: 0; transition: opacity 0.2s; box-shadow: 0 0 10px #00f0ff;">✓</div>
+            <div style="font-size: 40px; margin-bottom: 15px; color: #94a3b8;">🎯</div>
+            <h3 style="font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 10px;">Gratis</h3>
+            <p style="font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.5;">Acceso básico a tácticas, alineaciones y análisis de rendimiento.</p>
+          </div>
+
+          <!-- Pro Tier -->
+          <div class="tier-card locked" id="tier-card-pro" onclick="showOnboardingTierAlert('Pro', '$9.99', this)" style="flex: 1; min-width: 200px; max-width: 260px; background: rgba(10, 20, 35, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 30px 20px; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3); opacity: 0.75;">
+            <div class="tier-check" style="position: absolute; top: 15px; right: 15px; background: #00f0ff; color: #000; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; opacity: 0; transition: opacity 0.2s; box-shadow: 0 0 10px #00f0ff;">✓</div>
+            <div class="tier-lock" style="position: absolute; top: 15px; right: 15px; color: rgba(0, 240, 255, 0.7); font-size: 15px;">🔒</div>
+            <div style="font-size: 40px; margin-bottom: 15px; color: #00f0ff;">🔍</div>
+            <h3 style="font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">Pro <span style="font-size: 10px; background: rgba(0, 240, 255, 0.15); color: #00f0ff; padding: 2px 6px; border-radius: 20px; font-weight: 800; border: 1px solid rgba(0, 240, 255, 0.3);">PREMIUM</span></h3>
+            <p style="font-size: 13px; color: rgba(255,255,255,0.4); line-height: 1.5;">Descubre y evalúa talento local e internacional con IA.</p>
+          </div>
+ 
+          <!-- Plus Tier -->
+          <div class="tier-card locked" id="tier-card-plus" onclick="showOnboardingTierAlert('Plus', '$19.99', this)" style="flex: 1; min-width: 200px; max-width: 260px; background: rgba(10, 20, 35, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 30px 20px; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3); opacity: 0.75;">
+            <div class="tier-check" style="position: absolute; top: 15px; right: 15px; background: #00f0ff; color: #000; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; opacity: 0; transition: opacity 0.2s; box-shadow: 0 0 10px #00f0ff;">✓</div>
+            <div class="tier-lock" style="position: absolute; top: 15px; right: 15px; color: rgba(240, 188, 66, 0.7); font-size: 15px;">🔒</div>
+            <div style="font-size: 40px; margin-bottom: 15px; color: #f0bc42;">📊</div>
+            <h3 style="font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">Plus <span style="font-size: 10px; background: rgba(240, 188, 66, 0.15); color: #f0bc42; padding: 2px 6px; border-radius: 20px; font-weight: 800; border: 1px solid rgba(240, 188, 66, 0.3);">ELITE</span></h3>
+            <p style="font-size: 13px; color: rgba(255,255,255,0.4); line-height: 1.5;">Métricas avanzadas, heatmaps y estadísticas comparativas.</p>
+          </div>
+ 
+          <!-- Enterprise Tier -->
+          <div class="tier-card locked" id="tier-card-enterprise" onclick="showOnboardingTierAlert('Enterprise', '$49.99', this)" style="flex: 1; min-width: 200px; max-width: 260px; background: rgba(10, 20, 35, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 30px 20px; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3); opacity: 0.75;">
+            <div class="tier-check" style="position: absolute; top: 15px; right: 15px; background: #00f0ff; color: #000; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; opacity: 0; transition: opacity 0.2s; box-shadow: 0 0 10px #00f0ff;">✓</div>
+            <div class="tier-lock" style="position: absolute; top: 15px; right: 15px; color: rgba(200, 16, 46, 0.7); font-size: 15px;">🔒</div>
+            <div style="font-size: 40px; margin-bottom: 15px; color: #c8102e;">🤝</div>
+            <h3 style="font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">Enterprise <span style="font-size: 10px; background: rgba(200, 16, 46, 0.15); color: #c8102e; padding: 2px 6px; border-radius: 20px; font-weight: 800; border: 1px solid rgba(200, 16, 46, 0.3);">CLUB</span></h3>
+            <p style="font-size: 13px; color: rgba(255,255,255,0.4); line-height: 1.5;">Gestiona perfiles de jugadores y oportunidades de mercado.</p>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- STEP 3 FLOATING BOTTOM PANEL -->
+      <div class="onboarding-footer-hud step3-footer" style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 1000px; background: rgba(10, 20, 30, 0.95); border: 1px solid rgba(0, 240, 255, 0.3); border-radius: 15px; padding: 12px 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); z-index: 1000;">
+        <div class="footer-hud-container" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+          <div class="footer-hud-left-tags">
+            <div id="step3-selected-tier-chip" class="selected-country-tag" style="display: none; background: rgba(0, 240, 255, 0.1); border: 1px solid #00f0ff; color: #00f0ff; padding: 8px 16px; border-radius: 30px; font-weight: 600; gap: 8px;">
+              <span id="step3-selected-tier-name">Gratis</span>
+            </div>
+            <span id="step3-config-summary" style="color: rgba(255,255,255,0.5); font-size: 14px;">Selecciona tu plan de suscripción</span>
+          </div>
+
+          <div class="footer-hud-right-actions" style="flex-direction: row; gap: 15px; align-items: center;">
+            <a href="#" class="skip-link" onclick="goToStep2()" style="color: #64748b;">← Atrás</a>
+            <button class="btn-onboarding-continue-glow" id="btn-onboarding-final" disabled onclick="finalizarOnboarding()">Comenzar →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ──────────────── TACTICAL HEADER ──────────────── -->
+  <header class="tactical-nav">
+    <div class="nav-brand">
+      <span class="logo-icon">🌐</span>
+      <span>SCOUT AI</span>
+    </div>
+
+    <div class="nav-links">
+      <button class="nav-item" data-section="my-club" id="nav-my-club" style="display: none;">
+        <span class="nav-icon">🛡️</span>
+        <span data-i18n="nav_my_club">MI CLUB</span>
+      </button>
+      <button class="nav-item active" data-section="players">
+        <span class="nav-icon">👥</span>
+        <span data-i18n="nav_players">JUGADORES</span>
+      </button>
+      <button class="nav-item" data-section="compare">
+        <span class="nav-icon">⚖️</span>
+        <span data-i18n="nav_compare">COMPARAR</span>
+      </button>
+      <button class="nav-item" data-section="simulations">
+        <span class="nav-icon">🎮</span>
+        <span data-i18n="nav_simulations">SIMULACIONES</span>
+      </button>
+      <button class="nav-item" data-section="chat">
+        <span class="nav-icon">🤖</span>
+        <span data-i18n="nav_chat">IA CHAT</span>
+      </button>
+      <button class="nav-item" data-section="predictions">
+        <span class="nav-icon">🔮</span>
+        <span data-i18n="nav_predictions">PREDICCIONES</span>
+      </button>
+    </div>
+    <div class="header-right-group" style="display: flex; align-items: center; gap: 15px;">
+      <div class="lang-toggle-compact">
+        <span class="lang-btn active" data-lang="es">ES</span>
+        <span class="lang-btn" data-lang="en">EN</span>
+      </div>
+
+      <div class="user-profile-compact" id="user-profile-compact" onclick="goToSection('profile')"
+        style="display: flex; align-items: center; gap: 10px; padding: 5px 12px; background: rgba(255,255,255,0.05); border-radius: 20px; border: 1px solid var(--border); cursor: pointer; transition: background 0.2s;">
+        <img id="user-avatar" src="" style="width: 24px; height: 24px; border-radius: 50%; display: none;">
+        <span id="user-name" style="font-size: 0.85rem; font-weight: 600; color: var(--text-1);">Usuario</span>
+        <button id="btn-logout" title="Cerrar sesión"
+          style="background: none; border: none; color: var(--secondary); cursor: pointer; font-size: 1rem; padding: 0;">📤</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ──────────────── MAIN CONTENT ──────────────── -->
+  <main class="main-content">
+
+    <!-- HOME SECTION -->
+    <section class="section" id="section-home">
+      <div class="hero">
+        <div class="hero-bg">
+          <div class="hero-orb orb-1"></div>
+          <div class="hero-orb orb-2"></div>
+          <div class="hero-orb orb-3"></div>
+          <div class="field-lines"></div>
+        </div>
+        <div class="hero-content">
+          <div class="hero-badge" data-i18n="hero_badge">🤖 Impulsado por Gemini AI</div>
+          <h1 class="hero-title" id="hero-title" data-i18n="hero_title">Inteligencia Artificial<br /><span
+              class="gradient-text">del Fútbol Mundial</span></h1>
+          <p class="hero-subtitle" data-i18n="hero_subtitle">
+            Consulta estadísticas, compara jugadores y obtén análisis profundos con IA.
+          </p>
+          <div class="hero-actions">
+            <button class="btn-primary" onclick="goToSection('chat')" data-i18n="btn_talk_agent">
+              💬 Hablar con el Agente
+            </button>
+            <button class="btn-secondary" onclick="goToSection('players')" data-i18n="btn_see_players">
+              👥 Ver Jugadores
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats bar -->
+      <div class="stats-bar" id="home-stats-bar">
+        <div class="stat-item">
+          <span class="stat-num" id="stat-players">—</span>
+          <span class="stat-label" data-i18n="stat_players">Jugadores</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">7</span>
+          <span class="stat-label" data-i18n="stat_leagues">Ligas</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">∞</span>
+          <span class="stat-label" data-i18n="stat_questions">Preguntas</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">24/7</span>
+          <span class="stat-label" data-i18n="stat_available">Disponible</span>
+        </div>
+      </div>
+
+      <!-- Featured Players -->
+      <div class="section-header">
+        <h2 data-i18n="featured_title">⭐ Destacados</h2>
+        <button class="btn-link" data-i18n="see_all" onclick="goToSection('players')">Ver todos →</button>
+      </div>
+      <div class="players-grid" id="featured-grid"></div>
+
+      <!-- Quick Chat Prompt -->
+      <div class="quick-chat-card">
+        <h3 data-i18n="quick_chat_title">💬 Pregunta lo que quieras</h3>
+        <div class="quick-prompts" id="home-quick-prompts"></div>
+      </div>
+    </section>
+
+    <!-- MY CLUB SECTION (TACTICAL DASHBOARD) -->
+    <section class="section" id="section-my-club">
+      <div class="dashboard-grid">
+        
+        <!-- Left Column: Club Info & Matches -->
+        <div class="db-col db-left-col">
+          <!-- Mi Club Card -->
+          <div class="dashboard-card db-club-card">
+            <div class="db-card-header-simple">
+              <h3 class="db-card-title" data-i18n="db_my_club">Mi Club</h3>
+            </div>
+            
+            <div class="db-club-shield-wrap">
+              <div class="db-club-shield-glow" id="db-club-shield">
+                <!-- Procedural shield text -->
+                <span id="db-club-shield-short">FC</span>
+              </div>
+            </div>
+            
+            <div class="db-club-info">
+              <h2 id="db-club-name" class="db-club-name">Cargando...</h2>
+              <p id="db-club-details" class="db-club-details">La Liga · España</p>
+              <p id="db-club-season" class="db-club-season">2024/25</p>
+            </div>
+            
+            <div class="db-club-stats-grid">
+              <div class="db-stat-item">
+                <span class="db-stat-icon">🏆</span>
+                <div class="db-stat-text">
+                  <span class="db-stat-label" data-i18n="db_position">Posición</span>
+                  <span id="db-stat-pos" class="db-stat-val">3º</span>
+                </div>
+              </div>
+              <div class="db-stat-item">
+                <span class="db-stat-icon">⚽</span>
+                <div class="db-stat-text">
+                  <span class="db-stat-label" data-i18n="db_goals">Goles</span>
+                  <span id="db-stat-goals" class="db-stat-val">42</span>
+                </div>
+              </div>
+              <div class="db-stat-item">
+                <span class="db-stat-icon">📈</span>
+                <div class="db-stat-text">
+                  <span class="db-stat-label" data-i18n="db_xg">xG</span>
+                  <span id="db-stat-xg" class="db-stat-val">38.4</span>
+                </div>
+              </div>
+              <div class="db-stat-item">
+                <span class="db-stat-icon">📅</span>
+                <div class="db-stat-text">
+                  <span class="db-stat-label" data-i18n="db_matches">Partidos</span>
+                  <span id="db-stat-matches" class="db-stat-val">22</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Próximos partidos Card -->
+          <div class="dashboard-card db-matches-card">
+            <div class="db-card-header-simple">
+              <h3 class="db-card-title" data-i18n="db_next_matches">Próximos partidos</h3>
+            </div>
+            <div class="db-matches-list" id="db-matches-list">
+              <!-- Matches rows will be dynamically loaded -->
+            </div>
+          </div>
+        </div>
+        
+        <!-- Center Column: Football Pitch -->
+        <div class="db-col db-center-col">
+          <div class="dashboard-card db-pitch-card">
+            <div class="db-pitch-header" style="flex-wrap: wrap; gap: 8px;">
+              <h3 class="db-card-title" data-i18n="db_title_formation">Alineación Titular</h3>
+              <div class="db-selectors-container" style="display: none; gap: 8px;">
+                <div class="db-formation-selector-wrap">
+                  <select id="db-formation-selector" class="db-select">
+                    <option value="4-3-3" data-i18n="formation_433">4-3-3 (Posesión Clásica)</option>
+                    <option value="4-4-2" data-i18n="formation_442">4-4-2 (Doble Pivote Tradicional)</option>
+                    <option value="3-5-2" data-i18n="formation_352">3-5-2 (Carrileros y Fluidez)</option>
+                    <option value="4-2-3-1" data-i18n="formation_4231">4-2-3-1 (Doble Pivote y Enganche)</option>
+                    <option value="4-1-2-1-2" data-i18n="formation_41212">4-1-2-1-2 (Rombo Cerrado)</option>
+                    <option value="3-4-3" data-i18n="formation_343">3-4-3 (Ataque y Amplitud)</option>
+                    <option value="5-3-2" data-i18n="formation_532">5-3-2 (Muro Defensivo)</option>
+                    <option value="5-4-1" data-i18n="formation_541">5-4-1 (Cerrojo Defensivo)</option>
+                    <option value="4-5-1" data-i18n="formation_451">4-5-1 (Bloque Medio Ultracompacto)</option>
+                    <option value="4-3-2-1" data-i18n="formation_4321">4-3-2-1 (Árbol de Navidad)</option>
+                    <option value="3-4-2-1" data-i18n="formation_3421">3-4-2-1 (Línea de 3 con Carrileros)</option>
+                    <option value="5-2-3" data-i18n="formation_523">5-2-3 (Contragolpe de Cinco)</option>
+                    <option value="4-4-1-1" data-i18n="formation_4411">4-4-1-1 (Segundo Delantero)</option>
+                    <option value="3-4-1-2" data-i18n="formation_3412">3-4-1-2 (Tres Defensas y Enganche)</option>
+                    <option value="4-3-1-2" data-i18n="formation_4312">4-3-1-2 (Rombo Cerrado y Tres MCs)</option>
+                    <option value="4-2-2-2" data-i18n="formation_4222">4-2-2-2 (Rectángulo Mágico)</option>
+                  </select>
+                </div>
+                <div class="db-style-selector-wrap">
+                  <select id="db-style-selector" class="db-select" style="min-width: 140px;">
+                    <option value="tikitaka" data-i18n="style_tikitaka">Posesión (Tiki-Taka)</option>
+                    <option value="counter" data-i18n="style_counter">Contraataque Rápido</option>
+                    <option value="gegenpress" data-i18n="style_gegenpress">Presión Alta (Gegenpress)</option>
+                    <option value="longball" data-i18n="style_longball">Balón Largo (Directo)</option>
+                    <option value="wingplay" data-i18n="style_wingplay">Juego por las Bandas</option>
+                    <option value="parkbus" data-i18n="style_parkbus">Autobús (Defensivo)</option>
+                    <option value="total" data-i18n="style_total">Fútbol Total</option>
+                    <option value="catenaccio" data-i18n="style_catenaccio">Catenaccio (Cerrojo Italiano)</option>
+                    <option value="juego_posicion" data-i18n="style_juego_posicion">Juego de Posición (Estructural)</option>
+                    <option value="samba" data-i18n="style_samba">Jogo Bonito (Samba Creativo)</option>
+                    <option value="kick_rush" data-i18n="style_kick_rush">Kick and Rush (Fútbol Británico)</option>
+                    <option value="verrou" data-i18n="style_verrou">El Cerrojo (Bloque Bajo Suizo)</option>
+                    <option value="vertikalspiel" data-i18n="style_vertikalspiel">Pase Vertical (Juego Directo)</option>
+                    <option value="trequartista" data-i18n="style_trequartista">Juego del Enganche (Trequartista)</option>
+                    <option value="heavy_metal" data-i18n="style_heavy_metal">Heavy Metal (Ataque Furioso)</option>
+                    <option value="target_man" data-i18n="style_target_man">Juego con Referente (Target Man)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Soccer Pitch -->
+            <div class="soccer-pitch-container">
+              <div class="soccer-pitch">
+                <div class="field-lines-overlay">
+                  <div class="field-outer-border"></div>
+                  <div class="field-half-line"></div>
+                  <div class="field-center-circle"></div>
+                  <div class="field-center-dot"></div>
+                  <div class="field-penalty-area top">
+                    <div class="penalty-arc"></div>
+                    <div class="penalty-box"></div>
+                    <div class="goal-box"></div>
+                  </div>
+                  <div class="field-penalty-area bottom">
+                    <div class="penalty-arc"></div>
+                    <div class="penalty-box"></div>
+                    <div class="goal-box"></div>
+                  </div>
+                </div>
+                
+                <!-- Player Nodes Container -->
+                <div class="pitch-nodes-container" id="pitch-nodes-container">
+                  <!-- Nodes injected dynamically by JS -->
+                </div>
+              </div>
+            </div>
+            
+            <button class="db-btn-edit-formation" id="db-btn-edit-formation" data-i18n="db_btn_edit_formation">Editar alineación</button>
+          </div>
+        </div>
+        
+        <!-- Right Column: AI Alerts, Recent Performance & Chat -->
+        <div class="db-col db-right-col">
+          <!-- Alertas IA Card -->
+          <div class="dashboard-card db-alerts-card">
+            <div class="db-card-header-simple">
+              <h3 class="db-card-title" data-i18n="db_alerts_title">Alertas IA</h3>
+            </div>
+            <div class="db-alerts-list" id="db-alerts-list">
+              <!-- AI alerts will be injected dynamically -->
+            </div>
+          </div>
+          
+          <!-- Rendimiento Reciente Card -->
+          <div class="dashboard-card db-performance-card">
+            <div class="db-card-header-simple">
+              <h3 class="db-card-title" data-i18n="db_performance_title">Rendimiento reciente</h3>
+            </div>
+            <div class="db-chart-container">
+              <canvas id="dbRecentPerformanceChart"></canvas>
+            </div>
+          </div>
+          
+          <!-- Chat IA Quick Card -->
+          <div class="dashboard-card db-chat-card" style="display: flex; flex-direction: column;">
+            <div class="db-card-header-simple">
+              <h3 class="db-card-title" data-i18n="db_chat_title">Chat IA</h3>
+            </div>
+            <div id="db-inline-chat-messages" style="flex: 1; min-height: 180px; max-height: 250px; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; background: rgba(0,0,0,0.2); border-radius: 8px;">
+              <div style="color: var(--text-secondary); font-size: 0.9rem; text-align: center; margin-top: auto; margin-bottom: auto;">Asistente inteligente enfocado en tu club.</div>
+            </div>
+            <div class="db-chat-input-wrap">
+              <input type="text" id="db-chat-quick-input" data-i18n-placeholder="db_chat_placeholder" placeholder="Pregunta algo sobre tu equipo..." />
+              <button id="db-chat-quick-send-btn" class="db-chat-send-btn">➤</button>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </section>
+
+    <!-- PLAYERS SECTION -->
+    <section class="section" id="section-players">
+      <div class="section-title-bar">
+        <h2 data-i18n="section_players">👥 Jugadores</h2>
+        <span class="total-tag" id="players-count-tag">—</span>
+      </div>
+
+      <div class="tactical-filters-area">
+        <div class="tactical-search">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-input" placeholder="Buscar jugador o club..." />
+        </div>
+
+        <div class="tactical-selects" style="display: flex; gap: 10px; margin-top: 15px; margin-bottom: 5px;">
+          <select id="filter-league" class="sort-select" style="display: none;">
+            <option value="">Todas las ligas</option>
+          </select>
+          <select id="filter-team" class="sort-select" style="display: none;">
+            <option value="">Todos los equipos</option>
+          </select>
+
+          <!-- Custom dropdown for League -->
+          <div class="custom-dropdown" id="custom-dropdown-league" style="flex: 1; position: relative;">
+            <div class="dropdown-trigger" id="dropdown-trigger-league">
+              <span class="dropdown-trigger-text">🌐 Todas las ligas</span>
+              <span class="dropdown-arrow">▼</span>
+            </div>
+            <div class="dropdown-menu" id="dropdown-menu-league">
+              <div class="dropdown-search-wrap">
+                <input type="text" class="dropdown-search-input" id="dropdown-search-league" placeholder="Buscar liga..." autocomplete="off" />
+              </div>
+              <div class="dropdown-options" id="dropdown-options-league"></div>
+            </div>
+          </div>
+
+          <!-- Custom dropdown for Team -->
+          <div class="custom-dropdown" id="custom-dropdown-team" style="flex: 1; position: relative;">
+            <div class="dropdown-trigger" id="dropdown-trigger-team">
+              <span class="dropdown-trigger-text">Todos los equipos</span>
+              <span class="dropdown-arrow">▼</span>
+            </div>
+            <div class="dropdown-menu" id="dropdown-menu-team">
+              <div class="dropdown-search-wrap">
+                <input type="text" class="dropdown-search-input" id="dropdown-search-team" placeholder="Buscar equipo..." autocomplete="off" />
+              </div>
+              <div class="dropdown-options" id="dropdown-options-team"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="filter-chips" id="filter-chips" style="display: none;">
+          <button class="chip active" data-pos="">Todos</button>
+          <button class="chip" data-pos="ST">DC</button>
+          <button class="chip" data-pos="LW">EI</button>
+          <button class="chip" data-pos="RW">ED</button>
+          <button class="chip" data-pos="CM">MC</button>
+          <button class="chip" data-pos="fav">⭐ Favoritos</button>
+        </div>
+
+        <div class="tactical-sort">
+          <select id="sort-players" class="sort-select">
+            <option value="name_asc" data-i18n="sort_name_asc">Nombre (A-Z)</option>
+            <option value="name_desc" data-i18n="sort_name_desc">Nombre (Z-A)</option>
+            <option value="salary_desc" data-i18n="sort_salary_desc">Salario (Mayor a Menor)</option>
+            <option value="salary_asc" data-i18n="sort_salary_asc">Salario (Menor a Mayor)</option>
+            <option value="contract_asc" data-i18n="sort_contract_near">Contrato (Próximo a Expirar)</option>
+            <option value="contract_desc" data-i18n="sort_contract_far">Contrato (Lejano a Expirar)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="players-grid" id="players-grid">
+      </div>
+      <div class="pagination-controls" id="pagination-controls"
+        style="display:none; justify-content:center; gap:15px; margin-top:20px; align-items:center;">
+        <button class="btn-secondary" id="prev-page-btn" onclick="prevPage()">⬅️ Anterior</button>
+        <span id="page-info" class="page-info" style="color:var(--text-2); font-size:14px; font-weight:600;"></span>
+        <button class="btn-secondary" id="next-page-btn" onclick="nextPage()">Siguiente ➡️</button>
+      </div>
+      <div class="no-results" id="no-results" style="display:none">
+        <span>😕</span>
+        <p>No se encontraron jugadores / No players found</p>
+      </div>
+    </section>
+
+    <!-- CHAT SECTION -->
+    <section class="section" id="section-chat">
+      <div class="chat-layout">
+        <div class="chat-header">
+          <div class="agent-avatar">⚽</div>
+          <div class="agent-info">
+            <h3 data-i18n="chat_agent_name">FutbolAI Agent</h3>
+            <p class="agent-status" id="agent-status-text">Online — Gemini Powered</p>
+          </div>
+          <button class="btn-icon" id="btn-mute-agent" title="Silenciar Agente / Mute Agent">🔊</button>
+          <button class="btn-icon" id="btn-clear-chat" title="Nueva conversación / New conversation">🗑️</button>
+        </div>
+
+        <div class="chat-messages" id="chat-messages">
+          <div class="chat-welcome">
+            <div class="welcome-icon">⚽</div>
+            <h3>¡Bienvenido a FutbolAI!</h3>
+            <p>Soy tu experto en fútbol mundial. Puedo responder cualquier pregunta sobre jugadores, estadísticas,
+              carreras y más.<br /><em>I'm your global football expert. Ask me anything about players, stats, careers
+                and more.</em></p>
+            <div class="welcome-chips">
+              <button class="prompt-chip" onclick="sendQuick('¿Quién mete más goles actualmente en Europa?')">⚽ Máximo
+                goleador Europa</button>
+              <button class="prompt-chip" onclick="sendQuick('Tell me about Erling Haaland')">🇳🇴 Haaland
+                profile</button>
+              <button class="prompt-chip" onclick="sendQuick('¿Cuál es la mejor liga del mundo y por qué?')">🏆 Mejor
+                liga</button>
+              <button class="prompt-chip" onclick="sendQuick('Compare Vinicius Jr and Kylian Mbappé')">⚖️ Vini vs
+                Mbappé</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-input-area" id="chat-input-area">
+          <!-- Text Input (Normal) -->
+          <textarea id="chat-input" class="chat-textarea" data-i18n-placeholder="chat_placeholder"
+            placeholder="Escribe tu pregunta..." rows="1"></textarea>
+
+          <!-- Recording Overlay (WhatsApp style - Hidden by default) -->
+          <div id="recording-overlay" class="recording-overlay" style="display:none;">
+            <div class="recording-dot"></div>
+            <span id="record-timer" class="record-timer">0:00</span>
+            <span class="recording-placeholder" data-i18n="recording_msg">Grabando audio...</span>
+          </div>
+
+          <button id="record-btn" class="record-btn" title="Grabar audio / Record audio">
+            <span class="record-icon">🎤</span>
+          </button>
+
+          <button id="send-btn" class="send-btn" title="Enviar / Send">
+            <span class="send-icon">➤</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPARE SECTION -->
+    <section class="section" id="section-compare">
+      <div class="section-title-bar">
+        <h2 data-i18n="section_compare">⚖️ Comparar Jugadores</h2>
+      </div>
+
+      <div class="compare-selectors">
+        <div class="player-selector" id="selector-1">
+          <h4 data-i18n="player1_label">Jugador 1</h4>
+          <div class="search-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="compare-search-1" class="search-input" data-i18n-placeholder="search_player"
+              placeholder="Buscar jugador..." />
+          </div>
+          <div class="selector-results" id="selector-results-1"></div>
+          <div class="selected-player-card" id="selected-card-1">
+            <div class="empty-player" data-i18n="select_player">Selecciona un jugador</div>
+          </div>
+        </div>
+
+        <div class="vs-divider">
+          <span>VS</span>
+        </div>
+
+        <div class="player-selector" id="selector-2">
+          <h4 data-i18n="player2_label">Jugador 2</h4>
+          <div class="search-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="compare-search-2" class="search-input" data-i18n-placeholder="search_player"
+              placeholder="Buscar jugador..." />
+          </div>
+          <div class="selector-results" id="selector-results-2"></div>
+          <div class="selected-player-card" id="selected-card-2">
+            <div class="empty-player" data-i18n="select_player">Selecciona un jugador</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-primary btn-full" id="btn-compare" data-i18n="btn_analyze" disabled>
+        🤖 Analizar con IA
+      </button>
+
+      <div class="compare-result" id="compare-result" style="display:none">
+        <div class="tactical-compare-header">
+          <div class="t-title">
+            <span class="t-icon">⚖️</span>
+            <h3 data-i18n="compare_result_title">COMPARATIVA TÁCTICA</h3>
+          </div>
+          <button class="t-close-btn" onclick="closeComparison()">✕ Cerrar</button>
+        </div>
+
+        <div class="tactical-cards-container">
+          <!-- Player 1 Card -->
+          <div class="tactical-card" id="t-card-1">
+            <div class="t-card-header">
+              <div class="t-avatar-circle" id="t-avatar-1"></div>
+              <div class="t-name-group">
+                <div class="t-name" id="t-name-1">—</div>
+                <div class="t-meta" id="t-meta-1">—</div>
+                <div class="t-rating" id="t-rating-1">—</div>
+              </div>
+            </div>
+            <div class="t-stats-table" id="t-table-1">
+              <!-- Rows will be injected by JS -->
+            </div>
+          </div>
+
+          <div class="t-vs">VS</div>
+
+          <!-- Player 2 Card -->
+          <div class="tactical-card" id="t-card-2">
+            <div class="t-card-header">
+              <div class="t-avatar-circle" id="t-avatar-2"></div>
+              <div class="t-name-group">
+                <div class="t-name" id="t-name-2">—</div>
+                <div class="t-meta" id="t-meta-2">—</div>
+                <div class="t-rating" id="t-rating-2">—</div>
+              </div>
+            </div>
+            <div class="t-stats-table" id="t-table-2">
+              <!-- Rows will be injected by JS -->
+            </div>
+          </div>
+        </div>
+
+        <div class="h2h-section">
+          <div class="h2h-header">
+            <span class="h2h-icon">📊</span>
+            <h3>ESTADÍSTICAS CARA A CARA</h3>
+          </div>
+          <div class="h2h-bars" id="h2h-bars">
+            <!-- Bars will be injected by JS -->
+          </div>
+        </div>
+
+        <!-- Radar Chart for Visual Comparison -->
+        <div class="comparison-chart-container" style="height: 400px; position: relative; margin-top: 30px; background: rgba(0,0,0,0.2); border-radius: 15px; padding: 20px;">
+          <canvas id="comparisonRadarChart"></canvas>
+        </div>
+
+        <div class="compare-result-body" id="compare-result-body"></div>
+      </div>
+    </section>
+
+    <!-- SIMULATIONS SECTION -->
+    <section class="section" id="section-simulations">
+      <div class="section-title-bar">
+        <h2 data-i18n="section_simulations">🎮 Simulador de Partidos IA</h2>
+      </div>
+
+      <div class="simulations-layout">
+        <!-- Left Panel: Active Club & Fixtures -->
+        <div class="sim-left-panel">
+          <div class="sim-card active-club-card">
+            <h3 class="sim-card-title">🛡️ Tu Club Activo</h3>
+            <div class="sim-club-details">
+              <div class="sim-club-badge" id="sim-my-club-badge">⚽</div>
+              <div class="sim-club-info">
+                <h4 id="sim-my-club-name">Mi Club</h4>
+                <p id="sim-my-club-league">Cargando liga...</p>
+                <span class="badge-style" id="sim-my-club-style">Tiki-Taka</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="sim-card fixtures-card">
+            <h3 class="sim-card-title">📅 Próximos Partidos</h3>
+            <div class="fixtures-list" id="sim-fixtures-list">
+              <!-- Fixtures loaded dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Panel: Custom Simulation Arena -->
+        <div class="sim-right-panel">
+          <div class="sim-card arena-card">
+            <h3 class="sim-card-title">⚡ Arena de Simulación</h3>
+            
+            <div class="arena-setup">
+              <div class="arena-team home">
+                <div class="arena-badge" id="arena-home-badge">🛡️</div>
+                <span class="arena-team-name" id="arena-home-name">Local</span>
+                <span class="arena-rating" id="arena-home-rating">OVR --</span>
+              </div>
+              
+              <div class="arena-vs">VS</div>
+              
+              <div class="arena-team away">
+                <div class="arena-select-wrap">
+                  <select id="arena-away-select" class="arena-select">
+                    <option value="">Selecciona un rival...</option>
+                  </select>
+                </div>
+                <div class="arena-badge" id="arena-away-badge">🚩</div>
+                <span class="arena-team-name" id="arena-away-name">Visitante</span>
+                <span class="arena-rating" id="arena-away-rating">OVR --</span>
+              </div>
+            </div>
+
+            <button class="btn-primary btn-full btn-sim-start" id="btn-run-simulation" disabled>
+              <span>🎮</span> Iniciar Simulación con IA
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Simulation Loading Screen (Overlay inside section) -->
+      <div class="sim-loading-overlay" id="sim-loading-overlay" style="display: none;">
+        <div class="sim-loading-content">
+          <div class="tactical-radar-grid-mini"></div>
+          <div class="sim-spinner"></div>
+          <h3 id="sim-loading-status">Calculando probabilidades...</h3>
+          <div class="sim-progress-bar">
+            <div class="sim-progress-fill" id="sim-progress-fill"></div>
+          </div>
+          <p class="sim-loading-detail" id="sim-loading-detail">Analizando plantillas de ambos equipos...</p>
+        </div>
+      </div>
+
+      <!-- Simulation Results Modal (Overlay) -->
+      <div class="modal-overlay" id="sim-results-modal" style="display: none; z-index: 22000;">
+        <div class="modal modal-lg">
+          <button class="modal-close" onclick="closeSimResults()">✕</button>
+          
+          <!-- LIVE SIMULATION VIEW -->
+          <div id="sim-live-view" style="display: none;">
+            <div class="sim-topbar">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:13px;font-weight:700;color:var(--text-1)">Simulando...</span>
+                <span class="badge-sm badge-ai">IA activa</span>
+              </div>
+              <span class="badge-sm badge-live" id="sim-live-min-badge">0'</span>
+            </div>
+
+            <div class="scoreboard-sim">
+              <div style="display:flex;align-items:center;justify-content:center;gap:12px;">
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;">
+                  <div class="crest" id="sim-live-home-logo">⚽</div>
+                  <span style="font-size:14px;font-weight:700;color:var(--text-1)" id="sim-live-home-name">Local</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:15px;padding:0 16px;">
+                  <span class="score-n" id="sim-live-home-score" style="color:var(--cyan)">0</span>
+                  <span class="score-s" style="color:var(--text-3)">–</span>
+                  <span class="score-n" id="sim-live-away-score" style="color:var(--orange)">0</span>
+                </div>
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;">
+                  <div class="crest" id="sim-live-away-logo">⚽</div>
+                  <span style="font-size:14px;font-weight:700;color:var(--text-1)" id="sim-live-away-name">Visitante</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="padding:10px 16px 6px;">
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-2);margin-bottom:6px;">
+                <span>Progreso</span>
+                <span id="sim-live-prog-txt" style="color:var(--cyan);font-weight:500;">0 / 90'</span>
+              </div>
+              <div class="prog-track" id="sim-live-prog-track">
+                <div class="prog-fill" id="sim-live-prog-fill" style="width:0%"></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-3);margin-top:4px;">
+                <span>0'</span>
+                <span>45'</span>
+                <span>90'</span>
+              </div>
+            </div>
+
+            <div class="proba-row">
+              <div class="proba-cell"><div class="proba-pct" id="sim-live-p-h" style="color:var(--cyan);">—</div><div class="proba-lbl">Victoria Local</div></div>
+              <div class="proba-cell"><div class="proba-pct" id="sim-live-p-d" style="color:var(--text-2);">—</div><div class="proba-lbl">Empate</div></div>
+              <div class="proba-cell"><div class="proba-pct" id="sim-live-p-a" style="color:var(--orange);">—</div><div class="proba-lbl">Victoria Visitante</div></div>
+            </div>
+
+            <div class="speed-row">
+              <span style="margin-right: 6px;">Velocidad:</span>
+              <button class="sp-btn animate-btn" id="sim-speed-normal" onclick="setSimSpeed(1000,'sim-speed-normal')">Normal</button>
+              <button class="sp-btn animate-btn on" id="sim-speed-fast" onclick="setSimSpeed(300,'sim-speed-fast')">Rápido</button>
+              <button class="sp-btn animate-btn" id="sim-speed-turbo" onclick="setSimSpeed(80,'sim-speed-turbo')">Turbo</button>
+              <button class="sp-btn animate-btn" id="btn-skip-sim" onclick="skipMatchSimulation()" style="margin-left: auto; background: rgba(255, 61, 0, 0.1); border-color: rgba(255, 61, 0, 0.3); color: var(--orange);">Saltar simulación ⏭️</button>
+            </div>
+
+            <div class="sim-live-tabs">
+              <div class="sim-live-tab on" id="sim-live-tab-field" onclick="switchLiveSimTab('field')">🎮 Táctico</div>
+              <div class="sim-live-tab" id="sim-live-tab-stats" onclick="switchLiveSimTab('stats')">📊 Stats</div>
+              <div class="sim-live-tab" id="sim-live-tab-events" onclick="switchLiveSimTab('events')">⏱️ Eventos</div>
+              <div class="sim-live-tab" id="sim-live-tab-ai" onclick="switchLiveSimTab('ai')">🧠 IA</div>
+            </div>
+
+            <!-- TAB CONTENTS -->
+            <div class="sim-live-tc on" id="sim-live-tc-field">
+              <div class="field-wrap">
+                <svg width="100%" viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg" style="max-height: 380px; display: block; margin: 0 auto;">
+                  <rect x="10" y="10" width="280" height="380" rx="8" fill="#1b5e20" opacity="0.15"/>
+                  <rect x="10" y="10" width="280" height="380" rx="8" fill="none" stroke="#2e7d32" stroke-width="1.5" opacity="0.6"/>
+                  <line x1="10" y1="200" x2="290" y2="200" stroke="#2e7d32" stroke-width="1.5" opacity="0.6"/>
+                  <circle cx="150" cy="200" r="35" fill="none" stroke="#2e7d32" stroke-width="1.5" opacity="0.5"/>
+                  <circle cx="150" cy="200" r="3" fill="#2e7d32" opacity="0.6"/>
+                  <rect x="90" y="10" width="120" height="52" rx="4" fill="none" stroke="#2e7d32" stroke-width="1.2" opacity="0.5"/>
+                  <rect x="90" y="338" width="120" height="52" rx="4" fill="none" stroke="#2e7d32" stroke-width="1.2" opacity="0.5"/>
+                  <rect x="115" y="10" width="70" height="24" rx="2" fill="none" stroke="#2e7d32" stroke-width="1" opacity="0.5"/>
+                  <rect x="115" y="366" width="70" height="24" rx="2" fill="none" stroke="#2e7d32" stroke-width="1" opacity="0.5"/>
+                  
+                  <!-- Player Circles (Dynamic or Styled standard 4-3-3 visual positions) -->
+                  <g id="sim-svg-home-players">
+                    <circle cx="150" cy="358" r="9" fill="#00e5ff" stroke="#448aff" stroke-width="1.5"/><text x="150" y="361" text-anchor="middle" font-size="8" font-weight="700" fill="#040911">1</text>
+                    <circle cx="55" cy="305" r="9" fill="#00e5ff" stroke="#448aff" stroke-width="1.5"/><text x="55" y="308" text-anchor="middle" font-size="8" font-weight="700" fill="#040911">3</text>
+                    <circle cx="108" cy="310" r="9" fill="#00e5ff" stroke="#448aff" stroke-width="1.5"/><text x="108" y="313" text-anchor="middle" font-size="8" font-weight="700" fill="#040911">4</text>
+                    <circle cx="192" cy="310" r="9" fill="#00e5ff" stroke="#448aff" stroke-width="1.5"/><text x="192" y="313" text-anchor="middle" font-size="8" font-weight="700" fill="#040911">5</text>
+                    <circle cx="245" cy="305" r="9" fill="#00e5ff" stroke="#448aff" stroke-width="1.5"/><text x="245" y="308" text-anchor="middle" font-size="8" font-weight="700" fill="#040911">2</text>
+                    <circle cx="85" cy="255" r="9" fill="#00e5ff" stroke="#448aff" stroke-width="1.5"/><text x="85" y="258" text-anchor="middle" font-size="8" font-weight="700" fill="#040911">8</text>
+                    <circle cx="150" cy="250" r="9" fill="#00e5ff" stroke="#448aff" stroke-width="1.5"/><text x="150" y="253" text-anchor="middle" font-size="8" font-weight="700" fill="#040911">6</text>
+                    <circle cx="215" cy="255" r="9" fill="#00e5ff" stroke="#448aff" stroke-width="1.5"/><text x="215" y="258" text-anchor="middle" font-size="8" font-weight="700" fill="#040911">10</text>
+                    <circle cx="65" cy="210" r="9" fill="#00e5ff" stroke="#448aff" stroke-width="1.5"/><text x="65" y="213" text-anchor="middle" font-size="8" font-weight="700" fill="#040911">11</text>
+                    <circle cx="150" cy="205" r="9" fill="#448aff" stroke="#00e5ff" stroke-width="1.5"/><text x="150" y="208" text-anchor="middle" font-size="8" font-weight="700" fill="#ffffff">9</text>
+                    <circle cx="235" cy="210" r="9" fill="#00e5ff" stroke="#448aff" stroke-width="1.5"/><text x="235" y="213" text-anchor="middle" font-size="8" font-weight="700" fill="#040911">7</text>
+                  </g>
+                  
+                  <g id="sim-svg-away-players">
+                    <circle cx="150" cy="42" r="9" fill="#ff3d00" stroke="#ff5252" stroke-width="1.5"/><text x="150" y="45" text-anchor="middle" font-size="8" font-weight="700" fill="#ffffff">1</text>
+                    <circle cx="55" cy="90" r="9" fill="#ff3d00" stroke="#ff5252" stroke-width="1.5"/><text x="55" y="93" text-anchor="middle" font-size="8" font-weight="700" fill="#ffffff">3</text>
+                    <circle cx="108" cy="85" r="9" fill="#ff3d00" stroke="#ff5252" stroke-width="1.5"/><text x="108" y="88" text-anchor="middle" font-size="8" font-weight="700" fill="#ffffff">4</text>
+                    <circle cx="192" cy="85" r="9" fill="#ff3d00" stroke="#ff5252" stroke-width="1.5"/><text x="192" y="88" text-anchor="middle" font-size="8" font-weight="700" fill="#ffffff">5</text>
+                    <circle cx="245" cy="90" r="9" fill="#ff3d00" stroke="#ff5252" stroke-width="1.5"/><text x="245" y="93" text-anchor="middle" font-size="8" font-weight="700" fill="#ffffff">2</text>
+                    <circle cx="110" cy="135" r="9" fill="#ff3d00" stroke="#ff5252" stroke-width="1.5"/><text x="110" y="138" text-anchor="middle" font-size="8" font-weight="700" fill="#ffffff">6</text>
+                    <circle cx="190" cy="135" r="9" fill="#ff3d00" stroke="#ff5252" stroke-width="1.5"/><text x="190" y="138" text-anchor="middle" font-size="8" font-weight="700" fill="#ffffff">8</text>
+                    <circle cx="65" cy="170" r="9" fill="#ff3d00" stroke="#ff5252" stroke-width="1.5"/><text x="65" y="173" text-anchor="middle" font-size="8" font-weight="700" fill="#ffffff">11</text>
+                    <circle cx="150" cy="165" r="9" fill="#ff3d00" stroke="#ff5252" stroke-width="1.5"/><text x="150" y="168" text-anchor="middle" font-size="8" font-weight="700" fill="#ffffff">10</text>
+                    <circle cx="235" cy="170" r="9" fill="#ff3d00" stroke="#ff5252" stroke-width="1.5"/><text x="235" y="173" text-anchor="middle" font-size="8" font-weight="700" fill="#ffffff">7</text>
+                    <circle cx="150" cy="120" r="9" fill="#ff5252" stroke="#ff3d00" stroke-width="1.5"/><text x="150" y="123" text-anchor="middle" font-size="8" font-weight="700" fill="#ffffff">9</text>
+                  </g>
+                  
+                  <text x="14" y="24" font-size="8" font-weight="700" fill="#2e7d32" opacity="0.6" id="sim-svg-home-lbl">LOC</text>
+                  <text x="14" y="394" font-size="8" font-weight="700" fill="#2e7d32" opacity="0.6" id="sim-svg-away-lbl">VIS</text>
+                  <circle id="sim-live-ball" cx="150" cy="200" r="5" fill="#ffffff" stroke="#333333" stroke-width="1.5"/>
+                </svg>
+              </div>
+            </div>
+
+            <div class="sim-live-tc" id="sim-live-tc-stats">
+              <div class="stats-wrap" id="sim-live-stats-content"></div>
+            </div>
+
+            <div class="sim-live-tc" id="sim-live-tc-events">
+              <div class="events-wrap" id="sim-live-events-content">
+                <p style="font-size:13px;color:var(--text-3);padding:8px 0;text-align:center;">Esperando eventos...</p>
+              </div>
+            </div>
+
+            <div class="sim-live-tc" id="sim-live-tc-ai">
+              <div class="ai-wrap">
+                <div class="ai-card">
+                  <div class="ai-hdr" style="color: var(--cyan);"><span style="font-size:14px;">✨</span> Análisis en tiempo real</div>
+                  <div class="ai-txt" id="sim-live-ai-txt">Iniciando simulación...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- POST-MATCH DETAILED REPORT -->
+          <div id="sim-report-view" style="display: none;">
+            <div class="results-header">
+              <span class="results-tag" data-i18n="sim_report_title">Reporte de Simulación IA</span>
+            </div>
+
+            <div class="score-display">
+              <div class="score-team">
+                <span class="score-team-name" id="result-home-name">Local</span>
+                <span class="score-team-style" id="result-home-style">Tiki-Taka</span>
+              </div>
+              <div class="score-numbers">
+                <span class="score-num" id="result-home-score">2</span>
+                <span class="score-dash">-</span>
+                <span class="score-num" id="result-away-score">1</span>
+              </div>
+              <div class="score-team">
+                <span class="score-team-name" id="result-away-name">Visitante</span>
+                <span class="score-team-style" id="result-away-style">Contraataque</span>
+              </div>
+            </div>
+
+            <!-- Tab Navigation Bar -->
+            <div class="sim-tabs-bar">
+              <button class="sim-tab-btn active" id="btn-sim-tab-events" onclick="switchSimTab('events')">⏱️ Eventos</button>
+              <button class="sim-tab-btn" id="btn-sim-tab-stats" onclick="switchSimTab('stats')">📊 Estadísticas</button>
+              <button class="sim-tab-btn" id="btn-sim-tab-home" onclick="switchSimTab('home-lineup')">🛡️ Alineación Local</button>
+              <button class="sim-tab-btn" id="btn-sim-tab-away" onclick="switchSimTab('away-lineup')">🚩 Alineación Visitante</button>
+              <button class="sim-tab-btn" id="btn-sim-tab-tactics" onclick="switchSimTab('tactics')">🧠 Recomendaciones de IA</button>
+            </div>
+
+            <!-- Tab Content 1: Events -->
+            <div class="sim-tab-content active" id="sim-tab-events">
+              <h4 class="grid-col-title">⏱️ Eventos del Partido</h4>
+              <div class="timeline" id="result-timeline">
+                <!-- Timeline items injected dynamically -->
+              </div>
+            </div>
+
+            <!-- Tab Content 2: Stats -->
+            <div class="sim-tab-content" id="sim-tab-stats">
+              <h4 class="grid-col-title">📊 Estadísticas Finales del Partido</h4>
+              <div class="stats-wrap" id="result-stats-content" style="padding: 12px 0;">
+                <!-- Stats injected dynamically -->
+              </div>
+            </div>
+
+            <!-- Tab Content 3: Home Lineup -->
+            <div class="sim-tab-content" id="sim-tab-home-lineup">
+              <div class="results-squad-section">
+                <h4 class="grid-col-title" id="result-home-squad-title">📋 Alineación de Mi Club Utilizada</h4>
+                <p id="result-home-squad-desc" style="font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 15px;">La simulación se ha realizado utilizando la alineación titular configurada en la sección "Mi Club".</p>
+                <div class="results-squad-list" id="result-home-xi">
+                  <!-- Home players grid -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab Content 4: Away Lineup -->
+            <div class="sim-tab-content" id="sim-tab-away-lineup">
+              <div class="results-squad-section">
+                <h4 class="grid-col-title" id="result-away-squad-title">📋 Alineación del Rival Utilizada</h4>
+                <p id="result-away-squad-desc" style="font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 15px;">Alineación del rival para este encuentro calculada por el motor de IA.</p>
+                <div class="results-squad-list" id="result-away-xi">
+                  <!-- Away players grid -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab Content 5: Tactical Recommendations (IA) -->
+            <div class="sim-tab-content" id="sim-tab-tactics">
+              <div class="tactics-advice-container">
+                <h4 class="grid-col-title" id="rec-home-title">Recomendaciones tácticas — Local</h4>
+                <div id="rec-home-cards" style="margin-bottom: 20px;">
+                  <!-- Home cards injected dynamically -->
+                </div>
+                
+                <h4 class="grid-col-title" id="rec-away-title">Recomendaciones tácticas — Visitante</h4>
+                <div id="rec-away-cards">
+                  <!-- Away cards injected dynamically -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+      
+      <!-- PREDICTIONS SECTION -->
+    <section class="section" id="section-predictions">
+      <div class="section-title-bar">
+        <h2 data-i18n="section_predictions">🔮 Predicciones IA</h2>
+        <button class="btn-secondary" id="btn-refresh-predictions" data-i18n="btn_refresh">🔄 Actualizar</button>
+      </div>
+
+      <div class="predictions-intro">
+        <p data-i18n="predictions_desc">Predicciones generadas por inteligencia artificial basadas en estadísticas
+          reales y tendencias actuales de la temporada 2024-25.</p>
+      </div>
+
+      <div class="predictions-loading" id="predictions-loading">
+        <div class="spinner"></div>
+        <p data-i18n="loading_predictions">Generando predicciones...</p>
+      </div>
+
+      <div class="predictions-content" id="predictions-content" style="display:none"></div>
+    </section>
+
+    <!-- PROFILE SECTION -->
+    <section class="section" id="section-profile">
+      <div class="profile-header-banner">
+        <div class="profile-avatar-container">
+          <div class="profile-avatar-wrapper">
+            <img id="profile-page-avatar" class="profile-avatar" src="https://api.dicebear.com/9.x/notionists/svg?seed=User&backgroundColor=0d1117" alt="Avatar">
+            <!-- Gmail-style: the file input IS the clickable area, overlaid on the button -->
+            <div class="profile-avatar-edit" title="Cambiar foto de perfil">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              <input type="file" id="profile-avatar-input" accept="image/jpeg,image/png,image/webp,image/gif" class="avatar-file-overlay" title="Subir foto de perfil">
+            </div>
+          </div>
+          <div class="profile-title-group">
+            <h2 class="profile-name" id="profile-page-name">Usuario</h2>
+            <p class="profile-role" style="display:none;"></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-grid">
+        <div class="profile-left-col">
+          <div class="profile-card">
+            <div class="profile-card-header">
+              <span class="profile-card-icon">📋</span>
+              <h3 class="profile-card-title" data-i18n="profile_info_title">Información de Cuenta</h3>
+            </div>
+            <div class="profile-info-list">
+              <div class="profile-info-item">
+                <span class="profile-info-label">Nombre Completo</span>
+                <span class="profile-info-val" id="profile-page-fullname">—</span>
+              </div>
+              <div class="profile-info-item">
+                <span class="profile-info-label">Correo Electrónico</span>
+                <span class="profile-info-val" id="profile-page-email">—</span>
+              </div>
+              <div class="profile-info-item">
+                <span class="profile-info-label">Teléfono</span>
+                <span class="profile-info-val" id="profile-page-phone">—</span>
+              </div>
+              <div class="profile-info-item">
+                <span class="profile-info-label">Rol de Usuario</span>
+                <span class="profile-info-val" id="profile-page-role">—</span>
+              </div>
+              <div class="profile-info-item">
+                <span class="profile-info-label" data-i18n="profile_club_label">Club Seleccionado</span>
+                <span class="profile-info-val" id="profile-page-club">—</span>
+              </div>
+              <div class="profile-info-item">
+                <span class="profile-info-label" data-i18n="profile_country_label">País de Scouting</span>
+                <span class="profile-info-val" id="profile-page-country">—</span>
+              </div>
+              <div class="profile-info-item">
+                <span class="profile-info-label" data-i18n="profile_tactic_label">Estilo Táctico</span>
+                <span class="profile-info-val" id="profile-page-tactic">—</span>
+              </div>
+              <div class="profile-info-item" style="align-items: center; justify-content: space-between; display: flex; padding: 12px 0; border-top: 1px solid rgba(255,255,255,0.05);">
+                <span class="profile-info-label" style="color: rgba(255,255,255,0.5); font-size: 13px;">Plan de Suscripción</span>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span class="profile-info-val" id="profile-page-plan-name" style="font-weight: 700; color: #00f0ff; text-transform: uppercase; font-size: 13px; letter-spacing: 0.5px;">Gratis</span>
+                  <button class="btn-profile-primary" onclick="openUpgradeModal()" style="padding: 5px 12px; font-size: 11px; font-weight: 700; border-radius: 6px; background: rgba(0, 240, 255, 0.1); border: 1.5px solid #00f0ff; color: #00f0ff; cursor: pointer; transition: all 0.3s; box-shadow: 0 0 10px rgba(0, 240, 255, 0.1);" onmouseover="this.style.background='rgba(0, 240, 255, 0.2)'; this.style.boxShadow='0 0 15px rgba(0, 240, 255, 0.3)'" onmouseout="this.style.background='rgba(0, 240, 255, 0.1)'; this.style.boxShadow='0 0 10px rgba(0, 240, 255, 0.1)'">Actualizar Plan</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="profile-card" style="margin-top: 20px;">
+            <div class="profile-card-header">
+              <span class="profile-card-icon">⚙️</span>
+              <h3 class="profile-card-title" data-i18n="profile_settings_title">Preferencias</h3>
+            </div>
+            <div class="profile-settings-group">
+              <div class="profile-setting-row">
+                <span data-i18n="profile_notif_ai">Notificaciones de IA</span>
+                <div class="setting-toggle on" id="toggle-notif-ai" onclick="togglePreference('notif')"></div>
+              </div>
+              <div class="profile-setting-row">
+                <span data-i18n="profile_dark_mode">Modo Oscuro (Forzado)</span>
+                <div class="setting-toggle on" id="toggle-dark-mode" onclick="togglePreference('dark_mode')"></div>
+              </div>
+            </div>
+            <div class="profile-actions">
+              <button class="btn-profile-primary" onclick="openEditProfileModal()" data-i18n="profile_btn_edit">Editar Perfil</button>
+              <button class="btn-profile-secondary" id="btn-profile-logout" data-i18n="profile_btn_logout">Cerrar Sesión</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-right-col">
+          <!-- Profile Tabs Header -->
+          <div class="profile-tabs-header" style="display: flex; gap: 15px; margin-bottom: 20px; border-bottom: 1.5px solid rgba(255,255,255,0.06); padding-bottom: 10px;">
+            <button class="profile-tab-btn active" id="btn-profile-tab-activity" onclick="switchProfileTab('activity')" style="background: none; border: none; color: #00f0ff; font-weight: 700; font-size: 14.5px; padding: 6px 12px; cursor: pointer; border-bottom: 2.5px solid #00f0ff; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
+              <span>📊</span> Actividad
+            </button>
+            <button class="profile-tab-btn" id="btn-profile-tab-payments" onclick="switchProfileTab('payments')" style="background: none; border: none; color: rgba(255,255,255,0.6); font-weight: 600; font-size: 14.5px; padding: 6px 12px; cursor: pointer; border-bottom: 2.5px solid transparent; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
+              <span>💳</span> Historial de Pagos
+            </button>
+            <button class="profile-tab-btn" id="btn-profile-tab-favorites" onclick="switchProfileTab('favorites')" style="background: none; border: none; color: rgba(255,255,255,0.6); font-weight: 600; font-size: 14.5px; padding: 6px 12px; cursor: pointer; border-bottom: 2.5px solid transparent; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
+              <span>⭐</span> <span data-i18n="profile_tab_favorites">Favoritos</span>
+            </button>
+          </div>
+
+          <!-- Tab Content 1: Activity -->
+          <div id="profile-tab-content-activity" class="profile-tab-content">
+            <div class="profile-card">
+              <div class="profile-card-header">
+                <span class="profile-card-icon">📊</span>
+                <h3 class="profile-card-title" data-i18n="profile_stats_title">Estadísticas de Actividad</h3>
+              </div>
+              <div class="profile-stats-grid">
+                <div class="profile-stat-box">
+                  <div class="profile-stat-num" id="profile-stat-queries">24</div>
+                  <div class="profile-stat-desc" data-i18n="profile_stat_queries">Consultas IA</div>
+                </div>
+                <div class="profile-stat-box">
+                  <div class="profile-stat-num" id="profile-stat-compared">12</div>
+                  <div class="profile-stat-desc" data-i18n="profile_stat_compared">Comparaciones</div>
+                </div>
+                <div class="profile-stat-box">
+                  <div class="profile-stat-num" id="profile-stat-days">3</div>
+                  <div class="profile-stat-desc" data-i18n="profile_stat_days">Días Activo</div>
+                </div>
+                <div class="profile-stat-box">
+                  <div class="profile-stat-num" id="profile-stat-plan">Gratis</div>
+                  <div class="profile-stat-desc" data-i18n="profile_stat_plan">Plan Actual</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab Content 2: Payment History -->
+          <div id="profile-tab-content-payments" class="profile-tab-content" style="display: none;">
+            <div class="profile-card">
+              <div class="profile-card-header">
+                <span class="profile-card-icon">💳</span>
+                <h3 class="profile-card-title">Historial de Transacciones</h3>
+              </div>
+              
+              <div style="overflow-x: auto; width: 100%;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13.5px; color: var(--text-2);">
+                  <thead>
+                    <tr style="border-bottom: 1.5px solid rgba(255,255,255,0.08); color: #fff; font-weight: 700;">
+                      <th style="padding: 12px 10px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.4);">Fecha y Hora</th>
+                      <th style="padding: 12px 10px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.4);">Concepto</th>
+                      <th style="padding: 12px 10px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.4); text-align: right;">Monto</th>
+                    </tr>
+                  </thead>
+                  <tbody id="profile-payments-tbody">
+                    <!-- Dynamic payment rows will be injected by app.js -->
+                  </tbody>
+                </table>
+                <div id="profile-payments-empty" style="display: none; text-align: center; padding: 40px 10px; color: rgba(255,255,255,0.45); font-size: 14.5px;">
+                  <span style="font-size: 36px; display: block; margin-bottom: 12px; filter: grayscale(1);">💳</span>
+                  No se han registrado pagos en esta cuenta.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab Content 3: Favorites -->
+          <div id="profile-tab-content-favorites" class="profile-tab-content" style="display: none;">
+            <div class="profile-card">
+              <div class="profile-card-header">
+                <span class="profile-card-icon">⭐</span>
+                <h3 class="profile-card-title" data-i18n="profile_favorites_title">Jugadores Favoritos</h3>
+              </div>
+              <div id="profile-favorites-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; width: 100%; padding-top: 10px;">
+                <!-- Favorite player cards will be injected here -->
+              </div>
+              <div id="profile-favorites-empty" style="display: none; text-align: center; padding: 40px 10px; color: rgba(255,255,255,0.45); font-size: 14.5px;">
+                <span style="font-size: 36px; display: block; margin-bottom: 12px; filter: grayscale(1);">⭐</span>
+                <span data-i18n="profile_favorites_empty">No has marcado ningún jugador como favorito.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ──────────────── PLAYER MODAL ──────────────── -->
+  <div class="modal-overlay" id="player-modal" style="display:none">
+    <div class="modal">
+      <button class="modal-close" id="modal-close">✕</button>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div
+
+  <!-- ──────────────── PAYMENT MODAL ──────────────── -->
+  <div class="modal-overlay" id="payment-modal" style="display:none; z-index: 25000;">
+    <div class="modal" style="max-width: 480px; background: rgba(8, 14, 26, 0.96); border: 1px solid #00f0ff; border-radius: 24px; padding: 40px 30px; box-shadow: 0 0 50px rgba(0, 240, 255, 0.25); backdrop-filter: blur(15px); text-align: center; position: relative; display: flex; flex-direction: column; align-items: center; border: 1.5px solid #00f0ff;">
+      <button class="modal-close" onclick="closePaymentModal()" style="position: absolute; top: 15px; right: 20px; background: none; border: none; color: rgba(255,255,255,0.4); font-size: 24px; cursor: pointer; transition: color 0.2s;">✕</button>
+      
+      <!-- Checkout View Container -->
+      <div id="payment-checkout-view" style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+        <div id="payment-modal-icon" style="font-size: 55px; margin-bottom: 20px;">🔒</div>
+        <h2 style="font-size: 24px; font-weight: 800; color: #fff; margin-bottom: 12px; font-family: 'Segoe UI', sans-serif;" id="payment-modal-title">Activar Plan Pro</h2>
+        <p style="font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.6; margin-bottom: 25px; font-family: 'Segoe UI', sans-serif; text-align: center;" id="payment-modal-desc">
+          El plan seleccionado requiere una suscripción de pago activa para acceder a sus avanzadas capacidades de Inteligencia Artificial táctica.
+        </p>
+        <div style="background: rgba(0, 240, 255, 0.04); border: 1px solid rgba(0, 240, 255, 0.2); border-radius: 16px; padding: 15px; margin-bottom: 20px; width: 100%; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-size: 11px; color: #00f0ff; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Total a Pagar</span>
+          <div style="font-size: 24px; font-weight: 900; color: #fff;" id="payment-modal-price">$9.99 <span style="font-size: 13px; color: rgba(255,255,255,0.4); font-weight: 400;">/ mes</span></div>
+        </div>
+
+        <!-- Checkout Form -->
+        <form id="payment-gateway-form" style="width: 100%; display: flex; flex-direction: column; gap: 12px; text-align: left; margin-bottom: 20px; box-sizing: border-box;">
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <label style="font-size: 10px; color: rgba(255,255,255,0.4); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Nombre del Titular</label>
+            <input type="text" id="pay-card-name" placeholder="Lionel Messi" required style="background: rgba(255,255,255,0.03); border: 1.5px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 13.5px; font-family: 'Segoe UI', sans-serif; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#00f0ff'" onblur="this.style.borderColor='rgba(0, 240, 255, 0.15)'">
+          </div>
+          
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <label style="font-size: 10px; color: rgba(255,255,255,0.4); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Número de Tarjeta</label>
+            <div style="position: relative; display: flex; align-items: center; width: 100%; box-sizing: border-box;">
+              <input type="text" id="pay-card-number" placeholder="4000 1234 5678 9010" required maxlength="19" style="background: rgba(255,255,255,0.03); border: 1.5px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 13.5px; font-family: 'Segoe UI', sans-serif; outline: none; transition: border-color 0.2s; width: 100%; box-sizing: border-box; padding-right: 45px;" onfocus="this.style.borderColor='#00f0ff'" onblur="this.style.borderColor='rgba(0, 240, 255, 0.15)'">
+              <span id="pay-card-brand" style="position: absolute; right: 12px; font-size: 16px; color: rgba(255,255,255,0.4); font-weight: 700;">💳</span>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 12px; width: 100%;">
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+              <label style="font-size: 10px; color: rgba(255,255,255,0.4); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Vencimiento</label>
+              <input type="text" id="pay-card-expiry" placeholder="MM/AA" required maxlength="5" style="background: rgba(255,255,255,0.03); border: 1.5px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 10px; color: #fff; font-size: 13.5px; font-family: 'Segoe UI', sans-serif; outline: none; transition: border-color 0.2s; text-align: center; box-sizing: border-box; width: 100%;" onfocus="this.style.borderColor='#00f0ff'" onblur="this.style.borderColor='rgba(0, 240, 255, 0.15)'">
+            </div>
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+              <label style="font-size: 10px; color: rgba(255,255,255,0.4); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">CVV</label>
+              <input type="password" id="pay-card-cvv" placeholder="•••" required maxlength="4" style="background: rgba(255,255,255,0.03); border: 1.5px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 10px; color: #fff; font-size: 13.5px; font-family: 'Segoe UI', sans-serif; outline: none; transition: border-color 0.2s; text-align: center; box-sizing: border-box; width: 100%;" onfocus="this.style.borderColor='#00f0ff'" onblur="this.style.borderColor='rgba(0, 240, 255, 0.15)'">
+            </div>
+          </div>
+        </form>
+
+        <button class="btn-onboarding-continue-glow" id="btn-simulate-payment" disabled style="width: 100%; border-radius: 12px; padding: 15px; font-size: 16px; margin-bottom: 18px; cursor: pointer; opacity: 0.5;" onclick="simulatePayment()">Confirmar Pago Seguro 🔒</button>
+        <a href="#" onclick="closePaymentModal(); if(typeof selectTier === 'function') { selectTier('Gratis', document.getElementById('tier-card-gratis')); } event.preventDefault();" style="color: rgba(255,255,255,0.45); font-size: 13px; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.45)'">Volver y elegir plan Gratis</a>
+      </div>
+
+      <!-- Success Continuation View Container -->
+      <div id="payment-success-view" style="display: none; flex-direction: column; align-items: center; width: 100%; text-align: center;">
+        <div style="width: 80px; height: 80px; background: rgba(0, 240, 255, 0.1); border: 2.2px solid #00f0ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; box-shadow: 0 0 30px rgba(0, 240, 255, 0.4); animation: pulse 2s infinite ease-in-out;">
+          <span style="font-size: 40px; color: #00f0ff;">✓</span>
+        </div>
+        <h2 style="font-size: 24px; font-weight: 800; color: #fff; margin-bottom: 8px; font-family: 'Segoe UI', sans-serif;">¡Pago Confirmado!</h2>
+        <p style="font-size: 13.5px; color: rgba(255,255,255,0.65); line-height: 1.6; margin-bottom: 25px; text-align: center; max-width: 380px;">
+          Tu suscripción al plan <strong id="success-tier-name" style="color: #00f0ff;">Pro</strong> ha sido activada con éxito. Ya tienes acceso completo a las capacidades tácticas premium.
+        </p>
+        
+        <!-- Transaction Details Card -->
+        <div style="background: rgba(10, 20, 35, 0.6); border: 1.5px solid rgba(0, 240, 255, 0.2); border-radius: 16px; padding: 20px; margin-bottom: 30px; width: 100%; box-sizing: border-box; text-align: left; display: flex; flex-direction: column; gap: 12px; box-shadow: inset 0 0 15px rgba(0, 240, 255, 0.05);">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px;">
+            <span style="font-size: 11px; color: rgba(255,255,255,0.4); font-weight: 700; text-transform: uppercase;">ID de Transacción</span>
+            <span id="success-txn-id" style="font-size: 13px; color: #00f0ff; font-weight: 800; font-family: monospace;">TXN-XXXXXXXX</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 11px; color: rgba(255,255,255,0.4); font-weight: 700; text-transform: uppercase;">Monto Pagado</span>
+            <span id="success-amount" style="font-size: 14px; color: #fff; font-weight: 800;">$9.99 USD</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 11px; color: rgba(255,255,255,0.4); font-weight: 700; text-transform: uppercase;">Titular</span>
+            <span id="success-cardholder" style="font-size: 13px; color: #fff; font-weight: 600;">Lionel Messi</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 11px; color: rgba(255,255,255,0.4); font-weight: 700; text-transform: uppercase;">Método de Pago</span>
+            <span id="success-payment-method" style="font-size: 13px; color: #fff; font-weight: 600; display: flex; align-items: center; gap: 6px;">💳 Visa terminada en 7890</span>
+          </div>
+        </div>
+
+        <button class="btn-onboarding-continue-glow" id="btn-success-download-pdf" style="width: 100%; border-radius: 12px; padding: 14px; font-size: 15.5px; cursor: pointer; border: 1.5px solid #00f0ff; background: rgba(0, 240, 255, 0.1); color: #00f0ff; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; transition: all 0.2s;" onclick="downloadInvoicePDF()" onmouseover="this.style.background='rgba(0, 240, 255, 0.2)'; this.style.boxShadow='0 0 15px rgba(0, 240, 255, 0.3)'" onmouseout="this.style.background='rgba(0, 240, 255, 0.1)'; this.style.boxShadow='none'">
+          <span>📥</span> Descargar Factura PDF
+        </button>
+
+        <button class="btn-onboarding-continue-glow" id="btn-success-continue" style="width: 100%; border-radius: 12px; padding: 15px; font-size: 16px; cursor: pointer; border: none;" onclick="handleSuccessContinue()">Comenzar a explorar 🚀</button>
+      </div>
+
+      <!-- Success Role Step View Container -->
+      <div id="payment-role-view" style="display: none; flex-direction: column; align-items: center; width: 100%; text-align: center;">
+        <h2 style="font-size: 24px; font-weight: 800; color: #fff; margin-bottom: 8px; font-family: 'Segoe UI', sans-serif;">Rol Organizacional</h2>
+        <p style="font-size: 13.5px; color: rgba(255,255,255,0.65); line-height: 1.6; margin-bottom: 25px; text-align: center; max-width: 380px;">
+          Por favor, define tu rol profesional dentro del club para personalizar tu experiencia de scouting táctico.
+        </p>
+
+        <!-- Input Box container styled exactly like the user's image -->
+        <div style="background: rgba(8, 14, 26, 0.95); border: 1.5px solid #00f0ff; border-radius: 16px; padding: 25px; box-shadow: 0 0 25px rgba(0, 240, 255, 0.2); width: 100%; box-sizing: border-box; text-align: left; display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px;">
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <label style="font-size: 10px; color: rgba(255,255,255,0.45); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">ROL O CARGO PROFESIONAL</label>
+            <input type="text" id="success-user-role-new" placeholder="Ej: Director Técnico / Scout Principal" style="background: rgba(255,255,255,0.03); border: 1.5px solid rgba(0, 240, 255, 0.2); border-radius: 8px; padding: 12px 14px; color: #fff; font-size: 14px; font-family: 'Segoe UI', sans-serif; outline: none; transition: border-color 0.2s; width: 100%; box-sizing: border-box;" onfocus="this.style.borderColor='#00f0ff'" onblur="this.style.borderColor='rgba(0, 240, 255, 0.2)'">
+          </div>
+        </div>
+
+        <button class="btn-onboarding-continue-glow" id="btn-success-role-continue" style="width: 100%; border-radius: 12px; padding: 15px; font-size: 16px; cursor: pointer; border: none; font-weight: 700;" onclick="confirmSuccessAndSaveRole()">Comenzar a explorar 🚀</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ──────────────── UPGRADE PLAN MODAL ──────────────── -->
+  <div class="modal-overlay" id="upgrade-modal" style="display:none; z-index: 24000;">
+    <div class="modal" style="max-width: 960px; background: rgba(8, 14, 26, 0.98); border: 1.5px solid #00f0ff; border-radius: 24px; padding: 40px 30px; box-shadow: 0 0 60px rgba(0, 240, 255, 0.3); backdrop-filter: blur(15px); text-align: center; display: flex; flex-direction: column; align-items: center; border: 1.5px solid #00f0ff; position: relative;">
+      <button class="modal-close" onclick="closeUpgradeModal()" style="position: absolute; top: 15px; right: 20px; background: none; border: none; color: rgba(255,255,255,0.4); font-size: 24px; cursor: pointer; transition: color 0.2s;">✕</button>
+      <h2 style="font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 8px; font-family: 'Segoe UI', sans-serif;">Actualizar Plan de Suscripción</h2>
+      <p style="font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 35px; font-family: 'Segoe UI', sans-serif;">Potencia tu análisis táctico con nuestras herramientas avanzadas impulsadas por Inteligencia Artificial.</p>
+      
+      <!-- Upgrade Tiers Grid -->
+      <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; width: 100%; max-width: 900px; margin-bottom: 30px;">
+        <!-- Gratis -->
+        <div class="tier-card upgrade-card" id="upgrade-card-gratis" onclick="selectUpgradeTier('Gratis', this)" style="flex: 1; min-width: 180px; max-width: 210px; background: rgba(10, 20, 35, 0.6); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 16px; padding: 25px 15px; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+          <div class="tier-check" style="position: absolute; top: 12px; right: 12px; background: #00f0ff; color: #000; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; opacity: 0; transition: opacity 0.2s;">✓</div>
+          <div style="font-size: 30px; margin-bottom: 12px; color: #94a3b8;">🎯</div>
+          <h3 style="font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 8px;">Gratis</h3>
+          <p style="font-size: 11px; color: rgba(255,255,255,0.5); line-height: 1.4;">Acceso básico a tácticas y análisis táctico.</p>
+        </div>
+        
+        <!-- Pro -->
+        <div class="tier-card upgrade-card locked" id="upgrade-card-pro" onclick="showUpgradePaymentModal('Pro', '$9.99', this)" style="flex: 1; min-width: 180px; max-width: 210px; background: rgba(10, 20, 35, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 25px 15px; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3); opacity: 0.75;">
+          <div class="tier-check" style="position: absolute; top: 12px; right: 12px; background: #00f0ff; color: #000; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; opacity: 0; transition: opacity 0.2s;">✓</div>
+          <div class="tier-lock" style="position: absolute; top: 12px; right: 12px; color: rgba(0, 240, 255, 0.7); font-size: 13px;">🔒</div>
+          <div style="font-size: 30px; margin-bottom: 12px; color: #00f0ff;">🔍</div>
+          <h3 style="font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 8px;">Pro</h3>
+          <p style="font-size: 11px; color: rgba(255,255,255,0.4); line-height: 1.4;">Descubre y evalúa talento local e internacional con IA.</p>
+        </div>
+
+        <!-- Plus -->
+        <div class="tier-card upgrade-card locked" id="upgrade-card-plus" onclick="showUpgradePaymentModal('Plus', '$19.99', this)" style="flex: 1; min-width: 180px; max-width: 210px; background: rgba(10, 20, 35, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 25px 15px; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3); opacity: 0.75;">
+          <div class="tier-check" style="position: absolute; top: 12px; right: 12px; background: #00f0ff; color: #000; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; opacity: 0; transition: opacity 0.2s;">✓</div>
+          <div class="tier-lock" style="position: absolute; top: 12px; right: 12px; color: rgba(240, 188, 66, 0.7); font-size: 13px;">🔒</div>
+          <div style="font-size: 30px; margin-bottom: 12px; color: #f0bc42;">📊</div>
+          <h3 style="font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 8px;">Plus</h3>
+          <p style="font-size: 11px; color: rgba(255,255,255,0.4); line-height: 1.4;">Métricas avanzadas, heatmaps y estadísticas comparativas.</p>
+        </div>
+
+        <!-- Enterprise -->
+        <div class="tier-card upgrade-card locked" id="upgrade-card-enterprise" onclick="showUpgradePaymentModal('Enterprise', '$49.99', this)" style="flex: 1; min-width: 180px; max-width: 210px; background: rgba(10, 20, 35, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 25px 15px; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3); opacity: 0.75;">
+          <div class="tier-check" style="position: absolute; top: 12px; right: 12px; background: #00f0ff; color: #000; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; opacity: 0; transition: opacity 0.2s;">✓</div>
+          <div class="tier-lock" style="position: absolute; top: 12px; right: 12px; color: rgba(200, 16, 46, 0.7); font-size: 13px;">🔒</div>
+          <div style="font-size: 30px; margin-bottom: 12px; color: #c8102e;">🤝</div>
+          <h3 style="font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 8px;">Enterprise</h3>
+          <p style="font-size: 11px; color: rgba(255,255,255,0.4); line-height: 1.4;">Gestiona perfiles de jugadores y oportunidades de mercado.</p>
+        </div>
+      </div>
+      
+      <button class="btn-onboarding-continue-glow" id="btn-save-upgrade" disabled style="padding: 14px 40px; font-size: 15px; border-radius: 12px; cursor: pointer;" onclick="saveUpgradeTier()">Confirmar Actualización Plan</button>
+    </div>
+  </div>
+
+  <!-- EDIT PROFILE MODAL -->
+  <div class="modal-overlay" id="edit-profile-modal" style="display:none; z-index: 24000;">
+    <div class="modal">
+      <button class="modal-close" onclick="closeEditProfileModal()" style="position: absolute; top: 15px; right: 20px; background: none; border: none; color: rgba(255,255,255,0.4); font-size: 24px; cursor: pointer; transition: color 0.2s;">✕</button>
+      <h3 style="margin-bottom: 20px; font-size: 1.25rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px;">👤 Editar Detalles de Perfil</h3>
+      <form id="edit-profile-form" onsubmit="saveProfileEdits(event)">
+        <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+          <div style="flex: 1;">
+            <label style="display: block; font-size: 12px; color: rgba(255,255,255,0.6); margin-bottom: 6px; font-weight: 600;">Nombres</label>
+            <input type="text" id="edit-profile-nombres" required style="width: 100%; padding: 10px 14px; background: rgba(255,255,255,0.03); border: 1.5px solid rgba(255,255,255,0.08); border-radius: 8px; color: #fff; font-size: 14px; outline: none; transition: border-color 0.2s;">
+          </div>
+          <div style="flex: 1;">
+            <label style="display: block; font-size: 12px; color: rgba(255,255,255,0.6); margin-bottom: 6px; font-weight: 600;">Apellidos</label>
+            <input type="text" id="edit-profile-apellidos" required style="width: 100%; padding: 10px 14px; background: rgba(255,255,255,0.03); border: 1.5px solid rgba(255,255,255,0.08); border-radius: 8px; color: #fff; font-size: 14px; outline: none; transition: border-color 0.2s;">
+          </div>
+        </div>
+        <div style="margin-bottom: 15px;">
+          <label style="display: block; font-size: 12px; color: rgba(255,255,255,0.6); margin-bottom: 6px; font-weight: 600;">Correo Electrónico</label>
+          <input type="email" id="edit-profile-email" required style="width: 100%; padding: 10px 14px; background: rgba(255,255,255,0.03); border: 1.5px solid rgba(255,255,255,0.08); border-radius: 8px; color: #fff; font-size: 14px; outline: none; transition: border-color 0.2s;">
+        </div>
+        <div style="margin-bottom: 15px;">
+          <label style="display: block; font-size: 12px; color: rgba(255,255,255,0.6); margin-bottom: 6px; font-weight: 600;">Teléfono (ej: +34 600 111 222)</label>
+          <input type="text" id="edit-profile-telefono" required style="width: 100%; padding: 10px 14px; background: rgba(255,255,255,0.03); border: 1.5px solid rgba(255,255,255,0.08); border-radius: 8px; color: #fff; font-size: 14px; outline: none; transition: border-color 0.2s;">
+        </div>
+        <div style="margin-bottom: 25px;">
+          <label style="display: block; font-size: 12px; color: rgba(255,255,255,0.6); margin-bottom: 6px; font-weight: 600;">Rol en el Club</label>
+          <select id="edit-profile-role" style="width: 100%; padding: 10px 14px; background: rgba(4, 9, 17, 0.95); border: 1.5px solid rgba(255,255,255,0.08); border-radius: 8px; color: #fff; font-size: 14px; outline: none; cursor: pointer; transition: border-color 0.2s; -webkit-appearance: none;">
+            <option value="Director Deportivo">Director Deportivo</option>
+            <option value="Scout Principal">Scout Principal</option>
+            <option value="Técnico / Entrenador">Técnico / Entrenador</option>
+            <option value="Analista Táctico">Analista Táctico</option>
+            <option value="Usuario">Usuario / General</option>
+          </select>
+        </div>
+        <div style="display: flex; gap: 15px;">
+          <button type="button" onclick="closeEditProfileModal()" class="btn-profile-secondary" style="flex: 1; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; transition: background 0.2s;">Cancelar</button>
+          <button type="submit" class="btn-profile-primary" style="flex: 1; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; background: linear-gradient(135deg, var(--primary) 0%, #00a2ff 100%); border: none; color: #000; transition: opacity 0.2s;">Guardar Cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ──────────────── MINI-ALERT MODAL ──────────────── -->
+  <div class="modal-overlay" id="mini-alert-modal" style="display:none; z-index: 26000;">
+    <div class="modal" style="max-width: 400px; background: rgba(8, 14, 26, 0.96); border: 1.5px solid #00f0ff; border-radius: 20px; padding: 30px 24px; box-shadow: 0 0 40px rgba(0, 240, 255, 0.25); backdrop-filter: blur(15px); text-align: center; position: relative; display: flex; flex-direction: column; align-items: center;">
+      <button class="modal-close" onclick="closeMiniAlert()" style="position: absolute; top: 12px; right: 15px; background: none; border: none; color: rgba(255,255,255,0.4); font-size: 20px; cursor: pointer; transition: color 0.2s;">✕</button>
+      <div id="mini-alert-icon" style="font-size: 45px; margin-bottom: 15px;">🔒</div>
+      <h3 style="font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 10px; font-family: 'Segoe UI', sans-serif;" id="mini-alert-title">Plan Bloqueado</h3>
+      <p style="font-size: 13.5px; color: rgba(255,255,255,0.65); line-height: 1.5; margin-bottom: 20px; text-align: center;" id="mini-alert-desc">
+        Este plan requiere una suscripción activa para acceder a sus funciones profesionales.
+      </p>
+      <button class="btn-onboarding-continue-glow" id="btn-mini-alert-pay" style="width: 100%; border-radius: 10px; padding: 12px; font-size: 14.5px; font-weight: 700; margin-bottom: 12px; cursor: pointer;">Proceder al Pago 💳</button>
+      <a href="#" onclick="closeMiniAlert(); event.preventDefault();" style="color: rgba(255,255,255,0.45); font-size: 12px; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.45)'">Elegir otro plan</a>
+    </div>
+  </div>
+
+  <!-- ──────────────── TACTICAL EDITOR MODAL ──────────────── -->
+  <div class="modal-overlay" id="tactical-editor-modal" style="display:none; z-index: 23000; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(4, 6, 12, 0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; padding: 20px;">
+    <div class="modal" style="max-width: 900px; width: 95%; background: rgba(8, 14, 26, 0.98); border: 1.5px solid #00f0ff; border-radius: 24px; padding: 30px; box-shadow: 0 0 50px rgba(0, 240, 255, 0.25); backdrop-filter: blur(15px); text-align: left; position: relative; display: flex; flex-direction: column; color: #fff; max-height: 90vh; overflow-y: auto;">
+      <button class="modal-close" onclick="closeTacticalEditorModal()" style="position: absolute; top: 15px; right: 20px; background: none; border: none; color: rgba(255,255,255,0.4); font-size: 24px; cursor: pointer; transition: color 0.2s; z-index: 10;">✕</button>
+      
+      <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; font-family: 'Segoe UI', sans-serif; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; margin-top: 0;">
+        <span style="font-size: 26px;">📋</span> <span data-i18n="tactical_editor_title">Editor Táctico y de Alineaciones</span>
+      </h2>
+      
+      <!-- Tab Controls -->
+      <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px;">
+        <button class="tactic-tab-btn active" id="btn-tactic-tab-players" onclick="switchTacticTab('players')" style="background: rgba(0,240,255,0.1); border: 1.5px solid #00f0ff; color: #00f0ff; font-size: 14.5px; font-weight: 700; padding: 10px 18px; cursor: pointer; border-radius: 10px; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
+          👥 <span data-i18n="tactic_tab_players">Editar Alineación Titular</span>
+        </button>
+        <button class="tactic-tab-btn" id="btn-tactic-tab-formations" onclick="switchTacticTab('formations')" style="background: rgba(255,255,255,0.02); border: 1.5px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); font-size: 14.5px; font-weight: 600; padding: 10px 18px; cursor: pointer; border-radius: 10px; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
+          📐 <span data-i18n="tactic_tab_formations">Editar Formación y Estilos</span>
+        </button>
+      </div>
+      
+      <!-- Tab Content 1: Players Swapping -->
+      <div id="tactic-tab-content-players" class="tactic-tab-content" style="display: flex; flex-direction: column; gap: 15px;">
+        <p style="font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.5; margin: 0 0 5px 0;">
+          Selecciona un jugador titular de la columna izquierda y luego haz clic en un jugador del banquillo de la columna derecha para intercambiarlos en tu esquema de juego.
+        </p>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <!-- Left Column: Starting XI -->
+          <div style="background: rgba(10, 20, 35, 0.4); border: 1.5px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 18px; display: flex; flex-direction: column;">
+            <h3 style="font-size: 14.5px; font-weight: 700; color: #00f0ff; margin-bottom: 12px; display: flex; justify-content: space-between; border-bottom: 1px dashed rgba(0,240,255,0.15); padding-bottom: 8px; margin-top: 0;">
+              <span>🟢 Titulares en el Campo</span>
+              <span id="starting-players-count" style="font-size: 12px; color: rgba(255,255,255,0.4);">11 / 11</span>
+            </h3>
+            <div id="modal-starting-list" style="overflow-y: auto; max-height: 310px; min-height: 310px; display: flex; flex-direction: column; gap: 8px; padding-right: 5px;">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+          
+          <!-- Right Column: Bench -->
+          <div style="background: rgba(10, 20, 35, 0.4); border: 1.5px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 18px; display: flex; flex-direction: column;">
+            <h3 style="font-size: 14.5px; font-weight: 700; color: #ffbe10; margin-bottom: 12px; display: flex; justify-content: space-between; border-bottom: 1px dashed rgba(255,190,16,0.15); padding-bottom: 8px; margin-top: 0;">
+              <span>🟡 Jugadores Suplentes (Banquillo)</span>
+              <span id="bench-players-count" style="font-size: 12px; color: rgba(255,255,255,0.4);">0 suplentes</span>
+            </h3>
+            <div id="modal-bench-list" style="overflow-y: auto; max-height: 310px; min-height: 310px; display: flex; flex-direction: column; gap: 8px; padding-right: 5px;">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+        
+        <!-- Selection Swap Overlay Controller -->
+        <div id="swap-controller-bar" style="display: none; justify-content: space-between; align-items: center; background: linear-gradient(90deg, rgba(0,240,255,0.08), rgba(255,190,16,0.08)); border: 1.5px solid rgba(0,240,255,0.25); border-radius: 14px; padding: 12px 20px; margin-top: 10px; box-shadow: 0 4px 20px rgba(0,240,255,0.05);">
+          <div style="display: flex; gap: 15px; align-items: center;">
+            <div id="swap-start-preview" style="font-size: 13.5px; font-weight: 700; color: #00f0ff;"></div>
+            <div style="font-size: 18px; color: rgba(255,255,255,0.4);">🔄</div>
+            <div id="swap-bench-preview" style="font-size: 13.5px; font-weight: 700; color: #ffbe10;"></div>
+          </div>
+          <button onclick="executePlayerSwap()" class="btn-onboarding-continue-glow" style="padding: 10px 22px; font-size: 13px; font-weight: 700; border-radius: 8px; cursor: pointer; border: none; outline: none;">
+            Confirmar Cambio 🔄
+          </button>
+        </div>
+      </div>
+      
+      <!-- Tab Content 2: Formations & Styles -->
+      <div id="tactic-tab-content-formations" class="tactic-tab-content" style="display: none; flex-direction: column; gap: 15px;">
+        <p style="font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.5; margin: 0 0 5px 0;">
+          Modifica de manera interactiva la disposición general de tu equipo. Al cambiar la formación o el estilo táctico, ambos selectores se sincronizan de inmediato y el campo de juego se reestructura en tiempo real.
+        </p>
+        
+        <div style="display: grid; grid-template-columns: 1.25fr 1fr; gap: 20px; align-items: stretch;">
+          <!-- Controls Panel -->
+          <div style="background: rgba(10, 20, 35, 0.4); border: 1.5px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 16px; justify-content: center;">
+            <div>
+              <label style="display: block; font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.8); margin-bottom: 6px;">Alineación / Formación:</label>
+              <select id="modal-formation-selector" class="db-select" style="width: 100%; font-size: 13.5px; padding: 10px; border-radius: 8px; background: rgba(8, 14, 26, 0.9); border: 1px solid rgba(255,255,255,0.1); color: #fff;">
+                <!-- Copied dynamically from main selector -->
+              </select>
+            </div>
+            
+            <div>
+              <label style="display: block; font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.8); margin-bottom: 6px;">Estilo Táctico:</label>
+              <select id="modal-style-selector" class="db-select" style="width: 100%; font-size: 13.5px; padding: 10px; border-radius: 8px; background: rgba(8, 14, 26, 0.9); border: 1px solid rgba(255,255,255,0.1); color: #fff;">
+                <!-- Copied dynamically from main selector -->
+              </select>
+            </div>
+            <input type="hidden" id="modal-alternative-selector" value="A">
+            
+            <div style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 15px; display: flex; flex-direction: column; gap: 8px;">
+              <h4 style="font-size: 13.5px; font-weight: 700; color: #00f0ff; margin: 0; display: flex; align-items: center; gap: 8px;">
+                <span>⚡</span> Diagnóstico Táctico
+              </h4>
+              <p id="modal-tactic-desc" style="font-size: 12.5px; color: rgba(255,255,255,0.65); line-height: 1.6; margin: 0; min-height: 70px; background: rgba(0,240,255,0.04); border-left: 3px solid #00f0ff; padding: 8px 12px; border-radius: 0 8px 8px 0; font-family: 'Segoe UI', sans-serif;">
+                <!-- Populated by JS -->
+              </p>
+            </div>
+          </div>
+          
+          <!-- Tactical Pitch Preview Card -->
+          <div style="background: rgba(10, 20, 35, 0.5); border: 1.5px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 310px;">
+            <div style="font-size: 13.5px; font-weight: 800; color: #fff; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px;">
+              🏟️ <span id="modal-preview-title-text">Alineación 4-3-3</span>
+            </div>
+            <!-- Botones de selección de equipo -->
+            <div style="display: flex; gap: 8px; margin-bottom: 12px; width: 100%; max-width: 210px;">
+              <button id="btn-team-a" onclick="window.selectModalTeam('A')" style="flex: 1; padding: 8px 12px; font-size: 12.5px; font-weight: 700; border-radius: 8px; border: 1.5px solid #00f0ff; background: #00f0ff; color: #080e1a; cursor: pointer; transition: all 0.2s; font-family: sans-serif; text-transform: uppercase; letter-spacing: 0.5px;">Equipo A</button>
+              <button id="btn-team-b" onclick="window.selectModalTeam('B')" style="flex: 1; padding: 8px 12px; font-size: 12.5px; font-weight: 700; border-radius: 8px; border: 1.5px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05); color: #fff; cursor: pointer; transition: all 0.2s; font-family: sans-serif; text-transform: uppercase; letter-spacing: 0.5px;">Equipo B</button>
+            </div>
+            <div style="width: 100%; max-width: 210px; aspect-ratio: 3/4; border-radius: 10px; overflow: hidden; border: 1.5px solid rgba(255,255,255,0.1); box-shadow: 0 8px 24px rgba(0,0,0,0.4); position: relative;">
+              <div style="height: 100%; width: 100%; background: radial-gradient(circle, #1a4d2e 30%, #0d2a18 90%); position: relative;">
+                <!-- Lines -->
+                <div class="field-lines-overlay" style="opacity: 0.25; pointer-events: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0;">
+                  <div class="field-outer-border" style="border: 1px solid #fff; position: absolute; top: 4%; bottom: 4%; left: 4%; right: 4%;"></div>
+                  <div class="field-half-line" style="border-top: 1px solid #fff; position: absolute; top: 50%; left: 4%; right: 4%;"></div>
+                  <div class="field-center-circle" style="border: 1px solid #fff; border-radius: 50%; position: absolute; top: 40%; bottom: 40%; left: 35%; right: 35%;"></div>
+                </div>
+                <!-- Mini Player nodes -->
+                <div id="modal-preview-pitch-nodes" style="position: absolute; top:0; left:0; width:100%; height:100%; pointer-events: none;">
+                  <!-- Mini circles mapped dynamically -->
+                </div>
+              </div>
+            </div>
+            <!-- Botón para confirmar cambios -->
+            <button id="btn-modal-confirm-tactics" onclick="confirmTacticalChanges()" style="margin-top: 15px; width: 100%; max-width: 210px; background: linear-gradient(135deg, #00f0ff, #0072ff); border: none; border-radius: 10px; color: #080e1a; padding: 10px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 12px rgba(0, 240, 255, 0.3);" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 0 18px rgba(0, 240, 255, 0.5)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 0 12px rgba(0, 240, 255, 0.3)';">
+              Confirmar cambios
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 15px;">
+        <button onclick="closeTacticalEditorModal()" class="btn-profile-secondary" style="border-radius: 10px; padding: 10px 22px; font-size: 13.5px; font-weight: 600; cursor: pointer; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
+          Cerrar ✕
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Avatar View Modal -->
+  <div class="avatar-modal-overlay" id="avatar-view-modal" onclick="closeAvatarModal()">
+    <div class="avatar-modal-container" onclick="event.stopPropagation()">
+      <button class="avatar-modal-close" onclick="closeAvatarModal()">✕</button>
+      <img id="avatar-modal-img" class="avatar-modal-img" src="" alt="Avatar Grande">
+    </div>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="app.js?v=4.1"></script>
+  <script src="onboarding.js?v=3.0"></script>
+</body>
+
+</html>

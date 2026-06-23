@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FutbolAI — Consola de Base de Datos</title>
+  <!-- Google Fonts Outfit & Fira Code -->
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --bg: #070913;
+      --panel-bg: rgba(15, 23, 42, 0.65);
+      --border: rgba(255, 255, 255, 0.07);
+      --border-focus: rgba(16, 185, 129, 0.4);
+      --accent: #10b981;
+      --accent-glow: rgba(16, 185, 129, 0.25);
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --danger: #ef4444;
+      --font-main: 'Outfit', sans-serif;
+      --font-code: 'Fira Code', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(30, 64, 175, 0.08) 0px, transparent 50%);
+      color: var(--text);
+      font-family: var(--font-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Container Header */
+    header {
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background: rgba(7, 9, 19, 0.7);
+      border-bottom: 1px solid var(--border);
+      padding: 1.25rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #fff;
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+
+    .brand span {
+      background: linear-gradient(135deg, var(--accent), #34d399);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+    }
+
+    /* Main Layout */
+    main {
+      flex: 1;
+      max-width: 1400px;
+      width: 100%;
+      margin: 2rem auto;
+      padding: 0 2rem;
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 2rem;
+    }
+
+    @media (max-width: 992px) {
+      main {
+        grid-template-columns: 1fr;
+        padding: 0 1rem;
+        margin: 1rem auto;
+      }
+    }
+
+    /* Glassmorphic Panel Card */
+    .card {
+      background: var(--panel-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #fff;
+    }
+
+    .card-title i {
+      color: var(--accent);
+    }
+
+    /* Form Elements */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    label {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-wrapper i {
+      position: absolute;
+      left: 1rem;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    input, textarea {
+      width: 100%;
+      background: rgba(10, 15, 30, 0.8);
+      border: 1px solid var(--border);
+      color: #fff;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+    }
+
+    input {
+      padding: 0.75rem 1rem 0.75rem 2.5rem;
+    }
+
+    textarea {
+      padding: 1rem;
+      font-family: var(--font-code);
+      min-height: 250px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 1rem;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.95rem;
+      padding: 0.25rem;
+    }
+
+    .password-toggle:hover {
+      color: #fff;
+    }
+
+    /* Template buttons */
+    .preset-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      max-height: 240px;
+      overflow-y: auto;
+      padding-right: 0.25rem;
+    }
+
+    .preset-btn {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.65rem 0.85rem;
+      border-radius: 8px;
+      text-align: left;
+      font-size: 0.85rem;
+      font-family: var(--font-code);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .preset-btn:hover {
+      background: rgba(16, 185, 129, 0.08);
+      border-color: var(--accent);
+      transform: translateX(3px);
+    }
+
+    /* Execute Button */
+    .btn-execute {
+      background: linear-gradient(135deg, var(--accent), #059669);
+      color: #fff;
+      border: none;
+      padding: 0.85rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .btn-execute:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+    }
+
+    .btn-execute:active {
+      transform: translateY(0);
+    }
+
+    .btn-execute:disabled {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    /* Results Area */
+    .results-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      min-height: 600px;
+    }
+
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .results-stats {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .badge {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--accent);
+      padding: 0.25rem 0.6rem;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .btn-export {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.45rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-export:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-export:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .table-wrapper {
+      flex: 1;
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(5, 8, 15, 0.5);
+      max-height: 650px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      text-align: left;
+    }
+
+    th {
+      background: rgba(15, 23, 42, 0.95);
+      color: #fff;
+      font-weight: 600;
+      padding: 1rem;
+      position: sticky;
+      top: 0;
+      border-bottom: 1px solid var(--border);
+      z-index: 10;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: rgba(255, 255, 255, 0.85);
+      font-family: var(--font-code);
+      font-size: 0.8rem;
+      max-width: 250px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+      color: #fff;
+    }
+
+    /* Alerts and empty states */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      color: var(--text-muted);
+      flex: 1;
+      padding: 4rem 2rem;
+      text-align: center;
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      opacity: 0.25;
+      color: var(--text-muted);
+    }
+
+    .alert {
+      padding: 1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      line-height: 1.5;
+    }
+
+    .alert-danger {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: #f87171;
+    }
+
+    .alert-danger i {
+      font-size: 1.1rem;
+      margin-top: 0.1rem;
+    }
+
+    /* Scrollbars customization */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.1);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Loading Spinner */
+    .spinner {
+      animation: rotate 2s linear infinite;
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+    .spinner .path {
+      stroke: currentColor;
+      stroke-linecap: round;
+      animation: dash 1.5s ease-in-out infinite;
+    }
+    @keyframes rotate {
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes dash {
+      0% { stroke-dasharray: 1, 150; stroke-dashoffset: 0; }
+      50% { stroke-dasharray: 90, 150; stroke-dashoffset: -35; }
+      100% { stroke-dasharray: 90, 150; stroke-dashoffset: -124; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="brand">
+      <i class="fa-solid fa-futbol"></i> Futbol<span>AI</span> Console
+    </a>
+    <a href="index.html" class="nav-btn">
+      <i class="fa-solid fa-arrow-left"></i> Volver a la App
+    </a>
+  </header>
+
+  <main>
+    <!-- Left Column: Settings and queries -->
+    <div class="card">
+      <div class="card-title">
+        <i class="fa-solid fa-shield-halved"></i> Seguridad
+      </div>
+      
+      <div class="form-group">
+        <label for="admin-secret">Token Secreto (JWT_SECRET)</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-key"></i>
+          <input type="password" id="admin-secret" placeholder="Copia tu JWT_SECRET de Render...">
+          <button class="password-toggle" id="toggle-pwd" type="button">
+            <i class="fa-solid fa-eye" id="toggle-icon"></i>
+          </button>
+        </div>
+      </div>
+
+      <div style="border-top: 1px solid var(--border); margin: 0.5rem 0;"></div>
+
+      <div class="card-title">
+        <i class="fa-solid fa-code"></i> Consultas Frecuentes
+      </div>
+      
+      <div class="preset-list">
+        <button class="preset-btn" onclick="loadPreset('SELECT * FROM sqlite_master WHERE type=\'table\';')">
+          📁 Ver tablas del sistema
+        </button>
+        <button class="preset-btn" onclick="loadPreset('SELECT id, username, email, selectedTier, createdAt FROM users ORDER BY createdAt DESC;')">
+          👥 Ver Usuarios registrados
+        </button>
+        <button class="preset-btn" onclick="loadPreset('SELECT id, name, overallRating, currentTeam, position FROM Players LIMIT 10;')">
+          ⚽ Ver 10 Jugadores del sistema
+        </button>
+        <button class="preset-btn" onclick="loadPreset('SELECT id, userId, message, createdAt FROM query_logs ORDER BY createdAt DESC LIMIT 10;')">
+          💬 Ver Logs de Chat (IA)
+        </button>
+        <button class="preset-btn" onclick="loadPreset('SELECT id, userId, amount, status, userAccount, createdAt FROM payments ORDER BY createdAt DESC;')">
+          💳 Ver Historial de Pagos
+        </button>
+        <button class="preset-btn" onclick="loadPreset('SELECT sqlite_version();')">
+          ⚙️ Versión de SQLite de producción
+        </button>
+      </div>
+    </div>
+
+    <!-- Right Column: Query editor and results -->
+    <div class="card" style="flex: 1;">
+      <div class="card-title">
+        <i class="fa-solid fa-database"></i> Editor SQL
+      </div>
+
+      <div class="form-group">
+        <textarea id="sql-editor" placeholder="Escribe tu consulta SQL aquí...&#10;Ejemplo: SELECT * FROM users;"></textarea>
+      </div>
+
+      <button class="btn-execute" id="btn-execute">
+        <i class="fa-solid fa-play"></i> Ejecutar Consulta SQL
+      </button>
+
+      <div style="border-top: 1px solid var(--border); margin: 0.5rem 0;"></div>
+
+      <!-- Results section -->
+      <div class="results-container">
+        <div class="results-header">
+          <div class="card-title" style="font-size: 1.05rem;">
+            <i class="fa-solid fa-list-check"></i> Resultados
+          </div>
+          
+          <div class="results-stats">
+            <span class="badge" id="results-badge" style="display: none;">Listo</span>
+            <span id="results-count">Sin resultados</span>
+            <button class="btn-export" id="btn-export" disabled>
+              <i class="fa-solid fa-download"></i> Descargar JSON
+            </button>
+          </div>
+        </div>
+
+        <!-- Dynamic Output Container -->
+        <div class="table-wrapper" id="table-wrapper">
+          <div class="empty-state" id="empty-state">
+            <i class="fa-solid fa-terminal"></i>
+            <p>Escribe una consulta y haz clic en "Ejecutar" para ver los datos.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Load saved secret token from localStorage if available
+    const secretInput = document.getElementById('admin-secret');
+    const editor = document.getElementById('sql-editor');
+    const executeBtn = document.getElementById('btn-execute');
+    const exportBtn = document.getElementById('btn-export');
+    const tableWrapper = document.getElementById('table-wrapper');
+    const emptyState = document.getElementById('empty-state');
+    const resultsCount = document.getElementById('results-count');
+    const resultsBadge = document.getElementById('results-badge');
+    const togglePwd = document.getElementById('toggle-pwd');
+    const toggleIcon = document.getElementById('toggle-icon');
+
+    let currentResultsData = null;
+
+    if (localStorage.getItem('futbolai_admin_secret')) {
+      secretInput.value = localStorage.getItem('futbolai_admin_secret');
+    }
+
+    // Toggle password visibility
+    togglePwd.onclick = () => {
+      if (secretInput.type === 'password') {
+        secretInput.type = 'text';
+        toggleIcon.className = 'fa-solid fa-eye-slash';
+      } else {
+        secretInput.type = 'password';
+        toggleIcon.className = 'fa-solid fa-eye';
+      }
+    };
+
+    // Save secret on input
+    secretInput.oninput = () => {
+      localStorage.setItem('futbolai_admin_secret', secretInput.value);
+    };
+
+    // Load preset query
+    function loadPreset(sql) {
+      editor.value = sql;
+      editor.focus();
+    }
+
+    // Execute query
+    executeBtn.onclick = async () => {
+      const sql = editor.value.trim();
+      const secret = secretInput.value.trim();
+
+      if (!secret) {
+        showError('Falta autenticación: Por favor introduce tu Token Secreto (JWT_SECRET) en la barra de la izquierda.');
+        return;
+      }
+      if (!sql) {
+        showError('Consulta vacía: Escribe una consulta en el editor SQL.');
+        return;
+      }
+
+      // Show spinner
+      executeBtn.disabled = true;
+      executeBtn.innerHTML = `
+        <svg class="spinner" viewBox="0 0 50 50">
+          <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
+        </svg>
+        Ejecutando consulta...
+      `;
+
+      resultsBadge.style.display = 'none';
+      resultsCount.textContent = 'Procesando...';
+      exportBtn.disabled = true;
+
+      try {
+        // Find the API URL relative to current location
+        // Works both locally (localhost:3001) and in production
+        const API_BASE = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
+          ? 'http://localhost:3001'
+          : window.location.origin;
+
+        const response = await fetch(`${API_BASE}/api/admin/db-query`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ sql, secret })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Error desconocido en el servidor.');
+        }
+
+        renderResults(data.results);
+      } catch (err) {
+        showError(err.message);
+      } finally {
+        executeBtn.disabled = false;
+        executeBtn.innerHTML = '<i class="fa-solid fa-play"></i> Ejecutar Consulta SQL';
+      }
+    };
+
+    // Show error message in results panel
+    function showError(msg) {
+      resultsBadge.style.display = 'inline-block';
+      resultsBadge.className = 'badge';
+      resultsBadge.style.background = 'rgba(239, 68, 68, 0.15)';
+      resultsBadge.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+      resultsBadge.style.color = 'var(--danger)';
+      resultsBadge.textContent = 'Error';
+      
+      resultsCount.textContent = 'Error de ejecución';
+      exportBtn.disabled = true;
+
+      tableWrapper.innerHTML = `
+        <div class="alert alert-danger" style="margin: 1.5rem;">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <div>
+            <strong>Error de Base de Datos:</strong><br>${escapeHtml(msg)}
+          </div>
+        </div>
+      `;
+    }
+
+    // Render database results inside a table
+    function renderResults(results) {
+      resultsBadge.style.display = 'inline-block';
+      resultsBadge.className = 'badge';
+      resultsBadge.style.background = 'rgba(16, 185, 129, 0.15)';
+      resultsBadge.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+      resultsBadge.style.color = 'var(--accent)';
+      resultsBadge.textContent = 'Éxito';
+
+      currentResultsData = results;
+
+      if (!results) {
+        resultsCount.textContent = 'Operación completada sin filas devueltas (ej. INSERT/UPDATE/CREATE)';
+        tableWrapper.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-solid fa-circle-check" style="color: var(--accent); opacity: 0.8;"></i>
+            <p style="color: #fff; font-weight: 500;">Consulta completada correctamente.</p>
+            <p style="font-size: 0.85rem; margin-top: -0.5rem;">La base de datos fue modificada o no retornó registros.</p>
+          </div>
+        `;
+        exportBtn.disabled = true;
+        return;
+      }
+
+      const rows = Array.isArray(results) ? results : [results];
+      
+      if (rows.length === 0) {
+        resultsCount.textContent = '0 filas devueltas';
+        tableWrapper.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-solid fa-circle-info"></i>
+            <p>La consulta se ejecutó con éxito pero no devolvió ningún registro.</p>
+          </div>
+        `;
+        exportBtn.disabled = true;
+        return;
+      }
+
+      resultsCount.textContent = `${rows.length} fila(s) devuelta(s)`;
+      exportBtn.disabled = false;
+
+      // Extract headers from keys of the first row
+      const headers = Object.keys(rows[0]);
+
+      let html = '<table><thead><tr>';
+      headers.forEach(h => {
+        html += `<th>${escapeHtml(h)}</th>`;
+      });
+      html += '</tr></thead><tbody>';
+
+      rows.forEach(row => {
+        html += '<tr>';
+        headers.forEach(h => {
+          let cellValue = row[h];
+          if (cellValue === null || cellValue === undefined) {
+            cellValue = '<span style="color: rgba(255,255,255,0.25); font-style: italic;">NULL</span>';
+          } else if (typeof cellValue === 'object') {
+            cellValue = `<span title="${escapeHtml(JSON.stringify(cellValue))}">${escapeHtml(JSON.stringify(cellValue).substring(0, 50))}...</span>`;
+          } else {
+            cellValue = escapeHtml(cellValue.toString());
+          }
+          html += `<td title="${escapeHtml(row[h] ? row[h].toString() : '')}">${cellValue}</td>`;
+        });
+        html += '</tr>';
+      });
+
+      html += '</tbody></table>';
+      tableWrapper.innerHTML = html;
+    }
+
+    // Export results as JSON
+    exportBtn.onclick = () => {
+      if (!currentResultsData) return;
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(currentResultsData, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `futbolai_db_export_${Date.now()}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    };
+
+    // Helper functions
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "AllowMultiple": "false",
+  "Description": "\"Synchronize opponents fallback push logic in renderMyClubAlerts to guarantee 100% parity with renderMyClubMatches\"",
+  "EndLine": "1157",
+  "Instruction": "\"Add the if opponents.length < 3 fallback check in renderMyClubAlerts\"",
+  "ReplacementContent": "\"  const opponents = await getOtherTeamsInLeague(clubName, countryName);\\n  if (opponents.length < 3) {\\n    const fallbackOpponents = generateProceduralTeams(getEnglishCountryName(countryName)).filter(t => t !== clubName);\\n    opponents.push(...fallbackOpponents);\\n  }\\n  let hash = 0;\\n  for (let i = 0; i < clubName.length; i++) {\\n    hash = clubName.charCodeAt(i) + ((hash << 5) - hash);\\n  }\\n  const absHash = Math.abs(hash);\\n  const nextOpp = opponents.length > 0 ? opponents[absHash % opponents.length] : \\\"FC Azul\\\";\"",
+  "StartLine": "1151",
+  "TargetContent": "\"  const opponents = await getOtherTeamsInLeague(clubName, countryName);\\n  let hash = 0;\\n  for (let i = 0; i < clubName.length; i++) {\\n    hash = clubName.charCodeAt(i) + ((hash << 5) - hash);\\n  }\\n  const absHash = Math.abs(hash);\\n  const nextOpp = opponents.length > 0 ? opponents[absHash % opponents.length] : \\\"FC Azul\\\";\"",
+  "TargetFile": "\"c:\\\\Users\\\\franc\\\\.gemini\\\\antigravity\\\\scratch\\\\football-ai-platform\\\\frontend\\\\app.js\"",
+  "toolAction": "\"Adding fallback push logic to renderMyClubAlerts\"",
+  "toolSummary": "\"Edit app.js\""
+}

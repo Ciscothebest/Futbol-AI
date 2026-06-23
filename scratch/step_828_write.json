@@ -1,0 +1,12 @@
+{
+  "AllowMultiple": "false",
+  "Description": "\"Ensure initDashboard is called on app startup when onboarding is already complete\"",
+  "EndLine": "433",
+  "Instruction": "\"Call initDashboard in the else block of onboardingComplete check\"",
+  "ReplacementContent": "\"  // ─── Onboarding Check ─────────────────────────────────────────────\\n  if (!user.onboardingComplete) {\\n    setupOnboarding();\\n  } else {\\n    initDashboard();\\n  }\\n});\"",
+  "StartLine": "428",
+  "TargetContent": "\"  // ─── Onboarding Check ─────────────────────────────────────────────\\n  if (!user.onboardingComplete) {\\n    setupOnboarding();\\n  }\\n});\"",
+  "TargetFile": "\"c:\\\\Users\\\\franc\\\\.gemini\\\\antigravity\\\\scratch\\\\football-ai-platform\\\\frontend\\\\app.js\"",
+  "toolAction": "\"Updating onboarding complete check in app.js\"",
+  "toolSummary": "\"Onboarding complete check update\""
+}
