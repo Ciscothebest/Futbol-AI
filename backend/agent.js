@@ -29,7 +29,7 @@ async function findRelevantPlayers(message, limit = 5) {
   const terms = msg.split(/\s+/).filter(w => w.length > 3);
   if (terms.length === 0) return [];
 
-  // Build OR conditions for ALL valid terms, not just the first two
+  // Build OR conditions for ALL valid terms
   const orConditions = [];
   for (const term of terms) {
     orConditions.push({ name: { [Op.like]: `%${term}%` } });
@@ -37,17 +37,14 @@ async function findRelevantPlayers(message, limit = 5) {
     orConditions.push({ id: { [Op.like]: `%${term.replace(/\s/g, '-').substring(0, 20)}%` } });
   }
 
-  // Use DB to find matches directly with indexed queries
+  // Use DB to find matches directly
   const matches = await Player.findAll({
     where: { [Op.or]: orConditions },
     limit: limit,
     attributes: ['id', 'name', 'flag', 'currentTeam', 'league', 'position', 'overallRating', 'stats', 'bio', 'trophies', 'strengths', 'age', 'nationality']
   });
 
-  if (matches.length === 0) {
-    // Return empty context if no players found, better than forcing unrelated top players
-    return [];
-  }
+  if (matches.length === 0) return [];
 
   return matches.map(p => ({
     name: p.name, flag: p.flag, team: p.currentTeam, league: p.league,
@@ -60,29 +57,38 @@ async function findRelevantPlayers(message, limit = 5) {
 
 class FootballAgent {
   constructor() {
-    this.apiKey = process.env.GEMINI_API_KEY;
+    this.geminiApiKey = process.env.GEMINI_API_KEY;
+    this.deepseekApiKey = process.env.DEEPSEEK_API_KEY;
     this.model = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
     this.sessions = new Map(); // sessionId -> history[]
-    this.demoMode = !this.apiKey || this.apiKey === 'your_gemini_api_key_here';
 
-    if (!this.demoMode) {
-      this.genAI = new GoogleGenerativeAI(this.apiKey);
-      const modelName = this.model;
+    // Detect AI provider
+    this.provider = 'demo';
+    if (this.deepseekApiKey && this.deepseekApiKey !== 'your_deepseek_api_key_here') {
+      this.provider = 'deepseek';
+    } else if (this.geminiApiKey && this.geminiApiKey !== 'your_gemini_api_key_here') {
+      this.provider = 'gemini';
+    }
+    this.demoMode = this.provider === 'demo';
+
+    if (this.provider === 'gemini') {
+      this.genAI = new GoogleGenerativeAI(this.geminiApiKey);
       this.geminiModel = this.genAI.getGenerativeModel({
-        model: modelName,
+        model: this.model,
         systemInstruction: SYSTEM_PROMPT,
       });
     }
 
-    console.log(this.demoMode
-      ? '⚠️  Demo mode active (no API key). Using SQLite database.'
-      : `✅ Gemini connected (${this.model})`
-    );
+    console.log(`🤖 AI Provider initialized: ${this.provider.toUpperCase()} | Model: ${this.provider === 'gemini' ? this.model : (this.provider === 'deepseek' ? 'deepseek-chat' : 'local-demo')}`);
   }
 
   async chat(sessionId, userMessage, language = 'es', audioBase64 = null, mimeType = null) {
     if (this.demoMode) {
       return this._demoResponse(userMessage || "audio_message");
+    }
+
+    if (this.provider === 'deepseek') {
+      return this._chatDeepSeek(sessionId, userMessage, language, audioBase64);
     }
 
     if (!this.sessions.has(sessionId)) {
@@ -153,20 +159,6 @@ class FootballAgent {
           return this._demoResponse(userMessage || "audio_message");
         }
 
-        const isRateLimit = errMsg.includes('429') || errMsg.includes('quota') || errMsg.includes('RESOURCE_EXHAUSTED');
-        if (isRateLimit && attempt < 2) { // Reduced attempts
-          const retryMatch = errMsg.match(/"retryDelay":"(\d+)s"/);
-          const delaySec = retryMatch ? Math.min(parseInt(retryMatch[1]), 5) + 1 : 3;
-          const delayMs = delaySec * 1000;
-          console.log(`⏳ Rate limit hit (attempt ${attempt + 1}/2), retrying in ${delaySec}s...`);
-          await new Promise(r => setTimeout(r, delayMs));
-          continue;
-        }
-        if (isRateLimit) {
-           console.warn('⚠️ API Limit reached in standard chat. Falling back to Demo Mode.');
-           return (await this._demoResponse(userMessage)) + (language === 'en' ? "\n\n*(Offline mode)*" : "\n\n*(Modo offline)*");
-        }
-        console.error('Gemini API error:', errMsg);
         throw err;
       }
     }
@@ -178,6 +170,10 @@ class FootballAgent {
       onChunk(resp);
       onDone(resp);
       return;
+    }
+
+    if (this.provider === 'deepseek') {
+      return this._chatStreamDeepSeek(sessionId, userMessage, language, audioBase64, clubContext, clubRoster, onChunk, onDone, onError);
     }
 
     if (!this.sessions.has(sessionId)) this.sessions.set(sessionId, []);
@@ -283,20 +279,40 @@ class FootballAgent {
   async comparePlayers(player1Id, player2Id, language = 'es') {
     const p1 = await Player.findByPk(player1Id);
     const p2 = await Player.findByPk(player2Id);
-    if (!p1 || !p2) throw new Error('Player not found');
+
+    if (!p1 || !p2) return 'No se pudieron encontrar uno o ambos jugadores.';
 
     const langInstruction = language === 'en'
-      ? 'Respond entirely in English.'
-      : 'Responde completamente en español.';
+      ? 'Respond entirely in English, formatted in beautiful, readable markdown.'
+      : 'Responde completamente en español, con un formato de markdown limpio y legible.';
 
-    const prompt = `${langInstruction} Compare these two players in detail:
-Player 1: ${JSON.stringify(p1)}
-Player 2: ${JSON.stringify(p2)}
+    const prompt = `${langInstruction}
+Compare these two football players in detail using their stats and biography:
+1. **${p1.name}** (Club: ${p1.currentTeam}, Position: ${p1.position}, Age: ${p1.age}, Rating: ${p1.overallRating})
+   Stats: ${JSON.stringify(p1.stats)}
+   Bio: ${p1.bio}
+   Strengths: ${JSON.stringify(p1.strengths)}
+   Trophies: ${JSON.stringify(p1.trophies)}
+
+2. **${p2.name}** (Club: ${p2.currentTeam}, Position: ${p2.position}, Age: ${p2.age}, Rating: ${p2.overallRating})
+   Stats: ${JSON.stringify(p2.stats)}
+   Bio: ${p2.bio}
+   Strengths: ${JSON.stringify(p2.strengths)}
+   Trophies: ${JSON.stringify(p2.trophies)}
 
 Provide: overall comparison, who wins in each key attribute, best league fit, ceiling analysis, and a final verdict.`;
 
     if (this.demoMode) {
       return this._demoComparison(p1, p2);
+    }
+
+    if (this.provider === 'deepseek') {
+      try {
+        return await this._generateContentDeepSeek(prompt);
+      } catch (err) {
+        console.error("❌ DeepSeek Comparison Error:", err);
+        return this._demoComparison(p1, p2) + '\n\n*⚠️ AI Analysis unavailable due to DeepSeek API error.*';
+      }
     }
 
     try {
@@ -317,6 +333,15 @@ Provide: overall comparison, who wins in each key attribute, best league fit, ce
 
     if (this.demoMode) {
       return this._demoPredictions();
+    }
+
+    if (this.provider === 'deepseek') {
+      try {
+        return await this._generateContentDeepSeek(prompt);
+      } catch (err) {
+        console.error("❌ DeepSeek Predictions Error:", err);
+        return this._demoPredictions() + '\n\n*⚠️ AI Predictions unavailable due to DeepSeek API error.*';
+      }
     }
 
     try {
@@ -351,6 +376,15 @@ Write a highly professional, executive report (max 150 words).
       return `### Análisis Generado\n*Modo offline activo. API de IA no conectada.*\nAlerta: ${alertType}\nDetalles: ${JSON.stringify(contextData)}`;
     }
 
+    if (this.provider === 'deepseek') {
+      try {
+        return await this._generateContentDeepSeek(prompt);
+      } catch (err) {
+        console.error("❌ DeepSeek expandAlert error:", err);
+        return `⚠️ Error al generar contexto AI (DeepSeek): ${err.message}`;
+      }
+    }
+
     try {
       const result = await this.geminiModel.generateContent(prompt);
       return result.response.text();
@@ -362,6 +396,175 @@ Write a highly professional, executive report (max 150 words).
 
   clearSession(sessionId) {
     this.sessions.delete(sessionId);
+  }
+
+  // ─── DeepSeek API Helpers ───────────────────────────────────────
+  
+  async _chatDeepSeek(sessionId, userMessage, language, audioBase64) {
+    if (!this.sessions.has(sessionId)) this.sessions.set(sessionId, []);
+    const history = this.sessions.get(sessionId);
+    const langPrefix = language === 'en' ? '[RESPOND IN ENGLISH ONLY] ' : '[RESPONDE SIEMPRE EN ESPAÑOL] ';
+
+    const relevantPlayers = await findRelevantPlayers(userMessage || '');
+    const playerContext = relevantPlayers.length ? `\n\n[Contexto Jugadores]: ${JSON.stringify(relevantPlayers)}` : '';
+
+    let textQuery = userMessage || '';
+    if (audioBase64 && !textQuery) {
+      textQuery = '[Mensaje de voz enviado - Nota: DeepSeek opera en modo texto, indica amablemente al usuario que prefieres texto]';
+    }
+
+    const promptText = langPrefix + textQuery + playerContext;
+
+    // Convert Gemini history format to OpenAI format
+    const messages = [
+      { role: 'system', content: SYSTEM_PROMPT },
+      ...history.map(h => ({
+        role: h.role === 'model' ? 'assistant' : 'user',
+        content: h.parts.map(p => p.text).join(' ')
+      })),
+      { role: 'user', content: promptText }
+    ];
+
+    try {
+      const response = await fetch('https://api.deepseek.com/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.deepseekApiKey}`
+        },
+        body: JSON.stringify({
+          model: 'deepseek-chat',
+          messages,
+          temperature: 0.7
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`DeepSeek API error: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      const responseText = data.choices[0].message.content;
+
+      // Store in history (using Gemini format for cross-compatibility)
+      history.push({ role: 'user', parts: [{ text: userMessage || (audioBase64 ? '[Audio]' : '[Texto]') }] });
+      history.push({ role: 'model', parts: [{ text: responseText }] });
+      if (history.length > 40) this.sessions.set(sessionId, history.slice(-40));
+
+      return responseText;
+    } catch (err) {
+      console.error("❌ DeepSeek Chat Error:", err);
+      throw err;
+    }
+  }
+
+  async _chatStreamDeepSeek(sessionId, userMessage, language, audioBase64, clubContext, clubRoster, onChunk, onDone, onError) {
+    if (!this.sessions.has(sessionId)) this.sessions.set(sessionId, []);
+    const history = this.sessions.get(sessionId);
+    const langPrefix = language === 'en' ? '[RESPOND IN ENGLISH] ' : '[RESPONDE EN ESPAÑOL] ';
+
+    const relevantPlayers = await findRelevantPlayers(userMessage || '');
+    const playerContext = relevantPlayers.length ? `\n\n[Contexto Jugadores]: ${JSON.stringify(relevantPlayers)}` : '';
+    
+    const rosterRestriction = clubRoster ? `\n\n[ROSTER ACTUAL DEL EQUIPO]: ${clubRoster}\nUtiliza obligatoriamente esta lista de jugadores para cualquier consulta sobre la alineación, plantilla, fortalezas o debilidades actuales de ${clubContext}.` : '';
+    const clubRestriction = clubContext ? `\n\n[INSTRUCCIÓN DE CONTEXTO]: Estás operando en el panel del club ${clubContext}. Asume por defecto que todas las preguntas, análisis o peticiones del usuario se refieren al equipo ${clubContext}. Si el usuario hace una pregunta general (ej: '¿quién es mi mejor jugador?' o '¿cómo formamos?'), responde basándote en la plantilla de ${clubContext}.${rosterRestriction}\n\nNota: Si el usuario menciona explícitamente a otro equipo, liga o jugador externo, ESTÁS AUTORIZADO a responder sobre ese otro tema sin restricciones.` : '';
+    
+    let textQuery = userMessage || '';
+    if (audioBase64 && !textQuery) {
+      textQuery = 'El usuario envió un audio. Explica brevemente que DeepSeek no procesa audio directamente y le pides que escriba por texto.';
+    }
+
+    const promptText = langPrefix + clubRestriction + '\n' + textQuery + playerContext;
+
+    const messages = [
+      { role: 'system', content: SYSTEM_PROMPT },
+      ...history.map(h => ({
+        role: h.role === 'model' ? 'assistant' : 'user',
+        content: h.parts.map(p => p.text).join(' ')
+      })),
+      { role: 'user', content: promptText }
+    ];
+
+    try {
+      const response = await fetch('https://api.deepseek.com/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.deepseekApiKey}`
+        },
+        body: JSON.stringify({
+          model: 'deepseek-chat',
+          messages,
+          stream: true,
+          temperature: 0.7
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`DeepSeek Streaming API error: ${response.status} ${response.statusText}`);
+      }
+
+      let fullResponse = '';
+      const decoder = new TextDecoder('utf-8');
+      
+      let buffer = '';
+      for await (const chunk of response.body) {
+        buffer += decoder.decode(chunk);
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          const cleanedLine = line.trim();
+          if (cleanedLine === '' || cleanedLine === 'data: [DONE]') continue;
+          if (cleanedLine.startsWith('data: ')) {
+            try {
+              const parsed = JSON.parse(cleanedLine.substring(6));
+              const content = parsed.choices[0].delta.content;
+              if (content) {
+                fullResponse += content;
+                onChunk(content);
+              }
+            } catch (e) {
+              // Ignore incomplete JSON chunks
+            }
+          }
+        }
+      }
+
+      // Store in history (using Gemini format for cross-compatibility)
+      history.push({ role: 'user', parts: [{ text: userMessage || (audioBase64 ? '[Audio]' : '[Texto]') }] });
+      history.push({ role: 'model', parts: [{ text: fullResponse }] });
+      if (history.length > 40) this.sessions.set(sessionId, history.slice(-40));
+
+      onDone(fullResponse);
+    } catch (err) {
+      console.error("❌ DeepSeek Stream Error:", err);
+      onError(err);
+    }
+  }
+
+  async _generateContentDeepSeek(prompt) {
+    const response = await fetch('https://api.deepseek.com/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.deepseekApiKey}`
+      },
+      body: JSON.stringify({
+        model: 'deepseek-chat',
+        messages: [
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.7
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`DeepSeek API error: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.choices[0].message.content;
   }
 
   // ─── Demo Fallbacks (no API key) ───────────────────────────────
@@ -383,13 +586,13 @@ Write a highly professional, executive report (max 150 words).
   }
 
   _demoComparison(p1, p2) {
-    return `## ${p1.name} vs ${p2.name}\n\n| Attribute | ${p1.name} | ${p2.name} |\n|---|---|---|\n| Rating | ${p1.overallRating} | ${p2.overallRating} |\n| Goals 24-25 | ${p1.stats.goals} | ${p2.stats.goals} |\n| Assists | ${p1.stats.assists} | ${p2.stats.assists} |\n| Position | ${p1.position} | ${p2.position} |\n| League | ${p1.league} | ${p2.league} |\n\n**${p1.overallRating >= p2.overallRating ? p1.name : p2.name}** edges it overall with a higher rating.\n\n*Connect your Gemini API key for a full AI-powered analysis!*`;
+    return `## ${p1.name} vs ${p2.name}\n\n| Attribute | ${p1.name} | ${p2.name} |\n|---|---|---|\n| Rating | ${p1.overallRating} | ${p2.overallRating} |\n| Goals 24-25 | ${p1.stats.goals} | ${p2.stats.goals} |\n| Assists | ${p1.stats.assists} | ${p2.stats.assists} |\n| Position | ${p1.position} | ${p2.position} |\n| League | ${p1.league} | ${p2.league} |\n\n**${p1.overallRating >= p2.overallRating ? p1.name : p2.name}** edges it overall with a higher rating.\n\n*Connect your Gemini or DeepSeek API key for a full AI-powered analysis!*`;
   }
 
   async _demoPredictions() {
     const topPlayers = await Player.findAll({ order: [['overallRating', 'DESC']], limit: 10 });
     const topScorer = topPlayers[0]; // Simplified
-    return `## 🔮 AI Predictions — 2024-25 Season\n\n**1. Top Scorer Race:** ${topScorer.name} ${topScorer.flag} (${topScorer.stats.goals} goals) leads the race and is on track for the golden boot.\n\n**2. Ballon d'Or Front-Runner:** Vinicius Jr. & Bellingham are neck-and-neck for the award after stellar Champions League campaigns.\n\n**3. Surprise Performer:** Lamine Yamal continues to defy his age — don't be surprised to see him nominated for the Ballon d'Or before he turns 20.\n\n**4. Transfer Rumour:** Florian Wirtz is expected to move to a top-6 EPL club this summer in a deal exceeding €150M.\n\n**5. Bold Upset:** Arsenal to win the Premier League title for the first time since the Invincibles era.\n\n*Connect your Gemini API key for dynamic, real-time AI predictions!*`;
+    return `## 🔮 AI Predictions — 2024-25 Season\n\n**1. Top Scorer Race:** ${topScorer.name} ${topScorer.flag} (${topScorer.stats.goals} goals) leads the race and is on track for the golden boot.\n\n**2. Ballon d'Or Front-Runner:** Vinicius Jr. & Bellingham are neck-and-neck for the award after stellar Champions League campaigns.\n\n**3. Surprise Performer:** Lamine Yamal continues to defy his age — don't be surprised to see him nominated for the Ballon d'Or before he turns 20.\n\n**4. Transfer Rumour:** Florian Wirtz is expected to move to a top-6 EPL club this summer in a deal exceeding €150M.\n\n**5. Bold Upset:** Arsenal to win the Premier League title for the first time since the Invincibles era.\n\n*Connect your Gemini or DeepSeek API key for dynamic, real-time AI predictions!*`;
   }
 }
 
