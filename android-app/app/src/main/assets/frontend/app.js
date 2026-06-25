@@ -7817,15 +7817,9 @@ window.simulatePayment = async () => {
           payBtn.disabled = false;
           payBtn.innerHTML = 'Confirmar Pago Seguro 🔒';
         }
-      } catch (err) {
-        console.error('Payment checkout error:', err);
-        showToast('⚠️ Error de conexión con la pasarela fiduciaria.', 'error');
-        payBtn.disabled = false;
-        payBtn.innerHTML = 'Confirmar Pago Seguro 🔒';
-      }
+      }, 1000);
     }, 1000);
-  }, 1000);
-};
+  };
 
 // DOWNLOAD CERTIFIED INVOICE PDF
 window.downloadInvoicePDF = () => {
