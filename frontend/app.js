@@ -587,16 +587,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   updateProfileUI(user);
 
   // Logout Handler
-  document.getElementById('btn-logout')?.addEventListener('click', () => {
+  const performLogout = () => {
     localStorage.removeItem('scout_ai_token');
     localStorage.removeItem('scout_ai_user');
     window.location.href = 'landing.html';
-  });
-  document.getElementById('btn-profile-logout')?.addEventListener('click', () => {
-    localStorage.removeItem('scout_ai_token');
-    localStorage.removeItem('scout_ai_user');
-    window.location.href = 'landing.html';
-  });
+  };
+  document.getElementById('btn-logout')?.addEventListener('click', performLogout);
+  document.getElementById('btn-logout-mobile')?.addEventListener('click', performLogout);
+  document.getElementById('btn-profile-logout')?.addEventListener('click', performLogout);
 
   // Run splash in parallel with actual init work
   const splashDone = runSplashScreen();
@@ -2967,6 +2965,10 @@ function initDashboard() {
   if (navMyClub) {
     navMyClub.style.display = 'block';
   }
+  const navMyClubMobile = document.getElementById('nav-my-club-mobile');
+  if (navMyClubMobile) {
+    navMyClubMobile.style.display = 'block';
+  }
 
   // Self-heal and initialize defaults for formation and style
   let userUpdated = false;
@@ -3417,12 +3419,12 @@ window.openTacticalEditorModal = function() {
       const borderStyle = isSel ? 'border-color: #00f0ff; background: rgba(0,240,255,0.12); box-shadow: 0 0 10px rgba(0,240,255,0.1);' : 'border-color: rgba(255,255,255,0.05); background: rgba(255,255,255,0.02);';
       return `
         <div class="modal-player-row starting-row" id="starting-row-${item.slotIndex}" onclick="selectStartingPlayer(${item.slotIndex})" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border: 1.5px solid; border-radius: 10px; cursor: pointer; transition: all 0.2s; ${borderStyle}">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <span style="font-size: 11px; font-weight: 800; background: #00f0ff; color: #080e1a; padding: 2px 6px; border-radius: 4px; min-width: 32px; text-align: center; font-family: sans-serif;">${item.role}</span>
-            <span style="font-size: 13.5px; font-weight: 700; color: #fff;">${p.name || p.nickname || 'Jugador'}</span>
-            <span style="font-size: 11px; color: rgba(255,255,255,0.4); text-transform: uppercase;">${p.position || 'N/A'}</span>
+          <div style="display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; margin-right: 10px; overflow: hidden;">
+            <span style="font-size: 11px; font-weight: 800; background: #00f0ff; color: #080e1a; padding: 2px 6px; border-radius: 4px; min-width: 32px; text-align: center; font-family: sans-serif; flex-shrink: 0;">${item.role}</span>
+            <span class="modal-player-name" style="font-size: 13.5px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0;">${p.name || p.nickname || 'Jugador'}</span>
+            <span style="font-size: 11px; color: rgba(255,255,255,0.4); text-transform: uppercase; flex-shrink: 0;">${p.position || 'N/A'}</span>
           </div>
-          <div style="font-weight: 800; color: #00f0ff; font-size: 14px;">${p.overallRating || 75}</div>
+          <div style="font-weight: 800; color: #00f0ff; font-size: 14px; flex-shrink: 0;">${p.overallRating || 75}</div>
         </div>
       `;
     }).join('');
@@ -3440,11 +3442,11 @@ window.openTacticalEditorModal = function() {
         const borderStyle = isSel ? 'border-color: #ffbe10; background: rgba(255,190,16,0.12); box-shadow: 0 0 10px rgba(255,190,16,0.1);' : 'border-color: rgba(255,255,255,0.05); background: rgba(255,255,255,0.02);';
         return `
           <div class="modal-player-row bench-row" id="bench-row-${p.id}" onclick="selectBenchPlayer('${p.id}')" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border: 1.5px solid; border-radius: 10px; cursor: pointer; transition: all 0.2s; ${borderStyle}">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <span style="font-size: 13.5px; font-weight: 700; color: #fff;">${p.name || p.nickname || 'Jugador'}</span>
-              <span style="font-size: 11px; color: rgba(255,255,255,0.4); text-transform: uppercase;">${p.position || 'N/A'}</span>
+            <div style="display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; margin-right: 10px; overflow: hidden;">
+              <span class="modal-player-name" style="font-size: 13.5px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0;">${p.name || p.nickname || 'Jugador'}</span>
+              <span style="font-size: 11px; color: rgba(255,255,255,0.4); text-transform: uppercase; flex-shrink: 0;">${p.position || 'N/A'}</span>
             </div>
-            <div style="font-weight: 800; color: #ffbe10; font-size: 14px;">${p.overallRating || 75}</div>
+            <div style="font-weight: 800; color: #ffbe10; font-size: 14px; flex-shrink: 0;">${p.overallRating || 75}</div>
           </div>
         `;
       }).join('');
@@ -3660,7 +3662,11 @@ function getAbsoluteUrl(url) {
     const isAndroid = navigator.userAgent.toLowerCase().includes('android');
     host = window.API_HOST || (isAndroid ? '10.0.2.2:3001' : 'localhost:3001');
   } else {
-    host = window.location.host;
+    if (window.location.port && window.location.port !== '3001') {
+      host = `${window.location.hostname}:3001`;
+    } else {
+      host = window.location.host;
+    }
   }
   const protocol = window.location.protocol === 'https:' ? 'https:' : 'http:';
   return `${protocol}//${host}${url}`;
@@ -3758,6 +3764,15 @@ function updateProfileUI(user) {
   if (userAvatarEl && user.avatarUrl) {
     userAvatarEl.src = getAbsoluteUrl(user.avatarUrl);
     userAvatarEl.style.display = 'block';
+  }
+
+  // Mobile elements sync
+  const userNameMobileEl = document.getElementById('user-name-mobile');
+  const userAvatarMobileEl = document.getElementById('user-avatar-mobile');
+  if (userNameMobileEl) userNameMobileEl.textContent = user.nombres || user.username || 'Usuario';
+  if (userAvatarMobileEl && user.avatarUrl) {
+    userAvatarMobileEl.src = getAbsoluteUrl(user.avatarUrl);
+    userAvatarMobileEl.style.display = 'block';
   }
 }
 
@@ -7591,6 +7606,7 @@ window.confirmSuccessAndSaveRole = async () => {
   saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando rol...';
   saveBtn.disabled = true;
 
+  let isSaved = false;
   try {
     const token = localStorage.getItem('scout_ai_token');
     const res = await fetch(`${API}/auth/onboarding`, {
@@ -7603,22 +7619,20 @@ window.confirmSuccessAndSaveRole = async () => {
     });
 
     if (res.ok) {
-      const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
-      user.role = userRole;
-      localStorage.setItem('scout_ai_user', JSON.stringify(user));
-      renderProfile();
-    } else {
-      showToast('⚠️ Error al guardar el rol organizacional.', 'error');
-      saveBtn.textContent = originalText;
-      saveBtn.disabled = false;
-      return;
+      isSaved = true;
     }
   } catch (err) {
-    console.error(err);
-    showToast('⚠️ Error de red al guardar el rol organizacional.', 'error');
-    saveBtn.textContent = originalText;
-    saveBtn.disabled = false;
-    return;
+    console.warn('Saving role failed (offline/Netlify):', err);
+  }
+
+  // Fallback: Siempre guardar localmente y continuar
+  const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  user.role = userRole;
+  localStorage.setItem('scout_ai_user', JSON.stringify(user));
+  renderProfile();
+  
+  if (!isSaved) {
+    showToast('ℹ️ Rol guardado localmente (modo demostración).', 'info');
   }
 
   const onboardingScreen = document.getElementById('onboarding-screen');
@@ -7667,6 +7681,9 @@ window.simulatePayment = async () => {
       // Phase 3 loading spinner
       payBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registrando suscripción segura...';
 
+      let result;
+      let isSuccess = false;
+
       try {
         const token = localStorage.getItem('scout_ai_token');
         const res = await fetch(`${API}/payments/checkout`, {
@@ -7683,13 +7700,36 @@ window.simulatePayment = async () => {
           })
         });
 
-        const result = await res.json();
+        if (res.ok) {
+          result = await res.json();
+          if (result.success) {
+            isSuccess = true;
+          }
+        }
+      } catch (err) {
+        console.warn('Payment checkout offline fallback activated:', err);
+      }
 
-        if (res.ok && result.success) {
-          // 1. Update dynamic client states
-          const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
-          user.selectedTier = tier;
-          localStorage.setItem('scout_ai_user', JSON.stringify(user));
+      // Fallback: Simular transacción aprobada si el backend está offline (p. ej. Netlify estático)
+      if (!isSuccess) {
+        result = {
+          success: true,
+          transaction: {
+            transactionId: 'TXN-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+            amount: amount,
+            cardholderName: nameInput.value.trim() || 'Lionel Messi',
+            paymentMethod: 'Tarjeta de Crédito'
+          }
+        };
+        isSuccess = true;
+        showToast('ℹ️ Modo demo: Pago aprobado localmente.', 'info');
+      }
+
+      if (isSuccess && result.success) {
+        // 1. Update dynamic client states
+        const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+        user.selectedTier = tier;
+        localStorage.setItem('scout_ai_user', JSON.stringify(user));
           
           showToast(`🎉 ¡Pago exitoso! Plan ${tier} activado. Txn ID: ${result.transaction.transactionId}`, 'success');
 

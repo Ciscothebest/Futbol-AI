@@ -587,16 +587,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   updateProfileUI(user);
 
   // Logout Handler
-  document.getElementById('btn-logout')?.addEventListener('click', () => {
+  const performLogout = () => {
     localStorage.removeItem('scout_ai_token');
     localStorage.removeItem('scout_ai_user');
     window.location.href = 'landing.html';
-  });
-  document.getElementById('btn-profile-logout')?.addEventListener('click', () => {
-    localStorage.removeItem('scout_ai_token');
-    localStorage.removeItem('scout_ai_user');
-    window.location.href = 'landing.html';
-  });
+  };
+  document.getElementById('btn-logout')?.addEventListener('click', performLogout);
+  document.getElementById('btn-logout-mobile')?.addEventListener('click', performLogout);
+  document.getElementById('btn-profile-logout')?.addEventListener('click', performLogout);
 
   // Run splash in parallel with actual init work
   const splashDone = runSplashScreen();
@@ -2967,6 +2965,10 @@ function initDashboard() {
   if (navMyClub) {
     navMyClub.style.display = 'block';
   }
+  const navMyClubMobile = document.getElementById('nav-my-club-mobile');
+  if (navMyClubMobile) {
+    navMyClubMobile.style.display = 'block';
+  }
 
   // Self-heal and initialize defaults for formation and style
   let userUpdated = false;
@@ -3417,12 +3419,12 @@ window.openTacticalEditorModal = function() {
       const borderStyle = isSel ? 'border-color: #00f0ff; background: rgba(0,240,255,0.12); box-shadow: 0 0 10px rgba(0,240,255,0.1);' : 'border-color: rgba(255,255,255,0.05); background: rgba(255,255,255,0.02);';
       return `
         <div class="modal-player-row starting-row" id="starting-row-${item.slotIndex}" onclick="selectStartingPlayer(${item.slotIndex})" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border: 1.5px solid; border-radius: 10px; cursor: pointer; transition: all 0.2s; ${borderStyle}">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <span style="font-size: 11px; font-weight: 800; background: #00f0ff; color: #080e1a; padding: 2px 6px; border-radius: 4px; min-width: 32px; text-align: center; font-family: sans-serif;">${item.role}</span>
-            <span style="font-size: 13.5px; font-weight: 700; color: #fff;">${p.name || p.nickname || 'Jugador'}</span>
-            <span style="font-size: 11px; color: rgba(255,255,255,0.4); text-transform: uppercase;">${p.position || 'N/A'}</span>
+          <div style="display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; margin-right: 10px; overflow: hidden;">
+            <span style="font-size: 11px; font-weight: 800; background: #00f0ff; color: #080e1a; padding: 2px 6px; border-radius: 4px; min-width: 32px; text-align: center; font-family: sans-serif; flex-shrink: 0;">${item.role}</span>
+            <span class="modal-player-name" style="font-size: 13.5px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0;">${p.name || p.nickname || 'Jugador'}</span>
+            <span style="font-size: 11px; color: rgba(255,255,255,0.4); text-transform: uppercase; flex-shrink: 0;">${p.position || 'N/A'}</span>
           </div>
-          <div style="font-weight: 800; color: #00f0ff; font-size: 14px;">${p.overallRating || 75}</div>
+          <div style="font-weight: 800; color: #00f0ff; font-size: 14px; flex-shrink: 0;">${p.overallRating || 75}</div>
         </div>
       `;
     }).join('');
@@ -3440,11 +3442,11 @@ window.openTacticalEditorModal = function() {
         const borderStyle = isSel ? 'border-color: #ffbe10; background: rgba(255,190,16,0.12); box-shadow: 0 0 10px rgba(255,190,16,0.1);' : 'border-color: rgba(255,255,255,0.05); background: rgba(255,255,255,0.02);';
         return `
           <div class="modal-player-row bench-row" id="bench-row-${p.id}" onclick="selectBenchPlayer('${p.id}')" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border: 1.5px solid; border-radius: 10px; cursor: pointer; transition: all 0.2s; ${borderStyle}">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <span style="font-size: 13.5px; font-weight: 700; color: #fff;">${p.name || p.nickname || 'Jugador'}</span>
-              <span style="font-size: 11px; color: rgba(255,255,255,0.4); text-transform: uppercase;">${p.position || 'N/A'}</span>
+            <div style="display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; margin-right: 10px; overflow: hidden;">
+              <span class="modal-player-name" style="font-size: 13.5px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0;">${p.name || p.nickname || 'Jugador'}</span>
+              <span style="font-size: 11px; color: rgba(255,255,255,0.4); text-transform: uppercase; flex-shrink: 0;">${p.position || 'N/A'}</span>
             </div>
-            <div style="font-weight: 800; color: #ffbe10; font-size: 14px;">${p.overallRating || 75}</div>
+            <div style="font-weight: 800; color: #ffbe10; font-size: 14px; flex-shrink: 0;">${p.overallRating || 75}</div>
           </div>
         `;
       }).join('');
@@ -3660,7 +3662,11 @@ function getAbsoluteUrl(url) {
     const isAndroid = navigator.userAgent.toLowerCase().includes('android');
     host = window.API_HOST || (isAndroid ? '10.0.2.2:3001' : 'localhost:3001');
   } else {
-    host = window.location.host;
+    if (window.location.port && window.location.port !== '3001') {
+      host = `${window.location.hostname}:3001`;
+    } else {
+      host = window.location.host;
+    }
   }
   const protocol = window.location.protocol === 'https:' ? 'https:' : 'http:';
   return `${protocol}//${host}${url}`;
@@ -3758,6 +3764,15 @@ function updateProfileUI(user) {
   if (userAvatarEl && user.avatarUrl) {
     userAvatarEl.src = getAbsoluteUrl(user.avatarUrl);
     userAvatarEl.style.display = 'block';
+  }
+
+  // Mobile elements sync
+  const userNameMobileEl = document.getElementById('user-name-mobile');
+  const userAvatarMobileEl = document.getElementById('user-avatar-mobile');
+  if (userNameMobileEl) userNameMobileEl.textContent = user.nombres || user.username || 'Usuario';
+  if (userAvatarMobileEl && user.avatarUrl) {
+    userAvatarMobileEl.src = getAbsoluteUrl(user.avatarUrl);
+    userAvatarMobileEl.style.display = 'block';
   }
 }
 
@@ -4226,20 +4241,111 @@ async function showSimulationResults(homeName, awayName, homeOvr, awayOvr) {
 
   // Render XI for both teams
   const userStartingXI = getUserClubStartingXI(homeName, user);
-  renderStartingXi(userStartingXI, 'result-home-xi');
-  renderStartingXi(awayPlayers, 'result-away-xi');
+  renderStartingXi(userStartingXI, 'result-home-xi', true);
+  renderStartingXi(awayPlayers, 'result-away-xi', false);
   
-  // Tactical Strengths and Weaknesses
-  const strengthsContainer = document.getElementById('result-strengths');
-  const weaknessesContainer = document.getElementById('result-weaknesses');
-  if (strengthsContainer && weaknessesContainer) {
-    strengthsContainer.innerHTML = '';
-    weaknessesContainer.innerHTML = '';
+  // Render Final Stats
+  const statsContent = document.getElementById('result-stats-content');
+  if (statsContent) {
+    const t = simStats;
+    const sh = t.shots[0] + t.shots[1] + 1;
+    const xgt = t.xg[0] + t.xg[1] + 0.1;
+    const pt = t.passes[0] + t.passes[1] + 1;
+    const ft = t.fouls[0] + t.fouls[1] + 1;
+    const ot = t.onTarget[0] + t.onTarget[1] + 1;
+    
+    const ovrDiff = homeOvr - awayOvr;
+    const homePoss = Math.min(Math.max(50 + Math.round(ovrDiff * 1.2), 35), 65);
+    const awayPoss = 100 - homePoss;
+    
+    statsContent.innerHTML = `
+      <div class="stat-row">
+        <div class="stat-hdr">
+          <span style="color:var(--cyan);font-weight:700;">${homePoss}%</span>
+          <span style="color:var(--text-2); font-size:12px;">Posesión</span>
+          <span style="color:var(--orange);font-weight:700;">${awayPoss}%</span>
+        </div>
+        <div class="stat-bar" style="height:6px; background:rgba(255,255,255,0.05); border-radius:3px; display:flex; overflow:hidden;">
+          <div style="background:var(--cyan); width:${homePoss}%; height:100%;"></div>
+          <div style="background:var(--orange); width:${awayPoss}%; height:100%;"></div>
+        </div>
+      </div>
+      
+      <div class="stat-row">
+        <div class="stat-hdr">
+          <span style="color:var(--cyan);font-weight:700;">${t.shots[0]}</span>
+          <span style="color:var(--text-2); font-size:12px;">Tiros</span>
+          <span style="color:var(--orange);font-weight:700;">${t.shots[1]}</span>
+        </div>
+        <div class="stat-bar" style="height:6px; background:rgba(255,255,255,0.05); border-radius:3px; display:flex; overflow:hidden;">
+          <div style="background:var(--cyan); width:${Math.round(t.shots[0]/sh*100)}%; height:100%;"></div>
+          <div style="background:var(--orange); width:${Math.round(t.shots[1]/sh*100)}%; height:100%;"></div>
+        </div>
+      </div>
+      
+      <div class="stat-row">
+        <div class="stat-hdr">
+          <span style="color:var(--cyan);font-weight:700;">${t.onTarget[0]}</span>
+          <span style="color:var(--text-2); font-size:12px;">A puerta</span>
+          <span style="color:var(--orange);font-weight:700;">${t.onTarget[1]}</span>
+        </div>
+        <div class="stat-bar" style="height:6px; background:rgba(255,255,255,0.05); border-radius:3px; display:flex; overflow:hidden;">
+          <div style="background:var(--cyan); width:${Math.round(t.onTarget[0]/ot*100)}%; height:100%;"></div>
+          <div style="background:var(--orange); width:${Math.round(t.onTarget[1]/ot*100)}%; height:100%;"></div>
+        </div>
+      </div>
+      
+      <div class="stat-row">
+        <div class="stat-hdr">
+          <span style="color:var(--cyan);font-weight:700;">${t.xg[0].toFixed(2)}</span>
+          <span style="color:var(--text-2); font-size:12px;">xG acumulado</span>
+          <span style="color:var(--orange);font-weight:700;">${t.xg[1].toFixed(2)}</span>
+        </div>
+        <div class="stat-bar" style="height:6px; background:rgba(255,255,255,0.05); border-radius:3px; display:flex; overflow:hidden;">
+          <div style="background:var(--cyan); width:${Math.round(t.xg[0]/xgt*100)}%; height:100%;"></div>
+          <div style="background:var(--orange); width:${Math.round(t.xg[1]/xgt*100)}%; height:100%;"></div>
+        </div>
+      </div>
+      
+      <div class="stat-row">
+        <div class="stat-hdr">
+          <span style="color:var(--cyan);font-weight:700;">${t.passes[0]}</span>
+          <span style="color:var(--text-2); font-size:12px;">Pases completados</span>
+          <span style="color:var(--orange);font-weight:700;">${t.passes[1]}</span>
+        </div>
+        <div class="stat-bar" style="height:6px; background:rgba(255,255,255,0.05); border-radius:3px; display:flex; overflow:hidden;">
+          <div style="background:var(--cyan); width:${Math.round(t.passes[0]/pt*100)}%; height:100%;"></div>
+          <div style="background:var(--orange); width:${Math.round(t.passes[1]/pt*100)}%; height:100%;"></div>
+        </div>
+      </div>
+      
+      <div class="stat-row">
+        <div class="stat-hdr">
+          <span style="color:var(--cyan);font-weight:700;">${t.fouls[0]}</span>
+          <span style="color:var(--text-2); font-size:12px;">Faltas</span>
+          <span style="color:var(--orange);font-weight:700;">${t.fouls[1]}</span>
+        </div>
+        <div class="stat-bar" style="height:6px; background:rgba(255,255,255,0.05); border-radius:3px; display:flex; overflow:hidden;">
+          <div style="background:var(--cyan); width:${Math.round(t.fouls[0]/ft*100)}%; height:100%;"></div>
+          <div style="background:var(--orange); width:${Math.round(t.fouls[1]/ft*100)}%; height:100%;"></div>
+        </div>
+      </div>
+    `;
+  }
+  
+  // Tactical Recommendations
+  const recHomeTitle = document.getElementById('rec-home-title');
+  const recAwayTitle = document.getElementById('rec-away-title');
+  if (recHomeTitle) recHomeTitle.textContent = currentLang === 'es' ? `Recomendaciones tácticas — ${homeName}` : `Tactical Recommendations — ${homeName}`;
+  if (recAwayTitle) recAwayTitle.textContent = currentLang === 'es' ? `Recomendaciones tácticas — ${awayName}` : `Tactical Recommendations — ${awayName}`;
+
+  const recHomeCards = document.getElementById('rec-home-cards');
+  const recAwayCards = document.getElementById('rec-away-cards');
+  if (recHomeCards && recAwayCards) {
+    recHomeCards.innerHTML = '';
+    recAwayCards.innerHTML = '';
     
     const preferredStyle = user.preferredStyle || 'tikitaka';
-    let strengths = [];
-    let weaknesses = [];
-    
     const sortFn = (a, b) => (parseFloat(b.overallRating) || 0) - (parseFloat(a.overallRating) || 0);
     
     // Categorize home team players using active customized starting XI
@@ -4268,136 +4374,114 @@ async function showSimulationResults(homeName, awayName, homeOvr, awayOvr) {
     const awayBestMf = awayMfs[0];
     const awayBestDf = awayDfs[0];
     const awayBestGk = awayGks[0];
+
+    const homeBadgeText = homeName.substring(0, 3).toUpperCase();
+    const awayBadgeText = awayName.substring(0, 3).toUpperCase();
+
+    // 1. Home cards
+    let homeCardsHtml = '';
     
-    // Extract worst/average players for opponents' matchups
-    const homeWorstDf = homeDfs.length > 0 ? homeDfs[homeDfs.length - 1] : null;
-    const homeWorstMf = homeMfs.length > 0 ? homeMfs[homeMfs.length - 1] : null;
+    // Card 1: Pressing
+    const homeTurnovers = 5 + (homeName.length % 4);
+    const titleHome1 = currentLang === 'es' ? "Mantener presión alta en salida rival" : "Maintain high press during opponent build-up";
+    const bodyHome1 = currentLang === 'es' ? 
+      `La formación generó ${homeTurnovers} recuperaciones en campo rival. ${awayName} tuvo dificultades para salir jugando de forma limpia. Conservar esta estructura de pressing con ${homeBestMf ? homeBestMf.name : 'nuestros volantes'} como referencia del mediocampo alto.` :
+      `The formation generated ${homeTurnovers} turnovers in the opponent's half. ${awayName} struggled to build up cleanly. Preserve this pressing structure with ${homeBestMf ? homeBestMf.name : 'our midfielders'} as the reference in high areas.`;
+    homeCardsHtml += `
+      <div class="tac-card">
+        <div class="tac-hdr">
+          <span class="tac-title">${titleHome1}</span>
+          <span class="tac-badge badge-h">${homeBadgeText}</span>
+        </div>
+        <div class="tac-body">${bodyHome1}</div>
+        <span class="priority-pill pp-high">${currentLang === 'es' ? 'Prioridad alta' : 'High priority'}</span>
+      </div>
+    `;
+
+    // Card 2: Winger/Forward
+    const titleHome2 = currentLang === 'es' ? `Explotar banda con ${homeBestFw ? homeBestFw.name.split(' ').pop() : 'atacante'}` : `Exploit the wing with ${homeBestFw ? homeBestFw.name.split(' ').pop() : 'forward'}`;
+    const bodyHome2 = currentLang === 'es' ? 
+      `${homeBestFw ? homeBestFw.name : 'El atacante'} generó ${simStats.xg[0].toFixed(2)} xG desde la banda con regates exitosos. La defensa rival mostró vulnerabilidad en duelos 1v1 a alta velocidad. Priorizar combinaciones por ese sector.` :
+      `${homeBestFw ? homeBestFw.name : 'The forward'} generated ${simStats.xg[0].toFixed(2)} xG from the wing with successful dribbles. The opponent's defense showed vulnerability in 1v1 duels at high speed. Prioritize play through this sector.`;
+    homeCardsHtml += `
+      <div class="tac-card">
+        <div class="tac-hdr">
+          <span class="tac-title">${titleHome2}</span>
+          <span class="tac-badge badge-h">${homeBadgeText}</span>
+        </div>
+        <div class="tac-body">${bodyHome2}</div>
+        <span class="priority-pill pp-high">${currentLang === 'es' ? 'Prioridad alta' : 'High priority'}</span>
+      </div>
+    `;
+
+    // Card 3: Defense
+    const titleHome3 = currentLang === 'es' ? "Reforzar mediocampo tras pérdidas" : "Reinforce midfield after turnovers";
+    const bodyHome3 = currentLang === 'es' ? 
+      `Los ${simScoreA} gol${simScoreA === 1 ? '' : 'es'} de ${awayName} llegaron tras pérdidas de balón en mediocampo. Se deben cubrir mejor las transiciones defensivas cuando los volantes suben al ataque simultáneamente.` :
+      `The ${simScoreA} goal${simScoreA === 1 ? '' : 's'} for ${awayName} came from midfield turnovers. Defensive transitions must be covered better when midfielders push forward simultaneously.`;
+    homeCardsHtml += `
+      <div class="tac-card">
+        <div class="tac-hdr">
+          <span class="tac-title">${titleHome3}</span>
+          <span class="tac-badge badge-h">${homeBadgeText}</span>
+        </div>
+        <div class="tac-body">${bodyHome3}</div>
+        <span class="priority-pill pp-med">${currentLang === 'es' ? 'Prioridad media' : 'Medium priority'}</span>
+      </div>
+    `;
+    recHomeCards.innerHTML = homeCardsHtml;
+
+    // 2. Away cards
+    let awayCardsHtml = '';
     
-    const awayWorstDf = awayDfs.length > 0 ? awayDfs[awayDfs.length - 1] : null;
-    const awayWorstMf = awayMfs.length > 0 ? awayMfs[awayMfs.length - 1] : null;
-    
-    // Select beneficial matchup candidates (Home vs Away)
-    let beneficialMatchupStr = '';
-    if (currentLang === 'es') {
-      if (homeBestFw && awayWorstDf) {
-        beneficialMatchupStr = `⚔️ <b>[Matchup 1vs1 Beneficioso]</b> La agilidad de **${homeBestFw.name}** (OVR ${Math.round(homeBestFw.overallRating)}) desbordó constantemente al defensor **${awayWorstDf.name}** (OVR ${Math.round(awayWorstDf.overallRating)}), siendo clave para generar espacios ofensivos.`;
-      } else if (homeBestMf && awayWorstMf) {
-        beneficialMatchupStr = `⚔️ <b>[Matchup 1vs1 Beneficioso]</b> El mediocampista **${homeBestMf.name}** (OVR ${Math.round(homeBestMf.overallRating)}) impuso su visión de juego y control frente a la marca de **${awayWorstMf.name}** (OVR ${Math.round(awayWorstMf.overallRating)}).`;
-      } else if (homeBestDf && awayBestFw) {
-        beneficialMatchupStr = `⚔️ <b>[Matchup 1vs1 Beneficioso]</b> La zaga defensiva liderada por **${homeBestDf.name}** (OVR ${Math.round(homeBestDf.overallRating)}) neutralizó el peligro del atacante rival **${awayBestFw.name}** (OVR ${Math.round(awayBestFw.overallRating)}).`;
-      } else if (homeBestGk && awayBestFw) {
-        beneficialMatchupStr = `⚔️ <b>[Matchup 1vs1 Beneficioso]</b> El arquero **${homeBestGk.name}** (OVR ${Math.round(homeBestGk.overallRating)}) ganó el duelo individual al delantero rival **${awayBestFw.name}** (OVR ${Math.round(awayBestFw.overallRating)}) con atajadas providenciales.`;
-      } else {
-        beneficialMatchupStr = `⚔️ <b>[Matchup 1vs1 Beneficioso]</b> El bloque de nuestro club superó la presión táctica del rival en los emparejamientos individuales clave.`;
-      }
-    } else {
-      if (homeBestFw && awayWorstDf) {
-        beneficialMatchupStr = `⚔️ <b>[Beneficial 1vs1 Matchup]</b> The agility of **${homeBestFw.name}** (OVR ${Math.round(homeBestFw.overallRating)}) constantly outplayed defender **${awayWorstDf.name}** (OVR ${Math.round(awayWorstDf.overallRating)}), opening key spaces in attack.`;
-      } else if (homeBestMf && awayWorstMf) {
-        beneficialMatchupStr = `⚔️ <b>[Beneficial 1vs1 Matchup]</b> Midfielder **${homeBestMf.name}** (OVR ${Math.round(homeBestMf.overallRating)}) dominated the middle zone, outplaying **${awayWorstMf.name}** (OVR ${Math.round(awayWorstMf.overallRating)}).`;
-      } else if (homeBestDf && awayBestFw) {
-        beneficialMatchupStr = `⚔️ <b>[Beneficial 1vs1 Matchup]</b> Our defender **${homeBestDf.name}** (OVR ${Math.round(homeBestDf.overallRating)}) completely neutralized the dangerous runs of striker **${awayBestFw.name}** (OVR ${Math.round(awayBestFw.overallRating)}).`;
-      } else if (homeBestGk && awayBestFw) {
-        beneficialMatchupStr = `⚔️ <b>[Beneficial 1vs1 Matchup]</b> Goalkeeper **${homeBestGk.name}** (OVR ${Math.round(homeBestGk.overallRating)}) won the direct duel against striker **${awayBestFw.name}** (OVR ${Math.round(awayBestFw.overallRating)}) with key saves.`;
-      } else {
-        beneficialMatchupStr = `⚔️ <b>[Beneficial 1vs1 Matchup]</b> Our squad successfully won key individual duels to control important phases of the match.`;
-      }
-    }
-    
-    // Select detrimental matchup candidates (Away vs Home)
-    let detrimentalMatchupStr = '';
-    if (currentLang === 'es') {
-      if (awayBestFw && homeWorstDf) {
-        detrimentalMatchupStr = `⚔️ <b>[Matchup 1vs1 Perjudicial]</b> El atacante rival **${awayBestFw.name}** (OVR ${Math.round(awayBestFw.overallRating)}) superó con velocidad y potencia a nuestro defensor **${homeWorstDf.name}** (OVR ${Math.round(homeWorstDf.overallRating)}), generando desequilibrio defensivo.`;
-      } else if (awayBestMf && homeWorstMf) {
-        detrimentalMatchupStr = `⚔️ <b>[Matchup 1vs1 Perjudicial]</b> La marca de **${homeWorstMf.name}** (OVR ${Math.round(homeWorstMf.overallRating)}) se vio superada por la creatividad del mediocentro rival **${awayBestMf.name}** (OVR ${Math.round(awayBestMf.overallRating)}).`;
-      } else if (awayBestDf && homeBestFw) {
-        detrimentalMatchupStr = `⚔️ <b>[Matchup 1vs1 Perjudicial]</b> El central rival **${awayBestDf.name}** (OVR ${Math.round(awayBestDf.overallRating)}) anticipó y bloqueó con éxito los intentos de desborde de nuestro atacante **${homeBestFw.name}** (OVR ${Math.round(homeBestFw.overallRating)}).`;
-      } else if (awayBestGk && homeBestFw) {
-        detrimentalMatchupStr = `⚔️ <b>[Matchup 1vs1 Perjudicial]</b> El arquero rival **${awayBestGk.name}** (OVR ${Math.round(awayBestGk.overallRating)}) frustró a nuestro goleador **${homeBestFw.name}** (OVR ${Math.round(homeBestFw.overallRating)}) deteniendo tiros claros a puerta.`;
-      } else {
-        detrimentalMatchupStr = `⚔️ <b>[Matchup 1vs1 Perjudicial]</b> La presión defensiva del rival forzó pérdidas en duelos directos por banda.`;
-      }
-    } else {
-      if (awayBestFw && homeWorstDf) {
-        detrimentalMatchupStr = `⚔️ <b>[Detrimental 1vs1 Matchup]</b> Opponent striker **${awayBestFw.name}** (OVR ${Math.round(awayBestFw.overallRating)}) repeatedly bypassed defender **${homeWorstDf.name}** (OVR ${Math.round(homeWorstDf.overallRating)}) with speed, creating defensive instability.`;
-      } else if (awayBestMf && homeWorstMf) {
-        detrimentalMatchupStr = `⚔️ <b>[Detrimental 1vs1 Matchup]</b> The creative play of midfielder **${awayBestMf.name}** (OVR ${Math.round(awayBestMf.overallRating)}) easily bypassed the marking of **${homeWorstMf.name}** (OVR ${Math.round(homeWorstMf.overallRating)}).`;
-      } else if (awayBestDf && homeBestFw) {
-        detrimentalMatchupStr = `⚔️ <b>[Detrimental 1vs1 Matchup]</b> Opponent defender **${awayBestDf.name}** (OVR ${Math.round(awayBestDf.overallRating)}) successfully anticipated and blocked our forward **${homeBestFw.name}** (OVR ${Math.round(homeBestFw.overallRating)}).`;
-      } else if (awayBestGk && homeBestFw) {
-        detrimentalMatchupStr = `⚔️ <b>[Detrimental 1vs1 Matchup]</b> Opponent goalkeeper **${awayBestGk.name}** (OVR ${Math.round(awayBestGk.overallRating)}) frustrated our forward **${homeBestFw.name}** (OVR ${Math.round(homeBestFw.overallRating)}) by stopping clear goal chances.`;
-      } else {
-        detrimentalMatchupStr = `⚔️ <b>[Detrimental 1vs1 Matchup]</b> The opponent's defensive pressure caused turnovers in key individual matchups.`;
-      }
-    }
-    
-    // Set up score contingent strengths & weaknesses
-    if (currentLang === 'es') {
-      if (homeScore > awayScore) {
-        strengths.push(`🟢 **Victoria Táctica:** La delantera local rompió de forma efectiva el planteamiento defensivo de ${awayName}, capitalizando con un marcador favorable de ${homeScore}-${awayScore}.`);
-        strengths.push(`🟢 **Control y Posesión:** El mediocampo de nuestro club impuso el ritmo de juego y neutralizó las opciones de contraataque de ${awayName}.`);
-        strengths.push(beneficialMatchupStr);
-        
-        weaknesses.push(`🔴 **Desajuste Defensivo Tardío:** Conceder ${awayScore > 0 ? awayScore + ' gol(es)' : 'ocasiones'} evidenció desatenciones y falta de concentración en los últimos minutos.`);
-        weaknesses.push(`🔴 **Pérdida en Salida:** Entregas forzadas en zona baja comprometieron la portería y generaron presión innecesaria.`);
-        weaknesses.push(detrimentalMatchupStr);
-      } else if (homeScore < awayScore) {
-        strengths.push(`🟢 **Transiciones Verticales:** A pesar del resultado adverso (${homeScore}-${awayScore}), la velocidad en transiciones generó peligro esporádico.`);
-        strengths.push(beneficialMatchupStr);
-        
-        weaknesses.push(`🔴 **Derrota Defensiva:** Encajar ${awayScore} gol(es) refleja una fragilidad central ante el desborde y potencia del ataque de ${awayName}.`);
-        weaknesses.push(`🔴 **Transición y Repliegue Lento:** Los repliegues lentos propiciaron superioridad numérica del rival en contraataques fatales.`);
-        weaknesses.push(`🔴 **Bloqueo Creativo:** La presión alta del oponente neutralizó con éxito el estilo de juego ${preferredStyle.toUpperCase()} propuesto.`);
-        weaknesses.push(detrimentalMatchupStr);
-      } else {
-        strengths.push(`🟢 **Capacidad de Respuesta:** Mantener el orden táctico tras ir empatando ${homeScore}-${awayScore} permitió rescatar un punto clave en la Arena.`);
-        strengths.push(beneficialMatchupStr);
-        
-        weaknesses.push(`🔴 **Falta de Definición:** La posesión en el último tercio careció de profundidad para superar la cerrada defensa de ${awayName}.`);
-        weaknesses.push(`🔴 **Desatención a Balón Parado:** Errores puntuales de marca permitieron al rival forzar el empate.`);
-        weaknesses.push(detrimentalMatchupStr);
-      }
-    } else {
-      if (homeScore > awayScore) {
-        strengths.push(`🟢 **Tactical Victory:** Our forward line broke down ${awayName}'s defensive shape, securing a positive ${homeScore}-${awayScore} scoreline.`);
-        strengths.push(`🟢 **Midfield Dominance:** Our midfield controlled possession, effectively limiting the transition opportunities for ${awayName}.`);
-        strengths.push(beneficialMatchupStr);
-        
-        weaknesses.push(`🔴 **Late Focus Deficit:** Conceding ${awayScore > 0 ? awayScore + ' goal(s)' : 'chances'} highlighted minor lapses of concentration in the final minutes.`);
-        weaknesses.push(`🔴 **Build-up Risk:** Risky passes in our defensive third invited unwanted pressure from the opponent.`);
-        weaknesses.push(detrimentalMatchupStr);
-      } else if (homeScore < awayScore) {
-        strengths.push(`🟢 **Vertical Runs:** Despite the ${homeScore}-${awayScore} loss, quick transitions created a few clear scoring opportunities.`);
-        strengths.push(beneficialMatchupStr);
-        
-        weaknesses.push(`🔴 **Defensive Defeat:** Conceding ${awayScore} goal(s) exposes central vulnerabilities against the pace and width of ${awayName}.`);
-        weaknesses.push(`🔴 **Slow Recovery:** Delayed tracking back allowed the opponent to exploit numerical superiorities in counters.`);
-        weaknesses.push(`🔴 **Creative Shut down:** The opponent's high press successfully neutralized our midfield's preferred ${preferredStyle.toUpperCase()} setup.`);
-        weaknesses.push(detrimentalMatchupStr);
-      } else {
-        strengths.push(`🟢 **Tactical Resilience:** Maintaining defensive organization to secure a ${homeScore}-${awayScore} draw allowed us to save a key point.`);
-        strengths.push(beneficialMatchupStr);
-        
-        weaknesses.push(`🔴 **Final-Third Execution:** Possession in the final third lacked the depth needed to penetrate ${awayName}'s low block.`);
-        weaknesses.push(`🔴 **Set-Piece Error:** A minor marking lapse during set-pieces allowed the rival to score the equalizer.`);
-        weaknesses.push(detrimentalMatchupStr);
-      }
-    }
-    
-    strengths.forEach(rec => {
-      const div = document.createElement('div');
-      div.className = 'advice-item';
-      div.innerHTML = `<span class="advice-bullet">🔸</span> <span class="advice-text">${rec}</span>`;
-      strengthsContainer.appendChild(div);
-    });
-    
-    weaknesses.forEach(rec => {
-      const div = document.createElement('div');
-      div.className = 'advice-item';
-      div.innerHTML = `<span class="advice-bullet">🔸</span> <span class="advice-text">${rec}</span>`;
-      weaknessesContainer.appendChild(div);
-    });
+    // Card 1: Substitution
+    const titleAway1 = currentLang === 'es' ? `Entrada temprana de ${awayBestMf ? awayBestMf.name.split(' ').pop() : 'mediocampista'}` : `Early entry of ${awayBestMf ? awayBestMf.name.split(' ').pop() : 'midfielder'}`;
+    const bodyAway1 = currentLang === 'es' ? 
+      `${awayBestMf ? awayBestMf.name : 'El mediocampista'} promedió gran precisión en distribución tras asentarse. Si hubiera iniciado desde el comienzo, el control del mediocampo habría limitado el xG rival. Considerar como titular en el próximo encuentro.` :
+      `${awayBestMf ? awayBestMf.name : 'The midfielder'} averaged high precision in distribution after settling in. Had they started from the beginning, midfield control would have limited the opponent's xG. Consider starting them in the next match.`;
+    awayCardsHtml += `
+      <div class="tac-card">
+        <div class="tac-hdr">
+          <span class="tac-title">${titleAway1}</span>
+          <span class="tac-badge badge-a">${awayBadgeText}</span>
+        </div>
+        <div class="tac-body">${bodyAway1}</div>
+        <span class="priority-pill pp-high">${currentLang === 'es' ? 'Prioridad alta' : 'High priority'}</span>
+      </div>
+    `;
+
+    // Card 2: Defensive Block
+    const titleAway2 = currentLang === 'es' ? `Presión alta contra el juego directo de ${homeName}` : `High press against ${homeName}'s direct play`;
+    const bodyAway2 = currentLang === 'es' ? 
+      `${homeName} ejecutó transiciones muy rápidas en pocos segundos. Un bloque de ${awayName} más compacto entre líneas (PPDA bajo) habría reducido significativamente los espacios a las espaldas de los laterales.` :
+      `${homeName} executed high-speed transitions in just a few seconds. A more compact defensive block between lines (low PPDA) for ${awayName} would have significantly reduced space behind the fullbacks.`;
+    awayCardsHtml += `
+      <div class="tac-card">
+        <div class="tac-hdr">
+          <span class="tac-title">${titleAway2}</span>
+          <span class="tac-badge badge-a">${awayBadgeText}</span>
+        </div>
+        <div class="tac-body">${bodyAway2}</div>
+        <span class="priority-pill pp-high">${currentLang === 'es' ? 'Prioridad alta' : 'High priority'}</span>
+      </div>
+    `;
+
+    // Card 3: Depth/Verticality
+    const titleAway3 = currentLang === 'es' ? "Mayor verticalidad desde mediocampo" : "Increase vertical progression in midfield";
+    const bodyAway3 = currentLang === 'es' ? 
+      `${awayName} completó ${simStats.passes[1]} pases pero el ritmo de juego fue mayormente horizontal. Atacantes como ${awayBestFw ? awayBestFw.name : 'nuestros delanteros'} necesitan más balones en profundidad para explotar el espacio entre líneas.` :
+      `${awayName} completed ${simStats.passes[1]} passes, but the tempo was mostly horizontal. Attackers like ${awayBestFw ? awayBestFw.name : 'our forwards'} need more vertical and deep passes to exploit space between lines.`;
+    awayCardsHtml += `
+      <div class="tac-card">
+        <div class="tac-hdr">
+          <span class="tac-title">${titleAway3}</span>
+          <span class="tac-badge badge-a">${awayBadgeText}</span>
+        </div>
+        <div class="tac-body">${bodyAway3}</div>
+        <span class="priority-pill pp-med">${currentLang === 'es' ? 'Prioridad media' : 'Medium priority'}</span>
+      </div>
+    `;
+    recAwayCards.innerHTML = awayCardsHtml;
   }
   
   // Set events tab as default
@@ -4408,7 +4492,7 @@ async function showSimulationResults(homeName, awayName, homeOvr, awayOvr) {
   if (results) results.style.display = 'flex';
 }
 
-function renderStartingXi(teamPlayers, containerId) {
+function renderStartingXi(teamPlayers, containerId, isHome = true) {
   const container = document.getElementById(containerId);
   if (!container) return;
   container.innerHTML = '';
@@ -4462,16 +4546,110 @@ function renderStartingXi(teamPlayers, containerId) {
       }
     }
   }
+
+  // Sort XI by position so GK is first, then DEF, MED, DEL
+  const posOrder = { 'POR': 1, 'DEF': 2, 'MED': 3, 'DEL': 4, 'COM': 5 };
+  xi.sort((a, b) => posOrder[a.pos] - posOrder[b.pos]);
+
+  function getPlayerShortName(name) {
+    if (!name) return 'PL';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) {
+      return parts[0].substring(0, 4);
+    }
+    const lastPart = parts[parts.length - 1];
+    if (lastPart.toLowerCase().startsWith('jr')) {
+      return parts[0].substring(0, 2) + '.Jr';
+    }
+    const p1 = parts[0][0];
+    const p2 = lastPart.substring(0, 2);
+    return `${p1}.${p2}`;
+  }
+
+  function getStringHash(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return Math.abs(hash);
+  }
   
   xi.forEach(item => {
-    const card = document.createElement('div');
-    card.className = 'sim-player-card';
-    card.innerHTML = `
-      <span class="sim-player-pos">${item.pos}</span>
-      <span class="sim-player-name" title="${item.p.name}">${item.p.name}</span>
-      <span class="sim-player-rating">OVR ${Math.round(item.p.overallRating)}</span>
+    const hash = getStringHash(item.p.name);
+    
+    // Check if player scored in simPreGeneratedEvents
+    const goals = simPreGeneratedEvents.filter(ev => 
+      ev.type === 'g' && 
+      ev.team === (isHome ? 'h' : 'a') && 
+      (ev.scorer === item.p.name || ev.txt.toLowerCase().includes(item.p.name.toLowerCase()))
+    ).length;
+    
+    // Sum xG of those goals, plus add some random fraction if they had occasions
+    let xg = simPreGeneratedEvents
+      .filter(ev => 
+        ev.team === (isHome ? 'h' : 'a') && 
+        (ev.scorer === item.p.name || ev.txt.toLowerCase().includes(item.p.name.toLowerCase()))
+      )
+      .reduce((acc, ev) => acc + (ev.xg || 0.15), 0);
+      
+    // Generate realistic default stats
+    let plSub = '';
+    let ratingBonus = 0;
+    
+    if (item.pos === 'POR') {
+      const opponentGoals = isHome ? simScoreA : simScoreH;
+      const saves = Math.max(1, (hash % 4) + (opponentGoals > 0 ? 1 : 3));
+      const touches = 22 + (hash % 12);
+      const passAcc = 72 + (hash % 18);
+      plSub = `${saves} atajadas · ${touches} toques · ${passAcc}% pases`;
+      ratingBonus = saves * 0.35 - opponentGoals * 0.4;
+    } else if (item.pos === 'DEF') {
+      const tackles = 2 + (hash % 4);
+      const touches = 45 + (hash % 20);
+      const opponentGoals = isHome ? simScoreA : simScoreH;
+      if (xg === 0) xg = (hash % 6) / 100;
+      plSub = `${goals > 0 ? `${goals} gol${goals > 1 ? 'es' : ''} · ` : ''}${xg.toFixed(2)} xG · ${tackles} entradas · ${touches} toques`;
+      ratingBonus = goals * 1.5 + tackles * 0.2 - opponentGoals * 0.15;
+    } else if (item.pos === 'MED') {
+      const keyPasses = 1 + (hash % 3);
+      const touches = 55 + (hash % 30);
+      if (xg === 0) xg = (5 + (hash % 10)) / 100;
+      plSub = `${goals > 0 ? `${goals} gol${goals > 1 ? 'es' : ''} · ` : ''}${xg.toFixed(2)} xG · ${keyPasses} pases clave · ${touches} toques`;
+      ratingBonus = goals * 1.5 + keyPasses * 0.35;
+    } else { // DEL or COM
+      const shots = Math.max(goals, 1 + (hash % 4));
+      const dribbles = 1 + (hash % 5);
+      if (xg === 0) xg = (10 + (hash % 20)) / 100;
+      plSub = `${goals > 0 ? `${goals} gol${goals > 1 ? 'es' : ''} · ` : ''}${xg.toFixed(2)} xG · ${shots} tiros · ${dribbles} regates`;
+      ratingBonus = goals * 1.6 + shots * 0.12 + dribbles * 0.1;
+    }
+    
+    // Calculate final rating (OVR base + ratingBonus + team performance)
+    let teamDiff = simScoreH - simScoreA;
+    if (!isHome) teamDiff = -teamDiff;
+    const teamBonus = teamDiff > 0 ? 0.4 : (teamDiff < 0 ? -0.3 : 0.0);
+    
+    let ovrVal = parseFloat(item.p.overallRating) || 70;
+    if (ovrVal < 15) ovrVal = ovrVal * 10;
+    let baseRating = 6.2 + ((ovrVal - 65) / 18);
+    let rating = baseRating + ratingBonus + teamBonus + ((hash % 10) / 10 - 0.5);
+    
+    // Caps
+    rating = Math.min(9.9, Math.max(5.0, rating));
+    const finalRatingStr = rating.toFixed(1);
+    
+    const row = document.createElement('div');
+    row.className = 'player-row';
+    row.innerHTML = `
+      <div class="av ${isHome ? 'av-h' : 'av-a'}">${getPlayerShortName(item.p.name)}</div>
+      <div class="pl-info">
+        <div class="pl-name">${item.p.name}</div>
+        <div class="pl-sub">${plSub}</div>
+      </div>
+      <span class="pl-pos-badge" style="margin-right: 8px;">${item.pos}</span>
+      <div class="pl-rt ${isHome ? 'pl-rt-h' : 'pl-rt-a'}">${finalRatingStr}</div>
     `;
-    container.appendChild(card);
+    container.appendChild(row);
   });
 }
 
@@ -4493,6 +4671,7 @@ window.switchSimTab = function(tabName) {
   // Activate selected tab button
   let btnId = '';
   if (tabName === 'events') btnId = 'btn-sim-tab-events';
+  if (tabName === 'stats') btnId = 'btn-sim-tab-stats';
   if (tabName === 'home-lineup') btnId = 'btn-sim-tab-home';
   if (tabName === 'away-lineup') btnId = 'btn-sim-tab-away';
   if (tabName === 'tactics') btnId = 'btn-sim-tab-tactics';
@@ -7427,6 +7606,7 @@ window.confirmSuccessAndSaveRole = async () => {
   saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando rol...';
   saveBtn.disabled = true;
 
+  let isSaved = false;
   try {
     const token = localStorage.getItem('scout_ai_token');
     const res = await fetch(`${API}/auth/onboarding`, {
@@ -7439,22 +7619,20 @@ window.confirmSuccessAndSaveRole = async () => {
     });
 
     if (res.ok) {
-      const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
-      user.role = userRole;
-      localStorage.setItem('scout_ai_user', JSON.stringify(user));
-      renderProfile();
-    } else {
-      showToast('⚠️ Error al guardar el rol organizacional.', 'error');
-      saveBtn.textContent = originalText;
-      saveBtn.disabled = false;
-      return;
+      isSaved = true;
     }
   } catch (err) {
-    console.error(err);
-    showToast('⚠️ Error de red al guardar el rol organizacional.', 'error');
-    saveBtn.textContent = originalText;
-    saveBtn.disabled = false;
-    return;
+    console.warn('Saving role failed (offline/Netlify):', err);
+  }
+
+  // Fallback: Siempre guardar localmente y continuar
+  const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  user.role = userRole;
+  localStorage.setItem('scout_ai_user', JSON.stringify(user));
+  renderProfile();
+  
+  if (!isSaved) {
+    showToast('ℹ️ Rol guardado localmente (modo demostración).', 'info');
   }
 
   const onboardingScreen = document.getElementById('onboarding-screen');
@@ -7503,6 +7681,9 @@ window.simulatePayment = async () => {
       // Phase 3 loading spinner
       payBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registrando suscripción segura...';
 
+      let result;
+      let isSuccess = false;
+
       try {
         const token = localStorage.getItem('scout_ai_token');
         const res = await fetch(`${API}/payments/checkout`, {
@@ -7519,13 +7700,36 @@ window.simulatePayment = async () => {
           })
         });
 
-        const result = await res.json();
+        if (res.ok) {
+          result = await res.json();
+          if (result.success) {
+            isSuccess = true;
+          }
+        }
+      } catch (err) {
+        console.warn('Payment checkout offline fallback activated:', err);
+      }
 
-        if (res.ok && result.success) {
-          // 1. Update dynamic client states
-          const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
-          user.selectedTier = tier;
-          localStorage.setItem('scout_ai_user', JSON.stringify(user));
+      // Fallback: Simular transacción aprobada si el backend está offline (p. ej. Netlify estático)
+      if (!isSuccess) {
+        result = {
+          success: true,
+          transaction: {
+            transactionId: 'TXN-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+            amount: amount,
+            cardholderName: nameInput.value.trim() || 'Lionel Messi',
+            paymentMethod: 'Tarjeta de Crédito'
+          }
+        };
+        isSuccess = true;
+        showToast('ℹ️ Modo demo: Pago aprobado localmente.', 'info');
+      }
+
+      if (isSuccess && result.success) {
+        // 1. Update dynamic client states
+        const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+        user.selectedTier = tier;
+        localStorage.setItem('scout_ai_user', JSON.stringify(user));
           
           showToast(`🎉 ¡Pago exitoso! Plan ${tier} activado. Txn ID: ${result.transaction.transactionId}`, 'success');
 

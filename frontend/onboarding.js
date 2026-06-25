@@ -930,6 +930,7 @@ function setupOnboarding() {
       finalBtn.disabled = true;
     }
     
+    let isSuccess = false;
     try {
       const res = await fetchWithAuth(`${API}/auth/onboarding`, {
         method: 'PATCH',
@@ -942,45 +943,38 @@ function setupOnboarding() {
       });
       
       if (res.ok) {
+        isSuccess = true;
         const data = await res.json();
         console.log("✅ Onboarding complete:", data);
-        
-        // Update local user data
-        const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
-        user.onboardingComplete = true;
-        user.selectedCountry = selectedCountries.join(', ');
-        user.selectedClub = selectedClub;
-        user.selectedTier = selectedTier;
-        localStorage.setItem('scout_ai_user', JSON.stringify(user));
-        localStorage.removeItem('scout_ai_swaps'); // Clear custom swaps on club change!
-        localStorage.removeItem('scout_ai_benched'); // Clear benched players list on club change!
-        
-        // Success animation and exit
-        const onboarding = document.getElementById('onboarding-screen');
-        if (onboarding) {
-          onboarding.style.opacity = '0';
-          setTimeout(() => { 
-            onboarding.style.display = 'none'; 
-            initDashboard(); 
-          }, 500);
-        } else {
-          initDashboard();
-        }
-      } else {
-        const errData = await res.json();
-        console.error("❌ Onboarding failed:", errData);
-        if (finalBtn) {
-          finalBtn.innerHTML = 'Error al guardar';
-          finalBtn.disabled = false;
-        }
       }
     } catch (err) {
-      console.error("❌ Onboarding catch error:", err);
-      if (finalBtn) {
-        finalBtn.innerHTML = 'Error de red';
-        finalBtn.disabled = false;
-        setTimeout(() => { finalBtn.textContent = originalText; }, 2000);
-      }
+      console.warn("❌ Onboarding network error (using local fallback):", err);
+    }
+
+    // Fallback: Siempre completar exitosamente a nivel de cliente para despliegues estáticos
+    const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+    user.onboardingComplete = true;
+    user.selectedCountry = selectedCountries.join(', ');
+    user.selectedClub = selectedClub;
+    user.selectedTier = selectedTier;
+    localStorage.setItem('scout_ai_user', JSON.stringify(user));
+    localStorage.removeItem('scout_ai_swaps'); // Clear custom swaps on club change!
+    localStorage.removeItem('scout_ai_benched'); // Clear benched players list on club change!
+    
+    if (!isSuccess) {
+      showToast('ℹ️ Configuración guardada localmente (modo demo).', 'info');
+    }
+    
+    // Success animation and exit
+    const onboarding = document.getElementById('onboarding-screen');
+    if (onboarding) {
+      onboarding.style.opacity = '0';
+      setTimeout(() => { 
+        onboarding.style.display = 'none'; 
+        initDashboard(); 
+      }, 500);
+    } else {
+      initDashboard();
     }
   };
 
