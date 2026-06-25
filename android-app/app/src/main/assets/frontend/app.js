@@ -2438,70 +2438,74 @@ function renderDashboardPerformanceChart(teamColor) {
     ? { 'V': 'Victoria', 'W': 'Victoria', 'E': 'Empate', 'D': 'Derrota', 'L': 'Derrota' }
     : { 'V': 'Win', 'W': 'Win', 'E': 'Draw', 'D': 'Loss', 'L': 'Loss' };
 
-  performanceChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: form.dates,
-      datasets: [{
-        data: dataPoints,
-        borderColor: teamColor,
-        borderWidth: 2.5,
-        backgroundColor: gradient,
-        fill: true,
-        tension: 0.4,
-        pointBackgroundColor: form.results.map(r =>
-          r === 'V' || r === 'W' ? '#22c55e' :
-          r === 'E'              ? '#eab308' : '#ef4444'
-        ),
-        pointBorderColor: '#fff',
-        pointBorderWidth: 1.5,
-        pointHoverRadius: 7,
-        pointRadius: 5
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            title: (items) => form.dates[items[0].dataIndex],
-            label: (item) => {
-              const i = item.dataIndex;
-              const r = form.results[i];
-              const s = form.scores[i];
-              return ` ${resultLabel[r]}  ${s}`;
-            }
-          },
-          backgroundColor: 'rgba(10,14,26,0.95)',
-          titleColor: 'rgba(255,255,255,0.7)',
-          bodyColor: '#fff',
+  try {
+    performanceChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: form.dates,
+        datasets: [{
+          data: dataPoints,
           borderColor: teamColor,
-          borderWidth: 1,
-          padding: 10,
-          cornerRadius: 8
-        }
+          borderWidth: 2.5,
+          backgroundColor: gradient,
+          fill: true,
+          tension: 0.4,
+          pointBackgroundColor: form.results.map(r =>
+            r === 'V' || r === 'W' ? '#22c55e' :
+            r === 'E'              ? '#eab308' : '#ef4444'
+          ),
+          pointBorderColor: '#fff',
+          pointBorderWidth: 1.5,
+          pointHoverRadius: 7,
+          pointRadius: 5
+        }]
       },
-      scales: {
-        x: {
-          grid: { color: 'rgba(255,255,255,0.05)' },
-          ticks: { color: 'rgba(255,255,255,0.5)', font: { family: 'Inter', size: 9 } }
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              title: (items) => form.dates[items[0].dataIndex],
+              label: (item) => {
+                const i = item.dataIndex;
+                const r = form.results[i];
+                const s = form.scores[i];
+                return ` ${resultLabel[r]}  ${s}`;
+              }
+            },
+            backgroundColor: 'rgba(10,14,26,0.95)',
+            titleColor: 'rgba(255,255,255,0.7)',
+            bodyColor: '#fff',
+            borderColor: teamColor,
+            borderWidth: 1,
+            padding: 10,
+            cornerRadius: 8
+          }
         },
-        y: {
-          grid: { color: 'rgba(255,255,255,0.05)' },
-          ticks: {
-            color: 'rgba(255,255,255,0.5)',
-            font: { family: 'Inter', size: 9 },
-            callback: (v) => v === 85 ? (isEs ? 'V' : 'W') : v === 55 ? (isEs ? 'E' : 'D') : (isEs ? 'D' : 'L')
+        scales: {
+          x: {
+            grid: { color: 'rgba(255,255,255,0.05)' },
+            ticks: { color: 'rgba(255,255,255,0.5)', font: { family: 'Inter', size: 9 } }
           },
-          min: 0,
-          max: 100,
-          afterBuildTicks: (axis) => { axis.ticks = [{value:20},{value:55},{value:85}]; }
+          y: {
+            grid: { color: 'rgba(255,255,255,0.05)' },
+            ticks: {
+              color: 'rgba(255,255,255,0.5)',
+              font: { family: 'Inter', size: 9 },
+              callback: (v) => v === 85 ? (isEs ? 'V' : 'W') : v === 55 ? (isEs ? 'E' : 'D') : (isEs ? 'D' : 'L')
+            },
+            min: 0,
+            max: 100,
+            afterBuildTicks: (axis) => { axis.ticks = [{value:20},{value:55},{value:85}]; }
+          }
         }
       }
-    }
-  });
+    });
+  } catch (err) {
+    console.error('Failed to render Chart.js performance chart (dashboard):', err);
+  }
 }
 
 
@@ -7234,70 +7238,74 @@ function renderComparisonChart(p1, p2) {
     ? ['Velocidad', 'Remate', 'Pase', 'Regate', 'Defensa', 'Físico']
     : ['Pace', 'Shooting', 'Passing', 'Dribbling', 'Defense', 'Physical'];
 
-  comparisonChart = new Chart(ctx, {
-    type: 'radar',
-    data: {
-      labels: labels,
-      datasets: [
-        {
-          label: p1.name,
-          data: data1,
-          fill: true,
-          backgroundColor: 'rgba(0, 229, 255, 0.2)',
-          borderColor: getTeamColor(p1.currentTeam),
-          pointBackgroundColor: getTeamColor(p1.currentTeam),
-          pointBorderColor: '#fff',
-          pointHoverBackgroundColor: '#fff',
-          pointHoverBorderColor: getTeamColor(p1.currentTeam)
+  try {
+    comparisonChart = new Chart(ctx, {
+      type: 'radar',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: p1.name,
+            data: data1,
+            fill: true,
+            backgroundColor: 'rgba(0, 229, 255, 0.2)',
+            borderColor: getTeamColor(p1.currentTeam),
+            pointBackgroundColor: getTeamColor(p1.currentTeam),
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: getTeamColor(p1.currentTeam)
+          },
+          {
+            label: p2.name,
+            data: data2,
+            fill: true,
+            backgroundColor: 'rgba(118, 255, 3, 0.2)',
+            borderColor: getTeamColor(p2.currentTeam),
+            pointBackgroundColor: getTeamColor(p2.currentTeam),
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: getTeamColor(p2.currentTeam)
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        elements: {
+          line: { borderWidth: 3 }
         },
-        {
-          label: p2.name,
-          data: data2,
-          fill: true,
-          backgroundColor: 'rgba(118, 255, 3, 0.2)',
-          borderColor: getTeamColor(p2.currentTeam),
-          pointBackgroundColor: getTeamColor(p2.currentTeam),
-          pointBorderColor: '#fff',
-          pointHoverBackgroundColor: '#fff',
-          pointHoverBorderColor: getTeamColor(p2.currentTeam)
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      elements: {
-        line: { borderWidth: 3 }
-      },
-      scales: {
-        r: {
-          angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
-          grid: { color: 'rgba(255, 255, 255, 0.1)' },
-          pointLabels: {
-            color: 'rgba(255, 255, 255, 0.7)',
-            font: { size: 12, weight: 'bold' }
-          },
-          ticks: {
-            beginAtZero: true,
-            max: 100,
-            stepSize: 20,
-            display: false,
-            backdropColor: 'transparent'
-          },
-          suggestedMin: 30,
-          suggestedMax: 100
-        }
-      },
-      plugins: {
-        legend: {
-          labels: {
-            color: '#fff',
-            font: { family: 'Inter', size: 13, weight: '600' }
+        scales: {
+          r: {
+            angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+            pointLabels: {
+              color: 'rgba(255, 255, 255, 0.7)',
+              font: { size: 12, weight: 'bold' }
+            },
+            ticks: {
+              beginAtZero: true,
+              max: 100,
+              stepSize: 20,
+              display: false,
+              backdropColor: 'transparent'
+            },
+            suggestedMin: 30,
+            suggestedMax: 100
+          }
+        },
+        plugins: {
+          legend: {
+            labels: {
+              color: '#fff',
+              font: { family: 'Inter', size: 13, weight: '600' }
+            }
           }
         }
       }
-    }
-  });
+    });
+  } catch (err) {
+    console.error('Failed to render Chart.js radar chart (comparison):', err);
+  }
 }
 
 // ──────────────────────────────────────────

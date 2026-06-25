@@ -118,22 +118,34 @@ function setupOnboarding() {
 
   const isMobileDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0 && window.innerWidth <= 1024);
 
-  const map = L.map('map', {
-    center: [20, 0],
-    zoom: isMobileDevice ? 1.5 : 2,
-    minZoom: isMobileDevice ? 1 : 2,   // Allow zoom-in/out on mobile only
-    maxZoom: isMobileDevice ? 4 : 2,
-    dragging: false,                   // Disable dragging on both to avoid conflicts
-    scrollWheelZoom: false,
-    doubleClickZoom: false,
-    boxZoom: false,
-    keyboard: false,
-    touchZoom: isMobileDevice,
-    zoomControl: false,                // We use custom zoom controls fixed to the container on mobile
-    attributionControl: false,
-    worldCopyJump: false,
-  });
-  _onboardingMap = map;
+  let map = null;
+  try {
+    if (typeof L === 'undefined') {
+      throw new Error('Leaflet library (L) is not loaded.');
+    }
+    map = L.map('map', {
+      center: [20, 0],
+      zoom: isMobileDevice ? 1.5 : 2,
+      minZoom: isMobileDevice ? 1 : 2,   // Allow zoom-in/out on mobile only
+      maxZoom: isMobileDevice ? 4 : 2,
+      dragging: false,                   // Disable dragging on both to avoid conflicts
+      scrollWheelZoom: false,
+      doubleClickZoom: false,
+      boxZoom: false,
+      keyboard: false,
+      touchZoom: isMobileDevice,
+      zoomControl: false,                // We use custom zoom controls fixed to the container on mobile
+      attributionControl: false,
+      worldCopyJump: false,
+    });
+    _onboardingMap = map;
+  } catch (err) {
+    console.error('Failed to initialize Leaflet map (onboarding):', err);
+    const mapDiv = document.getElementById('map');
+    if (mapDiv) {
+      mapDiv.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,0.6);text-align:center;padding:20px;">⚠️ No se pudo cargar el mapa mundi interactivo. Revisa tu conexión de red o desactivadores de publicidad.</div>`;
+    }
+  }
 
   if (isMobileDevice) {
     const wrapper = document.getElementById('map-scroll-wrapper');
@@ -153,17 +165,17 @@ function setupOnboarding() {
     btnZoomIn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      map.zoomIn();
+      if (map) map.zoomIn();
     });
     btnZoomOut.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      map.zoomOut();
+      if (map) map.zoomOut();
     });
   }
 
   // Forzar redibujado cuando el contenedor ya tiene sus dimensiones CSS definitivas
-  setTimeout(() => { map.invalidateSize({ animate: false }); }, 200);
+  setTimeout(() => { if (map) map.invalidateSize({ animate: false }); }, 200);
 
   function getStyle(feature) {
     const name = getCountryName(feature.properties);
@@ -1047,26 +1059,31 @@ function setupOnboarding() {
 
   // Unified payment gateway will handle showPaymentModal, closePaymentModal, and simulatePayment.
 
-  // GeoJSON fetch — carga el mapa mundial
-  fetch('https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson')
-    .then(r => r.json())
-    .then(data => {
-      geoJsonLayer = L.geoJSON(data, { 
-        style: getStyle, 
-        onEachFeature: onEachFeature,
-        filter: (f) => getCountryName(f.properties) !== 'Antarctica'
-      }).addTo(map);
+  // GeoJSON fetch — carga el mapa mundial si el mapa Leaflet se inicializó
+  if (map) {
+    fetch('https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson')
+      .then(r => r.json())
+      .then(data => {
+        geoJsonLayer = L.geoJSON(data, { 
+          style: getStyle, 
+          onEachFeature: onEachFeature,
+          filter: (f) => getCountryName(f.properties) !== 'Antarctica'
+        }).addTo(map);
 
-      // Invalidar primero para que Leaflet conozca el tamaño real del contenedor
-      map.invalidateSize({ animate: false });
+        // Invalidar primero para que Leaflet conozca el tamaño real del contenedor
+        map.invalidateSize({ animate: false });
 
-      if (isMobileDevice) {
-        // En mobile: encuadre centrado a nivel 1.5 para poder desplazarse horizontalmente
-        map.setView([20, 0], 1.5, { animate: false });
-      } else {
-        map.fitBounds(geoJsonLayer.getBounds(), { padding: [0, 0] });
-      }
-    });
+        if (isMobileDevice) {
+          // En mobile: encuadre centrado a nivel 1.5 para poder desplazarse horizontalmente
+          map.setView([20, 0], 1.5, { animate: false });
+        } else {
+          map.fitBounds(geoJsonLayer.getBounds(), { padding: [0, 0] });
+        }
+      })
+      .catch(err => {
+        console.error('Failed to load GeoJSON map data:', err);
+      });
+  }
 }
 
 window.showOnboardingTierAlert = (tierName, price, cardElement) => {
