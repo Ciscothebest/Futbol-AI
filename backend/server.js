@@ -106,15 +106,17 @@ app.get('/api/players', authenticate, async (req, res) => {
     const apiHost = req.protocol + '://' + req.get('host');
     results = results.map(p => {
       const data = p.toJSON();
+      const photoId = data.photoId || playerFaces[data.id];
       const localImgPath = path.join(FRONTEND_PATH, 'assets', 'players', `${data.id}.png`);
+      const fallbackUrl = `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(data.name)}&backgroundColor=0d1117&textColor=ffffff&radius=50`;
       let avatarUrl = '';
       
-      if (fs.existsSync(localImgPath)) {
+      if (photoId) {
+        avatarUrl = `${apiHost}/api/player-photo/${photoId}?v=2`;
+      } else if (fs.existsSync(localImgPath)) {
         avatarUrl = `/assets/players/${data.id}.png`;
       } else {
-        const photoId = data.photoId || playerFaces[data.id];
-        const fallbackUrl = `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(data.name)}&backgroundColor=0d1117&textColor=ffffff&radius=50`;
-        avatarUrl = photoId ? `${apiHost}/api/player-photo/${photoId}?v=2` : fallbackUrl;
+        avatarUrl = fallbackUrl;
       }
       
       return {
@@ -139,14 +141,16 @@ app.get('/api/players/:id', async (req, res) => {
     const fs = require('fs');
     const localImgPath = path.join(FRONTEND_PATH, 'assets', 'players', `${data.id}.png`);
     const apiHost = req.protocol + '://' + req.get('host');
+    const photoId = data.photoId || playerFaces[data.id];
+    const fallbackUrl = `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(data.name)}&backgroundColor=0d1117&textColor=ffffff&radius=50`;
     
-    if (fs.existsSync(localImgPath)) {
+    data.photoId = photoId || null;
+    if (photoId) {
+      data.avatarUrl = `${apiHost}/api/player-photo/${photoId}?v=2`;
+    } else if (fs.existsSync(localImgPath)) {
       data.avatarUrl = `/assets/players/${data.id}.png`;
     } else {
-      const photoId = data.photoId || playerFaces[data.id];
-      const fallbackUrl = `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(data.name)}&backgroundColor=0d1117&textColor=ffffff&radius=50`;
-      data.photoId = photoId || null;
-      data.avatarUrl = photoId ? `${apiHost}/api/player-photo/${photoId}?v=2` : fallbackUrl;
+      data.avatarUrl = fallbackUrl;
     }
     
     res.json(data);
@@ -199,7 +203,30 @@ app.get('/api/player-photo/:id', (req, res) => {
   fetchImage();
 });
 
-
+// ─── Team Logo Image Proxy ────────────────────────────────────────
+app.get('/api/team-logo-image/:id', (req, res) => {
+  const https = require('https');
+  const options = {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+      'Referer': 'https://sofifa.com/',
+      'Accept': 'image/png,image/webp,*/*;q=0.8'
+    }
+  };
+  const url = `https://cdn.sofifa.net/teams/${req.params.id}/120.png`;
+  https.get(url, options, (proxyRes) => {
+    if (proxyRes.statusCode !== 200) {
+      proxyRes.resume();
+      return res.status(404).send('Logo not found');
+    }
+    res.setHeader('Content-Type', proxyRes.headers['content-type'] || 'image/png');
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    proxyRes.pipe(res);
+  }).on('error', (err) => {
+    console.error('Team logo proxy error:', err);
+    res.status(500).send('Error proxying team logo');
+  });
+});
 
 // ─── Chat ─────────────────────────────────────────────────────────
 app.post('/api/chat', authenticate, async (req, res) => {
@@ -650,15 +677,16 @@ const majorSofifaTeamIds = {
   "Al-Ahli SFC": "112140"
 };
 
-app.get('/api/team-logo', authenticate, async (req, res) => {
+app.get('/api/team-logo', async (req, res) => {
   try {
     const { name } = req.query;
     if (!name) return res.status(400).json({ error: 'Missing name' });
     
+    const apiHost = req.protocol + '://' + req.get('host');
     // 1. Check major mapping
     if (majorSofifaTeamIds[name]) {
-      const sofifaUrl = `https://cdn.sofifa.net/teams/${majorSofifaTeamIds[name]}/120.png`;
-      return res.json({ logoUrl: sofifaUrl });
+      const proxiedUrl = `${apiHost}/api/team-logo-image/${majorSofifaTeamIds[name]}`;
+      return res.json({ logoUrl: proxiedUrl });
     }
     
     // 2. Check cache
@@ -679,7 +707,7 @@ app.get('/api/team-logo', authenticate, async (req, res) => {
   }
 });
 
-app.get('/api/league-logo', authenticate, async (req, res) => {
+app.get('/api/league-logo', async (req, res) => {
   try {
     const { name } = req.query;
     if (!name) return res.status(400).json({ error: 'Missing name' });

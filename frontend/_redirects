@@ -1,1 +1,3 @@
 /api/*  https://futbol-ai-n2cu.onrender.com/api/:splat  200
+/uploads/*  https://futbol-ai-n2cu.onrender.com/uploads/:splat  200
+

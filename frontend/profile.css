@@ -1332,3 +1332,344 @@
   color: var(--text-3);
   margin-top: 2px;
 }
+
+/* ══════════════ MOBILE PROFILE OPTIMIZATIONS ══════════════ */
+@media (max-width: 768px) {
+  /* Profile header banner height and margin adjustments */
+  .profile-header-banner {
+    height: 150px !important;
+    margin-bottom: 95px !important;
+  }
+  
+  .profile-avatar-container {
+    bottom: -70px !important;
+  }
+  
+  .profile-avatar-wrapper {
+    width: 100px !important;
+    height: 100px !important;
+  }
+  
+  .profile-name {
+    font-size: 1.5rem !important;
+  }
+
+  /* Stack profile columns and cards vertically */
+  .profile-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+
+  /* Responsive Tab Buttons - Grid Layout */
+  .profile-tabs-header {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 6px !important;
+    padding-bottom: 5px !important;
+    border-bottom: none !important;
+  }
+
+  .profile-tab-btn {
+    font-size: 11px !important;
+    padding: 8px 4px !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    text-align: center !important;
+    justify-content: center !important;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.05) !important;
+    border-radius: 8px !important;
+    width: 100% !important;
+  }
+
+  .profile-tab-btn.active {
+    border-bottom: 2px solid var(--cyan) !important;
+    color: var(--cyan) !important;
+    background: rgba(0, 240, 255, 0.05) !important;
+  }
+
+  /* Stack account info item rows vertically to prevent horizontal overflow */
+  .profile-info-item {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 4px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+    padding-bottom: 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .profile-info-item:last-child {
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+  }
+
+  .profile-info-label {
+    font-size: 12px !important;
+  }
+
+  .profile-info-val {
+    font-size: 14px !important;
+    word-break: break-all !important; /* Prevent long emails/names from overflowing */
+  }
+
+  /* Custom override for subscription plan row layout on mobile */
+  .profile-info-item[style*="display: flex"] {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+    padding: 12px 0 !important;
+  }
+
+  .profile-info-item[style*="display: flex"] > div {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+  }
+
+  /* Profile preferences toggles spacing */
+  .profile-setting-row {
+    padding: 12px 0 !important;
+    font-size: 14px !important;
+  }
+
+  /* Profile activity statistics grid spacing */
+  .profile-stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important; /* 2x2 grid is much cleaner on mobile */
+    gap: 12px !important;
+  }
+
+  .profile-stat-box {
+    padding: 15px 10px !important;
+  }
+
+  .profile-stat-num {
+    font-size: 1.6rem !important;
+  }
+
+  .profile-stat-desc {
+    font-size: 11px !important;
+  }
+
+  /* Simulation Modal Mobile Optimizations */
+  .modal-lg {
+    padding: 16px 12px !important;
+  }
+
+  .score-display {
+    gap: 12px !important;
+    padding: 15px 10px !important;
+    margin: 15px 0 25px 0 !important;
+  }
+
+  .score-team-name {
+    font-size: 14px !important;
+  }
+
+  .score-team-style {
+    font-size: 9px !important;
+  }
+
+  .score-num {
+    width: 48px !important;
+    height: 48px !important;
+    font-size: 26px !important;
+    border-radius: var(--radius-md) !important;
+  }
+
+  .score-dash {
+    font-size: 18px !important;
+  }
+
+  .scoreboard-sim {
+    padding: 12px 10px !important;
+  }
+
+  .scoreboard-sim .crest {
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  .scoreboard-sim span[style*="font-size:14px"] {
+    font-size: 11px !important;
+  }
+
+  .scoreboard-sim span[style*="font-size:13px"] {
+    font-size: 10px !important;
+  }
+
+  .proba-row {
+    margin: 10px 8px !important;
+  }
+
+  .proba-cell {
+    padding: 6px 2px !important;
+  }
+
+  .proba-pct {
+    font-size: 13px !important;
+  }
+
+  .proba-lbl {
+    font-size: 8.5px !important;
+  }
+
+  .speed-row {
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    padding: 0 10px 10px !important;
+    font-size: 11px !important;
+  }
+
+  .sp-btn {
+    padding: 4px 8px !important;
+    font-size: 10px !important;
+  }
+
+  #btn-skip-sim {
+    margin-left: 0 !important;
+    width: 100% !important;
+    text-align: center !important;
+    margin-top: 4px !important;
+  }
+
+  /* Live simulation tabs un-scrolled grid */
+  .sim-live-tabs {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important; /* 2x2 grid */
+    gap: 6px !important;
+    border-bottom: none !important;
+    padding: 0 16px !important;
+    overflow-x: visible !important; /* Disable scroll */
+  }
+
+  .sim-live-tab {
+    width: 100% !important;
+    text-align: center !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+    padding: 8px 4px !important;
+    font-size: 11.5px !important;
+    background: rgba(255, 255, 255, 0.02) !important;
+    box-sizing: border-box !important;
+    white-space: normal !important; /* Allow wraps if needed, but they are short */
+  }
+
+  .sim-live-tab.on {
+    border-color: var(--primary) !important;
+    background: rgba(0, 229, 255, 0.08) !important;
+    color: var(--primary) !important;
+    border-bottom-width: 1px !important; /* Keep border consistent */
+    text-shadow: 0 0 8px rgba(0, 229, 255, 0.3) !important;
+  }
+
+  .field-wrap {
+    margin: 10px 8px !important;
+    padding: 8px !important;
+  }
+
+  /* Post-match report tabs un-scrolled grid */
+  .sim-tabs-bar {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important; /* 2 columns */
+    gap: 6px !important;
+    border-bottom: none !important;
+    padding: 0 12px !important;
+    overflow-x: visible !important; /* Disable scroll */
+    justify-content: stretch !important;
+  }
+
+  .sim-tab-btn {
+    width: 100% !important;
+    text-align: center !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+    padding: 8px 4px !important;
+    font-size: 11px !important;
+    background: rgba(255, 255, 255, 0.02) !important;
+    box-sizing: border-box !important;
+    white-space: normal !important; /* Allow wrap for team names or long titles */
+  }
+
+  /* Span the 5th tab (AI Recommendations) across both columns */
+  .sim-tabs-bar .sim-tab-btn:nth-child(5) {
+    grid-column: span 2 !important;
+  }
+
+  .sim-tab-btn.active {
+    border-color: var(--primary) !important;
+    background: rgba(0, 229, 255, 0.08) !important;
+    color: var(--primary) !important;
+    border-bottom-width: 1px !important; /* Keep border consistent */
+    text-shadow: 0 0 8px rgba(0, 229, 255, 0.3) !important;
+  }
+
+  .results-squad-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    width: 100% !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  .player-row {
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    padding: 10px 0 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  .player-row:last-child {
+    border-bottom: none !important;
+  }
+
+  .player-row .pl-info {
+    flex: 1 !important;
+    min-width: 0 !important;
+  }
+
+  .player-row .pl-name {
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    color: #fff !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .player-row .pl-sub {
+    font-size: 11px !important;
+    color: rgba(255, 255, 255, 0.5) !important;
+    margin-top: 2px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .player-row .pl-pos-badge {
+    font-size: 10px !important;
+    padding: 2px 6px !important;
+    border-radius: 4px !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    color: rgba(255, 255, 255, 0.6) !important;
+  }
+
+  .player-row .pl-rt {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+  }
+
+  .tactical-advice {
+    padding: 12px !important;
+    gap: 8px !important;
+  }
+
+  .advice-item {
+    font-size: 11.5px !important;
+  }
+}

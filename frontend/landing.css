@@ -752,3 +752,47 @@ body {
 .auth-input-helper.valid {
   color: var(--primary);
 }
+
+/* ════════════════════════════════════════════
+   MOBILE COMPATIBILITY SYSTEM (Android & iOS)
+   ════════════════════════════════════════════ */
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+button,
+a,
+.lnd-cta-primary,
+.lnd-cta-secondary,
+.auth-close,
+input {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+@media (max-width: 480px) {
+  .auth-modal {
+    width: 95% !important;
+    padding: 24px 16px !important;
+  }
+  
+  .lnd-h1 {
+    font-size: 2.2rem !important;
+  }
+}
