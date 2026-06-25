@@ -214,7 +214,7 @@ body {
 }
 
 .onboarding-header-text h1 {
-  font-size: 26px !important; /* El título de la pregunta sí es pequeño */
+  font-size: 36px; /* Desktop size — overridden to 20px on mobile */
   font-weight: 800;
   color: #fff;
   text-shadow: 0 4px 20px rgba(0,0,0,0.8);
@@ -222,9 +222,19 @@ body {
 }
 
 .onboarding-header-text p {
-  font-size: 13px !important; /* El subtítulo también pequeño */
+  font-size: 14px; /* Desktop size — overridden to 12px on mobile */
   color: #94a3b8;
   text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+}
+
+/* Default step3 title size (desktop) */
+#step3-title {
+  font-size: 36px;
+}
+
+/* Default onboarding h1 title size (desktop) */
+#onboarding-header-title {
+  font-size: 36px;
 }
 
 
@@ -1023,7 +1033,7 @@ body {
 .splash-corner-br { bottom: 24px; right: 24px; border-width: 0 2px 2px 0; }
 
 /* ══════════════ TACTICAL NAVBAR ══════════════ */
-.sidebar { display: none !important; } /* Removing old sidebar */
+.sidebar { display: none; } /* Hide by default on desktop */
 
 .tactical-nav {
   position: fixed;
@@ -2562,6 +2572,31 @@ body {
   height: 100%;
 }
 
+/* COMPARISON VISUALS WRAPPER (Side-by-Side on Desktop) */
+.comparison-visuals-wrapper {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 30px;
+  margin-top: 30px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.comparison-visuals-wrapper .h2h-section {
+  max-width: 100%;
+  width: 100%;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.comparison-visuals-wrapper .comparison-chart-container {
+  margin-top: 0 !important; /* Override inline margin-top */
+  box-sizing: border-box;
+  height: auto !important; /* Fill cell height */
+  min-height: 400px;
+}
+
 /* H2H SECTION */
 .h2h-section {
   padding: 40px;
@@ -2946,14 +2981,102 @@ body {
   .hero-title { font-size: 28px; }
 
   .stats-bar { grid-template-columns: repeat(2, 1fr); }
-  .players-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+  .players-grid { grid-template-columns: repeat(3, 1fr); }
 
+  /* Enforce side-by-side layout for player selectors on mobile/tablet */
   .compare-selectors {
-    grid-template-columns: 1fr;
-    gap: 16px;
+    grid-template-columns: 1fr auto 1fr !important;
+    gap: 8px !important;
+    align-items: start !important;
   }
 
-  .vs-divider { padding-top: 0; }
+  .player-selector h4 {
+    font-size: 12px !important;
+    margin-bottom: 6px !important;
+    text-align: center !important;
+  }
+
+  .player-selector .search-wrap {
+    padding: 8px 10px !important; /* Compact search bar */
+  }
+
+  .player-selector .search-wrap input {
+    font-size: 12px !important;
+  }
+
+  .selected-player-card {
+    padding: 10px 6px !important; /* Extremely compact */
+    min-height: 80px !important;
+    margin-top: 8px !important;
+    border-radius: 12px !important;
+  }
+
+  .selected-player-card .empty-player {
+    font-size: 11px !important;
+    text-align: center !important;
+  }
+
+  .sel-player-top {
+    gap: 6px !important;
+    margin-bottom: 8px !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+
+  .sel-flag {
+    font-size: 16px !important;
+  }
+
+  .sel-name {
+    font-size: 12px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 110px !important;
+  }
+
+  .sel-team {
+    font-size: 9px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 110px !important;
+  }
+
+  .sel-stats {
+    gap: 4px !important;
+    width: 100% !important;
+  }
+
+  .sel-stat {
+    padding: 4px 2px !important;
+    border-radius: 6px !important;
+  }
+
+  .sel-stat-num {
+    font-size: 12px !important;
+  }
+
+  .sel-stat-label {
+    font-size: 7.5px !important;
+  }
+
+  /* Compact Remove Slot Button */
+  .remove-slot-btn {
+    top: 4px !important;
+    right: 4px !important;
+    width: 18px !important;
+    height: 18px !important;
+    font-size: 11px !important;
+  }
+
+  .vs-divider {
+    font-size: 14px !important;
+    padding: 0 !important;
+    align-self: center !important;
+    height: auto !important;
+  }
 }
 
 @media (max-width: 500px) {
@@ -3909,4 +4032,1912 @@ body {
   background: rgba(15, 23, 42, 0.1) !important;
 }
 
+/* ==========================================================================
+   Simulation Report — Supporting Styles (stats, events, timeline, squads)
+   ========================================================================== */
+.grid-col-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-3);
+  margin: 0 0 10px 0;
+}
 
+.stat-row { margin-bottom: 12px; }
+
+.stat-hdr {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+
+.stat-bar {
+  height: 6px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 3px;
+  display: flex;
+  overflow: hidden;
+}
+
+.timeline { display: flex; flex-direction: column; gap: 0; }
+
+.timeline-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-size: 13px;
+  color: var(--text-1);
+}
+
+.timeline-item:last-child { border-bottom: none; }
+
+.timeline-minute {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--cyan);
+  min-width: 30px;
+  padding-top: 2px;
+}
+
+.timeline-text { flex: 1; line-height: 1.4; }
+
+.results-squad-section { padding: 4px 0; }
+
+.results-squad-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+}
+
+.sim-player-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 8px 10px;
+}
+
+.sim-player-pos {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.sim-player-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sim-player-rating {
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+/* ==========================================================================
+   Simulation Report — Tab Bar & Tab Content
+   ========================================================================== */
+.sim-tabs-bar {
+  display: flex;
+  gap: 4px;
+  padding: 12px 16px 0;
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex-wrap: nowrap;
+}
+
+.sim-tabs-bar::-webkit-scrollbar { display: none; }
+
+.sim-tab-btn {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 7px 12px;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  border: 1px solid transparent;
+  border-bottom: none;
+  background: transparent;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+  white-space: nowrap;
+}
+
+.sim-tab-btn:hover {
+  color: var(--text-2);
+  background: rgba(255,255,255,0.04);
+}
+
+.sim-tab-btn.active {
+  color: var(--cyan);
+  background: rgba(0, 229, 255, 0.06);
+  border-color: var(--border);
+  border-bottom-color: transparent;
+  margin-bottom: -1px;
+}
+
+.sim-tab-content {
+  display: none;
+  padding: 16px;
+  animation: fadeIn 0.2s ease;
+}
+
+.sim-tab-content.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.tactics-advice-container {
+  padding: 4px 0;
+}
+
+/* ==========================================================================
+   Tactical AI Recommendations Cards - Recreated style matching mockup
+   ========================================================================== */
+.tac-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+
+.tac-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.tac-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+.tac-badge {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+.badge-h {
+  background: rgba(0, 229, 255, 0.1);
+  color: var(--cyan);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+}
+
+.badge-a {
+  background: rgba(255, 61, 0, 0.1);
+  color: var(--orange);
+  border: 1px solid rgba(255, 61, 0, 0.2);
+}
+
+.tac-body {
+  font-size: 12px;
+  color: var(--text-2);
+  line-height: 1.6;
+  margin-bottom: 6px;
+}
+
+.priority-pill {
+  display: inline-block;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+.pp-high {
+  background: rgba(255, 82, 82, 0.15);
+  color: var(--red);
+  border: 1px solid rgba(255, 82, 82, 0.25);
+}
+
+.pp-med {
+  background: rgba(255, 234, 0, 0.15);
+  color: var(--yellow);
+  border: 1px solid rgba(255, 234, 0, 0.25);
+}
+
+.pp-low {
+  background: rgba(118, 255, 3, 0.15);
+  color: var(--green);
+  border: 1px solid rgba(118, 255, 3, 0.25);
+}
+
+/* ==========================================================================
+   Simulation Report — Match Header (Score Display)
+   ========================================================================== */
+.results-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px 0;
+}
+
+.results-tag {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--cyan);
+  background: rgba(0, 229, 255, 0.08);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.score-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px 12px;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+}
+
+.score-team {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.score-team:last-child {
+  text-align: right;
+  align-items: flex-end;
+}
+
+.score-team-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+.score-team-style {
+  font-size: 10px;
+  color: var(--text-3);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  margin-top: 2px;
+}
+
+.score-numbers {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.score-num {
+  font-size: 42px;
+  font-weight: 900;
+  color: var(--text-1);
+  line-height: 1;
+}
+
+.score-dash {
+  font-size: 24px;
+  color: var(--text-3);
+  font-weight: 300;
+}
+
+/* ==========================================================================
+   Simulation Report — Player Row (Lineup format matching mockup)
+   ========================================================================== */
+.player-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.player-row:last-child { border-bottom: none; }
+
+/* Avatar circle */
+.av {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  flex-shrink: 0;
+  letter-spacing: 0;
+}
+
+/* Home team avatar — cyan */
+.av-h {
+  background: rgba(0, 229, 255, 0.12);
+  color: var(--cyan);
+  border: 1.5px solid rgba(0, 229, 255, 0.3);
+}
+
+/* Away team avatar — orange */
+.av-a {
+  background: rgba(255, 61, 0, 0.12);
+  color: var(--orange);
+  border: 1.5px solid rgba(255, 61, 0, 0.3);
+}
+
+.pl-info { flex: 1; min-width: 0; }
+
+.pl-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pl-sub {
+  font-size: 11px;
+  color: var(--text-3);
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Rating pill on the right */
+.pl-rt {
+  font-size: 17px;
+  font-weight: 700;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.pl-rt-h { color: var(--cyan); }
+.pl-rt-a { color: var(--orange); }
+
+/* Position badge */
+.pl-pos-badge {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 5px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.06);
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+/* Override squad list grid to show list rows instead */
+.results-squad-list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0 !important;
+}
+
+
+/* ════════════════════════════════════════════
+   MOBILE COMPATIBILITY SYSTEM (Android & iOS)
+   ════════════════════════════════════════════ */
+
+/* Global Touch and Safe Area Adjustments */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* FastClick & Tap targets */
+button,
+a,
+.nav-item,
+.lang-btn,
+.prompt-chip,
+.close-mobile-btn,
+.menu-toggle {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Eliminate native iOS appearance on inputs */
+input[type="text"],
+input[type="search"],
+input[type="email"],
+input[type="password"],
+textarea,
+select {
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: var(--radius-md);
+}
+
+/* Hamburger Menu Toggle (Desktop: hidden) */
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 24px;
+  height: 18px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 1010;
+  padding: 0;
+}
+
+.menu-toggle .bar {
+  width: 100%;
+  height: 2px;
+  background-color: var(--text-1);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+/* ══════════════ MOBILE RESPONSIVE QUERIES ══════════════ */
+@media (max-width: 900px) {
+  /* Header adjustment */
+  .tactical-nav {
+    padding: 0 20px;
+    height: 60px;
+    justify-content: space-between;
+  }
+  
+  :root {
+    --nav-h: 60px;
+  }
+
+  /* Hide desktop links and profile from header on mobile */
+  .tactical-nav .nav-links,
+  .tactical-nav .header-right-group {
+    display: none !important;
+  }
+
+  /* Show Hamburger Toggle */
+  .menu-toggle {
+    display: flex;
+  }
+
+  /* Animated Hamburger toggle to 'X' when sidebar is open */
+  .sidebar.open ~ .tactical-nav #menu-toggle .bar:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+  }
+  .sidebar.open ~ .tactical-nav #menu-toggle .bar:nth-child(2) {
+    opacity: 0;
+  }
+  .sidebar.open ~ .tactical-nav #menu-toggle .bar:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+  }
+
+  /* Mobile Cajón Drawer (Sidebar) */
+  .sidebar {
+    display: flex !important;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 290px;
+    background: rgba(4, 9, 17, 0.98);
+    backdrop-filter: blur(20px) saturate(180%);
+    border-left: 1px solid rgba(0, 229, 255, 0.2);
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.7), -2px 0 15px rgba(0, 229, 255, 0.1);
+    transform: translateX(100%);
+    transition: transform var(--transition);
+    z-index: 1005;
+    padding: 24px 20px calc(24px + env(safe-area-inset-bottom, 0px)) 20px;
+    box-sizing: border-box;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+    flex-shrink: 0;
+  }
+
+  .close-mobile-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    color: var(--text-2);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .close-mobile-btn:hover {
+    color: var(--cyan);
+    border-color: var(--cyan);
+    background: rgba(0, 229, 255, 0.05);
+  }
+
+  .sidebar-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
+    overflow-y: auto;
+  }
+
+  .mobile-nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .mobile-nav-links .nav-item {
+    width: 100%;
+    padding: 14px 20px;
+    font-size: 14px;
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-sizing: border-box;
+    height: 48px; /* Great tap target */
+  }
+
+  .mobile-nav-links .nav-item.active {
+    background: rgba(0, 229, 255, 0.08);
+    border-color: var(--cyan);
+    color: var(--cyan);
+    box-shadow: inset 0 0 8px rgba(0, 229, 255, 0.15);
+  }
+
+  .sidebar-footer {
+    border-top: 1px solid var(--border);
+    padding-top: 20px;
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: none;
+  }
+
+  .sidebar-overlay.open {
+    display: block;
+  }
+
+  /* Main Content Adjustments on mobile */
+  .main-content {
+    padding: 16px;
+    min-height: calc(100vh - var(--nav-h));
+  }
+
+  .section {
+    padding: 16px 8px;
+  }
+  
+  .section#section-chat {
+    padding: 0;
+  }
+
+  /* Player Cards and grids on mobile */
+  .players-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  /* Comparison Section mobile adjustments */
+  /* Enforce side-by-side layout for player dossiers on mobile/tablet using CSS Grid for perfect alignment with selectors */
+  .tactical-compare-header {
+    padding: 12px 0 !important; /* Remove unnecessary side margins to align with selectors and cards */
+  }
+
+  .tactical-cards-container {
+    display: grid !important;
+    grid-template-columns: 1fr auto 1fr !important; /* Perfect symmetry and alignment with selectors */
+    align-items: stretch !important; /* Match heights */
+    padding: 12px 0 !important;
+    gap: 8px !important;
+  }
+
+  .tactical-card {
+    width: 100% !important; /* Stretch to fill grid column */
+    padding: 12px 8px !important;
+    box-sizing: border-box !important;
+    border-radius: 12px !important;
+    box-shadow: none !important;
+  }
+
+  .t-vs {
+    transform: none !important; /* No rotation */
+    margin: 0 4px !important;
+    font-size: 14px !important; /* Smaller VS text */
+    align-self: center !important;
+  }
+
+  .t-card-header {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 8px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .t-avatar-circle {
+    width: 50px !important;
+    height: 50px !important;
+    font-size: 16px !important;
+    box-shadow: 0 0 10px var(--p-color, var(--cyan)) !important;
+  }
+
+  .t-name-group {
+    width: 100% !important;
+  }
+
+  .t-name {
+    font-size: 13px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    width: 100% !important;
+  }
+
+  .t-meta {
+    font-size: 10px !important;
+    margin: 2px 0 6px !important;
+  }
+
+  .t-rating {
+    font-size: 20px !important;
+  }
+
+  /* Ultra compact table rows for mobile dossiers */
+  .t-row {
+    padding: 6px 0 !important;
+    font-size: 10.5px !important;
+  }
+
+  .t-label {
+    gap: 4px !important;
+  }
+
+  .comparison-visuals-wrapper {
+    grid-template-columns: 1fr !important; /* Stack vertically on mobile/tablet */
+    gap: 15px !important;
+  }
+
+  .comparison-visuals-wrapper .h2h-section {
+    padding: 16px !important;
+  }
+
+  .comparison-visuals-wrapper .comparison-chart-container {
+    height: 300px !important;
+    min-height: 300px !important;
+    padding: 10px !important;
+    margin-top: 0 !important;
+  }
+
+  /* ==========================================================================
+     Tactical Editor Modal Mobile Adjustments
+     ========================================================================== */
+  /* Stack tab contents in a single column instead of 2-column grid */
+  #tactic-tab-content-players > div[style*="display: grid"] {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  #tactic-tab-content-formations > div[style*="display: grid"] {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  /* Make modal tabs fit in one row without scroll and wrap */
+  #tactical-editor-modal div[style*="display: flex; gap: 10px"] {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 6px !important;
+  }
+
+  .tactic-tab-btn {
+    padding: 8px 4px !important;
+    font-size: 11px !important;
+    justify-content: center !important;
+    text-align: center !important;
+    gap: 4px !important;
+  }
+
+  /* Compact spacing inside tactical editor columns */
+  #modal-starting-list, #modal-bench-list {
+    max-height: 250px !important;
+    min-height: 200px !important;
+  }
+
+  /* Make pitch preview card in modal responsive */
+  #tactic-tab-content-formations div[style*="aspect-ratio: 3/4"] {
+    max-width: 210px !important;
+    margin: 0 auto !important;
+  }
+
+  #btn-team-a, #btn-team-b {
+    font-size: 11px !important;
+    padding: 6px 8px !important;
+  }
+
+  #btn-modal-confirm-tactics {
+    margin-top: 10px !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  /* Adjust swap controller bar for mobile */
+  #swap-controller-bar {
+    flex-direction: column !important;
+    gap: 12px !important;
+    padding: 12px !important;
+    text-align: center !important;
+  }
+
+  #swap-controller-bar div[style*="display: flex"] {
+    flex-direction: column !important;
+    gap: 6px !important;
+    align-items: center !important;
+  }
+
+  #swap-controller-bar button {
+    width: 100% !important;
+  }
+
+  /* ── ONBOARDING: ajustes mobile ── */
+
+  /* La pantalla completa ocupa el viewport, con padding abajo para el footer fijo */
+  .onboarding-screen {
+    padding: 0 0 72px 0 !important; /* espacio reservado para el footer fijo */
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    min-height: 100dvh !important;
+  }
+
+  /* Nav compacto */
+  .onboarding-nav-glass {
+    padding: 0 14px !important;
+    height: 40px !important;
+  }
+
+  /* Títulos compactos */
+  .onboarding-header-text {
+    padding: 4px 14px 6px !important;
+  }
+
+  .onboarding-header-text h1,
+  #onboarding-header-title {
+    font-size: 17px !important;
+    margin: 0 0 1px !important;
+    line-height: 1.2 !important;
+  }
+
+  .onboarding-header-text p {
+    font-size: 11px !important;
+    margin: 0 !important;
+  }
+
+  /* ─── Paso 1: Mapa en mobile/tabletas ─── */
+  #onboarding-step1-container.map-viewport-hud-container,
+  .map-viewport-hud-container {
+    width: calc(100% - 24px) !important;
+    max-width: calc(100% - 24px) !important;
+    margin: 12px auto !important;
+    border-radius: 16px !important;
+    border: 1px solid rgba(0, 240, 255, 0.25) !important;
+    box-shadow: 0 4px 25px rgba(0, 240, 255, 0.15) !important;
+    clip-path: none !important;
+    -webkit-clip-path: none !important;
+    height: 48vh !important;
+    min-height: unset !important;
+    max-height: unset !important;
+    flex: none !important;
+    overflow: hidden !important;
+    background: rgba(10, 20, 30, 0.4) !important;
+    position: relative !important;
+  }
+
+  /* El div #map debe tener altura explícita en mobile */
+  #map {
+    height: 48vh !important;
+    min-height: unset !important;
+  }
+
+  /* Footer del paso 1: flotante premium adaptado a mobile */
+  .onboarding-footer-hud.floating {
+    position: fixed !important;
+    bottom: 12px !important;
+    left: 12px !important;
+    right: 12px !important;
+    width: calc(100% - 24px) !important;
+    max-width: calc(100% - 24px) !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(0, 240, 255, 0.3) !important;
+    padding: 12px 16px !important;
+    box-sizing: border-box !important;
+    z-index: 9999 !important;
+    background: rgba(10, 20, 30, 0.95) !important;
+    box-shadow: 0 4px 20px rgba(0, 240, 255, 0.2) !important;
+    backdrop-filter: blur(10px) !important;
+    
+    /* Estado inicial oculto en móvil */
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: translateY(20px) !important;
+    transition: all 0.3s ease !important;
+  }
+
+  /* Estado visible en móvil al seleccionar algún país */
+  .onboarding-footer-hud.floating.visible {
+    opacity: 1 !important;
+    pointer-events: all !important;
+    transform: translateY(0) !important;
+  }
+
+  /* ─── Paso 2: Clubs ─── */
+  #onboarding-step2-container {
+    width: calc(100% - 24px) !important;
+    max-width: calc(100% - 24px) !important;
+    margin: 12px auto !important;
+    border-radius: 16px !important;
+    border: 1px solid rgba(0, 240, 255, 0.25) !important;
+    box-shadow: 0 4px 25px rgba(0, 240, 255, 0.15) !important;
+    height: 48vh !important;
+    min-height: unset !important;
+    max-height: unset !important;
+    flex: none !important;
+    overflow: hidden !important;
+    background: rgba(10, 20, 30, 0.4) !important;
+  }
+
+  .club-selection-layout {
+    display: flex !important;
+    flex-direction: row !important;
+    height: 100% !important;
+    width: 100% !important;
+    padding: 12px !important;
+    gap: 12px !important;
+    box-sizing: border-box !important;
+    align-items: stretch !important;
+  }
+
+  .country-info-panel {
+    max-width: 105px !important;
+    min-width: 95px !important;
+    padding: 8px !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    background: rgba(10, 20, 35, 0.6) !important;
+    border: 1px solid rgba(0, 240, 255, 0.15) !important;
+    border-radius: 12px !important;
+    height: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .country-flag-glow {
+    width: 60px !important;
+    height: 40px !important;
+    margin-bottom: 2px !important;
+    border-radius: 4px !important;
+    overflow: hidden !important;
+    flex-shrink: 0 !important;
+  }
+
+  #step2-country-name {
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    color: #fff !important;
+    margin-bottom: 2px !important;
+    text-align: center !important;
+  }
+
+  #step2-league-name {
+    font-size: 9px !important;
+    font-weight: bold !important;
+    color: #00f0ff !important;
+    background: rgba(0, 240, 255, 0.1) !important;
+    padding: 2px 6px !important;
+    border-radius: 20px !important;
+    border: 1px solid rgba(0, 240, 255, 0.2) !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+  }
+
+  .clubs-grid-panel {
+    flex: 1 !important;
+    padding: 6px !important;
+    background: transparent !important;
+    border: none !important;
+    height: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  #clubs-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 6px !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  /* Estilos compactos para las tarjetas de clubes en móvil */
+  #clubs-grid .club-card {
+    padding: 8px 4px !important;
+    gap: 6px !important;
+    border-radius: 8px !important;
+  }
+  #clubs-grid .club-shield-container {
+    width: 32px !important;
+    height: 32px !important;
+  }
+  #clubs-grid .club-logo-img {
+    max-width: 100% !important;
+    max-height: 100% !important;
+  }
+  #clubs-grid .club-name-text {
+    font-size: 9px !important;
+    font-weight: bold !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    width: 100% !important;
+  }
+  #clubs-grid .club-card.selected::after {
+    top: 3px !important;
+    right: 3px !important;
+    width: 12px !important;
+    height: 12px !important;
+    font-size: 8px !important;
+    line-height: 12px !important;
+  }
+
+  /* Footer paso 2: flotante premium con el patrón UI de la app */
+  .onboarding-footer-hud.step2-footer {
+    position: fixed !important;
+    bottom: 12px !important;
+    left: 12px !important;
+    right: 12px !important;
+    transform: none !important;
+    width: calc(100% - 24px) !important;
+    max-width: calc(100% - 24px) !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(0, 240, 255, 0.3) !important;
+    padding: 12px 16px !important;
+    box-sizing: border-box !important;
+    z-index: 9999 !important;
+    background: rgba(10, 20, 30, 0.95) !important;
+    box-shadow: 0 4px 20px rgba(0, 240, 255, 0.2) !important;
+    backdrop-filter: blur(10px) !important;
+    opacity: 1 !important;
+    pointer-events: all !important;
+    margin-top: 0 !important;
+  }
+
+  /* ─── Paso 3: Planes ─── */
+  #onboarding-step3-container {
+    width: calc(100% - 24px) !important;
+    max-width: calc(100% - 24px) !important;
+    margin: 12px auto !important;
+    border-radius: 16px !important;
+    border: 1px solid rgba(0, 240, 255, 0.25) !important;
+    box-shadow: 0 4px 25px rgba(0, 240, 255, 0.15) !important;
+    height: auto !important;
+    overflow: hidden !important;
+    background: rgba(10, 20, 30, 0.4) !important;
+    padding: 14px 12px 88px 12px !important;
+    box-sizing: border-box !important;
+  }
+
+  #step3-title {
+    font-size: 18px !important;
+    margin-bottom: 4px !important;
+  }
+
+  #step3-subtitle {
+    font-size: 11px !important;
+    margin-bottom: 12px !important;
+  }
+
+  /* Tier cards: cuadrícula 2×2 sin scroll en mobile */
+  #onboarding-step3-container > div > div[style*="gap: 20px"] {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    grid-template-rows: auto auto !important;
+    flex-direction: unset !important;
+    flex-wrap: unset !important;
+    overflow: visible !important;
+    overflow-x: unset !important;
+    overflow-y: unset !important;
+    gap: 10px !important;
+    padding: 6px 2px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .tier-card {
+    min-width: unset !important;
+    max-width: unset !important;
+    width: 100% !important;
+    flex: unset !important;
+    padding: 14px 10px !important;
+    border-radius: 12px !important;
+    flex-direction: column !important;
+    text-align: center !important;
+    align-items: center !important;
+    gap: 6px !important;
+    box-sizing: border-box !important;
+    height: auto !important;
+  }
+
+  .tier-card > div[style*="font-size: 40px"] {
+    font-size: 26px !important;
+    margin-bottom: 4px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .tier-card h3 {
+    font-size: 13px !important;
+    margin-bottom: 2px !important;
+  }
+
+  .tier-card p {
+    font-size: 10px !important;
+    line-height: 1.3 !important;
+  }
+
+  /* Footer paso 3: flotante premium con el patrón UI de la app */
+  .onboarding-footer-hud.step3-footer {
+    position: fixed !important;
+    bottom: 12px !important;
+    left: 12px !important;
+    right: 12px !important;
+    transform: none !important;
+    width: calc(100% - 24px) !important;
+    max-width: calc(100% - 24px) !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(0, 240, 255, 0.3) !important;
+    padding: 12px 16px !important;
+    box-sizing: border-box !important;
+    z-index: 9999 !important;
+    background: rgba(10, 20, 30, 0.95) !important;
+    box-shadow: 0 4px 20px rgba(0, 240, 255, 0.2) !important;
+    backdrop-filter: blur(10px) !important;
+    opacity: 1 !important;
+    pointer-events: all !important;
+    margin-top: 0 !important;
+  }
+
+  /* Footer compartido: fila horizontal */
+  .footer-hud-container {
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+
+  .footer-hud-left-tags {
+    flex: 1 !important;
+    max-width: 60% !important;
+    overflow-x: auto !important;
+  }
+
+  .footer-hud-center-info {
+    display: none !important;
+  }
+
+  .footer-hud-right-actions {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 10px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .btn-onboarding-continue-glow {
+    padding: 10px 18px !important;
+    font-size: 13px !important;
+    border-radius: 10px !important;
+  }
+
+  .skip-link {
+    font-size: 12px !important;
+    white-space: nowrap !important;
+  }
+
+  /* Chips */
+  .chips-container {
+    flex-wrap: wrap !important;
+    gap: 5px !important;
+  }
+
+  /* Tooltip del mapa: ancho adaptado */
+  .country-tooltip {
+    min-width: 160px !important;
+    max-width: 80vw !important;
+  }
+
+  /* Chat Box layout with dynamic viewport height (dvh) */
+  .chat-layout {
+    height: calc(100dvh - var(--nav-h)) !important;
+  }
+
+  .chat-header {
+    padding: 12px 16px;
+    gap: 10px;
+  }
+
+  .agent-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+
+  .chat-messages {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .chat-bubble {
+    max-width: 90%;
+  }
+
+  .bubble-content {
+    padding: 10px 14px;
+    font-size: 13.5px;
+  }
+
+  .chat-input-area {
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px)) 16px;
+    gap: 8px;
+  }
+
+  .send-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Prevent iOS Safari auto-zoom by forcing minimum 16px font-size on inputs */
+  .chat-textarea,
+  input[type="text"],
+  input[type="search"],
+  input[type="email"],
+  input[type="password"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+
+  /* Filters Area Mobile optimization */
+  .tactical-filters-area {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+    margin-bottom: 25px !important;
+  }
+
+  .tactical-search {
+    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .tactical-selects {
+    width: 100% !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    display: flex !important;
+    gap: 10px !important;
+  }
+
+  .tactical-selects .custom-dropdown {
+    flex: 1 !important;
+    min-width: 0 !important; /* Allow shrinking below min-content */
+  }
+
+  .tactical-selects .dropdown-trigger {
+    padding: 12px 10px !important; /* Slightly more compact padding for mobile */
+    font-size: 11px !important;
+  }
+
+  .tactical-sort {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+  }
+
+  .tactical-sort .sort-select {
+    width: 100% !important;
+    flex: 1 !important;
+    padding: 12px !important;
+    font-size: 14px !important;
+    box-sizing: border-box !important;
+    border-radius: var(--radius-sm) !important;
+    border: 1px solid var(--border) !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+  }
+}
+
+@media (max-width: 500px) {
+  /* Modals full width */
+  .modal-overlay {
+    padding: 10px;
+  }
+
+  .modal-body {
+    padding: 16px;
+  }
+
+  .modal-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .modal-rating {
+    text-align: left;
+    font-size: 32px;
+  }
+}
+
+@media (max-width: 600px) {
+  .players-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+}
+
+@media (max-width: 500px) {
+  .comparison-visuals-wrapper .comparison-chart-container {
+    height: 250px !important;
+    min-height: 250px !important;
+  }
+}
+
+/* ==========================================================================
+   Mobile Lineups & Tactical Editor Zero-Horizontal-Scroll & Zero-Scroll-Down Fixes
+   ========================================================================== */
+@media (max-width: 900px) {
+  /* Prevent horizontal scroll and lock modal page in Tactical Editor Modal */
+  #tactical-editor-modal {
+    overflow: hidden !important;
+  }
+
+  #tactical-editor-modal > .modal {
+    padding: 15px 12px 20px 12px !important;
+    max-height: 95vh !important;
+    width: 98% !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    box-sizing: border-box !important;
+    border-radius: 16px !important;
+  }
+
+  #tactical-editor-modal h2 {
+    font-size: 16px !important;
+    margin-bottom: 12px !important;
+    padding-bottom: 8px !important;
+    margin-top: 0 !important;
+  }
+
+  /* Compact tab navigation area */
+  #tactical-editor-modal div[style*="display: flex; gap: 10px; margin-bottom: 20px"] {
+    margin-bottom: 12px !important;
+    padding-bottom: 6px !important;
+    gap: 6px !important;
+  }
+
+  /* Hide description paragraphs to save massive vertical space on mobile */
+  #tactic-tab-content-players > p,
+  #tactic-tab-content-formations > p {
+    display: none !important;
+  }
+
+  /* Keep starting XI and bench lists side-by-side on mobile for zero scroll down */
+  #tactic-tab-content-players > div[style*="display: grid"] {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+  }
+
+  /* Compact the column containers */
+  #tactic-tab-content-players > div[style*="display: grid"] > div {
+    padding: 10px 8px !important;
+    border-radius: 12px !important;
+  }
+
+  /* Compact list headers */
+  #tactic-tab-content-players h3 {
+    font-size: 11px !important;
+    margin-bottom: 8px !important;
+    padding-bottom: 6px !important;
+  }
+
+  #tactic-tab-content-players h3 span:first-child {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 90px !important;
+  }
+
+  /* Compact list heights to fit the screen */
+  #modal-starting-list, 
+  #modal-bench-list {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    width: 100% !important;
+    max-height: 185px !important;
+    min-height: 185px !important;
+    padding-right: 2px !important;
+    box-sizing: border-box !important;
+    gap: 6px !important;
+  }
+
+  /* Ultra compact player rows */
+  .modal-player-row {
+    padding: 6px 8px !important;
+    border-radius: 6px !important;
+    gap: 4px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .modal-player-row > div:first-of-type {
+    min-width: 0 !important;
+    flex: 1 !important;
+    overflow: hidden !important;
+    gap: 6px !important;
+    margin-right: 4px !important;
+  }
+
+  /* Role badge compact */
+  .modal-player-row div:first-of-type span:first-child {
+    font-size: 9px !important;
+    padding: 1.5px 4px !important;
+    min-width: 26px !important;
+    border-radius: 3px !important;
+  }
+
+  /* Player name compact */
+  .modal-player-name {
+    font-size: 11.5px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+  }
+
+  /* Hide redundant position badge on starting players list on mobile */
+  .starting-row div:first-of-type span:nth-child(3) {
+    display: none !important;
+  }
+
+  /* Compact position badge on bench list */
+  .bench-row div:first-of-type span:nth-child(2) {
+    font-size: 9px !important;
+    opacity: 0.7 !important;
+  }
+
+  /* Compact rating value */
+  .modal-player-row div[style*="font-weight: 800"] {
+    font-size: 12px !important;
+  }
+
+  /* Compact swap controller bar */
+  #swap-controller-bar {
+    margin-top: 8px !important;
+    padding: 8px 12px !important;
+    border-radius: 10px !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    box-shadow: 0 2px 10px rgba(0,240,255,0.05) !important;
+  }
+
+  #swap-controller-bar div[style*="display: flex"] {
+    flex-direction: column !important;
+    gap: 4px !important;
+    align-items: center !important;
+  }
+
+  #swap-start-preview, 
+  #swap-bench-preview {
+    font-size: 11.5px !important;
+  }
+
+  #swap-controller-bar button {
+    width: 100% !important;
+    padding: 8px 16px !important;
+    font-size: 11.5px !important;
+  }
+
+  /* Keep Formations & Pitch side-by-side on mobile using CSS Grid display contents for zero scroll down.
+     Left column uses min-content so it takes exactly the width of the selector text — no more, no less. Right column (1fr) takes all leftover space for a wide, spacious pitch. */
+  #tactic-tab-content-formations > div[style*="display: grid"] {
+    display: grid !important;
+    grid-template-columns: min-content 1fr !important;
+    grid-template-rows: auto auto auto !important;
+    gap: 8px !important;
+  }
+
+  /* Dissolve the Controls Panel container so its children become direct grid items */
+  #tactic-tab-content-formations > div[style*="display: grid"] > div:first-of-type {
+    display: contents !important;
+  }
+
+  /* Place formation selector in col 1, row 1 */
+  #tactic-tab-content-formations > div[style*="display: grid"] > div:first-of-type > div:nth-of-type(1) {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    background: rgba(10, 20, 35, 0.4) !important;
+    border: 1.5px solid rgba(255,255,255,0.05) !important;
+    border-radius: 10px !important;
+    padding: 6px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    box-sizing: border-box !important;
+    align-self: center;
+  }
+
+  /* Place style selector in col 1, row 2 */
+  #tactic-tab-content-formations > div[style*="display: grid"] > div:first-of-type > div:nth-of-type(2) {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    background: rgba(10, 20, 35, 0.4) !important;
+    border: 1.5px solid rgba(255,255,255,0.05) !important;
+    border-radius: 10px !important;
+    padding: 6px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    box-sizing: border-box !important;
+    align-self: center;
+  }
+
+  #tactic-tab-content-formations label {
+    font-size: 9.5px !important;
+    margin-bottom: 2px !important;
+    font-weight: 700 !important;
+    color: rgba(255,255,255,0.7) !important;
+    text-transform: none !important; /* Prevent uppercase squeeze to avoid cut-off text */
+    letter-spacing: 0.1px !important;
+    line-height: 1.2 !important;
+  }
+
+  #tactic-tab-content-formations .db-select {
+    padding: 4px 6px !important;
+    font-size: 10.5px !important;
+    height: 28px !important;
+    border-radius: 5px !important;
+    background: rgba(8, 14, 26, 0.9) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    color: #fff !important;
+    /* width auto so the select is exactly as wide as its longest option text */
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    white-space: nowrap !important;
+  }
+
+  /* Place Pitch Preview Card in col 2, spanning ALL 3 rows so it sits alongside selectors AND the diagnosis block.
+     Removed card background and border to trim all excess space on mobile. */
+  #tactic-tab-content-formations > div[style*="display: grid"] > div:last-of-type {
+    grid-column: 2 !important;
+    grid-row: 1 / span 3 !important; /* Now spans all 3 rows: formation, style, and diagnosis */
+    padding: 4px !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    min-height: auto !important;
+    height: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    box-sizing: border-box !important;
+  }
+
+  #tactic-tab-content-formations #modal-preview-title-text {
+    font-size: 10px !important;
+    margin-bottom: 4px !important;
+  }
+
+  /* Buttons for Team A/B selection - stacked vertically on mobile as requested */
+  #tactic-tab-content-formations div[style*="display: flex; gap: 8px; margin-bottom: 12px"] {
+    flex-direction: column !important;
+    margin-bottom: 6px !important;
+    gap: 5px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  #btn-team-a, 
+  #btn-team-b {
+    width: 100% !important;
+    padding: 5px 8px !important;
+    font-size: 9.5px !important;
+    border-radius: 5px !important;
+    text-align: center !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Preview Pitch container scaling - fills the right column width dynamically (~200px to ~250px) to be wide and spacious */
+  #tactic-tab-content-formations div[style*="aspect-ratio: 3/4"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    border-radius: 8px !important;
+    aspect-ratio: 3 / 4 !important; /* Restored to standard 3/4 aspect ratio to keep it long/tall */
+  }
+
+  /* Place Diagnosis block in col 1, row 3 — below the two selectors, alongside the pitch */
+  #tactic-tab-content-formations > div[style*="display: grid"] > div:first-of-type > div:nth-of-type(3) {
+    grid-column: 1 !important; /* Left column only — pitch occupies col 2 */
+    grid-row: 3 !important;
+    background: rgba(10, 20, 35, 0.4) !important;
+    border: 1.5px solid rgba(255,255,255,0.05) !important;
+    border-radius: 8px !important;
+    padding: 6px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    align-self: start !important;
+  }
+
+  #tactic-tab-content-formations h4 {
+    font-size: 9.5px !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  #modal-tactic-desc {
+    font-size: 8.5px !important;
+    padding: 4px 5px !important;
+    min-height: unset !important;
+    line-height: 1.3 !important;
+    overflow: hidden !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 4 !important;
+    -webkit-box-orient: vertical !important;
+  }
+
+  /* Optimize preview pitch player nodes for mobile - comfortable sizing since the pitch is now wide and spacious */
+  #modal-preview-pitch-nodes div[style*="position: absolute"] > div:first-child {
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 8.5px !important;
+    border-width: 1.2px !important;
+  }
+
+  #modal-preview-pitch-nodes div[style*="position: absolute"] > div:last-child {
+    font-size: 9px !important;
+    padding: 2px 4px !important;
+    max-width: 64px !important; /* Comfortable and spacious name tags */
+    margin-top: 1.5px !important;
+    border-radius: 4px !important;
+  }
+
+  /* Prevent horizontal overflow on simulation results squad lists */
+  .results-squad-list {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .player-row {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+}
+
+/* Base styles for the map scroll wrapper */
+.map-scroll-wrapper {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Scroll styles enabled dynamically on mobile devices */
+.map-scroll-wrapper.mobile-scroll-active {
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+.map-scroll-wrapper.mobile-scroll-active #map {
+  width: 1200px !important;
+  height: 50vh !important;
+  min-height: unset !important;
+}
+
+/* Modern Webkit Scrollbar for the map wrapper */
+.map-scroll-wrapper.mobile-scroll-active::-webkit-scrollbar {
+  height: 6px !important;
+}
+.map-scroll-wrapper.mobile-scroll-active::-webkit-scrollbar-track {
+  background: rgba(2, 8, 22, 0.5) !important;
+}
+.map-scroll-wrapper.mobile-scroll-active::-webkit-scrollbar-thumb {
+  background: rgba(0, 240, 255, 0.3) !important;
+  border-radius: 3px !important;
+}
+.map-scroll-wrapper.mobile-scroll-active::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 240, 255, 0.6) !important;
+}
+
+/* Estilos premium para los botones de zoom personalizados */
+.custom-zoom-controls {
+  display: none; /* Ocultos por defecto en desktop */
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 9999; /* Asegurar que flote sobre el mapa y tooltip */
+}
+
+.has-custom-zoom .custom-zoom-controls {
+  display: flex; /* Se muestran solo en móvil */
+}
+
+.custom-zoom-controls .zoom-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: rgba(10, 20, 30, 0.9);
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  color: #00f0ff;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
+  backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.custom-zoom-controls .zoom-btn:active {
+  background: #00f0ff;
+  color: #020816;
+  box-shadow: 0 0 25px #00f0ff;
+  transform: scale(0.95);
+}
+
+
+/* ==========================================================================
+   Mobile Payment Modal & Voucher – Compact layout (no scroll needed)
+   ========================================================================== */
+@media (max-width: 900px) {
+
+  /* ── Modal overlay: allow centering with vertical padding ── */
+  #payment-modal.modal-overlay,
+  #upgrade-modal.modal-overlay {
+    padding: 10px !important;
+    align-items: center !important;
+  }
+
+  /* ── Modal box: constrained height, internal scroll only if unavoidable ── */
+  #payment-modal > .modal {
+    padding: 20px 16px 16px !important;
+    border-radius: 18px !important;
+    max-height: 95dvh !important;
+    max-height: 95vh !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-y: auto !important;
+    box-sizing: border-box !important;
+  }
+
+  /* ── CHECKOUT VIEW – compact every element ── */
+
+  /* Big lock icon */
+  #payment-modal-icon {
+    font-size: 36px !important;
+    margin-bottom: 10px !important;
+  }
+
+  /* Title */
+  #payment-checkout-view h2,
+  #payment-modal-title {
+    font-size: 18px !important;
+    margin-bottom: 6px !important;
+  }
+
+  /* Description paragraph */
+  #payment-modal-desc {
+    font-size: 12px !important;
+    line-height: 1.45 !important;
+    margin-bottom: 12px !important;
+  }
+
+  /* "Total a Pagar" price box */
+  #payment-checkout-view > div[style*="Total a Pagar"],
+  #payment-checkout-view > div[style*="rgba(0, 240, 255, 0.04)"] {
+    padding: 10px 14px !important;
+    margin-bottom: 12px !important;
+    border-radius: 12px !important;
+  }
+
+  #payment-modal-price {
+    font-size: 20px !important;
+  }
+
+  /* Form */
+  #payment-gateway-form {
+    gap: 8px !important;
+    margin-bottom: 12px !important;
+  }
+
+  #payment-gateway-form label {
+    font-size: 9px !important;
+  }
+
+  #payment-gateway-form input {
+    padding: 8px 10px !important;
+    font-size: 12px !important;
+  }
+
+  /* Pay confirm button */
+  #btn-simulate-payment {
+    padding: 11px !important;
+    font-size: 13px !important;
+    margin-bottom: 10px !important;
+    border-radius: 10px !important;
+  }
+
+  /* "Volver y elegir plan Gratis" link */
+  #payment-checkout-view > a {
+    font-size: 11px !important;
+  }
+
+  /* ── SUCCESS / VOUCHER VIEW – compact ── */
+  #payment-success-view {
+    gap: 0 !important;
+  }
+
+  /* Success circle */
+  #payment-success-view > div[style*="width: 80px"] {
+    width: 58px !important;
+    height: 58px !important;
+    margin-bottom: 10px !important;
+  }
+
+  #payment-success-view > div[style*="width: 80px"] span {
+    font-size: 28px !important;
+  }
+
+  /* "¡Pago Confirmado!" */
+  #payment-success-view h2 {
+    font-size: 18px !important;
+    margin-bottom: 4px !important;
+  }
+
+  /* Subtitle text */
+  #payment-success-view > p {
+    font-size: 11.5px !important;
+    line-height: 1.45 !important;
+    margin-bottom: 12px !important;
+  }
+
+  /* Transaction details card */
+  #payment-success-view > div[style*="background: rgba(10, 20, 35"] {
+    padding: 12px 14px !important;
+    margin-bottom: 12px !important;
+    border-radius: 12px !important;
+    gap: 8px !important;
+  }
+
+  #payment-success-view > div[style*="background: rgba(10, 20, 35"] span[style*="font-size: 11px"] {
+    font-size: 9.5px !important;
+  }
+
+  #payment-success-view > div[style*="background: rgba(10, 20, 35"] span[style*="font-size: 13px"],
+  #payment-success-view > div[style*="background: rgba(10, 20, 35"] span[style*="font-size: 14px"] {
+    font-size: 12px !important;
+  }
+
+  /* Download PDF button */
+  #btn-success-download-pdf {
+    padding: 10px !important;
+    font-size: 13px !important;
+    margin-bottom: 8px !important;
+    border-radius: 10px !important;
+  }
+
+  /* Continue button */
+  #btn-success-continue {
+    padding: 11px !important;
+    font-size: 13px !important;
+    border-radius: 10px !important;
+  }
+
+  /* ── ROLE VIEW – compact ── */
+  #payment-role-view h2 {
+    font-size: 18px !important;
+    margin-bottom: 4px !important;
+  }
+
+  #payment-role-view > p {
+    font-size: 12px !important;
+    margin-bottom: 14px !important;
+    line-height: 1.45 !important;
+  }
+
+  #payment-role-view > div[style*="background: rgba(8, 14, 26"] {
+    padding: 16px !important;
+    border-radius: 12px !important;
+    margin-bottom: 14px !important;
+  }
+
+  #payment-role-view input {
+    padding: 10px 12px !important;
+    font-size: 13px !important;
+  }
+
+  #btn-success-role-continue {
+    padding: 11px !important;
+    font-size: 13px !important;
+    border-radius: 10px !important;
+  }
+}

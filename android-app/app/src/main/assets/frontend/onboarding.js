@@ -116,27 +116,54 @@ function setupOnboarding() {
   let geoJsonLayer = null;
   let tooltipHideTimer = null;
 
+  const isMobileDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0 && window.innerWidth <= 1024);
+
   const map = L.map('map', {
-    center: [25, 0],
-    zoom: 2.0,
-    minZoom: 2.0,
-    maxZoom: 2.0, // Bloqueamos zoom
-    dragging: false,
-    scrollWheelZoom: false, // Desactivamos scroll
+    center: [20, 0],
+    zoom: isMobileDevice ? 1.5 : 2,
+    minZoom: isMobileDevice ? 1 : 2,   // Allow zoom-in/out on mobile only
+    maxZoom: isMobileDevice ? 4 : 2,
+    dragging: false,                   // Disable dragging on both to avoid conflicts
+    scrollWheelZoom: false,
     doubleClickZoom: false,
     boxZoom: false,
     keyboard: false,
-    touchZoom: false,
-    zoomControl: false,
+    touchZoom: isMobileDevice,
+    zoomControl: false,                // We use custom zoom controls fixed to the container on mobile
     attributionControl: false,
     worldCopyJump: false,
   });
   _onboardingMap = map;
-  
-  // Bloqueo total absoluto
-  map.dragging.disable();
-  if (map.tap) map.tap.disable();
-  map.off('mousedown touchstart');
+
+  if (isMobileDevice) {
+    const wrapper = document.getElementById('map-scroll-wrapper');
+    if (wrapper) {
+      wrapper.classList.add('mobile-scroll-active');
+    }
+    const container = document.getElementById('onboarding-step1-container');
+    if (container) {
+      container.classList.add('has-custom-zoom');
+    }
+  }
+
+  // Configurar listeners de botones de zoom personalizados para móvil
+  const btnZoomIn = document.getElementById('btn-custom-zoom-in');
+  const btnZoomOut = document.getElementById('btn-custom-zoom-out');
+  if (btnZoomIn && btnZoomOut) {
+    btnZoomIn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      map.zoomIn();
+    });
+    btnZoomOut.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      map.zoomOut();
+    });
+  }
+
+  // Forzar redibujado cuando el contenedor ya tiene sus dimensiones CSS definitivas
+  setTimeout(() => { map.invalidateSize({ animate: false }); }, 200);
 
   function getStyle(feature) {
     const name = getCountryName(feature.properties);
@@ -160,11 +187,25 @@ function setupOnboarding() {
 
     const mapContainer = document.getElementById('map');
     const rect = mapContainer.getBoundingClientRect();
-    let x = e.originalEvent.clientX - rect.left + 14;
-    let y = e.originalEvent.clientY - rect.top - 80;
+    let x, y;
+    if (e.latlng && _onboardingMap) {
+      const containerPoint = _onboardingMap.latLngToContainerPoint(e.latlng);
+      x = containerPoint.x + 14;
+      y = containerPoint.y - 80;
+    } else {
+      const orig = e.originalEvent;
+      let clientX = orig.clientX;
+      let clientY = orig.clientY;
+      if (orig && orig.touches && orig.touches.length > 0) {
+        clientX = orig.touches[0].clientX;
+        clientY = orig.touches[0].clientY;
+      }
+      x = (clientX || 0) - rect.left + 14;
+      y = (clientY || 0) - rect.top - 80;
+    }
 
-    if (x + 230 > rect.width) x = e.originalEvent.clientX - rect.left - 230;
-    if (y < 0) y = e.originalEvent.clientY - rect.top + 14;
+    if (x + 230 > rect.width) x = x - 244;
+    if (y < 0) y = y + 94;
 
     tooltip.style.left = x + 'px';
     tooltip.style.top = y + 'px';
@@ -172,9 +213,9 @@ function setupOnboarding() {
   }
 
   function updateUI() {
-    const footer = document.querySelector('.onboarding-footer-hud');
+    const footer = document.querySelector('.onboarding-footer-hud.floating');
     chipsContainer.innerHTML = '';
-    
+
     if (selectedCountries.length > 0) {
       selectedCountries.forEach(name => {
         const data = leagueData[name];
@@ -188,7 +229,7 @@ function setupOnboarding() {
       if (footer) footer.classList.add('visible');
     } else {
       chipsContainer.innerHTML = '<span id="chip-empty" class="chip-empty">Ningún país seleccionado</span>';
-      footerHint.textContent = 'Haz clic en un país con liga profesional';
+      footerHint.textContent = 'Toca un país con liga profesional';
       continueBtn.disabled = true;
       if (footer) footer.classList.remove('visible');
     }
@@ -962,13 +1003,27 @@ function setupOnboarding() {
         },
         click: (e) => {
           L.DomEvent.stopPropagation(e);
-          if (selectedCountries.includes(name)) {
-            selectedCountries = selectedCountries.filter(c => c !== name);
+          if (isMobileDevice) {
+            // En mobile: un tap selecciona/deselecciona el país directamente
+            // No usamos el tooltip intermedio porque está dentro de overflow:hidden
+            if (selectedCountries.includes(name)) {
+              selectedCountries = selectedCountries.filter(c => c !== name);
+            } else {
+              // Solo un país a la vez en mobile para simplificar
+              selectedCountries = [name];
+            }
+            updateUI();
+            geoJsonLayer.eachLayer(l => geoJsonLayer.resetStyle(l));
           } else {
-            selectedCountries.push(name);
+            // En desktop: click alterna selección
+            if (selectedCountries.includes(name)) {
+              selectedCountries = selectedCountries.filter(c => c !== name);
+            } else {
+              selectedCountries.push(name);
+            }
+            updateUI();
+            geoJsonLayer.eachLayer(l => geoJsonLayer.resetStyle(l));
           }
-          updateUI();
-          geoJsonLayer.eachLayer(l => geoJsonLayer.resetStyle(l));
         }
       });
     }
@@ -998,6 +1053,7 @@ function setupOnboarding() {
 
   // Unified payment gateway will handle showPaymentModal, closePaymentModal, and simulatePayment.
 
+  // GeoJSON fetch — carga el mapa mundial
   fetch('https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson')
     .then(r => r.json())
     .then(data => {
@@ -1006,10 +1062,16 @@ function setupOnboarding() {
         onEachFeature: onEachFeature,
         filter: (f) => getCountryName(f.properties) !== 'Antarctica'
       }).addTo(map);
-      // Auto-encuadre máximo (Cero padding para ganar cada píxel)
-      map.fitBounds(geoJsonLayer.getBounds(), {
-        padding: [0, 0]
-      });
+
+      // Invalidar primero para que Leaflet conozca el tamaño real del contenedor
+      map.invalidateSize({ animate: false });
+
+      if (isMobileDevice) {
+        // En mobile: encuadre centrado a nivel 1.5 para poder desplazarse horizontalmente
+        map.setView([20, 0], 1.5, { animate: false });
+      } else {
+        map.fitBounds(geoJsonLayer.getBounds(), { padding: [0, 0] });
+      }
     });
 }
 

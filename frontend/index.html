@@ -3,7 +3,12 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Scout AI" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#040911" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
@@ -82,19 +87,27 @@
       </nav>
 
       <div class="onboarding-header-text">
-        <h1 id="onboarding-header-title" style="font-size: 38px; margin-top: 0px;">¿Qué ligas quieres explorar?</h1>
+        <h1 id="onboarding-header-title">¿Qué ligas quieres explorar?</h1>
         <p id="onboarding-header-subtitle">Selecciona los países con ligas profesionales que más te interesan.</p>
       </div>
     </div>
 
     <!-- STEP 1: MAP SELECTION -->
     <div id="onboarding-step1-container" class="onboarding-step-container map-viewport-hud-container">
-      <div id="map"></div>
+      <div id="map-scroll-wrapper" class="map-scroll-wrapper">
+        <div id="map"></div>
+      </div>
       
       <div class="country-tooltip" id="tooltip">
           <div class="tt-name" id="tt-name">España</div>
           <div class="tt-info" id="tt-info">La Liga · 20 equipos</div>
           <button class="btn-ver-liga" onclick="selectCountry()">Ver liga</button>
+      </div>
+
+      <!-- Control de zoom flotante fijo para móvil -->
+      <div class="custom-zoom-controls">
+        <button id="btn-custom-zoom-in" class="zoom-btn" title="Acercar">+</button>
+        <button id="btn-custom-zoom-out" class="zoom-btn" title="Alejar">−</button>
       </div>
 
       <!-- FLOATING BOTTOM PANEL - Ahora DENTRO del visor -->
@@ -164,7 +177,7 @@
     <div id="onboarding-step3-container" class="onboarding-step-container" style="display: none; flex: 1; width: 95%; max-width: 1400px; margin: 0 auto 20px; position: relative; z-index: 1; background: transparent; border-radius: 15px;">
       <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; padding: 20px; box-sizing: border-box;">
         
-        <h2 id="step3-title" style="font-size: 36px; font-weight: 800; color: #fff; margin-bottom: 10px; text-shadow: 0 0 10px rgba(255,255,255,0.2); text-align: center;">¿Cuál es tu plan?</h2>
+        <h2 id="step3-title" style="font-weight: 800; color: #fff; margin-bottom: 10px; text-shadow: 0 0 10px rgba(255,255,255,0.2); text-align: center;">¿Cuál es tu plan?</h2>
         <p id="step3-subtitle" style="font-size: 16px; color: rgba(255,255,255,0.6); margin-bottom: 40px; text-align: center;">Tu experiencia se adaptará según tu suscripción elegida.</p>
 
         <!-- Tiers Grid -->
@@ -235,6 +248,12 @@
       <span class="logo-icon">🌐</span>
       <span>SCOUT AI</span>
     </div>
+
+    <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menú">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
 
     <div class="nav-links">
       <button class="nav-item" data-section="my-club" id="nav-my-club" style="display: none;">
@@ -756,19 +775,21 @@
           </div>
         </div>
 
-        <div class="h2h-section">
-          <div class="h2h-header">
-            <span class="h2h-icon">📊</span>
-            <h3>ESTADÍSTICAS CARA A CARA</h3>
+        <div class="comparison-visuals-wrapper">
+          <div class="h2h-section">
+            <div class="h2h-header">
+              <span class="h2h-icon">📊</span>
+              <h3>ESTADÍSTICAS CARA A CARA</h3>
+            </div>
+            <div class="h2h-bars" id="h2h-bars">
+              <!-- Bars will be injected by JS -->
+            </div>
           </div>
-          <div class="h2h-bars" id="h2h-bars">
-            <!-- Bars will be injected by JS -->
+  
+          <!-- Radar Chart for Visual Comparison -->
+          <div class="comparison-chart-container" style="height: 400px; position: relative; margin-top: 30px; background: rgba(0,0,0,0.2); border-radius: 15px; padding: 20px;">
+            <canvas id="comparisonRadarChart"></canvas>
           </div>
-        </div>
-
-        <!-- Radar Chart for Visual Comparison -->
-        <div class="comparison-chart-container" style="height: 400px; position: relative; margin-top: 30px; background: rgba(0,0,0,0.2); border-radius: 15px; padding: 20px;">
-          <canvas id="comparisonRadarChart"></canvas>
         </div>
 
         <div class="compare-result-body" id="compare-result-body"></div>
@@ -1525,7 +1546,7 @@
           <!-- Left Column: Starting XI -->
           <div style="background: rgba(10, 20, 35, 0.4); border: 1.5px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 18px; display: flex; flex-direction: column;">
             <h3 style="font-size: 14.5px; font-weight: 700; color: #00f0ff; margin-bottom: 12px; display: flex; justify-content: space-between; border-bottom: 1px dashed rgba(0,240,255,0.15); padding-bottom: 8px; margin-top: 0;">
-              <span>🟢 Titulares en el Campo</span>
+              <span>🟢 Titulares</span>
               <span id="starting-players-count" style="font-size: 12px; color: rgba(255,255,255,0.4);">11 / 11</span>
             </h3>
             <div id="modal-starting-list" style="overflow-y: auto; max-height: 310px; min-height: 310px; display: flex; flex-direction: column; gap: 8px; padding-right: 5px;">
@@ -1536,7 +1557,7 @@
           <!-- Right Column: Bench -->
           <div style="background: rgba(10, 20, 35, 0.4); border: 1.5px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 18px; display: flex; flex-direction: column;">
             <h3 style="font-size: 14.5px; font-weight: 700; color: #ffbe10; margin-bottom: 12px; display: flex; justify-content: space-between; border-bottom: 1px dashed rgba(255,190,16,0.15); padding-bottom: 8px; margin-top: 0;">
-              <span>🟡 Jugadores Suplentes (Banquillo)</span>
+              <span>🟡 Suplentes</span>
               <span id="bench-players-count" style="font-size: 12px; color: rgba(255,255,255,0.4);">0 suplentes</span>
             </h3>
             <div id="modal-bench-list" style="overflow-y: auto; max-height: 310px; min-height: 310px; display: flex; flex-direction: column; gap: 8px; padding-right: 5px;">
@@ -1637,6 +1658,59 @@
     <div class="avatar-modal-container" onclick="event.stopPropagation()">
       <button class="avatar-modal-close" onclick="closeAvatarModal()">✕</button>
       <img id="avatar-modal-img" class="avatar-modal-img" src="" alt="Avatar Grande">
+    </div>
+  </div>
+
+  <!-- Cajón de navegación móvil (Sidebar) -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="nav-brand">
+        <span class="logo-icon">🌐</span>
+        <span>SCOUT AI</span>
+      </div>
+      <button class="close-mobile-btn" onclick="closeMobileMenu()" aria-label="Cerrar menú">✕</button>
+    </div>
+    <div class="sidebar-content">
+      <div class="mobile-nav-links">
+        <button class="nav-item" data-section="my-club" id="nav-my-club-mobile" style="display: none;">
+          <span class="nav-icon">🛡️</span>
+          <span data-i18n="nav_my_club">MI CLUB</span>
+        </button>
+        <button class="nav-item active" data-section="players">
+          <span class="nav-icon">👥</span>
+          <span data-i18n="nav_players">JUGADORES</span>
+        </button>
+        <button class="nav-item" data-section="compare">
+          <span class="nav-icon">⚖️</span>
+          <span data-i18n="nav_compare">COMPARAR</span>
+        </button>
+        <button class="nav-item" data-section="simulations">
+          <span class="nav-icon">🎮</span>
+          <span data-i18n="nav_simulations">SIMULACIONES</span>
+        </button>
+        <button class="nav-item" data-section="chat">
+          <span class="nav-icon">🤖</span>
+          <span data-i18n="nav_chat">IA CHAT</span>
+        </button>
+        <button class="nav-item" data-section="predictions">
+          <span class="nav-icon">🔮</span>
+          <span data-i18n="nav_predictions">PREDICCIONES</span>
+        </button>
+      </div>
+      
+      <div class="sidebar-footer">
+        <div class="lang-toggle-compact" style="margin-bottom: 20px; justify-content: center; width: 100%;">
+          <span class="lang-btn active" data-lang="es">ES</span>
+          <span class="lang-btn" data-lang="en">EN</span>
+        </div>
+        <div class="user-profile-compact" id="user-profile-compact-mobile" onclick="goToSection('profile')"
+          style="display: flex; align-items: center; gap: 10px; padding: 8px 16px; background: rgba(255,255,255,0.05); border-radius: 20px; border: 1px solid var(--border); cursor: pointer; transition: background 0.2s; width: 100%;">
+          <img id="user-avatar-mobile" src="" style="width: 24px; height: 24px; border-radius: 50%; display: none;">
+          <span id="user-name-mobile" style="font-size: 0.85rem; font-weight: 600; color: var(--text-1);">Usuario</span>
+          <button id="btn-logout-mobile" title="Cerrar sesión"
+            style="background: none; border: none; color: var(--red); cursor: pointer; font-size: 1.1rem; padding: 0; margin-left: auto; display: flex; align-items: center;">📤</button>
+        </div>
+      </div>
     </div>
   </div>
 
