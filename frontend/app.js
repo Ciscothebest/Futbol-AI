@@ -500,7 +500,16 @@ async function fetchWithAuth(url, options = {}) {
 }
 
 let sessionId = null;
-let allPlayers = [];
+let allPlayers = (() => {
+  try {
+    const cached = localStorage.getItem('scout_ai_cached_players');
+    return cached ? JSON.parse(cached) : [];
+  } catch (e) {
+    console.error('Error loading cached players:', e);
+    return [];
+  }
+})();
+window.allPlayers = allPlayers;
 let filteredPlayers = [];
 let currentPage = 0;
 const PAGE_SIZE = 30;
@@ -608,12 +617,33 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupCompareSearch();
   setupAvatarUpload();
   setupFilters();
-  await checkBackendStatus();
+  const hasCache = allPlayers && allPlayers.length > 0;
+  if (hasCache) {
+    populateLeagueFilter();
+    renderPlayers();
+    renderFeaturedPlayers();
+    buildHomePrompts();
+  }
+
+  const initFetches = (async () => {
+    try {
+      await Promise.allSettled([
+        checkBackendStatus(),
+        loadPlayers()
+      ]);
+      renderPlayers();
+      renderFeaturedPlayers();
+      buildHomePrompts();
+    } catch (err) {
+      console.error('Error during initial background fetch:', err);
+    }
+  })();
+
+  if (!hasCache) {
+    await initFetches;
+  }
+
   setTimeout(checkBackendStatus, 2000);
-  await loadPlayers();
-  renderPlayers(); // Initial render for default active section
-  renderFeaturedPlayers();
-  buildHomePrompts();
 
   // Ensure splash finishes its animation before the app is fully interactive
   await splashDone;
@@ -5194,11 +5224,15 @@ async function loadPlayers() {
     if (!res.ok) throw new Error('API failed');
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Error from server');
-    allPlayers = Array.isArray(data?.players) ? data.players : [];
+    if (Array.isArray(data?.players)) {
+      allPlayers = data.players;
+      window.allPlayers = allPlayers;
+      localStorage.setItem('scout_ai_cached_players', JSON.stringify(allPlayers));
+    }
     populateLeagueFilter(); // Populate dropdowns
   } catch (err) {
     console.error('loadPlayers error:', err);
-    allPlayers = [];
+    // Keep existing cached players if they are already populated
   }
 }
 
