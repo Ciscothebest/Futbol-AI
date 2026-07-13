@@ -7211,64 +7211,6 @@
       ]
     },
     {
-      "id": "alexis-mac-allister",
-      "name": "Alexis Mac Allister",
-      "photoId": "243912",
-      "nickname": "Macca",
-      "age": 25,
-      "nationality": "Argentinian",
-      "nationalityEs": "Argentino",
-      "flag": "????",
-      "position": "CM",
-      "positionEs": "Mediocentro",
-      "currentTeam": "Liverpool",
-      "league": "Premier League",
-      "country": "England",
-      "jerseyNumber": 10,
-      "height": 176,
-      "weight": 72,
-      "preferredFoot": "Right",
-      "marketValue": 75000000,
-      "overallRating": 8.5,
-      "stats": {
-        "season": "2024-25",
-        "matches": 20,
-        "goals": 5,
-        "assists": 5,
-        "yellowCards": 4
-      },
-      "careerTotals": {
-        "goals": 30,
-        "assists": 28,
-        "matches": 200
-      },
-      "trophies": [
-        "FIFA World Cup",
-        "EFL Cup"
-      ],
-      "transfers": [
-        {
-          "year": 2023,
-          "from": "Brighton & Hove Albion",
-          "to": "Liverpool",
-          "fee": "35M £"
-        }
-      ],
-      "bio": "A World Cup-winning Argentine midfielder, known for his creativity, passing, and tactical intelligence.",
-      "bioEs": "Un mediocampista argentino campeón del mundo, conocido por su creatividad, pases e inteligencia táctica.",
-      "strengths": [
-        "Passing",
-        "Vision",
-        "Long Shots"
-      ],
-      "tags": [
-        "midfielder",
-        "playmaker",
-        "technical"
-      ],
-      "history": null
-    },
-    {
       "id": "alexis-sanchez",
       "name": "Alexis Sánchez",
       "photoId": "279478",
@@ -23957,118 +23899,6 @@
       ]
     },
     {
-      "id": "bruno-guimaraes",
-      "name": "Bruno Guimarães",
-      "photoId": "228499",
-      "nickname": "Bruninho",
-      "age": 26,
-      "nationality": "Brazilian",
-      "nationalityEs": "Brasileño",
-      "flag": "????",
-      "position": "CM",
-      "positionEs": "Mediocentro",
-      "currentTeam": "Newcastle United",
-      "league": "Premier League",
-      "country": "England",
-      "jerseyNumber": 39,
-      "height": 182,
-      "weight": 78,
-      "preferredFoot": "Right",
-      "marketValue": 85000000,
-      "overallRating": 8.6,
-      "stats": {
-        "season": "2024-25",
-        "matches": 21,
-        "goals": 3,
-        "assists": 4,
-        "yellowCards": 6
-      },
-      "careerTotals": {
-        "goals": 25,
-        "assists": 35,
-        "matches": 220
-      },
-      "trophies": [
-        "Copa Sudamericana"
-      ],
-      "transfers": [
-        {
-          "year": 2022,
-          "from": "Lyon",
-          "to": "Newcastle United",
-          "fee": "40M £"
-        }
-      ],
-      "bio": "A tenacious Brazilian central midfielder, known for his all-around game and leadership.",
-      "bioEs": "Un tenaz mediocentro brasileño, conocido por su juego completo y liderazgo.",
-      "strengths": [
-        "Passing",
-        "Tackling",
-        "Work Rate"
-      ],
-      "tags": [
-        "midfielder",
-        "box-to-box",
-        "leader"
-      ],
-      "history": [
-        {
-          "season": "2024/25",
-          "team": "Newcastle United",
-          "matches": 21,
-          "goals": 3,
-          "assists": 4,
-          "yellowCards": 6,
-          "rating": 8.6
-        },
-        {
-          "season": "2023/24",
-          "team": "Newcastle United",
-          "matches": 19,
-          "goals": 2,
-          "assists": 3,
-          "yellowCards": 6,
-          "rating": 8.4
-        },
-        {
-          "season": "2022/23",
-          "team": "Newcastle United",
-          "matches": 17,
-          "goals": 1,
-          "assists": 2,
-          "yellowCards": 6,
-          "rating": 8.3
-        },
-        {
-          "season": "2021/22",
-          "team": "Newcastle United",
-          "matches": 15,
-          "goals": 0,
-          "assists": 1,
-          "yellowCards": 6,
-          "rating": 8.2
-        },
-        {
-          "season": "2020/21",
-          "team": "Newcastle United",
-          "matches": 15,
-          "goals": 0,
-          "assists": 0,
-          "yellowCards": 6,
-          "rating": 8
-        },
-        {
-          "season": "2019/20",
-          "team": "Newcastle United",
-          "matches": 15,
-          "goals": 0,
-          "assists": 0,
-          "yellowCards": 6,
-          "rating": 7.8
-        }
-      ]
-    },
-    {
       "id": "bryan-gil",
       "name": "Bryan Gil",
       "photoId": "245410",
@@ -24407,119 +24237,6 @@
           "assists": 1,
           "yellowCards": 2,
           "rating": 6.6
-        }
-      ]
-    },
-    {
-      "id": "bukayo-saka",
-      "name": "Bukayo Saka",
-      "photoId": "246669",
-      "nickname": "B",
-      "age": 22,
-      "nationality": "English",
-      "nationalityEs": "Inglés",
-      "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
-      "position": "RW",
-      "positionEs": "Extremo Derecho",
-      "currentTeam": "Arsenal",
-      "league": "Premier League",
-      "country": "England",
-      "jerseyNumber": 7,
-      "height": 178,
-      "weight": 72,
-      "preferredFoot": "Left",
-      "marketValue": 130000000,
-      "overallRating": 8.8,
-      "stats": {
-        "season": "2024-25",
-        "matches": 25,
-        "goals": 10,
-        "assists": 8,
-        "yellowCards": 2
-      },
-      "careerTotals": {
-        "goals": 60,
-        "assists": 50,
-        "matches": 200
-      },
-      "trophies": [
-        "FA Cup",
-        "PFA Young Player of the Year"
-      ],
-      "transfers": [
-        {
-          "year": 2018,
-          "from": "Arsenal Academy",
-          "to": "Arsenal",
-          "fee": "0"
-        }
-      ],
-      "bio": "An electric English winger, a key player for Arsenal known for his dribbling and goal contribution.",
-      "bioEs": "Un eléctrico extremo inglés, jugador clave para el Arsenal conocido por su regate y contribución a goles.",
-      "strengths": [
-        "Dribbling",
-        "Pace",
-        "Crossing"
-      ],
-      "tags": [
-        "winger",
-        "dribbler",
-        "fast"
-      ],
-      "history": [
-        {
-          "season": "2024/25",
-          "team": "Arsenal",
-          "matches": 25,
-          "goals": 10,
-          "assists": 8,
-          "yellowCards": 2,
-          "rating": 8.8
-        },
-        {
-          "season": "2023/24",
-          "team": "Arsenal",
-          "matches": 23,
-          "goals": 9,
-          "assists": 7,
-          "yellowCards": 2,
-          "rating": 8.7
-        },
-        {
-          "season": "2022/23",
-          "team": "Arsenal",
-          "matches": 21,
-          "goals": 8,
-          "assists": 6,
-          "yellowCards": 2,
-          "rating": 8.5
-        },
-        {
-          "season": "2021/22",
-          "team": "Arsenal",
-          "matches": 19,
-          "goals": 7,
-          "assists": 5,
-          "yellowCards": 2,
-          "rating": 8.4
-        },
-        {
-          "season": "2020/21",
-          "team": "Arsenal",
-          "matches": 17,
-          "goals": 6,
-          "assists": 4,
-          "yellowCards": 2,
-          "rating": 8.2
-        },
-        {
-          "season": "2019/20",
-          "team": "Arsenal",
-          "matches": 15,
-          "goals": 5,
-          "assists": 3,
-          "yellowCards": 2,
-          "rating": 8.1
         }
       ]
     },
@@ -30637,119 +30354,6 @@
           "yellowCards": 2,
           "rating": 6.8,
           "injuries": "Ninguna"
-        }
-      ]
-    },
-    {
-      "id": "cole-palmer",
-      "name": "Cole Palmer",
-      "photoId": "257534",
-      "nickname": "Cold Palmer",
-      "age": 22,
-      "nationality": "English",
-      "nationalityEs": "Inglés",
-      "flag": "??????????????",
-      "position": "CAM",
-      "positionEs": "Mediocentro Ofensivo",
-      "currentTeam": "Chelsea",
-      "league": "Premier League",
-      "country": "England",
-      "jerseyNumber": 20,
-      "height": 189,
-      "weight": 79,
-      "preferredFoot": "Left",
-      "marketValue": 80000000,
-      "overallRating": 8.6,
-      "stats": {
-        "season": "2024-25",
-        "matches": 24,
-        "goals": 12,
-        "assists": 7,
-        "yellowCards": 3
-      },
-      "careerTotals": {
-        "goals": 35,
-        "assists": 20,
-        "matches": 100
-      },
-      "trophies": [
-        "UEFA Super Cup",
-        "Premier League"
-      ],
-      "transfers": [
-        {
-          "year": 2023,
-          "from": "Manchester City",
-          "to": "Chelsea",
-          "fee": "42.5M £"
-        }
-      ],
-      "bio": "An exciting English attacking midfielder with exceptional dribbling and penalty-taking skills.",
-      "bioEs": "Un emocionante mediocentro ofensivo inglés con habilidades excepcionales de regate y lanzamiento de penaltis.",
-      "strengths": [
-        "Dribbling",
-        "Penalties",
-        "Vision"
-      ],
-      "tags": [
-        "playmaker",
-        "skillful",
-        "finisher"
-      ],
-      "history": [
-        {
-          "season": "2024/25",
-          "team": "Chelsea",
-          "matches": 24,
-          "goals": 12,
-          "assists": 7,
-          "yellowCards": 3,
-          "rating": 8.6
-        },
-        {
-          "season": "2023/24",
-          "team": "Chelsea",
-          "matches": 22,
-          "goals": 11,
-          "assists": 6,
-          "yellowCards": 3,
-          "rating": 8.4
-        },
-        {
-          "season": "2022/23",
-          "team": "Chelsea",
-          "matches": 20,
-          "goals": 10,
-          "assists": 5,
-          "yellowCards": 3,
-          "rating": 8.3
-        },
-        {
-          "season": "2021/22",
-          "team": "Chelsea",
-          "matches": 18,
-          "goals": 9,
-          "assists": 4,
-          "yellowCards": 3,
-          "rating": 8.2
-        },
-        {
-          "season": "2020/21",
-          "team": "Chelsea",
-          "matches": 16,
-          "goals": 8,
-          "assists": 3,
-          "yellowCards": 3,
-          "rating": 8
-        },
-        {
-          "season": "2019/20",
-          "team": "Chelsea",
-          "matches": 15,
-          "goals": 7,
-          "assists": 2,
-          "yellowCards": 3,
-          "rating": 7.8
         }
       ]
     },
@@ -37891,118 +37495,6 @@
           "assists": 20,
           "yellowCards": 0,
           "rating": 9.2
-        }
-      ]
-    },
-    {
-      "id": "declan-rice",
-      "name": "Declan Rice",
-      "photoId": "234378",
-      "nickname": "Dec",
-      "age": 25,
-      "nationality": "English",
-      "nationalityEs": "Inglés",
-      "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
-      "position": "CDM",
-      "positionEs": "Mediocentro Defensivo",
-      "currentTeam": "Arsenal",
-      "league": "Premier League",
-      "country": "England",
-      "jerseyNumber": 41,
-      "height": 188,
-      "weight": 80,
-      "preferredFoot": "Right",
-      "marketValue": 110000000,
-      "overallRating": 8.8,
-      "stats": {
-        "season": "2024-25",
-        "matches": 24,
-        "goals": 4,
-        "assists": 5,
-        "yellowCards": 4
-      },
-      "careerTotals": {
-        "goals": 25,
-        "assists": 30,
-        "matches": 300
-      },
-      "trophies": [
-        "UEFA Europa Conference League"
-      ],
-      "transfers": [
-        {
-          "year": 2023,
-          "from": "West Ham United",
-          "to": "Arsenal",
-          "fee": "105M £"
-        }
-      ],
-      "bio": "A commanding English defensive midfielder known for his leadership and ball winning ability.",
-      "bioEs": "Un imponente mediocentro defensivo inglés conocido por su liderazgo y capacidad para recuperar balones.",
-      "strengths": [
-        "Tackling",
-        "Interceptions",
-        "Leadership"
-      ],
-      "tags": [
-        "midfielder",
-        "destroyer",
-        "leader"
-      ],
-      "history": [
-        {
-          "season": "2024/25",
-          "team": "Arsenal",
-          "matches": 24,
-          "goals": 4,
-          "assists": 5,
-          "yellowCards": 4,
-          "rating": 8.8
-        },
-        {
-          "season": "2023/24",
-          "team": "Arsenal",
-          "matches": 22,
-          "goals": 3,
-          "assists": 4,
-          "yellowCards": 4,
-          "rating": 8.7
-        },
-        {
-          "season": "2022/23",
-          "team": "Arsenal",
-          "matches": 20,
-          "goals": 2,
-          "assists": 3,
-          "yellowCards": 4,
-          "rating": 8.5
-        },
-        {
-          "season": "2021/22",
-          "team": "Arsenal",
-          "matches": 18,
-          "goals": 1,
-          "assists": 2,
-          "yellowCards": 4,
-          "rating": 8.4
-        },
-        {
-          "season": "2020/21",
-          "team": "Arsenal",
-          "matches": 16,
-          "goals": 0,
-          "assists": 1,
-          "yellowCards": 4,
-          "rating": 8.2
-        },
-        {
-          "season": "2019/20",
-          "team": "Arsenal",
-          "matches": 15,
-          "goals": 0,
-          "assists": 0,
-          "yellowCards": 4,
-          "rating": 8.1
         }
       ]
     },
@@ -52394,118 +51886,6 @@
           "assists": 0,
           "yellowCards": 2,
           "rating": 5.5
-        }
-      ]
-    },
-    {
-      "id": "gabriel-martinelli",
-      "name": "Gabriel Martinelli",
-      "photoId": "251566",
-      "nickname": "Gabi",
-      "age": 23,
-      "nationality": "Brazilian",
-      "nationalityEs": "Brasileño",
-      "flag": "????",
-      "position": "LW",
-      "positionEs": "Extremo Izquierdo",
-      "currentTeam": "Arsenal",
-      "league": "Premier League",
-      "country": "England",
-      "jerseyNumber": 11,
-      "height": 178,
-      "weight": 75,
-      "preferredFoot": "Right",
-      "marketValue": 70000000,
-      "overallRating": 8.4,
-      "stats": {
-        "season": "2024-25",
-        "matches": 20,
-        "goals": 7,
-        "assists": 4,
-        "yellowCards": 1
-      },
-      "careerTotals": {
-        "goals": 45,
-        "assists": 25,
-        "matches": 180
-      },
-      "trophies": [
-        "FA Cup"
-      ],
-      "transfers": [
-        {
-          "year": 2019,
-          "from": "Ituano",
-          "to": "Arsenal",
-          "fee": "6M £"
-        }
-      ],
-      "bio": "A dynamic Brazilian winger, known for his relentless energy, speed, and goal-scoring ability.",
-      "bioEs": "Un dinámico extremo brasileño, conocido por su energía incansable, velocidad y capacidad goleadora.",
-      "strengths": [
-        "Pace",
-        "Finishing",
-        "Work Rate"
-      ],
-      "tags": [
-        "winger",
-        "fast",
-        "energetic"
-      ],
-      "history": [
-        {
-          "season": "2024/25",
-          "team": "Arsenal",
-          "matches": 20,
-          "goals": 7,
-          "assists": 4,
-          "yellowCards": 1,
-          "rating": 8.4
-        },
-        {
-          "season": "2023/24",
-          "team": "Arsenal",
-          "matches": 18,
-          "goals": 6,
-          "assists": 3,
-          "yellowCards": 1,
-          "rating": 8.3
-        },
-        {
-          "season": "2022/23",
-          "team": "Arsenal",
-          "matches": 16,
-          "goals": 5,
-          "assists": 2,
-          "yellowCards": 1,
-          "rating": 8.1
-        },
-        {
-          "season": "2021/22",
-          "team": "Arsenal",
-          "matches": 15,
-          "goals": 4,
-          "assists": 1,
-          "yellowCards": 1,
-          "rating": 8
-        },
-        {
-          "season": "2020/21",
-          "team": "Arsenal",
-          "matches": 15,
-          "goals": 3,
-          "assists": 0,
-          "yellowCards": 1,
-          "rating": 7.8
-        },
-        {
-          "season": "2019/20",
-          "team": "Arsenal",
-          "matches": 15,
-          "goals": 2,
-          "assists": 0,
-          "yellowCards": 1,
-          "rating": 7.7
         }
       ]
     },
@@ -100121,118 +99501,6 @@
       ]
     },
     {
-      "id": "martin-odegaard",
-      "name": "Martin Ødegaard",
-      "photoId": "222665",
-      "nickname": "Ode",
-      "age": 25,
-      "nationality": "Norwegian",
-      "nationalityEs": "Noruego",
-      "flag": "🇳🇴",
-      "position": "CAM",
-      "positionEs": "Mediocentro Ofensivo",
-      "currentTeam": "Arsenal",
-      "league": "Premier League",
-      "country": "Norway",
-      "jerseyNumber": 8,
-      "height": 178,
-      "weight": 68,
-      "preferredFoot": "Left",
-      "marketValue": 95000000,
-      "overallRating": 8.9,
-      "stats": {
-        "season": "2024-25",
-        "matches": 23,
-        "goals": 8,
-        "assists": 9,
-        "yellowCards": 1
-      },
-      "careerTotals": {
-        "goals": 60,
-        "assists": 70,
-        "matches": 300
-      },
-      "trophies": [
-        "Eredivisie Talent of the Season"
-      ],
-      "transfers": [
-        {
-          "year": 2021,
-          "from": "Real Madrid",
-          "to": "Arsenal",
-          "fee": "35M €"
-        }
-      ],
-      "bio": "A creative Norwegian attacking midfielder and Arsenal captain, known for his vision and passing.",
-      "bioEs": "Un creativo mediocentro ofensivo noruego y capitán del Arsenal, conocido por su visión y pases.",
-      "strengths": [
-        "Vision",
-        "Passing",
-        "Dribbling"
-      ],
-      "tags": [
-        "playmaker",
-        "captain",
-        "creative"
-      ],
-      "history": [
-        {
-          "season": "2024/25",
-          "team": "Arsenal",
-          "matches": 23,
-          "goals": 8,
-          "assists": 9,
-          "yellowCards": 1,
-          "rating": 8.9
-        },
-        {
-          "season": "2023/24",
-          "team": "Arsenal",
-          "matches": 21,
-          "goals": 7,
-          "assists": 8,
-          "yellowCards": 1,
-          "rating": 8.8
-        },
-        {
-          "season": "2022/23",
-          "team": "Arsenal",
-          "matches": 19,
-          "goals": 6,
-          "assists": 7,
-          "yellowCards": 1,
-          "rating": 8.6
-        },
-        {
-          "season": "2021/22",
-          "team": "Arsenal",
-          "matches": 17,
-          "goals": 5,
-          "assists": 6,
-          "yellowCards": 1,
-          "rating": 8.5
-        },
-        {
-          "season": "2020/21",
-          "team": "Arsenal",
-          "matches": 15,
-          "goals": 4,
-          "assists": 5,
-          "yellowCards": 1,
-          "rating": 8.3
-        },
-        {
-          "season": "2019/20",
-          "team": "Arsenal",
-          "matches": 15,
-          "goals": 3,
-          "assists": 4,
-          "yellowCards": 1,
-          "rating": 8.2
-        }
-      ]
-    },
-    {
       "id": "martin-satriano",
       "name": "Martín Satriano",
       "photoId": "258661",
@@ -116694,118 +115962,6 @@
       ]
     },
     {
-      "id": "ollie-watkins",
-      "name": "Ollie Watkins",
-      "photoId": "232411",
-      "nickname": "Ollie",
-      "age": 28,
-      "nationality": "English",
-      "nationalityEs": "Inglés",
-      "flag": "??????????????",
-      "position": "ST",
-      "positionEs": "Delantero Centro",
-      "currentTeam": "Aston Villa",
-      "league": "Premier League",
-      "country": "England",
-      "jerseyNumber": 11,
-      "height": 180,
-      "weight": 70,
-      "preferredFoot": "Right",
-      "marketValue": 65000000,
-      "overallRating": 8.5,
-      "stats": {
-        "season": "2024-25",
-        "matches": 22,
-        "goals": 14,
-        "assists": 6,
-        "yellowCards": 3
-      },
-      "careerTotals": {
-        "goals": 120,
-        "assists": 45,
-        "matches": 350
-      },
-      "trophies": [
-        "Championship Player of the Season"
-      ],
-      "transfers": [
-        {
-          "year": 2020,
-          "from": "Brentford",
-          "to": "Aston Villa",
-          "fee": "28M £"
-        }
-      ],
-      "bio": "A prolific English striker known for his pace, finishing, and work rate.",
-      "bioEs": "Un prolífico delantero inglés conocido por su ritmo, definición y ética de trabajo.",
-      "strengths": [
-        "Finishing",
-        "Pace",
-        "Work Rate"
-      ],
-      "tags": [
-        "striker",
-        "goalscorer",
-        "fast"
-      ],
-      "history": [
-        {
-          "season": "2024/25",
-          "team": "Aston Villa",
-          "matches": 22,
-          "goals": 14,
-          "assists": 6,
-          "yellowCards": 3,
-          "rating": 8.5
-        },
-        {
-          "season": "2023/24",
-          "team": "Aston Villa",
-          "matches": 20,
-          "goals": 13,
-          "assists": 5,
-          "yellowCards": 3,
-          "rating": 8.3
-        },
-        {
-          "season": "2022/23",
-          "team": "Aston Villa",
-          "matches": 18,
-          "goals": 12,
-          "assists": 4,
-          "yellowCards": 3,
-          "rating": 8.2
-        },
-        {
-          "season": "2021/22",
-          "team": "Aston Villa",
-          "matches": 16,
-          "goals": 11,
-          "assists": 3,
-          "yellowCards": 3,
-          "rating": 8.1
-        },
-        {
-          "season": "2020/21",
-          "team": "Aston Villa",
-          "matches": 15,
-          "goals": 10,
-          "assists": 2,
-          "yellowCards": 3,
-          "rating": 7.9
-        },
-        {
-          "season": "2019/20",
-          "team": "Aston Villa",
-          "matches": 15,
-          "goals": 9,
-          "assists": 1,
-          "yellowCards": 3,
-          "rating": 7.8
-        }
-      ]
-    },
-    {
       "id": "omar-alderete",
       "name": "Omar Alderete",
       "photoId": "236055",
@@ -122503,120 +121659,6 @@
           "assists": 0,
           "yellowCards": 1,
           "rating": 5
-        }
-      ]
-    },
-    {
-      "id": "phil-foden",
-      "name": "Phil Foden",
-      "photoId": "237692",
-      "nickname": "Stockport Iniesta",
-      "age": 24,
-      "nationality": "English",
-      "nationalityEs": "Inglés",
-      "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
-      "position": "CAM",
-      "positionEs": "Mediocentro Ofensivo",
-      "currentTeam": "Manchester City",
-      "league": "Premier League",
-      "country": "England",
-      "jerseyNumber": 47,
-      "height": 171,
-      "weight": 70,
-      "preferredFoot": "Left",
-      "marketValue": 120000000,
-      "overallRating": 8.9,
-      "stats": {
-        "season": "2024-25",
-        "matches": 23,
-        "goals": 9,
-        "assists": 6,
-        "yellowCards": 1
-      },
-      "careerTotals": {
-        "goals": 80,
-        "assists": 60,
-        "matches": 250
-      },
-      "trophies": [
-        "Premier League",
-        "Champions League",
-        "FA Cup"
-      ],
-      "transfers": [
-        {
-          "year": 2017,
-          "from": "Man City Academy",
-          "to": "Manchester City",
-          "fee": "0"
-        }
-      ],
-      "bio": "A highly talented English midfielder, known for his close control, dribbling, and versatility.",
-      "bioEs": "Un talentoso mediocampista inglés, conocido por su control cercano, regate y versatilidad.",
-      "strengths": [
-        "Dribbling",
-        "Vision",
-        "Finishing"
-      ],
-      "tags": [
-        "playmaker",
-        "winger",
-        "technical"
-      ],
-      "history": [
-        {
-          "season": "2024/25",
-          "team": "Manchester City",
-          "matches": 23,
-          "goals": 9,
-          "assists": 6,
-          "yellowCards": 1,
-          "rating": 8.9
-        },
-        {
-          "season": "2023/24",
-          "team": "Manchester City",
-          "matches": 21,
-          "goals": 8,
-          "assists": 5,
-          "yellowCards": 1,
-          "rating": 8.8
-        },
-        {
-          "season": "2022/23",
-          "team": "Manchester City",
-          "matches": 19,
-          "goals": 7,
-          "assists": 4,
-          "yellowCards": 1,
-          "rating": 8.6
-        },
-        {
-          "season": "2021/22",
-          "team": "Manchester City",
-          "matches": 17,
-          "goals": 6,
-          "assists": 3,
-          "yellowCards": 1,
-          "rating": 8.5
-        },
-        {
-          "season": "2020/21",
-          "team": "Manchester City",
-          "matches": 15,
-          "goals": 5,
-          "assists": 2,
-          "yellowCards": 1,
-          "rating": 8.3
-        },
-        {
-          "season": "2019/20",
-          "team": "Manchester City",
-          "matches": 15,
-          "goals": 4,
-          "assists": 1,
-          "yellowCards": 1,
-          "rating": 8.2
         }
       ]
     },
@@ -152539,118 +151581,6 @@
       ]
     },
     {
-      "id": "william-saliba",
-      "name": "William Saliba",
-      "photoId": "243715",
-      "nickname": "Willy",
-      "age": 23,
-      "nationality": "French",
-      "nationalityEs": "Francés",
-      "flag": "🇫🇷",
-      "position": "CB",
-      "positionEs": "Defensa Central",
-      "currentTeam": "Arsenal",
-      "league": "Premier League",
-      "country": "France",
-      "jerseyNumber": 2,
-      "height": 192,
-      "weight": 85,
-      "preferredFoot": "Right",
-      "marketValue": 80000000,
-      "overallRating": 8.7,
-      "stats": {
-        "season": "2024-25",
-        "matches": 20,
-        "goals": 1,
-        "assists": 0,
-        "yellowCards": 2
-      },
-      "careerTotals": {
-        "goals": 5,
-        "assists": 3,
-        "matches": 150
-      },
-      "trophies": [
-        "Ligue 1 Young Player of the Year"
-      ],
-      "transfers": [
-        {
-          "year": 2019,
-          "from": "Saint-Étienne",
-          "to": "Arsenal",
-          "fee": "27M £"
-        }
-      ],
-      "bio": "A strong and composed French centre-back, vital to Arsenal's defense.",
-      "bioEs": "Un fuerte y sereno defensa central francés, vital para la defensa del Arsenal.",
-      "strengths": [
-        "Pace",
-        "Tackling",
-        "Passing"
-      ],
-      "tags": [
-        "defender",
-        "ball-playing",
-        "strong"
-      ],
-      "history": [
-        {
-          "season": "2024/25",
-          "team": "Arsenal",
-          "matches": 20,
-          "goals": 1,
-          "assists": 2,
-          "yellowCards": 2,
-          "rating": 8.7
-        },
-        {
-          "season": "2023/24",
-          "team": "Arsenal",
-          "matches": 18,
-          "goals": 0,
-          "assists": 1,
-          "yellowCards": 2,
-          "rating": 8.5
-        },
-        {
-          "season": "2022/23",
-          "team": "Arsenal",
-          "matches": 16,
-          "goals": 0,
-          "assists": 0,
-          "yellowCards": 2,
-          "rating": 8.4
-        },
-        {
-          "season": "2021/22",
-          "team": "Arsenal",
-          "matches": 15,
-          "goals": 0,
-          "assists": 0,
-          "yellowCards": 2,
-          "rating": 8.3
-        },
-        {
-          "season": "2020/21",
-          "team": "Arsenal",
-          "matches": 15,
-          "goals": 0,
-          "assists": 0,
-          "yellowCards": 2,
-          "rating": 8.1
-        },
-        {
-          "season": "2019/20",
-          "team": "Arsenal",
-          "matches": 15,
-          "goals": 0,
-          "assists": 0,
-          "yellowCards": 2,
-          "rating": 7.9
-        }
-      ]
-    },
-    {
       "id": "williot-swedberg",
       "name": "Williot Swedberg",
       "photoId": "261078",
@@ -156634,6 +155564,1096 @@
           "rating": 6.7
         }
       ]
+    },
+    {
+      "id": "alexis-mac-allister",
+      "name": "Alexis Mac Allister",
+      "photoId": "243912",
+      "nickname": "Macca",
+      "age": 25,
+      "nationality": "Argentinian",
+      "nationalityEs": "Argentino",
+      "flag": "🇦🇷",
+      "position": "CM",
+      "positionEs": "Mediocentro",
+      "currentTeam": "Liverpool",
+      "league": "Premier League",
+      "country": "England",
+      "jerseyNumber": 10,
+      "height": 176,
+      "weight": 72,
+      "preferredFoot": "Right",
+      "marketValue": 75000000,
+      "overallRating": 8.5,
+      "stats": {
+        "season": "2024-25",
+        "matches": 20,
+        "goals": 5,
+        "assists": 5,
+        "yellowCards": 4
+      },
+      "careerTotals": {
+        "goals": 30,
+        "assists": 28,
+        "matches": 200
+      },
+      "trophies": [
+        "FIFA World Cup",
+        "EFL Cup"
+      ],
+      "transfers": [
+        {
+          "year": 2023,
+          "from": "Brighton & Hove Albion",
+          "to": "Liverpool",
+          "fee": "35M £"
+        }
+      ],
+      "bio": "A World Cup-winning Argentine midfielder, known for his creativity, passing, and tactical intelligence.",
+      "bioEs": "Un mediocampista argentino campeón del mundo, conocido por su creatividad, pases e inteligencia táctica.",
+      "strengths": [
+        "Passing",
+        "Vision",
+        "Long Shots"
+      ],
+      "tags": [
+        "midfielder",
+        "playmaker",
+        "technical"
+      ],
+      "history": null,
+      "createdAt": "2026-06-15 04:25:14.296 +00:00",
+      "updatedAt": "2026-06-15 04:25:14.296 +00:00"
+    },
+    {
+      "id": "bruno-guimaraes",
+      "name": "Bruno Guimarães",
+      "photoId": "228499",
+      "nickname": "Bruninho",
+      "age": 26,
+      "nationality": "Brazilian",
+      "nationalityEs": "Brasileño",
+      "flag": "🇧🇷",
+      "position": "CM",
+      "positionEs": "Mediocentro",
+      "currentTeam": "Newcastle United",
+      "league": "Premier League",
+      "country": "England",
+      "jerseyNumber": 39,
+      "height": 182,
+      "weight": 78,
+      "preferredFoot": "Right",
+      "marketValue": 85000000,
+      "overallRating": 8.6,
+      "stats": {
+        "season": "2024-25",
+        "matches": 21,
+        "goals": 3,
+        "assists": 4,
+        "yellowCards": 6
+      },
+      "careerTotals": {
+        "goals": 25,
+        "assists": 35,
+        "matches": 220
+      },
+      "trophies": [
+        "Copa Sudamericana"
+      ],
+      "transfers": [
+        {
+          "year": 2022,
+          "from": "Lyon",
+          "to": "Newcastle United",
+          "fee": "40M £"
+        }
+      ],
+      "bio": "A tenacious Brazilian central midfielder, known for his all-around game and leadership.",
+      "bioEs": "Un tenaz mediocentro brasileño, conocido por su juego completo y liderazgo.",
+      "strengths": [
+        "Passing",
+        "Tackling",
+        "Work Rate"
+      ],
+      "tags": [
+        "midfielder",
+        "box-to-box",
+        "leader"
+      ],
+      "history": [
+        {
+          "season": "2024/25",
+          "team": "Newcastle United",
+          "matches": 21,
+          "goals": 3,
+          "assists": 4,
+          "yellowCards": 6,
+          "rating": 8.6
+        },
+        {
+          "season": "2023/24",
+          "team": "Newcastle United",
+          "matches": 19,
+          "goals": 2,
+          "assists": 3,
+          "yellowCards": 6,
+          "rating": 8.4
+        },
+        {
+          "season": "2022/23",
+          "team": "Newcastle United",
+          "matches": 17,
+          "goals": 1,
+          "assists": 2,
+          "yellowCards": 6,
+          "rating": 8.3
+        },
+        {
+          "season": "2021/22",
+          "team": "Newcastle United",
+          "matches": 15,
+          "goals": 0,
+          "assists": 1,
+          "yellowCards": 6,
+          "rating": 8.2
+        },
+        {
+          "season": "2020/21",
+          "team": "Newcastle United",
+          "matches": 15,
+          "goals": 0,
+          "assists": 0,
+          "yellowCards": 6,
+          "rating": 8
+        },
+        {
+          "season": "2019/20",
+          "team": "Newcastle United",
+          "matches": 15,
+          "goals": 0,
+          "assists": 0,
+          "yellowCards": 6,
+          "rating": 7.8
+        }
+      ],
+      "createdAt": "2026-06-15 04:25:14.336 +00:00",
+      "updatedAt": "2026-06-15 04:25:14.336 +00:00"
+    },
+    {
+      "id": "bukayo-saka",
+      "name": "Bukayo Saka",
+      "photoId": "239074",
+      "nickname": "B",
+      "age": 22,
+      "nationality": "English",
+      "nationalityEs": "Inglés",
+      "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+      "position": "RW",
+      "positionEs": "Extremo Derecho",
+      "currentTeam": "Arsenal",
+      "league": "Premier League",
+      "country": "England",
+      "jerseyNumber": 7,
+      "height": 178,
+      "weight": 72,
+      "preferredFoot": "Left",
+      "marketValue": 130000000,
+      "overallRating": 8.8,
+      "stats": {
+        "season": "2024-25",
+        "matches": 25,
+        "goals": 10,
+        "assists": 8,
+        "yellowCards": 2
+      },
+      "careerTotals": {
+        "goals": 60,
+        "assists": 50,
+        "matches": 200
+      },
+      "trophies": [
+        "FA Cup",
+        "PFA Young Player of the Year"
+      ],
+      "transfers": [
+        {
+          "year": 2018,
+          "from": "Arsenal Academy",
+          "to": "Arsenal",
+          "fee": "0"
+        }
+      ],
+      "bio": "An electric English winger, a key player for Arsenal known for his dribbling and goal contribution.",
+      "bioEs": "Un eléctrico extremo inglés, jugador clave para el Arsenal conocido por su regate y contribución a goles.",
+      "strengths": [
+        "Dribbling",
+        "Pace",
+        "Crossing"
+      ],
+      "tags": [
+        "winger",
+        "dribbler",
+        "fast"
+      ],
+      "history": [
+        {
+          "season": "2024/25",
+          "team": "Arsenal",
+          "matches": 25,
+          "goals": 10,
+          "assists": 8,
+          "yellowCards": 2,
+          "rating": 8.8
+        },
+        {
+          "season": "2023/24",
+          "team": "Arsenal",
+          "matches": 23,
+          "goals": 9,
+          "assists": 7,
+          "yellowCards": 2,
+          "rating": 8.7
+        },
+        {
+          "season": "2022/23",
+          "team": "Arsenal",
+          "matches": 21,
+          "goals": 8,
+          "assists": 6,
+          "yellowCards": 2,
+          "rating": 8.5
+        },
+        {
+          "season": "2021/22",
+          "team": "Arsenal",
+          "matches": 19,
+          "goals": 7,
+          "assists": 5,
+          "yellowCards": 2,
+          "rating": 8.4
+        },
+        {
+          "season": "2020/21",
+          "team": "Arsenal",
+          "matches": 17,
+          "goals": 6,
+          "assists": 4,
+          "yellowCards": 2,
+          "rating": 8.2
+        },
+        {
+          "season": "2019/20",
+          "team": "Arsenal",
+          "matches": 15,
+          "goals": 5,
+          "assists": 3,
+          "yellowCards": 2,
+          "rating": 8.1
+        }
+      ],
+      "createdAt": "2026-06-15 04:25:14.336 +00:00",
+      "updatedAt": "2026-06-15 04:25:14.336 +00:00"
+    },
+    {
+      "id": "cole-palmer",
+      "name": "Cole Palmer",
+      "photoId": "257534",
+      "nickname": "Cold Palmer",
+      "age": 22,
+      "nationality": "English",
+      "nationalityEs": "Inglés",
+      "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+      "position": "CAM",
+      "positionEs": "Mediocentro Ofensivo",
+      "currentTeam": "Chelsea",
+      "league": "Premier League",
+      "country": "England",
+      "jerseyNumber": 20,
+      "height": 189,
+      "weight": 79,
+      "preferredFoot": "Left",
+      "marketValue": 80000000,
+      "overallRating": 8.6,
+      "stats": {
+        "season": "2024-25",
+        "matches": 24,
+        "goals": 12,
+        "assists": 7,
+        "yellowCards": 3
+      },
+      "careerTotals": {
+        "goals": 35,
+        "assists": 20,
+        "matches": 100
+      },
+      "trophies": [
+        "UEFA Super Cup",
+        "Premier League"
+      ],
+      "transfers": [
+        {
+          "year": 2023,
+          "from": "Manchester City",
+          "to": "Chelsea",
+          "fee": "42.5M £"
+        }
+      ],
+      "bio": "An exciting English attacking midfielder with exceptional dribbling and penalty-taking skills.",
+      "bioEs": "Un emocionante mediocentro ofensivo inglés con habilidades excepcionales de regate y lanzamiento de penaltis.",
+      "strengths": [
+        "Dribbling",
+        "Penalties",
+        "Vision"
+      ],
+      "tags": [
+        "playmaker",
+        "skillful",
+        "finisher"
+      ],
+      "history": [
+        {
+          "season": "2024/25",
+          "team": "Chelsea",
+          "matches": 24,
+          "goals": 12,
+          "assists": 7,
+          "yellowCards": 3,
+          "rating": 8.6
+        },
+        {
+          "season": "2023/24",
+          "team": "Chelsea",
+          "matches": 22,
+          "goals": 11,
+          "assists": 6,
+          "yellowCards": 3,
+          "rating": 8.4
+        },
+        {
+          "season": "2022/23",
+          "team": "Chelsea",
+          "matches": 20,
+          "goals": 10,
+          "assists": 5,
+          "yellowCards": 3,
+          "rating": 8.3
+        },
+        {
+          "season": "2021/22",
+          "team": "Chelsea",
+          "matches": 18,
+          "goals": 9,
+          "assists": 4,
+          "yellowCards": 3,
+          "rating": 8.2
+        },
+        {
+          "season": "2020/21",
+          "team": "Chelsea",
+          "matches": 16,
+          "goals": 8,
+          "assists": 3,
+          "yellowCards": 3,
+          "rating": 8
+        },
+        {
+          "season": "2019/20",
+          "team": "Chelsea",
+          "matches": 15,
+          "goals": 7,
+          "assists": 2,
+          "yellowCards": 3,
+          "rating": 7.8
+        }
+      ],
+      "createdAt": "2026-06-15 04:25:14.352 +00:00",
+      "updatedAt": "2026-06-15 04:25:14.352 +00:00"
+    },
+    {
+      "id": "declan-rice",
+      "name": "Declan Rice",
+      "photoId": "232049",
+      "nickname": "Dec",
+      "age": 25,
+      "nationality": "English",
+      "nationalityEs": "Inglés",
+      "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+      "position": "CDM",
+      "positionEs": "Mediocentro Defensivo",
+      "currentTeam": "Arsenal",
+      "league": "Premier League",
+      "country": "England",
+      "jerseyNumber": 41,
+      "height": 188,
+      "weight": 80,
+      "preferredFoot": "Right",
+      "marketValue": 110000000,
+      "overallRating": 8.8,
+      "stats": {
+        "season": "2024-25",
+        "matches": 24,
+        "goals": 4,
+        "assists": 5,
+        "yellowCards": 4
+      },
+      "careerTotals": {
+        "goals": 25,
+        "assists": 30,
+        "matches": 300
+      },
+      "trophies": [
+        "UEFA Europa Conference League"
+      ],
+      "transfers": [
+        {
+          "year": 2023,
+          "from": "West Ham United",
+          "to": "Arsenal",
+          "fee": "105M £"
+        }
+      ],
+      "bio": "A commanding English defensive midfielder known for his leadership and ball winning ability.",
+      "bioEs": "Un imponente mediocentro defensivo inglés conocido por su liderazgo y capacidad para recuperar balones.",
+      "strengths": [
+        "Tackling",
+        "Interceptions",
+        "Leadership"
+      ],
+      "tags": [
+        "midfielder",
+        "destroyer",
+        "leader"
+      ],
+      "history": [
+        {
+          "season": "2024/25",
+          "team": "Arsenal",
+          "matches": 24,
+          "goals": 4,
+          "assists": 5,
+          "yellowCards": 4,
+          "rating": 8.8
+        },
+        {
+          "season": "2023/24",
+          "team": "Arsenal",
+          "matches": 22,
+          "goals": 3,
+          "assists": 4,
+          "yellowCards": 4,
+          "rating": 8.7
+        },
+        {
+          "season": "2022/23",
+          "team": "Arsenal",
+          "matches": 20,
+          "goals": 2,
+          "assists": 3,
+          "yellowCards": 4,
+          "rating": 8.5
+        },
+        {
+          "season": "2021/22",
+          "team": "Arsenal",
+          "matches": 18,
+          "goals": 1,
+          "assists": 2,
+          "yellowCards": 4,
+          "rating": 8.4
+        },
+        {
+          "season": "2020/21",
+          "team": "Arsenal",
+          "matches": 16,
+          "goals": 0,
+          "assists": 1,
+          "yellowCards": 4,
+          "rating": 8.2
+        },
+        {
+          "season": "2019/20",
+          "team": "Arsenal",
+          "matches": 15,
+          "goals": 0,
+          "assists": 0,
+          "yellowCards": 4,
+          "rating": 8.1
+        }
+      ],
+      "createdAt": "2026-06-15 04:25:14.372 +00:00",
+      "updatedAt": "2026-06-15 04:25:14.372 +00:00"
+    },
+    {
+      "id": "gabriel-martinelli",
+      "name": "Gabriel Martinelli",
+      "photoId": "251566",
+      "nickname": "Gabi",
+      "age": 23,
+      "nationality": "Brazilian",
+      "nationalityEs": "Brasileño",
+      "flag": "🇧🇷",
+      "position": "LW",
+      "positionEs": "Extremo Izquierdo",
+      "currentTeam": "Arsenal",
+      "league": "Premier League",
+      "country": "England",
+      "jerseyNumber": 11,
+      "height": 178,
+      "weight": 75,
+      "preferredFoot": "Right",
+      "marketValue": 70000000,
+      "overallRating": 8.4,
+      "stats": {
+        "season": "2024-25",
+        "matches": 20,
+        "goals": 7,
+        "assists": 4,
+        "yellowCards": 1
+      },
+      "careerTotals": {
+        "goals": 45,
+        "assists": 25,
+        "matches": 180
+      },
+      "trophies": [
+        "FA Cup"
+      ],
+      "transfers": [
+        {
+          "year": 2019,
+          "from": "Ituano",
+          "to": "Arsenal",
+          "fee": "6M £"
+        }
+      ],
+      "bio": "A dynamic Brazilian winger, known for his relentless energy, speed, and goal-scoring ability.",
+      "bioEs": "Un dinámico extremo brasileño, conocido por su energía incansable, velocidad y capacidad goleadora.",
+      "strengths": [
+        "Pace",
+        "Finishing",
+        "Work Rate"
+      ],
+      "tags": [
+        "winger",
+        "fast",
+        "energetic"
+      ],
+      "history": [
+        {
+          "season": "2024/25",
+          "team": "Arsenal",
+          "matches": 20,
+          "goals": 7,
+          "assists": 4,
+          "yellowCards": 1,
+          "rating": 8.4
+        },
+        {
+          "season": "2023/24",
+          "team": "Arsenal",
+          "matches": 18,
+          "goals": 6,
+          "assists": 3,
+          "yellowCards": 1,
+          "rating": 8.3
+        },
+        {
+          "season": "2022/23",
+          "team": "Arsenal",
+          "matches": 16,
+          "goals": 5,
+          "assists": 2,
+          "yellowCards": 1,
+          "rating": 8.1
+        },
+        {
+          "season": "2021/22",
+          "team": "Arsenal",
+          "matches": 15,
+          "goals": 4,
+          "assists": 1,
+          "yellowCards": 1,
+          "rating": 8
+        },
+        {
+          "season": "2020/21",
+          "team": "Arsenal",
+          "matches": 15,
+          "goals": 3,
+          "assists": 0,
+          "yellowCards": 1,
+          "rating": 7.8
+        },
+        {
+          "season": "2019/20",
+          "team": "Arsenal",
+          "matches": 15,
+          "goals": 2,
+          "assists": 0,
+          "yellowCards": 1,
+          "rating": 7.7
+        }
+      ],
+      "createdAt": "2026-06-15 04:25:14.401 +00:00",
+      "updatedAt": "2026-06-15 04:25:14.401 +00:00"
+    },
+    {
+      "id": "martin-odegaard",
+      "name": "Martin Ødegaard",
+      "photoId": "222665",
+      "nickname": "Ode",
+      "age": 25,
+      "nationality": "Norwegian",
+      "nationalityEs": "Noruego",
+      "flag": "🇳🇴",
+      "position": "CAM",
+      "positionEs": "Mediocentro Ofensivo",
+      "currentTeam": "Arsenal",
+      "league": "Premier League",
+      "country": "England",
+      "jerseyNumber": 8,
+      "height": 178,
+      "weight": 68,
+      "preferredFoot": "Left",
+      "marketValue": 95000000,
+      "overallRating": 8.9,
+      "stats": {
+        "season": "2024-25",
+        "matches": 23,
+        "goals": 8,
+        "assists": 9,
+        "yellowCards": 1
+      },
+      "careerTotals": {
+        "goals": 60,
+        "assists": 70,
+        "matches": 300
+      },
+      "trophies": [
+        "Eredivisie Talent of the Season"
+      ],
+      "transfers": [
+        {
+          "year": 2021,
+          "from": "Real Madrid",
+          "to": "Arsenal",
+          "fee": "35M €"
+        }
+      ],
+      "bio": "A creative Norwegian attacking midfielder and Arsenal captain, known for his vision and passing.",
+      "bioEs": "Un creativo mediocentro ofensivo noruego y capitán del Arsenal, conocido por su visión y pases.",
+      "strengths": [
+        "Vision",
+        "Passing",
+        "Dribbling"
+      ],
+      "tags": [
+        "playmaker",
+        "captain",
+        "creative"
+      ],
+      "history": [
+        {
+          "season": "2024/25",
+          "team": "Arsenal",
+          "matches": 23,
+          "goals": 8,
+          "assists": 9,
+          "yellowCards": 1,
+          "rating": 8.9
+        },
+        {
+          "season": "2023/24",
+          "team": "Arsenal",
+          "matches": 21,
+          "goals": 7,
+          "assists": 8,
+          "yellowCards": 1,
+          "rating": 8.8
+        },
+        {
+          "season": "2022/23",
+          "team": "Arsenal",
+          "matches": 19,
+          "goals": 6,
+          "assists": 7,
+          "yellowCards": 1,
+          "rating": 8.6
+        },
+        {
+          "season": "2021/22",
+          "team": "Arsenal",
+          "matches": 17,
+          "goals": 5,
+          "assists": 6,
+          "yellowCards": 1,
+          "rating": 8.5
+        },
+        {
+          "season": "2020/21",
+          "team": "Arsenal",
+          "matches": 15,
+          "goals": 4,
+          "assists": 5,
+          "yellowCards": 1,
+          "rating": 8.3
+        },
+        {
+          "season": "2019/20",
+          "team": "Arsenal",
+          "matches": 15,
+          "goals": 3,
+          "assists": 4,
+          "yellowCards": 1,
+          "rating": 8.2
+        }
+      ],
+      "createdAt": "2026-06-15 04:25:14.517 +00:00",
+      "updatedAt": "2026-06-15 04:25:14.517 +00:00"
+    },
+    {
+      "id": "ollie-watkins",
+      "name": "Ollie Watkins",
+      "photoId": "232411",
+      "nickname": "Ollie",
+      "age": 28,
+      "nationality": "English",
+      "nationalityEs": "Inglés",
+      "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+      "position": "ST",
+      "positionEs": "Delantero Centro",
+      "currentTeam": "Aston Villa",
+      "league": "Premier League",
+      "country": "England",
+      "jerseyNumber": 11,
+      "height": 180,
+      "weight": 70,
+      "preferredFoot": "Right",
+      "marketValue": 65000000,
+      "overallRating": 8.5,
+      "stats": {
+        "season": "2024-25",
+        "matches": 22,
+        "goals": 14,
+        "assists": 6,
+        "yellowCards": 3
+      },
+      "careerTotals": {
+        "goals": 120,
+        "assists": 45,
+        "matches": 350
+      },
+      "trophies": [
+        "Championship Player of the Season"
+      ],
+      "transfers": [
+        {
+          "year": 2020,
+          "from": "Brentford",
+          "to": "Aston Villa",
+          "fee": "28M £"
+        }
+      ],
+      "bio": "A prolific English striker known for his pace, finishing, and work rate.",
+      "bioEs": "Un prolífico delantero inglés conocido por su ritmo, definición y ética de trabajo.",
+      "strengths": [
+        "Finishing",
+        "Pace",
+        "Work Rate"
+      ],
+      "tags": [
+        "striker",
+        "goalscorer",
+        "fast"
+      ],
+      "history": [
+        {
+          "season": "2024/25",
+          "team": "Aston Villa",
+          "matches": 22,
+          "goals": 14,
+          "assists": 6,
+          "yellowCards": 3,
+          "rating": 8.5
+        },
+        {
+          "season": "2023/24",
+          "team": "Aston Villa",
+          "matches": 20,
+          "goals": 13,
+          "assists": 5,
+          "yellowCards": 3,
+          "rating": 8.3
+        },
+        {
+          "season": "2022/23",
+          "team": "Aston Villa",
+          "matches": 18,
+          "goals": 12,
+          "assists": 4,
+          "yellowCards": 3,
+          "rating": 8.2
+        },
+        {
+          "season": "2021/22",
+          "team": "Aston Villa",
+          "matches": 16,
+          "goals": 11,
+          "assists": 3,
+          "yellowCards": 3,
+          "rating": 8.1
+        },
+        {
+          "season": "2020/21",
+          "team": "Aston Villa",
+          "matches": 15,
+          "goals": 10,
+          "assists": 2,
+          "yellowCards": 3,
+          "rating": 7.9
+        },
+        {
+          "season": "2019/20",
+          "team": "Aston Villa",
+          "matches": 15,
+          "goals": 9,
+          "assists": 1,
+          "yellowCards": 3,
+          "rating": 7.8
+        }
+      ],
+      "createdAt": "2026-06-15 04:25:14.546 +00:00",
+      "updatedAt": "2026-06-15 04:25:14.546 +00:00"
+    },
+    {
+      "id": "phil-foden",
+      "name": "Phil Foden",
+      "photoId": "237692",
+      "nickname": "Stockport Iniesta",
+      "age": 24,
+      "nationality": "English",
+      "nationalityEs": "Inglés",
+      "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+      "position": "CAM",
+      "positionEs": "Mediocentro Ofensivo",
+      "currentTeam": "Manchester City",
+      "league": "Premier League",
+      "country": "England",
+      "jerseyNumber": 47,
+      "height": 171,
+      "weight": 70,
+      "preferredFoot": "Left",
+      "marketValue": 120000000,
+      "overallRating": 8.9,
+      "stats": {
+        "season": "2024-25",
+        "matches": 23,
+        "goals": 9,
+        "assists": 6,
+        "yellowCards": 1
+      },
+      "careerTotals": {
+        "goals": 80,
+        "assists": 60,
+        "matches": 250
+      },
+      "trophies": [
+        "Premier League",
+        "Champions League",
+        "FA Cup"
+      ],
+      "transfers": [
+        {
+          "year": 2017,
+          "from": "Man City Academy",
+          "to": "Manchester City",
+          "fee": "0"
+        }
+      ],
+      "bio": "A highly talented English midfielder, known for his close control, dribbling, and versatility.",
+      "bioEs": "Un talentoso mediocampista inglés, conocido por su control cercano, regate y versatilidad.",
+      "strengths": [
+        "Dribbling",
+        "Vision",
+        "Finishing"
+      ],
+      "tags": [
+        "playmaker",
+        "winger",
+        "technical"
+      ],
+      "history": [
+        {
+          "season": "2024/25",
+          "team": "Manchester City",
+          "matches": 23,
+          "goals": 9,
+          "assists": 6,
+          "yellowCards": 1,
+          "rating": 8.9
+        },
+        {
+          "season": "2023/24",
+          "team": "Manchester City",
+          "matches": 21,
+          "goals": 8,
+          "assists": 5,
+          "yellowCards": 1,
+          "rating": 8.8
+        },
+        {
+          "season": "2022/23",
+          "team": "Manchester City",
+          "matches": 19,
+          "goals": 7,
+          "assists": 4,
+          "yellowCards": 1,
+          "rating": 8.6
+        },
+        {
+          "season": "2021/22",
+          "team": "Manchester City",
+          "matches": 17,
+          "goals": 6,
+          "assists": 3,
+          "yellowCards": 1,
+          "rating": 8.5
+        },
+        {
+          "season": "2020/21",
+          "team": "Manchester City",
+          "matches": 15,
+          "goals": 5,
+          "assists": 2,
+          "yellowCards": 1,
+          "rating": 8.3
+        },
+        {
+          "season": "2019/20",
+          "team": "Manchester City",
+          "matches": 15,
+          "goals": 4,
+          "assists": 1,
+          "yellowCards": 1,
+          "rating": 8.2
+        }
+      ],
+      "createdAt": "2026-06-15 04:25:14.560 +00:00",
+      "updatedAt": "2026-06-15 04:25:14.560 +00:00"
+    },
+    {
+      "id": "william-saliba",
+      "name": "William Saliba",
+      "photoId": "243715",
+      "nickname": "Willy",
+      "age": 23,
+      "nationality": "French",
+      "nationalityEs": "Francés",
+      "flag": "🇫🇷",
+      "position": "CB",
+      "positionEs": "Defensa Central",
+      "currentTeam": "Arsenal",
+      "league": "Premier League",
+      "country": "England",
+      "jerseyNumber": 2,
+      "height": 192,
+      "weight": 85,
+      "preferredFoot": "Right",
+      "marketValue": 80000000,
+      "overallRating": 8.7,
+      "stats": {
+        "season": "2024-25",
+        "matches": 20,
+        "goals": 1,
+        "assists": 0,
+        "yellowCards": 2
+      },
+      "careerTotals": {
+        "goals": 5,
+        "assists": 3,
+        "matches": 150
+      },
+      "trophies": [
+        "Ligue 1 Young Player of the Year"
+      ],
+      "transfers": [
+        {
+          "year": 2019,
+          "from": "Saint-Étienne",
+          "to": "Arsenal",
+          "fee": "27M £"
+        }
+      ],
+      "bio": "A strong and composed French centre-back, vital to Arsenal's defense.",
+      "bioEs": "Un fuerte y sereno defensa central francés, vital para la defensa del Arsenal.",
+      "strengths": [
+        "Pace",
+        "Tackling",
+        "Passing"
+      ],
+      "tags": [
+        "defender",
+        "ball-playing",
+        "strong"
+      ],
+      "history": [
+        {
+          "season": "2024/25",
+          "team": "Arsenal",
+          "matches": 20,
+          "goals": 1,
+          "assists": 2,
+          "yellowCards": 2,
+          "rating": 8.7
+        },
+        {
+          "season": "2023/24",
+          "team": "Arsenal",
+          "matches": 18,
+          "goals": 0,
+          "assists": 1,
+          "yellowCards": 2,
+          "rating": 8.5
+        },
+        {
+          "season": "2022/23",
+          "team": "Arsenal",
+          "matches": 16,
+          "goals": 0,
+          "assists": 0,
+          "yellowCards": 2,
+          "rating": 8.4
+        },
+        {
+          "season": "2021/22",
+          "team": "Arsenal",
+          "matches": 15,
+          "goals": 0,
+          "assists": 0,
+          "yellowCards": 2,
+          "rating": 8.3
+        },
+        {
+          "season": "2020/21",
+          "team": "Arsenal",
+          "matches": 15,
+          "goals": 0,
+          "assists": 0,
+          "yellowCards": 2,
+          "rating": 8.1
+        },
+        {
+          "season": "2019/20",
+          "team": "Arsenal",
+          "matches": 15,
+          "goals": 0,
+          "assists": 0,
+          "yellowCards": 2,
+          "rating": 7.9
+        }
+      ],
+      "createdAt": "2026-06-15 04:25:14.629 +00:00",
+      "updatedAt": "2026-06-15 04:25:14.629 +00:00"
     }
   ]
 }
