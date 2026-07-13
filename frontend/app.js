@@ -503,7 +503,16 @@ let sessionId = null;
 let allPlayers = (() => {
   try {
     const cached = localStorage.getItem('scout_ai_cached_players');
-    return cached ? JSON.parse(cached) : [];
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      const isDirty = Array.isArray(parsed) && parsed.some(p => p.overallRating > 10);
+      if (isDirty) {
+        localStorage.removeItem('scout_ai_cached_players');
+        return [];
+      }
+      return parsed;
+    }
+    return [];
   } catch (e) {
     console.error('Error loading cached players:', e);
     return [];
