@@ -208,6 +208,41 @@ async function enableRLSIfPostgres() {
         console.warn(`  ⚠️ Could not enable RLS on table ${table}:`, err.message);
       }
     }
+
+    console.log('🛡️ Applying standard RLS policies...');
+    const policies = [
+      'DROP POLICY IF EXISTS "Allow public read access" ON "Players";',
+      'CREATE POLICY "Allow public read access" ON "Players" FOR SELECT TO public USING (true);',
+      'DROP POLICY IF EXISTS "Allow public read access" ON "leagues";',
+      'CREATE POLICY "Allow public read access" ON "leagues" FOR SELECT TO public USING (true);',
+      'DROP POLICY IF EXISTS "Allow public read access" ON "teams";',
+      'CREATE POLICY "Allow public read access" ON "teams" FOR SELECT TO public USING (true);',
+      'DROP POLICY IF EXISTS "Allow users to view their own profile" ON "users";',
+      'CREATE POLICY "Allow users to view their own profile" ON "users" FOR SELECT TO authenticated USING (auth.uid() = id);',
+      'DROP POLICY IF EXISTS "Allow users to update their own profile" ON "users";',
+      'CREATE POLICY "Allow users to update their own profile" ON "users" FOR UPDATE TO authenticated USING (auth.uid() = id) WITH CHECK (auth.uid() = id);',
+      'DROP POLICY IF EXISTS "Allow users to view their own payments" ON "payments";',
+      'CREATE POLICY "Allow users to view their own payments" ON "payments" FOR SELECT TO authenticated USING (auth.uid() = "userId");',
+      'DROP POLICY IF EXISTS "Allow users to view their own query logs" ON "query_logs";',
+      'CREATE POLICY "Allow users to view their own query logs" ON "query_logs" FOR SELECT TO authenticated USING (auth.uid() = "userId");',
+      'DROP POLICY IF EXISTS "Allow users to insert their own query logs" ON "query_logs";',
+      'CREATE POLICY "Allow users to insert their own query logs" ON "query_logs" FOR INSERT TO authenticated WITH CHECK (auth.uid() = "userId");',
+      'DROP POLICY IF EXISTS "Allow users to view their own comparison logs" ON "comparison_logs";',
+      'CREATE POLICY "Allow users to view their own comparison logs" ON "comparison_logs" FOR SELECT TO authenticated USING (auth.uid() = "userId");',
+      'DROP POLICY IF EXISTS "Allow users to insert their own comparison logs" ON "comparison_logs";',
+      'CREATE POLICY "Allow users to insert their own comparison logs" ON "comparison_logs" FOR INSERT TO authenticated WITH CHECK (auth.uid() = "userId");',
+      'DROP POLICY IF EXISTS "Allow users to manage their own favorite logs" ON "favorite_logs";',
+      'CREATE POLICY "Allow users to manage their own favorite logs" ON "favorite_logs" FOR ALL TO authenticated USING (auth.uid() = "userId") WITH CHECK (auth.uid() = "userId");'
+    ];
+
+    for (const policySql of policies) {
+      try {
+        await sequelize.query(policySql);
+      } catch (err) {
+        console.warn(`  ⚠️ Could not apply policy query: ${policySql.substring(0, 50)}... Reason:`, err.message);
+      }
+    }
+    console.log('  - All RLS policies configured successfully.');
   }
 }
 
