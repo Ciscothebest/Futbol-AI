@@ -243,6 +243,14 @@ async function enableRLSIfPostgres() {
       }
     }
     console.log('  - All RLS policies configured successfully.');
+
+    // Revoke public execute privileges on rls_auto_enable function if it exists
+    try {
+      await sequelize.query('REVOKE EXECUTE ON FUNCTION public.rls_auto_enable() FROM PUBLIC;');
+      console.log('  - Revoked public execute privileges on rls_auto_enable() function.');
+    } catch (err) {
+      // Ignore if function does not exist
+    }
   }
 }
 
