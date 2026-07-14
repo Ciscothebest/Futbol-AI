@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
@@ -320,8 +321,14 @@ class _LoginFormOverlayState extends State<_LoginFormOverlay> {
         }
       }
     } catch (e) {
+      final errorMsg = e.toString().replaceAll('Exception:', '').trim();
+      if (errorMsg == 'needs_verification') {
+        setState(() => _isLoading = false);
+        await _showOtpDialog(context, _usernameController.text);
+        return;
+      }
       setState(() {
-        _errorText = e.toString().replaceAll('Exception:', '').trim();
+        _errorText = errorMsg;
       });
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -592,19 +599,14 @@ class _RegisterFormOverlayState extends State<_RegisterFormOverlay> {
         email: _emailController.text,
       );
 
-      // Auto login on successful register
-      await auth.login(_usernameController.text, _passwordController.text);
-
+      setState(() => _isLoading = false);
       if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const OnboardingScreen()),
-        );
+        await _showOtpDialog(context, _usernameController.text);
       }
     } catch (e) {
       setState(() {
         _errorText = e.toString().replaceAll('Exception:', '').trim();
       });
-    } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
@@ -689,8 +691,16 @@ class _RegisterFormOverlayState extends State<_RegisterFormOverlay> {
                       controller: _emailController,
                       style: const TextStyle(color: Colors.white, fontSize: 13),
                       keyboardType: TextInputType.emailAddress,
-                      decoration: _inputDecoration('Correo Electrónico', 'juan@example.com'),
-                      validator: (value) => value == null || value.trim().isEmpty ? 'Ingresa tu correo' : null,
+                      decoration: _inputDecoration('Email', 'Example@gmail.com'),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) return 'Ingresa tu correo';
+                        final email = value.toLowerCase().trim();
+                        final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@(gmail\.com|yahoo\.com)$');
+                        if (!emailRegex.hasMatch(email)) {
+                          return 'Debe ser un correo de gmail.com o yahoo.com';
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 12),
                     // Username
@@ -710,6 +720,11 @@ class _RegisterFormOverlayState extends State<_RegisterFormOverlay> {
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) return 'Ingresa una contraseña';
                         if (value.length < 8) return 'Debe tener al menos 8 caracteres';
+                        final hasLetter = RegExp(r'[a-zA-Z]').hasMatch(value);
+                        final hasNumber = RegExp(r'\d').hasMatch(value);
+                        if (!hasLetter || !hasNumber) {
+                          return 'Debe incluir letras y números';
+                        }
                         return null;
                       },
                     ),
@@ -768,4 +783,167 @@ class _RegisterFormOverlayState extends State<_RegisterFormOverlay> {
       focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFF00F0FF))),
     );
   }
+}
+
+Future<void> _showOtpDialog(BuildContext context, String username) async {
+  final otpController = TextEditingController();
+  String dialogError = '';
+  bool resending = false;
+  bool verifying = false;
+  int resendSecondsLeft = 0;
+  Timer? countdownTimer;
+
+  await showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (context, setDialogState) {
+          void startCountdown() {
+            setDialogState(() {
+              resendSecondsLeft = 60;
+            });
+            countdownTimer?.cancel();
+            countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+              setDialogState(() {
+                if (resendSecondsLeft > 0) {
+                  resendSecondsLeft--;
+                } else {
+                  timer.cancel();
+                }
+              });
+            });
+          }
+
+          return AlertDialog(
+            backgroundColor: const Color(0xFF0D1117),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: const BorderSide(color: Color(0xFF00F0FF), width: 1.5),
+            ),
+            title: const Text(
+              'Verificación de Correo',
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Ingresa el código OTP de 6 dígitos enviado a tu correo:',
+                  style: TextStyle(color: Colors.white70, fontSize: 13),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: otpController,
+                  keyboardType: TextInputType.number,
+                  maxLength: 6,
+                  enableInteractiveSelection: false,
+                  style: const TextStyle(color: Colors.white, fontSize: 20, letterSpacing: 8, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                  decoration: const InputDecoration(
+                    hintText: '000000',
+                    hintStyle: TextStyle(color: Colors.white30),
+                    counterText: '',
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xFF00F0FF)),
+                    ),
+                  ),
+                ),
+                if (dialogError.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  Text(
+                    dialogError,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: dialogError.contains('éxito') ? const Color(0xFF00F0FF) : const Color(0xFFEF4444),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: (resending || resendSecondsLeft > 0)
+                    ? null
+                    : () async {
+                        setDialogState(() {
+                          resending = true;
+                          dialogError = '';
+                        });
+                        try {
+                          final auth = Provider.of<AuthProvider>(context, listen: false);
+                          await auth.resendOtp(username: username);
+                          startCountdown();
+                          setDialogState(() {
+                            dialogError = 'Código reenviado con éxito';
+                          });
+                        } catch (e) {
+                          setDialogState(() {
+                            dialogError = e.toString().replaceAll('Exception:', '').trim();
+                          });
+                        } finally {
+                          setDialogState(() => resending = false);
+                        }
+                      },
+                child: Text(
+                  resending
+                      ? 'Reenviando...'
+                      : resendSecondsLeft > 0
+                          ? 'Reenviar (${resendSecondsLeft}s)'
+                          : 'Reenviar',
+                  style: TextStyle(
+                    color: (resending || resendSecondsLeft > 0)
+                        ? Colors.white30
+                        : const Color(0xFF00F0FF),
+                  ),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: verifying
+                    ? null
+                    : () async {
+                        if (otpController.text.trim().length != 6) {
+                          setDialogState(() {
+                            dialogError = 'Ingresa los 6 dígitos';
+                          });
+                          return;
+                        }
+                        setDialogState(() {
+                          verifying = true;
+                          dialogError = '';
+                        });
+                        try {
+                          final auth = Provider.of<AuthProvider>(context, listen: false);
+                          await auth.verifyOtp(username: username, otp: otpController.text.trim());
+                          
+                          countdownTimer?.cancel();
+                          if (context.mounted) {
+                            Navigator.of(context).pop(); // Close dialog
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(builder: (_) => const OnboardingScreen()),
+                            );
+                          }
+                        } catch (e) {
+                          setDialogState(() {
+                            dialogError = e.toString().replaceAll('Exception:', '').trim();
+                          });
+                        } finally {
+                          setDialogState(() => verifying = false);
+                        }
+                      },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF00F0FF),
+                  foregroundColor: Colors.black,
+                ),
+                child: Text(verifying ? 'Verificando...' : 'Verificar'),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+  countdownTimer?.cancel();
+  otpController.dispose();
 }

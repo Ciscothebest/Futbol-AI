@@ -1,10 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
   const loginModal = document.getElementById('login-modal');
   const registerModal = document.getElementById('register-modal');
+  const otpModal = document.getElementById('otp-modal');
   const btnOpenLogin = document.getElementById('btn-open-login');
   const btnOpenRegister = document.getElementById('btn-open-register');
   const closeLogin = document.getElementById('close-login');
   const closeRegister = document.getElementById('close-register');
+  const closeOtp = document.getElementById('close-otp');
 
   // Hero section buttons
   const heroBtnRegister = document.getElementById('hero-btn-register');
@@ -23,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   closeLogin?.addEventListener('click', () => closeModal(loginModal));
   closeRegister?.addEventListener('click', () => closeModal(registerModal));
+  closeOtp?.addEventListener('click', () => closeModal(otpModal));
 
   // Switch between login/register
   document.getElementById('switch-to-register')?.addEventListener('click', () => {
@@ -75,7 +78,22 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       const result = await res.json();
 
-      if (!res.ok) throw new Error((result.details ? `${result.error} (${result.details})` : null) || result.error || 'Error al iniciar sesión');
+      if (!res.ok) {
+        if (result.error === 'needs_verification') {
+          closeModal(loginModal);
+          openModal(otpModal);
+          document.getElementById('otp-username').value = username;
+          document.getElementById('otp-code').value = '';
+          document.getElementById('otp-error').textContent = '';
+          const otpSuccessEl = document.getElementById('otp-success');
+          if (otpSuccessEl) {
+            otpSuccessEl.textContent = '';
+            otpSuccessEl.style.display = 'none';
+          }
+          return;
+        }
+        throw new Error((result.details ? `${result.error} (${result.details})` : null) || result.error || 'Error al iniciar sesión');
+      }
 
       localStorage.setItem('scout_ai_token', result.token);
       localStorage.setItem('scout_ai_user', JSON.stringify(result.user));
@@ -301,8 +319,16 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    if (password.length < 8) {
-      errorEl.textContent = 'La contraseña debe tener al menos 8 caracteres';
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|yahoo\.com)$/;
+    if (!emailRegex.test(email.toLowerCase().trim())) {
+      errorEl.textContent = 'El correo electrónico debe ser una cuenta válida de gmail.com o yahoo.com';
+      return;
+    }
+
+    const hasLetter = /[a-zA-Z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    if (password.length < 8 || !hasLetter || !hasNumber) {
+      errorEl.textContent = 'La contraseña debe tener al menos 8 caracteres, incluyendo letras y números';
       return;
     }
 
@@ -321,12 +347,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (!res.ok) throw new Error((result.details ? `${result.error} (${result.details})` : null) || result.error || 'Error al registrarse');
 
-      // SHOW SUCCESS AND SWITCH TO LOGIN
+      // SHOW SUCCESS AND SWITCH TO OTP MODAL
       successEl.style.display = 'block';
       setTimeout(() => {
         closeModal(registerModal);
-        openModal(loginModal);
-        document.getElementById('login-username').value = username;
+        openModal(otpModal);
+        document.getElementById('otp-username').value = username;
+        document.getElementById('otp-code').value = '';
+        document.getElementById('otp-error').textContent = '';
+        const otpSuccessEl = document.getElementById('otp-success');
+        if (otpSuccessEl) {
+          otpSuccessEl.textContent = '';
+          otpSuccessEl.style.display = 'none';
+        }
         successEl.style.display = 'none';
       }, 1500);
       
@@ -336,6 +369,134 @@ document.addEventListener('DOMContentLoaded', () => {
     } finally {
       spinner.style.display = 'none';
       btnText.style.display = 'inline-block';
+    }
+  });
+
+  // PREVENT PASTE ON OTP INPUT
+  document.getElementById('otp-code')?.addEventListener('paste', (e) => {
+    e.preventDefault();
+  });
+
+  // OTP FORM SUBMIT
+  document.getElementById('otp-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const username = document.getElementById('otp-username').value;
+    const otp = document.getElementById('otp-code').value.trim();
+    const errorEl = document.getElementById('otp-error');
+    const successEl = document.getElementById('otp-success');
+    const spinner = document.getElementById('otp-spinner');
+    const btnText = document.getElementById('otp-btn-text');
+
+    if (!otp) {
+      errorEl.textContent = 'Ingresa el código OTP';
+      return;
+    }
+
+    errorEl.textContent = '';
+    successEl.style.display = 'none';
+    spinner.style.display = 'inline-block';
+    btnText.style.display = 'none';
+
+    try {
+      const res = await fetch(`${API_BASE}/auth/verify-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, otp })
+      });
+      const result = await res.json();
+
+      if (!res.ok) throw new Error(result.error || 'Error al verificar el código');
+
+      successEl.textContent = '¡Cuenta verificada con éxito! Iniciando sesión...';
+      successEl.style.display = 'block';
+
+      localStorage.setItem('scout_ai_token', result.token);
+      localStorage.setItem('scout_ai_user', JSON.stringify(result.user));
+
+      setTimeout(() => {
+        closeModal(otpModal);
+        window.location.href = 'index.html';
+      }, 1500);
+    } catch (err) {
+      console.error('OTP verification error:', err);
+      errorEl.textContent = err.message;
+    } finally {
+      spinner.style.display = 'none';
+      btnText.style.display = 'inline-block';
+    }
+  });
+
+  // RESEND OTP
+  let resendCooldown = false;
+  let resendTimer = null;
+
+  const startResendCountdown = () => {
+    const btn = document.getElementById('resend-otp-btn');
+    if (!btn) return;
+    
+    resendCooldown = true;
+    btn.style.pointerEvents = 'none';
+    btn.style.opacity = '0.5';
+    
+    let secondsLeft = 60;
+    btn.textContent = `Reenviar código (${secondsLeft}s)`;
+
+    resendTimer = setInterval(() => {
+      secondsLeft--;
+      if (secondsLeft <= 0) {
+        clearInterval(resendTimer);
+        resendCooldown = false;
+        btn.style.pointerEvents = 'auto';
+        btn.style.opacity = '1';
+        btn.textContent = 'Reenviar código';
+      } else {
+        btn.textContent = `Reenviar código (${secondsLeft}s)`;
+      }
+    }, 1000);
+  };
+
+  document.getElementById('resend-otp-btn')?.addEventListener('click', async (e) => {
+    e.preventDefault();
+    if (resendCooldown) return;
+
+    const username = document.getElementById('otp-username').value;
+    const errorEl = document.getElementById('otp-error');
+    const successEl = document.getElementById('otp-success');
+
+    if (!username) {
+      errorEl.textContent = 'Error: no se detectó el usuario';
+      return;
+    }
+
+    errorEl.textContent = '';
+    successEl.style.display = 'none';
+
+    try {
+      startResendCountdown();
+
+      const res = await fetch(`${API_BASE}/auth/resend-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username })
+      });
+      const result = await res.json();
+
+      if (!res.ok) throw new Error(result.error || 'Error al reenviar el código');
+
+      successEl.textContent = result.message || 'Código reenviado con éxito';
+      successEl.style.display = 'block';
+    } catch (err) {
+      console.error('Resend OTP error:', err);
+      errorEl.textContent = err.message;
+      
+      if (resendTimer) clearInterval(resendTimer);
+      resendCooldown = false;
+      const btn = document.getElementById('resend-otp-btn');
+      if (btn) {
+        btn.style.pointerEvents = 'auto';
+        btn.style.opacity = '1';
+        btn.textContent = 'Reenviar código';
+      }
     }
   });
 

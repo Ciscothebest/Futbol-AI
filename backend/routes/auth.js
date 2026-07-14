@@ -1,7 +1,81 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
 
 module.exports = ({ User, JWT_SECRET }) => {
+  const transporter = process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS
+    ? nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: parseInt(process.env.SMTP_PORT || '587'),
+        secure: process.env.SMTP_SECURE === 'true',
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS
+        }
+      })
+    : null;
+
+  const sendOTPEmail = async (email, otp) => {
+    const mailOptions = {
+      from: process.env.SMTP_FROM || '"ScoutAI" <noreply@scoutai.com>',
+      to: email,
+      subject: 'Código de Verificación ScoutAI',
+      text: `Tu código de verificación para ScoutAI es: ${otp}\n\nEste código expira en 15 minutos.`,
+      html: `
+        <div style="background-color: #05080c; padding: 40px 20px; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #ffffff; text-align: center; border-radius: 12px; max-width: 500px; margin: 0 auto; border: 1px solid rgba(0, 240, 255, 0.15); box-shadow: 0 10px 30px rgba(0, 240, 255, 0.05);">
+          <!-- Logo / Header -->
+          <div style="margin-bottom: 30px;">
+            <span style="font-size: 28px; font-weight: 900; letter-spacing: 2px; color: #ffffff; text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);">
+              SCOUT<span style="color: #00F0FF;">AI</span>
+            </span>
+          </div>
+
+          <!-- Divider -->
+          <div style="height: 1px; background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.4), transparent); margin-bottom: 30px;"></div>
+
+          <!-- Main Content -->
+          <h2 style="color: #ffffff; font-size: 22px; font-weight: 700; margin-bottom: 15px; letter-spacing: 0.5px;">Verifica tu Cuenta</h2>
+          <p style="color: #a0aab8; font-size: 14px; line-height: 1.6; margin-bottom: 25px;">
+            ¡Gracias por unirte a la plataforma de Inteligencia Artificial para fútbol más potente! Por favor ingresa el siguiente código de verificación de un solo uso (OTP) para completar tu onboarding:
+          </p>
+
+          <!-- OTP Box -->
+          <div style="background: rgba(255, 255, 255, 0.02); border: 1.5px solid rgba(0, 240, 255, 0.3); padding: 15px 30px; border-radius: 8px; font-size: 32px; font-weight: 800; letter-spacing: 8px; color: #00F0FF; margin: 25px auto; width: fit-content; text-shadow: 0 0 15px rgba(0, 240, 255, 0.4); display: inline-block;">
+            ${otp}
+          </div>
+
+          <!-- Info / Timer -->
+          <p style="color: #a0aab8; font-size: 13px; margin-top: 25px;">
+            Este código es válido por <strong style="color: #00F0FF;">15 minutos</strong>.
+          </p>
+
+          <!-- Footer Divider -->
+          <div style="height: 1px; background: rgba(255, 255, 255, 0.05); margin: 30px 0 20px 0;"></div>
+
+          <!-- Footer -->
+          <p style="color: #52667d; font-size: 11px; line-height: 1.4; margin: 0;">
+            Si no solicitaste este código, puedes ignorar este correo de forma segura.<br>
+            &copy; 2026 ScoutAI Platform. Todos los derechos reservados.
+          </p>
+        </div>
+      `
+    };
+
+    if (transporter) {
+      try {
+        await transporter.sendMail(mailOptions);
+        console.log(`✉️ [SMTP] Correo de verificación enviado con éxito a ${email}`);
+      } catch (error) {
+        console.error(`❌ [SMTP] Error al enviar correo de verificación a ${email}:`, error);
+        console.log(`✉️ [EMAIL MOCK FALLBACK] Código OTP para ${email}: ${otp}`);
+      }
+    } else {
+      console.log(`✉️ [EMAIL MOCK] Código OTP para ${email}: ${otp}`);
+    }
+  };
+
+  const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
+
   const router = express.Router();
 
   const isAlphanumeric = (str) => /^[a-zA-Z0-0]+$/.test(str);
@@ -108,8 +182,10 @@ module.exports = ({ User, JWT_SECRET }) => {
         return res.status(400).json({ error: 'Todos los campos son obligatorios' });
       }
       
-      if (password.length < 8) {
-        return res.status(400).json({ error: 'La contraseña debe tener al menos 8 caracteres' });
+      const hasLetter = /[a-zA-Z]/.test(password);
+      const hasNumber = /\d/.test(password);
+      if (password.length < 8 || !hasLetter || !hasNumber) {
+        return res.status(400).json({ error: 'La contraseña debe tener al menos 8 caracteres, incluyendo letras y números' });
       }
 
       const telValidation = validatePhoneNumber(telefono);
@@ -117,10 +193,18 @@ module.exports = ({ User, JWT_SECRET }) => {
         return res.status(400).json({ error: `Número de teléfono: ${telValidation.message}` });
       }
 
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|yahoo\.com)$/;
+      if (!emailRegex.test((email || '').toLowerCase().trim())) {
+        return res.status(400).json({ error: 'El correo electrónico debe ser una cuenta válida de gmail.com o yahoo.com' });
+      }
+
       const existing = await User.findOne({ where: { username: username.toLowerCase() } });
       if (existing) {
         return res.status(409).json({ error: 'Ese nombre de usuario ya está en uso' });
       }
+
+      const otpCode = generateOTP();
+      const otpExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
       const user = await User.create({
         username: username.toLowerCase().trim(),
@@ -129,11 +213,21 @@ module.exports = ({ User, JWT_SECRET }) => {
         apellidos: apellidos.trim(),
         telefono: telefono.trim(),
         email: email.toLowerCase().trim(),
-        avatarUrl: `https://api.dicebear.com/9.x/notionists/svg?seed=${encodeURIComponent(username)}&backgroundColor=0d1117&radius=50`
+        avatarUrl: `https://api.dicebear.com/9.x/notionists/svg?seed=${encodeURIComponent(username)}&backgroundColor=0d1117&radius=50`,
+        isVerified: false,
+        otpCode: otpCode,
+        otpExpires: otpExpires
       });
 
-      console.log(`👤 New user registered: ${user.username} (ID: ${user.id})`);
-      res.status(201).json({ success: true, message: 'Usuario registrado con éxito' });
+      console.log(`👤 New user registered: ${user.username} (ID: ${user.id}). OTP: ${otpCode}`);
+      await sendOTPEmail(user.email, otpCode);
+
+      res.status(201).json({ 
+        success: true, 
+        message: 'Usuario registrado con éxito. Se ha enviado un código de verificación (OTP) a tu correo.',
+        needsVerification: true,
+        username: user.username
+      });
     } catch (err) {
       console.error('Register error:', err);
       res.status(500).json({ error: 'Error al crear cuenta', details: err.message });
@@ -158,6 +252,15 @@ module.exports = ({ User, JWT_SECRET }) => {
         return res.status(401).json({ error: 'Credenciales incorrectas' });
       }
 
+      // Check if user is verified
+      if (!user.isVerified) {
+        return res.status(403).json({ 
+          error: 'needs_verification', 
+          message: 'Cuenta no verificada. Por favor, verifica tu correo con el código OTP enviado.',
+          username: user.username 
+        });
+      }
+
       await user.update({ lastLogin: new Date() });
 
       const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, JWT_SECRET, { expiresIn: '30d' });
@@ -166,6 +269,90 @@ module.exports = ({ User, JWT_SECRET }) => {
     } catch (err) {
       console.error('Login error:', err);
       res.status(500).json({ error: 'Error al iniciar sesión', details: err.message });
+    }
+  });
+
+  // ─── POST /api/auth/verify-otp ──────────────────────────────────
+  router.post('/verify-otp', async (req, res) => {
+    try {
+      const { username, otp } = req.body;
+      if (!username || !otp) {
+        return res.status(400).json({ error: 'Usuario y código OTP requeridos' });
+      }
+
+      const user = await User.findOne({ where: { username: username.toLowerCase().trim() } });
+      if (!user) {
+        return res.status(404).json({ error: 'Usuario no encontrado' });
+      }
+
+      if (user.isVerified) {
+        return res.status(400).json({ error: 'La cuenta ya está verificada' });
+      }
+
+      if (user.otpCode !== otp.trim()) {
+        return res.status(400).json({ error: 'Código de verificación incorrecto' });
+      }
+
+      if (new Date() > user.otpExpires) {
+        return res.status(400).json({ error: 'El código de verificación ha expirado' });
+      }
+
+      // Verify user
+      await user.update({
+        isVerified: true,
+        otpCode: null,
+        otpExpires: null
+      });
+
+      console.log(`✅ User ${user.username} successfully verified email ${user.email}`);
+
+      // Auto-login upon verification: generate token and return it
+      const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, JWT_SECRET, { expiresIn: '30d' });
+
+      res.json({ 
+        success: true, 
+        message: 'Cuenta verificada con éxito', 
+        token, 
+        user: user.toPublicJSON() 
+      });
+    } catch (err) {
+      console.error('Verify OTP error:', err);
+      res.status(500).json({ error: 'Error al verificar código OTP', details: err.message });
+    }
+  });
+
+  // ─── POST /api/auth/resend-otp ──────────────────────────────────
+  router.post('/resend-otp', async (req, res) => {
+    try {
+      const { username } = req.body;
+      if (!username) {
+        return res.status(400).json({ error: 'Usuario requerido' });
+      }
+
+      const user = await User.findOne({ where: { username: username.toLowerCase().trim() } });
+      if (!user) {
+        return res.status(404).json({ error: 'Usuario no encontrado' });
+      }
+
+      if (user.isVerified) {
+        return res.status(400).json({ error: 'La cuenta ya está verificada' });
+      }
+
+      const otpCode = generateOTP();
+      const otpExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+
+      await user.update({
+        otpCode,
+        otpExpires
+      });
+
+      console.log(`✉️ Resending OTP to user ${user.username} (${user.email}). New OTP: ${otpCode}`);
+      await sendOTPEmail(user.email, otpCode);
+
+      res.json({ success: true, message: 'Código de verificación reenviado con éxito.' });
+    } catch (err) {
+      console.error('Resend OTP error:', err);
+      res.status(500).json({ error: 'Error al reenviar código OTP', details: err.message });
     }
   });
 

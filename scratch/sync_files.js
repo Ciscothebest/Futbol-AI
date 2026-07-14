@@ -18,6 +18,8 @@ const filesToSync = [
   'android-app/app/src/main/assets/frontend/styles.css',
   'android-app/app/src/main/assets/frontend/profile.css',
   'backend/server.js',
+  'backend/database.js',
+  'backend/final-restore.js',
   'backend/models/User.js',
   'backend/routes/auth.js',
   'backend/routes/payments.js',

@@ -5,7 +5,7 @@ const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
 const jwt = require('jsonwebtoken');
 const FootballAgent = require('./agent');
-const { Player, User, League, Team, sequelize, QueryLog, ComparisonLog, FavoriteLog, Payment } = require('./database');
+const { Player, User, League, Team, sequelize, QueryLog, ComparisonLog, FavoriteLog, Payment, enableRLSIfPostgres } = require('./database');
 const seedLeaguesAndTeams = require('./seed-db-onboarding');
 
 const app = express();
@@ -917,6 +917,18 @@ function startServer(retries = 2) {
           console.log('➕ Adding role column...');
           await sequelize.query('ALTER TABLE users ADD role NVARCHAR(100) NULL').catch(() => {});
         }
+        if (!hasUserColumn('isVerified')) {
+          console.log('➕ Adding isVerified column...');
+          await sequelize.query('ALTER TABLE users ADD isVerified BIT DEFAULT 0').catch(() => {});
+        }
+        if (!hasUserColumn('otpCode')) {
+          console.log('➕ Adding otpCode column...');
+          await sequelize.query('ALTER TABLE users ADD otpCode NVARCHAR(6) NULL').catch(() => {});
+        }
+        if (!hasUserColumn('otpExpires')) {
+          console.log('➕ Adding otpExpires column...');
+          await sequelize.query('ALTER TABLE users ADD otpExpires DATETIMEOFFSET NULL').catch(() => {});
+        }
 
         // Check columns for payments table case-insensitively
         const paymentTableInfo = await queryInterface.describeTable('payments').catch(() => ({}));
@@ -968,6 +980,11 @@ function startServer(retries = 2) {
       await FavoriteLog.sync();
       if (doAlter) await FavoriteLog.sync({ alter: true });
       await seedLeaguesAndTeams();
+
+      // Enable RLS for Postgres tables if applicable
+      if (typeof enableRLSIfPostgres === 'function') {
+        await enableRLSIfPostgres();
+      }
 
       // Seed players from players.json
       let count = await Player.count();

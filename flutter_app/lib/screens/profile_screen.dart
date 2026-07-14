@@ -222,7 +222,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Column(
                 children: [
                   _buildProfileRow('Nombre de Usuario', user.username),
-                  _buildProfileRow('Correo Electrónico', user.email),
+                  _buildProfileRow('Email', user.email),
                   _buildProfileRow('Número de Teléfono', user.telefono),
                 ],
               ),

@@ -70,6 +70,18 @@ module.exports = (sequelize) => {
     selectedTier: {
       type: DataTypes.STRING(50),
       defaultValue: 'Gratis'
+    },
+    isVerified: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    otpCode: {
+      type: DataTypes.STRING(6),
+      allowNull: true
+    },
+    otpExpires: {
+      type: DataTypes.DATE,
+      allowNull: true
     }
   }, {
     tableName: 'users',
@@ -113,6 +125,8 @@ module.exports = (sequelize) => {
   User.prototype.toPublicJSON = function() {
     const data = this.toJSON();
     delete data.passwordHash;
+    delete data.otpCode;
+    delete data.otpExpires;
     return data;
   };
 

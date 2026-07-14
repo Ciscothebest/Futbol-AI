@@ -112,6 +112,43 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+  // ─── VERIFY OTP ──────────────────────────────────────────────────
+  Future<void> verifyOtp({
+    required String username,
+    required String otp,
+  }) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final res = await _apiService.verifyOtp(username: username, otp: otp);
+      _token = res['token'];
+      _user = User.fromJson(res['user']);
+      
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('scout_ai_token', _token!);
+      await prefs.setString('scout_ai_user', jsonEncode(_user!.toJson()));
+      
+      await checkBackendStatus();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  // ─── RESEND OTP ──────────────────────────────────────────────────
+  Future<void> resendOtp({
+    required String username,
+  }) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      await _apiService.resendOtp(username: username);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   // ─── ONBOARDING SUBMISSION ──────────────────────────────────────
   Future<void> completeOnboarding({
     required String selectedCountry,

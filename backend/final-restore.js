@@ -132,7 +132,7 @@ async function main() {
   }
 
   // Import database modules fresh
-  const { sequelize, Player, User, League, Team, Payment, QueryLog, ComparisonLog, FavoriteLog } = require('./database');
+  const { sequelize, Player, User, League, Team, Payment, QueryLog, ComparisonLog, FavoriteLog, enableRLSIfPostgres } = require('./database');
   const seedLeaguesAndTeams = require('./seed-db-onboarding');
 
   await sequelize.authenticate();
@@ -149,6 +149,10 @@ async function main() {
   await League.sync({ force: true });
   await Team.sync({ force: true });
   console.log('✅ Tables ready\n');
+
+  if (typeof enableRLSIfPostgres === 'function') {
+    await enableRLSIfPostgres();
+  }
 
   // Seed leagues and teams
   console.log('🌍 Seeding leagues and teams...');

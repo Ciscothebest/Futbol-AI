@@ -97,7 +97,54 @@ class ApiService {
     if (response.statusCode == 200) {
       return {'success': true, 'token': data['token'], 'user': data['user']};
     } else {
+      if (data['error'] == 'needs_verification') {
+        throw Exception('needs_verification');
+      }
       throw Exception(data['error'] ?? 'Credenciales incorrectas');
+    }
+  }
+
+  // ─── POST /api/auth/verify-otp ──────────────────────────────────
+  Future<Map<String, dynamic>> verifyOtp({
+    required String username,
+    required String otp,
+  }) async {
+    final url = Uri.parse('$baseUrl/auth/verify-otp');
+    final response = await _client.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'username': username,
+        'otp': otp,
+      }),
+    );
+
+    final data = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      return {'success': true, 'token': data['token'], 'user': data['user']};
+    } else {
+      throw Exception(data['error'] ?? 'Error al verificar el código');
+    }
+  }
+
+  // ─── POST /api/auth/resend-otp ──────────────────────────────────
+  Future<Map<String, dynamic>> resendOtp({
+    required String username,
+  }) async {
+    final url = Uri.parse('$baseUrl/auth/resend-otp');
+    final response = await _client.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'username': username,
+      }),
+    );
+
+    final data = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      return {'success': true, 'message': data['message']};
+    } else {
+      throw Exception(data['error'] ?? 'Error al reenviar el código');
     }
   }
 

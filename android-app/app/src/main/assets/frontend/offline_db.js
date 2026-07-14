@@ -251,6 +251,13 @@
       const users = JSON.parse(localStorage.getItem('futbolai_users_db') || '[]');
       const match = users.find(u => u.username === body.username && u.password === body.password);
       if (match) {
+        if (match.isVerified === false) {
+          return makeJsonResponse(403, { 
+            error: 'needs_verification', 
+            message: 'Cuenta no verificada. Por favor, verifica tu correo.', 
+            username: match.username 
+          });
+        }
         return makeJsonResponse(200, {
           token: "offline_token_" + Date.now(),
           user: match
@@ -262,6 +269,7 @@
           nombres: body.username || "Scout",
           apellidos: "Invitado",
           onboardingComplete: false,
+          isVerified: true,
           selectedTier: "Pro"
         };
         users.push(newUser);
@@ -280,6 +288,21 @@
       if (exists) {
         return makeJsonResponse(400, { error: "El usuario ya existe" });
       }
+      
+      const hasLetter = /[a-zA-Z]/.test(body.password || '');
+      const hasNumber = /\d/.test(body.password || '');
+      if (!body.password || body.password.length < 8 || !hasLetter || !hasNumber) {
+        return makeJsonResponse(400, { error: "La contraseña debe tener al menos 8 caracteres, incluyendo letras y números" });
+      }
+
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|yahoo\.com)$/;
+      if (!body.email || !emailRegex.test(body.email.toLowerCase().trim())) {
+        return makeJsonResponse(400, { error: "El correo electrónico debe ser una cuenta válida de gmail.com o yahoo.com" });
+      }
+
+      const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+      const otpExpires = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+
       const newUser = {
         username: body.username,
         password: body.password,
@@ -287,11 +310,74 @@
         apellidos: body.apellidos,
         telefono: body.telefono,
         email: body.email,
-        onboardingComplete: false
+        onboardingComplete: false,
+        isVerified: false,
+        otpCode: otpCode,
+        otpExpires: otpExpires
       };
       users.push(newUser);
       localStorage.setItem('futbolai_users_db', JSON.stringify(users));
-      return makeJsonResponse(200, { success: true });
+      
+      console.log(`✉️ [Offline Mock DB] Registered user ${body.username}. OTP: ${otpCode}`);
+
+      return makeJsonResponse(200, { 
+        success: true, 
+        message: 'Usuario registrado con éxito. Se ha enviado un código de verificación (OTP) a tu correo.',
+        needsVerification: true,
+        username: body.username
+      });
+    }
+
+    // Route: Auth Verify OTP (Simulado)
+    if (url.includes('/api/auth/verify-otp')) {
+      const users = JSON.parse(localStorage.getItem('futbolai_users_db') || '[]');
+      const userIdx = users.findIndex(u => u.username === body.username);
+      if (userIdx === -1) {
+        return makeJsonResponse(404, { error: "Usuario no encontrado" });
+      }
+      const user = users[userIdx];
+      if (user.otpCode !== body.otp) {
+        return makeJsonResponse(400, { error: "Código de verificación incorrecto" });
+      }
+      if (new Date().toISOString() > user.otpExpires) {
+        return makeJsonResponse(400, { error: "El código ha expirado" });
+      }
+
+      user.isVerified = true;
+      user.otpCode = null;
+      user.otpExpires = null;
+      users[userIdx] = user;
+      localStorage.setItem('futbolai_users_db', JSON.stringify(users));
+
+      console.log(`✅ [Offline Mock DB] User verified: ${user.username}`);
+
+      return makeJsonResponse(200, { 
+        success: true, 
+        message: 'Cuenta verificada con éxito',
+        token: "offline_token_" + Date.now(),
+        user: user
+      });
+    }
+
+    // Route: Auth Resend OTP (Simulado)
+    if (url.includes('/api/auth/resend-otp')) {
+      const users = JSON.parse(localStorage.getItem('futbolai_users_db') || '[]');
+      const userIdx = users.findIndex(u => u.username === body.username);
+      if (userIdx === -1) {
+        return makeJsonResponse(404, { error: "Usuario no encontrado" });
+      }
+      const user = users[userIdx];
+      const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+      const otpExpires = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+
+      user.otpCode = otpCode;
+      user.otpExpires = otpExpires;
+      users[userIdx] = user;
+      localStorage.setItem('futbolai_users_db', JSON.stringify(users));
+
+      console.log(`✉️ [Offline Mock DB] Resending OTP to ${user.username}. New OTP: ${otpCode}`);
+
+      return makeJsonResponse(200, { success: true, message: 'Código reenviado con éxito' });
     }
 
     // Route: Onboarding Completed

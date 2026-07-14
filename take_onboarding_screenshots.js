@@ -52,7 +52,7 @@ async function run() {
           nombres: 'Test',
           apellidos: 'Scout',
           telefono: '+34 600 111 222',
-          email: `${testUsername}@scout.com`
+          email: `${testUsername}@gmail.com`
         })
       });
     } catch (e) {

@@ -196,4 +196,20 @@ const Payment = PaymentModel(sequelize);
 User.hasMany(Payment, { foreignKey: 'userId' });
 Payment.belongsTo(User, { foreignKey: 'userId' });
 
-module.exports = { sequelize, Player, User, League, Team, QueryLog, ComparisonLog, FavoriteLog, Payment };
+async function enableRLSIfPostgres() {
+  if (sequelize.options.dialect === 'postgres') {
+    console.log('🔒 Enabling Row Level Security (RLS) on public tables...');
+    const tables = ['users', 'Players', 'payments', 'query_logs', 'comparison_logs', 'favorite_logs', 'leagues', 'teams'];
+    for (const table of tables) {
+      try {
+        await sequelize.query(`ALTER TABLE "${table}" ENABLE ROW LEVEL SECURITY;`);
+        console.log(`  - RLS enabled on table: ${table}`);
+      } catch (err) {
+        console.warn(`  ⚠️ Could not enable RLS on table ${table}:`, err.message);
+      }
+    }
+  }
+}
+
+module.exports = { sequelize, Player, User, League, Team, QueryLog, ComparisonLog, FavoriteLog, Payment, enableRLSIfPostgres };
+

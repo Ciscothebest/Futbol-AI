@@ -174,8 +174,8 @@
           <div class="auth-input-helper" id="reg-tel-helper"></div>
         </div>
         <div class="auth-field">
-          <label for="reg-email">Correo electrónico</label>
-          <input type="email" id="reg-email" placeholder="Ej: juan.perez@example.com" required />
+          <label for="reg-email">Email</label>
+          <input type="email" id="reg-email" placeholder="Example@gmail.com" required />
         </div>
         <div class="auth-field">
           <label for="reg-username">Nombre de usuario</label>
@@ -231,6 +231,33 @@
     </div>
   </div>
 
-  <script src="landing.js"></script>
+  <!-- Modal Verificación OTP -->
+  <div class="auth-overlay" id="otp-modal">
+    <div class="auth-modal">
+      <button class="auth-close" id="close-otp">&times;</button>
+      <div class="auth-modal-header">
+        <h2>Verificar Correo</h2>
+        <p style="color: #00f0ff;">Ingresa el código de 6 dígitos enviado a tu correo</p>
+      </div>
+      <form class="auth-form" id="otp-form" novalidate>
+        <input type="hidden" id="otp-username" />
+        <div class="auth-field">
+          <label for="otp-code">Código de Verificación</label>
+          <input type="text" id="otp-code" placeholder="Ej: 123456" maxlength="6" style="text-align: center; letter-spacing: 5px; font-size: 1.5rem; font-weight: bold; background: rgba(255,255,255,0.03); border: 1.5px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 10px; color: #fff; box-sizing: border-box; width: 100%;" required />
+        </div>
+        <div class="auth-error" id="otp-error"></div>
+        <div class="auth-success" id="otp-success" style="color: #00F0FF; font-size: 0.9rem; margin-bottom: 10px; display: none; text-align: center;"></div>
+        <button type="submit" class="auth-submit" id="otp-submit">
+          <span id="otp-btn-text">Verificar Código</span>
+          <span class="auth-spinner" id="otp-spinner" style="display:none"></span>
+        </button>
+      </form>
+      <div class="auth-footer" style="margin-top: 15px;">
+        ¿No recibiste el código? <span class="auth-link" id="resend-otp-btn">Reenviar código</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="landing.js?v=202607020257"></script>
 </body>
 </html>
