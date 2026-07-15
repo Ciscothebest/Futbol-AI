@@ -42,7 +42,13 @@ module.exports = (sequelize) => {
     }
   }, {
     tableName: 'payments',
-    timestamps: true
+    timestamps: true,
+    indexes: [
+      {
+        fields: ['userId'],
+        name: 'payments_userId_idx'
+      }
+    ]
   });
 
   return Payment;

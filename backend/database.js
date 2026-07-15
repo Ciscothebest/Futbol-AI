@@ -165,19 +165,46 @@ const User = UserModel(sequelize);
 const QueryLog = sequelize.define('QueryLog', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   message: { type: DataTypes.TEXT, allowNull: true } // can be null if audio or quick query
-}, { tableName: 'query_logs', timestamps: true });
+}, { 
+  tableName: 'query_logs', 
+  timestamps: true,
+  indexes: [
+    {
+      fields: ['userId'],
+      name: 'query_logs_userId_idx'
+    }
+  ]
+});
 
 const ComparisonLog = sequelize.define('ComparisonLog', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   player1Id: { type: DataTypes.STRING, allowNull: false },
   player2Id: { type: DataTypes.STRING, allowNull: false }
-}, { tableName: 'comparison_logs', timestamps: true });
+}, { 
+  tableName: 'comparison_logs', 
+  timestamps: true,
+  indexes: [
+    {
+      fields: ['userId'],
+      name: 'comparison_logs_userId_idx'
+    }
+  ]
+});
 
 const FavoriteLog = sequelize.define('FavoriteLog', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   playerId: { type: DataTypes.STRING, allowNull: false },
   action: { type: DataTypes.STRING, allowNull: false } // 'add' or 'remove'
-}, { tableName: 'favorite_logs', timestamps: true });
+}, { 
+  tableName: 'favorite_logs', 
+  timestamps: true,
+  indexes: [
+    {
+      fields: ['userId'],
+      name: 'favorite_logs_userId_idx'
+    }
+  ]
+});
 
 // Relationships
 User.hasMany(QueryLog, { foreignKey: 'userId' });
