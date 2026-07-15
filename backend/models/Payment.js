@@ -10,7 +10,7 @@ module.exports = (sequelize) => {
     transactionId: {
       type: DataTypes.STRING(100),
       allowNull: false,
-      unique: true
+      unique: 'payments_transactionId_key'
     },
     amount: {
       type: DataTypes.FLOAT,
