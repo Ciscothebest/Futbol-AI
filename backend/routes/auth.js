@@ -502,6 +502,12 @@ module.exports = ({ User, JWT_SECRET }) => {
         message: err.message, 
         code: err.code, 
         command: err.command,
+        connectionDetails: {
+          SMTP_HOST: process.env.SMTP_HOST,
+          SMTP_PORT: process.env.SMTP_PORT || '587 (Default)',
+          SMTP_SECURE: process.env.SMTP_SECURE || 'false (Default)',
+          SMTP_USER: process.env.SMTP_USER
+        },
         stack: err.stack 
       });
     }
