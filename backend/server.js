@@ -1,4 +1,8 @@
 const path = require('path');
+const dns = require('dns');
+// Forzar a Node.js a preferir IPv4 sobre IPv6 en todas las resoluciones de red (evita fallos ENETUNREACH en Render)
+dns.setDefaultResultOrder('ipv4first');
+
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 const express = require('express');
 const cors = require('cors');
