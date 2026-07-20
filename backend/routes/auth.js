@@ -274,7 +274,9 @@ module.exports = ({ User, JWT_SECRET }) => {
       });
 
       console.log(`👤 New user registered: ${user.username} (ID: ${user.id}). OTP: ${otpCode}`);
-      await sendOTPEmail(user.email, otpCode);
+      sendOTPEmail(user.email, otpCode).catch(err => {
+        console.error('❌ [BACKGROUND-SMTP] Error al enviar correo OTP de registro:', err);
+      });
 
       res.status(201).json({ 
         success: true, 
@@ -424,7 +426,9 @@ module.exports = ({ User, JWT_SECRET }) => {
       });
 
       console.log(`✉️ Resending OTP to user ${user.username} (${user.email}). New OTP: ${otpCode}`);
-      await sendOTPEmail(user.email, otpCode);
+      sendOTPEmail(user.email, otpCode).catch(err => {
+        console.error('❌ [BACKGROUND-SMTP] Error al reenviar correo OTP:', err);
+      });
 
       res.json({ success: true, message: 'Código de verificación reenviado con éxito.' });
     } catch (err) {

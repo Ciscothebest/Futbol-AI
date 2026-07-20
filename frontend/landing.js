@@ -40,12 +40,46 @@ document.addEventListener('DOMContentLoaded', () => {
   // Validation
   const isAlphanumeric = (str) => /^[a-zA-Z0-9]+$/.test(str);
 
-  // Show Premium Server Error Modal (500)
+  // Show Premium Server Error Modal (500/504)
   const showErrorModal = (message) => {
     const modal = document.getElementById('server-error-modal');
     const msgEl = document.getElementById('server-error-msg');
+    const titleEl = document.getElementById('server-error-title');
+    const descEl = document.getElementById('server-error-desc');
+    const symbolEl = document.getElementById('server-error-icon-symbol');
+
     if (modal && msgEl) {
       msgEl.textContent = message || 'Fallo de conexión en el backend.';
+      
+      const is504 = message && (message.includes('504') || message.toLowerCase().includes('timeout'));
+      if (is504) {
+        if (titleEl) {
+          titleEl.textContent = 'Tiempo de Espera Agotado (504)';
+          titleEl.style.background = 'linear-gradient(135deg, #ff8a00, #ffb800)';
+          titleEl.style.webkitBackgroundClip = 'text';
+          titleEl.style.webkitTextFillColor = 'transparent';
+        }
+        if (descEl) {
+          descEl.textContent = 'El servidor proxy excedió el tiempo de respuesta del backend en Render. Esto suele ocurrir si la instancia gratuita de Render se encuentra en reposo y tarda en reactivarse o hay sobrecarga.';
+        }
+        if (symbolEl) {
+          symbolEl.textContent = '⏳';
+        }
+      } else {
+        if (titleEl) {
+          titleEl.textContent = 'Error de Infraestructura 500';
+          titleEl.style.background = 'linear-gradient(135deg, #ff4a4a, #ff8a00)';
+          titleEl.style.webkitBackgroundClip = 'text';
+          titleEl.style.webkitTextFillColor = 'transparent';
+        }
+        if (descEl) {
+          descEl.textContent = 'El servidor de Render no pudo procesar tu solicitud. Esto ocurre habitualmente cuando las variables de envío de correo SMTP no están configuradas en el panel de Render.';
+        }
+        if (symbolEl) {
+          symbolEl.textContent = '⚠️';
+        }
+      }
+
       modal.style.display = 'flex';
       
       // Cerrar modales que pudieran estar abiertos para no empalmar
