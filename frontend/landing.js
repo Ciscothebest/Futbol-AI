@@ -76,7 +76,15 @@ document.addEventListener('DOMContentLoaded', () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
       });
-      const result = await res.json();
+      
+      let result;
+      const contentType = res.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        result = await res.json();
+      } else {
+        const errorText = await res.text();
+        throw new Error(errorText.substring(0, 120) || `El servidor de Render devolvió un error ${res.status} sin formato JSON.`);
+      }
 
       if (!res.ok) {
         if (result.error === 'needs_verification') {
@@ -397,7 +405,15 @@ document.addEventListener('DOMContentLoaded', () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password, nombres, apellidos, telefono, email })
       });
-      const result = await res.json();
+      
+      let result;
+      const contentType = res.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        result = await res.json();
+      } else {
+        const errorText = await res.text();
+        throw new Error(errorText.substring(0, 120) || `El servidor de Render devolvió un error ${res.status} sin formato JSON.`);
+      }
 
       if (!res.ok) throw new Error((result.details ? `${result.error} (${result.details})` : null) || result.error || 'Error al registrarse');
 
