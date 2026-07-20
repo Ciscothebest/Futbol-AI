@@ -78,22 +78,16 @@
           </button>
         </div>
 
-        <div style="display: flex; align-items: center; gap: 12px; font-size: 13px; color: #64748b;">
-          <span id="onboarding-step-text" style="margin-right: 8px;">Paso 1 de 3</span>
-          <div class="step-dot active" id="dot-step-1"></div>
-          <div class="step-dot" id="dot-step-2"></div>
-          <div class="step-dot" id="dot-step-3"></div>
-        </div>
       </nav>
 
       <div class="onboarding-header-text">
-        <h1 id="onboarding-header-title">¿Qué ligas quieres explorar?</h1>
-        <p id="onboarding-header-subtitle">Selecciona los países con ligas profesionales que más te interesan.</p>
+        <h1 id="onboarding-header-title">¿Cuál es tu plan?</h1>
+        <p id="onboarding-header-subtitle">Tu experiencia se adaptará según tu suscripción elegida.</p>
       </div>
     </div>
 
     <!-- STEP 1: MAP SELECTION -->
-    <div id="onboarding-step1-container" class="onboarding-step-container map-viewport-hud-container">
+    <div id="onboarding-step1-container" class="onboarding-step-container map-viewport-hud-container" style="display: none;">
       <div id="map-scroll-wrapper" class="map-scroll-wrapper">
         <div id="map"></div>
       </div>
@@ -124,8 +118,8 @@
               </div>
 
               <div class="footer-hud-right-actions">
-                  <button class="btn-onboarding-continue-glow" id="btn-onboarding-continue" disabled onclick="goToStep2()">Continuar →</button>
-                  <a href="#" class="skip-link" onclick="initDashboard()">Saltar por ahora</a>
+                  <button class="btn-onboarding-continue-glow" id="btn-onboarding-continue" disabled onclick="goToStep3()">Continuar →</button>
+                  <a href="#" class="skip-link" onclick="goToStep1()" style="color: #64748b;">← Atrás</a>
               </div>
           </div>
       </div>
@@ -166,15 +160,15 @@
           </div>
 
           <div class="footer-hud-right-actions" style="flex-direction: row; gap: 15px; align-items: center;">
-            <a href="#" class="skip-link" onclick="goToStep1()" style="color: #64748b;">← Atrás</a>
-            <button class="btn-onboarding-continue-glow" id="btn-confirmar-club" disabled onclick="goToStep3()">Confirmar club →</button>
+            <a href="#" class="skip-link" onclick="goToStep2()" style="color: #64748b;">← Atrás</a>
+            <button class="btn-onboarding-continue-glow" id="btn-confirmar-club" disabled onclick="finalizarOnboarding()">Comenzar →</button>
           </div>
         </div>
       </div>
     </div>
 
     <!-- STEP 3: SUBSCRIPTION TIERS -->
-    <div id="onboarding-step3-container" class="onboarding-step-container" style="display: none; flex: 1; width: 95%; max-width: 1400px; margin: 0 auto 20px; position: relative; z-index: 1; background: transparent; border-radius: 15px;">
+    <div id="onboarding-step3-container" class="onboarding-step-container" style="display: flex; flex: 1; width: 95%; max-width: 1400px; margin: 0 auto 20px; position: relative; z-index: 1; background: transparent; border-radius: 15px;">
       <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; padding: 20px; box-sizing: border-box;">
         
         <h2 id="step3-title" style="font-weight: 800; color: #fff; margin-bottom: 10px; text-shadow: 0 0 10px rgba(255,255,255,0.2); text-align: center;">¿Cuál es tu plan?</h2>
@@ -198,6 +192,15 @@
             <div style="font-size: 40px; margin-bottom: 15px; color: #00f0ff;">🔍</div>
             <h3 style="font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">Pro <span style="font-size: 10px; background: rgba(0, 240, 255, 0.15); color: #00f0ff; padding: 2px 6px; border-radius: 20px; font-weight: 800; border: 1px solid rgba(0, 240, 255, 0.3);">PREMIUM</span></h3>
             <p style="font-size: 13px; color: rgba(255,255,255,0.4); line-height: 1.5;">Descubre y evalúa talento local e internacional con IA.</p>
+          </div>
+
+          <!-- Local Tier -->
+          <div class="tier-card locked" id="tier-card-local" onclick="showOnboardingTierAlert('Local', '$40.00', this)" style="flex: 1; min-width: 200px; max-width: 260px; background: rgba(10, 20, 35, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 30px 20px; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3); opacity: 0.75;">
+            <div class="tier-check" style="position: absolute; top: 15px; right: 15px; background: #00f0ff; color: #000; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; opacity: 0; transition: opacity 0.2s; box-shadow: 0 0 10px #00f0ff;">✓</div>
+            <div class="tier-lock" style="position: absolute; top: 15px; right: 15px; color: rgba(57, 255, 20, 0.7); font-size: 15px;">🔒</div>
+            <div style="font-size: 40px; margin-bottom: 15px; color: #39ff14;">🧢</div>
+            <h3 style="font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">Local <span style="font-size: 10px; background: rgba(57, 255, 20, 0.15); color: #39ff14; padding: 2px 6px; border-radius: 20px; font-weight: 800; border: 1px solid rgba(57, 255, 20, 0.3);">ENTRENADOR</span></h3>
+            <p style="font-size: 13px; color: rgba(255,255,255,0.4); line-height: 1.5;">Destinado para entrenador local. Acceso a todas las funciones locales.</p>
           </div>
  
           <!-- Plus Tier -->
@@ -233,8 +236,8 @@
           </div>
 
           <div class="footer-hud-right-actions" style="flex-direction: row; gap: 15px; align-items: center;">
-            <a href="#" class="skip-link" onclick="goToStep2()" style="color: #64748b;">← Atrás</a>
-            <button class="btn-onboarding-continue-glow" id="btn-onboarding-final" disabled onclick="finalizarOnboarding()">Comenzar →</button>
+            <a href="#" class="skip-link" onclick="initDashboard()" style="color: #64748b;">Saltar por ahora</a>
+            <button class="btn-onboarding-continue-glow" id="btn-onboarding-final" disabled>Continuar →</button>
           </div>
         </div>
       </div>
@@ -1177,8 +1180,50 @@
                 <span class="profile-info-label" style="color: rgba(255,255,255,0.5); font-size: 13px;">Plan de Suscripción</span>
                 <div style="display: flex; align-items: center; gap: 12px;">
                   <span class="profile-info-val" id="profile-page-plan-name" style="font-weight: 700; color: #00f0ff; text-transform: uppercase; font-size: 13px; letter-spacing: 0.5px;">Gratis</span>
-                  <button class="btn-profile-primary" onclick="openUpgradeModal()" style="padding: 5px 12px; font-size: 11px; font-weight: 700; border-radius: 6px; background: rgba(0, 240, 255, 0.1); border: 1.5px solid #00f0ff; color: #00f0ff; cursor: pointer; transition: all 0.3s; box-shadow: 0 0 10px rgba(0, 240, 255, 0.1);" onmouseover="this.style.background='rgba(0, 240, 255, 0.2)'; this.style.boxShadow='0 0 15px rgba(0, 240, 255, 0.3)'" onmouseout="this.style.background='rgba(0, 240, 255, 0.1)'; this.style.boxShadow='0 0 10px rgba(0, 240, 255, 0.1)'">Actualizar Plan</button>
+                  <button class="btn-profile-primary" onclick="openUpgradeModal()" style="padding: 5px 12px; font-size: 11px; font-weight: 700; border-radius: 6px; background: rgba(0, 240, 255, 0.1); border: 1.5px solid #00f0ff; color: #00f0ff; cursor: pointer; transition: all 0.3s; box-shadow: 0 0 10px rgba(0, 240, 255, 0.1);" onmouseover="this.style.background='rgba(0, 240, 255, 0.2)'; this.style.boxShadow='0 0 15px rgba(0, 240, 255, 0.3)'" onmouseout="this.style.background='rgba(0, 240, 255, 0.1)'; this.style.boxShadow='0 0 10px rgba(0, 240, 255, 0.1)'">Gestionar Plan</button>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tarjeta de Información de Entrenador Local -->
+          <div class="profile-card" id="profile-local-coach-card" style="display: none; margin-top: 20px;">
+            <div class="profile-card-header">
+              <span class="profile-card-icon">🧢</span>
+              <h3 class="profile-card-title">Ficha de Entrenador Local</h3>
+            </div>
+            <div class="profile-info-list">
+              <div class="profile-info-item">
+                <span class="profile-info-label">Club que entrena</span>
+                <span class="profile-info-val" id="profile-local-club">—</span>
+              </div>
+              <div class="profile-info-item">
+                <span class="profile-info-label">Rango de edad cantera</span>
+                <span class="profile-info-val" id="profile-local-age-range">—</span>
+              </div>
+              <div class="profile-info-item">
+                <span class="profile-info-label">País</span>
+                <span class="profile-info-val" id="profile-local-country">—</span>
+              </div>
+              <div class="profile-info-item">
+                <span class="profile-info-label">Ubicación del club</span>
+                <span class="profile-info-val" id="profile-local-address">—</span>
+              </div>
+              <div class="profile-info-item">
+                <span class="profile-info-label">Código de registro</span>
+                <span class="profile-info-val" id="profile-local-code">—</span>
+              </div>
+              <div class="profile-info-item">
+                <span class="profile-info-label">Teléfono adm. club</span>
+                <span class="profile-info-val" id="profile-local-admin-phone">—</span>
+              </div>
+              <div class="profile-info-item">
+                <span class="profile-info-label">Ligas participantes</span>
+                <span class="profile-info-val" id="profile-local-leagues">—</span>
+              </div>
+              <div class="profile-info-item" style="flex-direction: column; align-items: flex-start; gap: 4px; border-bottom: none;">
+                <span class="profile-info-label">Premios o campeonatos</span>
+                <span class="profile-info-val" id="profile-local-awards" style="white-space: pre-wrap; font-size: 13px; line-height: 1.4; margin-top: 4px; color: rgba(255,255,255,0.85);">—</span>
               </div>
             </div>
           </div>
@@ -1412,6 +1457,92 @@
     </div>
   </div>
 
+  <!-- ──────────────── SCREEN FOR LOCAL COACH ONBOARDING ──────────────── -->
+  <div class="local-coach-screen" id="local-coach-onboarding-screen" style="display: none;">
+    <!-- Capa de rejilla táctica (Radar Effect) -->
+    <div class="tactical-radar-grid"></div>
+
+    <div class="local-coach-layout-container">
+      <!-- Columna Izquierda: Información de IA Táctica -->
+      <div class="local-coach-info-panel">
+        <div class="local-coach-badge">🛡️ PLAN LOCAL ACTIVO</div>
+        <div class="local-coach-info-icon">🧢</div>
+        <h2 class="local-coach-info-title">Impulsa el Talento Local al Escenario Mundial</h2>
+        <p class="local-coach-info-desc">
+          Has activado con éxito el perfil de <strong>Entrenador Local</strong>. Completa los datos de tu club para registrar y promocionar a tus jugadores destacados, dándoles visibilidad directa frente a scouts internacionales que buscan la próxima gran estrella.
+        </p>
+        <div class="local-coach-features-list">
+          <div class="local-coach-feature-item">
+            <span class="feature-bullet">⚡</span>
+            <span>Exposición global para los jóvenes talentos de tu cantera.</span>
+          </div>
+          <div class="local-coach-feature-item">
+            <span class="feature-bullet">📊</span>
+            <span>Métricas e informes listos para ser evaluados por scouts internacionales.</span>
+          </div>
+          <div class="local-coach-feature-item">
+            <span class="feature-bullet">🌐</span>
+            <span>Conexión directa entre el fútbol local y el mercado de élite.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Columna Derecha: Formulario de Registro -->
+      <div class="local-coach-form-panel">
+        <div class="local-coach-header">
+          <h2 class="local-coach-title">Detalles del Club</h2>
+          <p class="local-coach-subtitle">Establece la configuración competitiva inicial</p>
+        </div>
+
+        <div class="local-coach-grid">
+          <div class="local-coach-field-full">
+            <label class="local-coach-label">Club que entrena</label>
+            <input type="text" id="local-coach-club" placeholder="Ej: Club Deportivo Huracán" class="local-coach-input">
+          </div>
+
+          <div class="local-coach-field-full">
+            <label class="local-coach-label">Rango de Edad (Ej: 15-18)</label>
+            <input type="text" id="local-coach-age-range" placeholder="Ej: 15-18 años" class="local-coach-input">
+            <span class="local-coach-hint-text">* Los jugadores de esta categoría deben ser estrictamente menores de 20 años.</span>
+          </div>
+
+          <div class="local-coach-field">
+            <label class="local-coach-label">País</label>
+            <input type="text" id="local-coach-nationality" placeholder="Ej: España" class="local-coach-input">
+          </div>
+
+          <div class="local-coach-field">
+            <label class="local-coach-label">Código local</label>
+            <input type="text" id="local-coach-code" placeholder="Ej: LOC-4829" class="local-coach-input">
+          </div>
+
+          <div class="local-coach-field-full">
+            <label class="local-coach-label">Ubicación del club</label>
+            <input type="text" id="local-coach-league-address" placeholder="Ej: Av. de la Constitución 14, Sevilla" class="local-coach-input">
+          </div>
+
+          <div class="local-coach-field-full">
+            <label class="local-coach-label">Teléfono Administrativo del Club</label>
+            <input type="text" id="local-coach-admin-phone" placeholder="Ej: +34 600 123 456" class="local-coach-input">
+            <span class="local-coach-hint-text" style="color: rgba(255,255,255,0.4); margin-top: 4px; display: block; font-size: 11px;">* Debe ser un número diferente al teléfono personal de tu cuenta.</span>
+          </div>
+
+          <div class="local-coach-field-full">
+            <label class="local-coach-label">Ligas en las que participa el club</label>
+            <input type="text" id="local-coach-leagues-participating" placeholder="Ej: Liga Andaluza Juvenil, Copa Provincial" class="local-coach-input">
+          </div>
+
+          <div class="local-coach-field-full">
+            <label class="local-coach-label">Premios individuales o campeonatos del club</label>
+            <textarea id="local-coach-awards" placeholder="Ej: Campeón Copa Juvenil 2024, Premio Juego Limpio 2023" class="local-coach-input local-coach-textarea"></textarea>
+          </div>
+        </div>
+
+        <button class="btn-onboarding-continue-glow" id="btn-success-local-continue" style="width: 100%; border-radius: 12px; padding: 15px; font-size: 16px; cursor: pointer; border: none; font-weight: 700; margin-top: 15px;" onclick="confirmSuccessAndSaveLocalForm()">Comenzar a explorar 🚀</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ──────────────── UPGRADE PLAN MODAL ──────────────── -->
   <div class="modal-overlay" id="upgrade-modal" style="display:none; z-index: 24000;">
     <div class="modal" style="max-width: 960px; background: rgba(8, 14, 26, 0.98); border: 1.5px solid #00f0ff; border-radius: 24px; padding: 40px 30px; box-shadow: 0 0 60px rgba(0, 240, 255, 0.3); backdrop-filter: blur(15px); text-align: center; display: flex; flex-direction: column; align-items: center; border: 1.5px solid #00f0ff; position: relative;">
@@ -1436,6 +1567,15 @@
           <div style="font-size: 30px; margin-bottom: 12px; color: #00f0ff;">🔍</div>
           <h3 style="font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 8px;">Pro</h3>
           <p style="font-size: 11px; color: rgba(255,255,255,0.4); line-height: 1.4;">Descubre y evalúa talento local e internacional con IA.</p>
+        </div>
+
+        <!-- Local -->
+        <div class="tier-card upgrade-card locked" id="upgrade-card-local" onclick="showUpgradePaymentModal('Local', '$40.00', this)" style="flex: 1; min-width: 180px; max-width: 210px; background: rgba(10, 20, 35, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 25px 15px; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3); opacity: 0.75;">
+          <div class="tier-check" style="position: absolute; top: 12px; right: 12px; background: #00f0ff; color: #000; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; opacity: 0; transition: opacity 0.2s;">✓</div>
+          <div class="tier-lock" style="position: absolute; top: 12px; right: 12px; color: rgba(57, 255, 20, 0.7); font-size: 13px;">🔒</div>
+          <div style="font-size: 30px; margin-bottom: 12px; color: #39ff14;">🧢</div>
+          <h3 style="font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 8px;">Local</h3>
+          <p style="font-size: 11px; color: rgba(255,255,255,0.4); line-height: 1.4;">Destinado para entrenador local. Acceso a todas las funciones locales.</p>
         </div>
 
         <!-- Plus -->
@@ -1716,9 +1856,96 @@
 
   <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
+  <!-- ───────────── CRASH / ERROR SCREEN ───────────── -->
+  <div id="app-error-screen" style="display:none; position:fixed; inset:0; z-index:99999; background:#080e1a; flex-direction:column; align-items:center; justify-content:center; padding:40px; text-align:center; font-family:'Inter',sans-serif;">
+    <!-- Animated background grid -->
+    <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(0,240,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,0.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;"></div>
+    <!-- Glowing orbs -->
+    <div style="position:absolute;width:500px;height:500px;background:radial-gradient(ellipse,rgba(0,240,255,0.07) 0%,transparent 70%);top:-100px;right:-100px;pointer-events:none;"></div>
+    <div style="position:absolute;width:400px;height:400px;background:radial-gradient(ellipse,rgba(255,74,74,0.06) 0%,transparent 70%);bottom:-50px;left:-50px;pointer-events:none;"></div>
+
+    <div style="position:relative;z-index:1;max-width:680px;width:100%;">
+      <!-- Error code badge -->
+      <div style="display:inline-flex;align-items:center;gap:10px;background:rgba(255,74,74,0.12);border:1px solid rgba(255,74,74,0.35);border-radius:50px;padding:8px 20px;margin-bottom:32px;">
+        <span style="width:8px;height:8px;border-radius:50%;background:#ff4a4a;box-shadow:0 0 10px #ff4a4a;display:inline-block;"></span>
+        <span style="color:#ff4a4a;font-size:0.78rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;">Sistema Inactivo — Error de Aplicación</span>
+      </div>
+
+      <!-- Big error code -->
+      <div style="font-size:clamp(80px,15vw,140px);font-weight:900;line-height:1;color:transparent;background:linear-gradient(135deg,#ff4a4a 0%,#ff8a00 50%,#ff4a4a 100%);-webkit-background-clip:text;background-clip:text;letter-spacing:-6px;margin-bottom:8px;">ERR</div>
+
+      <!-- Title -->
+      <h1 style="font-size:clamp(22px,4vw,34px);font-weight:800;color:#fff;letter-spacing:-0.5px;margin:0 0 16px;">Algo salió mal en la aplicación</h1>
+
+      <!-- Description -->
+      <p style="font-size:0.97rem;color:#64748b;line-height:1.7;margin:0 0 28px;">El sistema detectó un error crítico que impidió cargar esta sección correctamente.<br>Puedes intentar recargar la página o volver al inicio.</p>
+
+      <!-- Error detail box -->
+      <div style="background:rgba(255,74,74,0.07);border:1px solid rgba(255,74,74,0.2);border-radius:12px;padding:16px 20px;margin-bottom:36px;text-align:left;">
+        <div style="font-size:0.72rem;font-weight:700;letter-spacing:1.5px;color:rgba(255,74,74,0.7);text-transform:uppercase;margin-bottom:8px;">Detalle del error</div>
+        <code id="app-error-detail" style="font-size:0.82rem;color:#ff6b6b;word-break:break-all;line-height:1.6;">Error desconocido.</code>
+      </div>
+
+      <!-- Action buttons -->
+      <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+        <button onclick="window.location.reload()" style="display:flex;align-items:center;gap:10px;padding:14px 28px;background:#00f0ff;color:#080e1a;border:none;border-radius:10px;font-size:0.95rem;font-weight:800;cursor:pointer;box-shadow:0 0 24px rgba(0,240,255,0.35);transition:all 0.2s;letter-spacing:0.3px;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 0 36px rgba(0,240,255,0.5)'" onmouseout="this.style.transform='';this.style.boxShadow='0 0 24px rgba(0,240,255,0.35)'">
+          🔄 Recargar página
+        </button>
+        <button onclick="localStorage.removeItem('scout_ai_token');localStorage.removeItem('scout_ai_user');window.location.href='landing.html'" style="display:flex;align-items:center;gap:10px;padding:14px 28px;background:rgba(255,255,255,0.05);color:#fff;border:1px solid rgba(255,255,255,0.15);border-radius:10px;font-size:0.95rem;font-weight:700;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
+          ← Volver al inicio
+        </button>
+      </div>
+
+      <!-- Scout AI branding -->
+      <div style="margin-top:48px;display:flex;align-items:center;justify-content:center;gap:10px;opacity:0.35;">
+        <span style="font-size:18px;">🌐</span>
+        <span style="font-size:0.82rem;font-weight:700;letter-spacing:2px;color:#fff;">SCOUT AI</span>
+      </div>
+    </div>
+  </div>
+
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="app.js?v=4.1"></script>
+
+  <!-- Global error interceptor: shows crash screen instead of blank page -->
+  <script>
+    (function () {
+      function showCrashScreen(message) {
+        var screen = document.getElementById('app-error-screen');
+        var detail = document.getElementById('app-error-detail');
+        if (!screen) return;
+        if (detail) detail.textContent = message || 'Error desconocido.';
+        screen.style.display = 'flex';
+        // Hide all other main content so only error shows
+        var main = document.querySelector('.main-content');
+        if (main) main.style.visibility = 'hidden';
+        var header = document.querySelector('.tactical-nav');
+        if (header) header.style.visibility = 'hidden';
+        var onboarding = document.getElementById('onboarding-screen');
+        if (onboarding) onboarding.style.display = 'none';
+        var localCoach = document.getElementById('local-coach-onboarding-screen');
+        if (localCoach) localCoach.style.display = 'none';
+      }
+
+      window.addEventListener('error', function (e) {
+        var msg = '';
+        if (e.message) msg += e.message;
+        if (e.filename) msg += '  —  ' + e.filename.split('/').pop();
+        if (e.lineno) msg += ':' + e.lineno;
+        showCrashScreen(msg || 'Error de JavaScript no capturado.');
+      });
+
+      window.addEventListener('unhandledrejection', function (e) {
+        var reason = (e.reason && (e.reason.message || String(e.reason))) || 'Promise rechazada sin mensaje.';
+        // Ignore session-expiry redirects (not real crashes)
+        if (reason.indexOf('Sesi') !== -1 || reason.indexOf('expira') !== -1) return;
+        showCrashScreen('Promise sin resolver: ' + reason);
+      });
+    })();
+  </script>
+
+  <script src="app.js?v=4.2"></script>
   <script src="onboarding.js?v=3.0"></script>
 </body>
 

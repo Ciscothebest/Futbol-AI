@@ -1,8 +1,26 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+const { Op } = require('sequelize');
 
 module.exports = ({ User, JWT_SECRET }) => {
+  const sequelize = User.sequelize;
+  const { DataTypes } = require('sequelize');
+  const ExpiredRegistration = sequelize.define('ExpiredRegistration', {
+    username: {
+      type: DataTypes.STRING,
+      primaryKey: true
+    },
+    expiredAt: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW
+    }
+  }, {
+    tableName: 'expired_registrations',
+    timestamps: false
+  });
+
+  ExpiredRegistration.sync().catch(err => console.error('Error syncing ExpiredRegistration:', err));
   const transporter = process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS
     ? nodemailer.createTransport({
         host: process.env.SMTP_HOST,
@@ -75,6 +93,37 @@ module.exports = ({ User, JWT_SECRET }) => {
   };
 
   const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
+
+  const cleanupUnverifiedUsers = async () => {
+    try {
+      const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000); // 24 hours ago
+      const expiredUsers = await User.findAll({
+        where: {
+          isVerified: false,
+          createdAt: {
+            [Op.lt]: cutoff
+          }
+        }
+      });
+
+      for (const u of expiredUsers) {
+        await ExpiredRegistration.findOrCreate({ where: { username: u.username } }).catch(() => {});
+        await u.destroy().catch(() => {});
+      }
+
+      if (expiredUsers.length > 0) {
+        console.log(`🧹 [CLEANUP] Deleted and logged ${expiredUsers.length} unverified users older than 24 hours.`);
+      }
+    } catch (error) {
+      console.error('❌ [CLEANUP] Error deleting old unverified users:', error);
+    }
+  };
+
+  // Run cleanup once on startup
+  cleanupUnverifiedUsers();
+
+  // Run cleanup every hour
+  setInterval(cleanupUnverifiedUsers, 60 * 60 * 1000);
 
   const router = express.Router();
 
@@ -176,6 +225,8 @@ module.exports = ({ User, JWT_SECRET }) => {
   router.post('/register', async (req, res) => {
     console.log('📥 Registration request received:', req.body);
     try {
+      await cleanupUnverifiedUsers();
+
       const { username, password, nombres, apellidos, telefono, email } = req.body;
 
       if (!username || !password || !nombres || !apellidos || !telefono || !email) {
@@ -202,6 +253,9 @@ module.exports = ({ User, JWT_SECRET }) => {
       if (existing) {
         return res.status(409).json({ error: 'Ese nombre de usuario ya está en uso' });
       }
+
+      // Clean up previous expiration records if any
+      await ExpiredRegistration.destroy({ where: { username: username.toLowerCase().trim() } }).catch(() => {});
 
       const otpCode = generateOTP();
       const otpExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
@@ -237,6 +291,8 @@ module.exports = ({ User, JWT_SECRET }) => {
   // ─── POST /api/auth/login ───────────────────────────────────────
   router.post('/login', async (req, res) => {
     try {
+      await cleanupUnverifiedUsers();
+
       const { username, password } = req.body;
       if (!username || !password) {
         return res.status(400).json({ error: 'Usuario y contraseña requeridos' });
@@ -244,21 +300,42 @@ module.exports = ({ User, JWT_SECRET }) => {
 
       const user = await User.findOne({ where: { username: username.toLowerCase().trim() } });
       if (!user) {
-        return res.status(401).json({ error: 'Credenciales incorrectas' });
+        // Check if they were deleted due to expiration
+        const wasExpired = await ExpiredRegistration.findOne({ where: { username: username.toLowerCase().trim() } });
+        if (wasExpired) {
+          return res.status(404).json({ error: 'user_expired', message: 'Usuario expirado tras no haber finalizado el proceso de autenticación' });
+        }
+        return res.status(404).json({ error: 'user_not_found', message: 'Usuario inexistente' });
+      }
+
+      // Check if user is verified
+      if (!user.isVerified) {
+        // Double check if more than 24 hours have passed since creation
+        const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
+        if (user.createdAt < cutoff) {
+          await ExpiredRegistration.findOrCreate({ where: { username: user.username } }).catch(() => {});
+          await user.destroy().catch(() => {});
+          return res.status(404).json({
+            error: 'user_expired',
+            message: 'Usuario expirado tras no haber finalizado el proceso de autenticación'
+          });
+        }
+
+        const valid = await user.validatePassword(password);
+        if (!valid) {
+          return res.status(401).json({ error: 'Credenciales incorrectas' });
+        }
+
+        return res.status(403).json({ 
+          error: 'needs_verification', 
+          message: 'Cuenta no verificada. Por favor, verifica tu correo con el código OTP enviado.',
+          username: user.username
+        });
       }
 
       const valid = await user.validatePassword(password);
       if (!valid) {
         return res.status(401).json({ error: 'Credenciales incorrectas' });
-      }
-
-      // Check if user is verified
-      if (!user.isVerified) {
-        return res.status(403).json({ 
-          error: 'needs_verification', 
-          message: 'Cuenta no verificada. Por favor, verifica tu correo con el código OTP enviado.',
-          username: user.username 
-        });
       }
 
       await user.update({ lastLogin: new Date() });
@@ -368,7 +445,7 @@ module.exports = ({ User, JWT_SECRET }) => {
   
   router.patch('/onboarding', authenticate, async (req, res) => {
     try {
-      const { selectedCountries, selectedClub, preferredFormation, preferredStyle, selectedTier } = req.body;
+      const { selectedCountries, selectedClub, preferredFormation, preferredStyle, selectedTier, localCoachData } = req.body;
       const selectedCountry = req.body.selectedCountry !== undefined ? req.body.selectedCountry : selectedCountries;
       const user = await User.findByPk(req.user.id);
       if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
@@ -391,6 +468,9 @@ module.exports = ({ User, JWT_SECRET }) => {
       }
       if (req.body.role !== undefined) {
         updateData.role = req.body.role;
+      }
+      if (localCoachData !== undefined) {
+        updateData.localCoachData = typeof localCoachData === 'object' ? JSON.stringify(localCoachData) : localCoachData;
       }
       
       updateData.onboardingComplete = true;

@@ -10,7 +10,7 @@ module.exports = (sequelize) => {
     transactionId: {
       type: DataTypes.STRING(100),
       allowNull: false,
-      unique: 'payments_transactionId_key'
+      unique: true
     },
     amount: {
       type: DataTypes.FLOAT,
@@ -42,13 +42,7 @@ module.exports = (sequelize) => {
     }
   }, {
     tableName: 'payments',
-    timestamps: true,
-    indexes: [
-      {
-        fields: ['userId'],
-        name: 'payments_userId_idx'
-      }
-    ]
+    timestamps: true
   });
 
   return Payment;

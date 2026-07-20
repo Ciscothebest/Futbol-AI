@@ -82,6 +82,10 @@ module.exports = (sequelize) => {
     otpExpires: {
       type: DataTypes.DATE,
       allowNull: true
+    },
+    localCoachData: {
+      type: DataTypes.TEXT,
+      allowNull: true
     }
   }, {
     tableName: 'users',

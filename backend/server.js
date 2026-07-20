@@ -929,6 +929,15 @@ function startServer(retries = 2) {
           console.log('➕ Adding otpExpires column...');
           await sequelize.query('ALTER TABLE users ADD otpExpires DATETIMEOFFSET NULL').catch(() => {});
         }
+        if (!hasUserColumn('localCoachData')) {
+          console.log('➕ Adding localCoachData column...');
+          await queryInterface.addColumn('users', 'localCoachData', {
+            type: require('sequelize').DataTypes.TEXT,
+            allowNull: true
+          }).catch(async () => {
+            await sequelize.query('ALTER TABLE users ADD localCoachData TEXT NULL').catch(() => {});
+          });
+        }
 
         // Check columns for payments table case-insensitively
         const paymentTableInfo = await queryInterface.describeTable('payments').catch(() => ({}));

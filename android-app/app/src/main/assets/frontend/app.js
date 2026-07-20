@@ -500,7 +500,25 @@ async function fetchWithAuth(url, options = {}) {
 }
 
 let sessionId = null;
-let allPlayers = [];
+let allPlayers = (() => {
+  try {
+    const cached = localStorage.getItem('scout_ai_cached_players');
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      const isDirty = Array.isArray(parsed) && parsed.some(p => p.overallRating > 10);
+      if (isDirty) {
+        localStorage.removeItem('scout_ai_cached_players');
+        return [];
+      }
+      return parsed;
+    }
+    return [];
+  } catch (e) {
+    console.error('Error loading cached players:', e);
+    return [];
+  }
+})();
+window.allPlayers = allPlayers;
 let filteredPlayers = [];
 let currentPage = 0;
 const PAGE_SIZE = 30;
@@ -608,12 +626,33 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupCompareSearch();
   setupAvatarUpload();
   setupFilters();
-  await checkBackendStatus();
+  const hasCache = allPlayers && allPlayers.length > 0;
+  if (hasCache) {
+    populateLeagueFilter();
+    renderPlayers();
+    renderFeaturedPlayers();
+    buildHomePrompts();
+  }
+
+  const initFetches = (async () => {
+    try {
+      await Promise.allSettled([
+        checkBackendStatus(),
+        loadPlayers()
+      ]);
+      renderPlayers();
+      renderFeaturedPlayers();
+      buildHomePrompts();
+    } catch (err) {
+      console.error('Error during initial background fetch:', err);
+    }
+  })();
+
+  if (!hasCache) {
+    await initFetches;
+  }
+
   setTimeout(checkBackendStatus, 2000);
-  await loadPlayers();
-  renderPlayers(); // Initial render for default active section
-  renderFeaturedPlayers();
-  buildHomePrompts();
 
   // Ensure splash finishes its animation before the app is fully interactive
   await splashDone;
@@ -3654,6 +3693,7 @@ window.openTacticalEditorModal = function() {
   };
 
   goToSection('my-club');
+  applyPlanPermissions();
 }
 
 // ─── Avatar URL helper (works in browser + Android WebView) ───────────────
@@ -3777,6 +3817,31 @@ function updateProfileUI(user) {
   if (userAvatarMobileEl && user.avatarUrl) {
     userAvatarMobileEl.src = getAbsoluteUrl(user.avatarUrl);
     userAvatarMobileEl.style.display = 'block';
+  }
+
+  applyPlanPermissions();
+}
+
+function applyPlanPermissions() {
+  const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  const isLocal = (user.selectedTier || '').toLowerCase() === 'local' || (user.role || '').toLowerCase() === 'local' || (user.role || '').toLowerCase() === 'entrenador local';
+  const restricted = ['players', 'my-club', 'compare', 'predictions', 'simulations'];
+
+  document.querySelectorAll('.nav-item').forEach(btn => {
+    const section = btn.dataset.section;
+    if (isLocal && restricted.includes(section)) {
+      btn.style.display = 'none';
+    } else if (section === 'my-club') {
+      btn.style.display = user.selectedClub ? 'block' : 'none';
+    } else {
+      btn.style.display = 'block';
+    }
+  });
+
+  const activeBtn = document.querySelector('.nav-item.active');
+  const currentSection = activeBtn ? activeBtn.dataset.section : 'players';
+  if (isLocal && (restricted.includes(currentSection) || currentSection === 'home')) {
+    goToSection('chat');
   }
 }
 
@@ -5147,6 +5212,14 @@ function setupNavigation() {
 }
 
 function goToSection(name) {
+  const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  const isLocal = (user.selectedTier || '').toLowerCase() === 'local' || (user.role || '').toLowerCase() === 'local' || (user.role || '').toLowerCase() === 'entrenador local';
+  const restricted = ['players', 'my-club', 'compare', 'predictions', 'simulations'];
+
+  if (isLocal && (restricted.includes(name) || name === 'home')) {
+    name = 'chat';
+  }
+
   document.querySelectorAll('.nav-item').forEach(b => {
     b.classList.toggle('active', b.dataset.section === name);
   });
@@ -5194,11 +5267,15 @@ async function loadPlayers() {
     if (!res.ok) throw new Error('API failed');
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Error from server');
-    allPlayers = Array.isArray(data?.players) ? data.players : [];
+    if (Array.isArray(data?.players)) {
+      allPlayers = data.players;
+      window.allPlayers = allPlayers;
+      localStorage.setItem('scout_ai_cached_players', JSON.stringify(allPlayers));
+    }
     populateLeagueFilter(); // Populate dropdowns
   } catch (err) {
     console.error('loadPlayers error:', err);
-    allPlayers = [];
+    // Keep existing cached players if they are already populated
   }
 }
 
@@ -7408,6 +7485,7 @@ window.pendingPaymentCard = null;
 // Prices map
 const TIER_PRICES = {
   'Pro': 9.99,
+  'Local': 40.00,
   'Plus': 19.99,
   'Enterprise': 49.99
 };
@@ -7704,7 +7782,8 @@ window.simulatePayment = async () => {
             tier,
             cardholderName: nameInput.value.trim(),
             cardNumber: numInput.value,
-            amount
+            amount,
+            role: tier === 'Local' ? 'Entrenador Local' : undefined
           })
         });
 
@@ -7737,6 +7816,9 @@ window.simulatePayment = async () => {
         // 1. Update dynamic client states
         const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
         user.selectedTier = tier;
+        if (tier === 'Local') {
+          user.role = 'Entrenador Local';
+        }
         localStorage.setItem('scout_ai_user', JSON.stringify(user));
           
           showToast(`🎉 ¡Pago exitoso! Plan ${tier} activado. Txn ID: ${result.transaction.transactionId}`, 'success');
@@ -8014,12 +8096,18 @@ window.downloadInvoicePDF = () => {
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(9.5);
     doc.setTextColor(primarySlate[0], primarySlate[1], primarySlate[2]);
-    doc.text(`Suscripción Premium Mensual • Plan ${tier}`, 23, tableY + 14.5);
+    if (tier === 'Local') {
+      doc.text('Plan Entrenador Local (Pago Único)', 23, tableY + 14.5);
+    } else {
+      doc.text(`Suscripción Premium Mensual • Plan ${tier}`, 23, tableY + 14.5);
+    }
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8);
     doc.setTextColor(secondarySlate[0], secondarySlate[1], secondarySlate[2]);
-    const descText = 'Acceso completo a métricas avanzadas, predicciones IA, scouting global e informes tácticos.';
+    const descText = tier === 'Local' 
+      ? 'Acceso completo a métricas avanzadas y herramientas de scouting para entrenador local.' 
+      : 'Acceso completo a métricas avanzadas, predicciones IA, scouting global e informes tácticos.';
     const splitDesc = doc.splitTextToSize(descText, 90);
     doc.text(splitDesc, 23, tableY + 19.5);
 
@@ -8199,7 +8287,11 @@ window.showMiniAlert = (tierName, price, cardElement, isUpgradeContext = false) 
 
   if (titleEl) titleEl.textContent = `Plan ${tierName} Bloqueado`;
   if (descEl) {
-    descEl.innerHTML = `El plan <strong>${tierName}</strong> es una función premium que requiere una suscripción activa de <strong>${price}/mes</strong>. ¿Deseas proceder a la pasarela de pago seguro para desbloquearlo?`;
+    if (tierName === 'Local') {
+      descEl.innerHTML = `El plan <strong>${tierName}</strong> es una función premium destinada para entrenador local que requiere un pago único de <strong>${price}</strong>. ¿Deseas proceder a la pasarela de pago seguro para desbloquearlo?`;
+    } else {
+      descEl.innerHTML = `El plan <strong>${tierName}</strong> es una función premium que requiere una suscripción activa de <strong>${price}/mes</strong>. ¿Deseas proceder a la pasarela de pago seguro para desbloquearlo?`;
+    }
   }
 
   if (payBtn) {

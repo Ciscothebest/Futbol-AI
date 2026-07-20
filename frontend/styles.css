@@ -5941,3 +5941,229 @@ select {
     border-radius: 10px !important;
   }
 }
+
+/* Local Coach Onboarding Layout (Split-screen) */
+.local-coach-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(circle at 50% 50%, #030712 0%, #010204 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 30000;
+  overflow-y: auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.local-coach-layout-container {
+  width: 100%;
+  max-width: 1100px;
+  display: flex;
+  background: rgba(8, 14, 26, 0.85);
+  border: 1px solid rgba(0, 240, 255, 0.25);
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(25px);
+  z-index: 30005;
+  box-sizing: border-box;
+}
+
+/* Columna Izquierda */
+.local-coach-info-panel {
+  flex: 1.1;
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.08) 0%, rgba(10, 20, 35, 0.95) 100%);
+  border-right: 1px solid rgba(0, 240, 255, 0.15);
+  padding: 50px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.local-coach-badge {
+  align-self: flex-start;
+  font-size: 11px;
+  font-weight: 800;
+  color: #39ff14;
+  background: rgba(57, 255, 20, 0.1);
+  border: 1px solid rgba(57, 255, 20, 0.3);
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 1px;
+  margin-bottom: 25px;
+  text-transform: uppercase;
+}
+
+.local-coach-info-icon {
+  font-size: 55px;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 0 15px rgba(0, 240, 255, 0.3));
+}
+
+.local-coach-info-title {
+  font-size: 30px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.25;
+  margin-bottom: 15px;
+  font-family: 'Segoe UI', sans-serif;
+  letter-spacing: 0.5px;
+}
+
+.local-coach-info-desc {
+  font-size: 14.5px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+
+.local-coach-features-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.local-coach-feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 13.5px;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.4;
+}
+
+.feature-bullet {
+  color: #00f0ff;
+  font-size: 16px;
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+}
+
+/* Columna Derecha */
+.local-coach-form-panel {
+  flex: 1.5;
+  padding: 45px 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.local-coach-header {
+  margin-bottom: 25px;
+}
+
+.local-coach-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 6px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.local-coach-subtitle {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.local-coach-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.local-coach-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.local-coach-field-full {
+  grid-column: span 2;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.local-coach-label {
+  font-size: 9.5px;
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.local-coach-input {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1.5px solid rgba(0, 240, 255, 0.15);
+  border-radius: 8px;
+  padding: 11px 14px;
+  color: #fff;
+  font-size: 13.5px;
+  font-family: 'Segoe UI', sans-serif;
+  outline: none;
+  transition: all 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.local-coach-input:focus {
+  border-color: #00f0ff;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.15);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.local-coach-textarea {
+  min-height: 70px;
+  max-height: 120px;
+  resize: vertical;
+}
+
+.local-coach-hint-text {
+  font-size: 11px;
+  color: #00f0ff;
+  margin-top: 3px;
+}
+
+/* Responsividad para móviles y tablets */
+@media (max-width: 900px) {
+  .local-coach-screen {
+    padding: 10px;
+  }
+  .local-coach-layout-container {
+    flex-direction: column;
+    max-height: 95vh;
+    overflow-y: auto;
+  }
+  .local-coach-info-panel {
+    border-right: none;
+    border-bottom: 1px solid rgba(0, 240, 255, 0.15);
+    padding: 30px 24px;
+  }
+  .local-coach-info-title {
+    font-size: 24px;
+  }
+  .local-coach-info-desc {
+    margin-bottom: 15px;
+  }
+  .local-coach-badge {
+    margin-bottom: 15px;
+  }
+  .local-coach-features-list {
+    display: none;
+  }
+  .local-coach-form-panel {
+    padding: 30px 24px;
+  }
+  .local-coach-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  .local-coach-field-full {
+    grid-column: span 1;
+  }
+}

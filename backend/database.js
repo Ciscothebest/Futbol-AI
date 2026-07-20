@@ -3,12 +3,17 @@ const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 // ─── DYNAMIC DATABASE CONNECTION (PostgreSQL, SQL Server or SQLite fallback) ───────────────────
+const isProduction = process.env.NODE_ENV === 'production';
 const useSQLite = process.env.DB_DIALECT === 'sqlite' || 
-                  (process.env.NODE_ENV === 'production' && !process.env.DB_HOST && !process.env.DATABASE_URL);
+                  (isProduction && !process.env.DB_HOST && !process.env.DATABASE_URL);
 
 let sequelize;
 
-if (process.env.DATABASE_URL) {
+// En desarrollo local, prohibimos usar la base de datos de producción (Supabase) por seguridad,
+// a menos que se fuerce explícitamente mediante ALLOW_REMOTE_DB_IN_DEV=true.
+const useProductionPostgres = process.env.DATABASE_URL && (isProduction || process.env.ALLOW_REMOTE_DB_IN_DEV === 'true');
+
+if (useProductionPostgres) {
   console.log('🐘 Connecting to persistent PostgreSQL database...');
   sequelize = new Sequelize(process.env.DATABASE_URL, {
     dialect: 'postgres',
@@ -165,46 +170,19 @@ const User = UserModel(sequelize);
 const QueryLog = sequelize.define('QueryLog', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   message: { type: DataTypes.TEXT, allowNull: true } // can be null if audio or quick query
-}, { 
-  tableName: 'query_logs', 
-  timestamps: true,
-  indexes: [
-    {
-      fields: ['userId'],
-      name: 'query_logs_userId_idx'
-    }
-  ]
-});
+}, { tableName: 'query_logs', timestamps: true });
 
 const ComparisonLog = sequelize.define('ComparisonLog', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   player1Id: { type: DataTypes.STRING, allowNull: false },
   player2Id: { type: DataTypes.STRING, allowNull: false }
-}, { 
-  tableName: 'comparison_logs', 
-  timestamps: true,
-  indexes: [
-    {
-      fields: ['userId'],
-      name: 'comparison_logs_userId_idx'
-    }
-  ]
-});
+}, { tableName: 'comparison_logs', timestamps: true });
 
 const FavoriteLog = sequelize.define('FavoriteLog', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   playerId: { type: DataTypes.STRING, allowNull: false },
   action: { type: DataTypes.STRING, allowNull: false } // 'add' or 'remove'
-}, { 
-  tableName: 'favorite_logs', 
-  timestamps: true,
-  indexes: [
-    {
-      fields: ['userId'],
-      name: 'favorite_logs_userId_idx'
-    }
-  ]
-});
+}, { tableName: 'favorite_logs', timestamps: true });
 
 // Relationships
 User.hasMany(QueryLog, { foreignKey: 'userId' });
@@ -245,21 +223,21 @@ async function enableRLSIfPostgres() {
       'DROP POLICY IF EXISTS "Allow public read access" ON "teams";',
       'CREATE POLICY "Allow public read access" ON "teams" FOR SELECT TO public USING (true);',
       'DROP POLICY IF EXISTS "Allow users to view their own profile" ON "users";',
-      'CREATE POLICY "Allow users to view their own profile" ON "users" FOR SELECT TO authenticated USING ((select auth.uid()) = id);',
+      'CREATE POLICY "Allow users to view their own profile" ON "users" FOR SELECT TO authenticated USING (auth.uid() = id);',
       'DROP POLICY IF EXISTS "Allow users to update their own profile" ON "users";',
-      'CREATE POLICY "Allow users to update their own profile" ON "users" FOR UPDATE TO authenticated USING ((select auth.uid()) = id) WITH CHECK ((select auth.uid()) = id);',
+      'CREATE POLICY "Allow users to update their own profile" ON "users" FOR UPDATE TO authenticated USING (auth.uid() = id) WITH CHECK (auth.uid() = id);',
       'DROP POLICY IF EXISTS "Allow users to view their own payments" ON "payments";',
-      'CREATE POLICY "Allow users to view their own payments" ON "payments" FOR SELECT TO authenticated USING ((select auth.uid()) = "userId");',
+      'CREATE POLICY "Allow users to view their own payments" ON "payments" FOR SELECT TO authenticated USING (auth.uid() = "userId");',
       'DROP POLICY IF EXISTS "Allow users to view their own query logs" ON "query_logs";',
-      'CREATE POLICY "Allow users to view their own query logs" ON "query_logs" FOR SELECT TO authenticated USING ((select auth.uid()) = "userId");',
+      'CREATE POLICY "Allow users to view their own query logs" ON "query_logs" FOR SELECT TO authenticated USING (auth.uid() = "userId");',
       'DROP POLICY IF EXISTS "Allow users to insert their own query logs" ON "query_logs";',
-      'CREATE POLICY "Allow users to insert their own query logs" ON "query_logs" FOR INSERT TO authenticated WITH CHECK ((select auth.uid()) = "userId");',
+      'CREATE POLICY "Allow users to insert their own query logs" ON "query_logs" FOR INSERT TO authenticated WITH CHECK (auth.uid() = "userId");',
       'DROP POLICY IF EXISTS "Allow users to view their own comparison logs" ON "comparison_logs";',
-      'CREATE POLICY "Allow users to view their own comparison logs" ON "comparison_logs" FOR SELECT TO authenticated USING ((select auth.uid()) = "userId");',
+      'CREATE POLICY "Allow users to view their own comparison logs" ON "comparison_logs" FOR SELECT TO authenticated USING (auth.uid() = "userId");',
       'DROP POLICY IF EXISTS "Allow users to insert their own comparison logs" ON "comparison_logs";',
-      'CREATE POLICY "Allow users to insert their own comparison logs" ON "comparison_logs" FOR INSERT TO authenticated WITH CHECK ((select auth.uid()) = "userId");',
+      'CREATE POLICY "Allow users to insert their own comparison logs" ON "comparison_logs" FOR INSERT TO authenticated WITH CHECK (auth.uid() = "userId");',
       'DROP POLICY IF EXISTS "Allow users to manage their own favorite logs" ON "favorite_logs";',
-      'CREATE POLICY "Allow users to manage their own favorite logs" ON "favorite_logs" FOR ALL TO authenticated USING ((select auth.uid()) = "userId") WITH CHECK ((select auth.uid()) = "userId");'
+      'CREATE POLICY "Allow users to manage their own favorite logs" ON "favorite_logs" FOR ALL TO authenticated USING (auth.uid() = "userId") WITH CHECK (auth.uid() = "userId");'
     ];
 
     for (const policySql of policies) {

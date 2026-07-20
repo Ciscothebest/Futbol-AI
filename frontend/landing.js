@@ -80,16 +80,70 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (!res.ok) {
         if (result.error === 'needs_verification') {
+          // Close login modal
           closeModal(loginModal);
-          openModal(otpModal);
-          document.getElementById('otp-username').value = username;
-          document.getElementById('otp-code').value = '';
-          document.getElementById('otp-error').textContent = '';
-          const otpSuccessEl = document.getElementById('otp-success');
-          if (otpSuccessEl) {
-            otpSuccessEl.textContent = '';
-            otpSuccessEl.style.display = 'none';
+          
+          // Open pending-verification-modal
+          const pendingModal = document.getElementById('pending-verification-modal');
+          if (pendingModal) {
+            pendingModal.style.display = 'flex';
+            
+            // Configure the "Autenticar cuenta" button
+            const authBtn = document.getElementById('btn-pending-verify-auth');
+            if (authBtn) {
+              authBtn.onclick = async () => {
+                authBtn.disabled = true;
+                authBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando código...';
+                
+                try {
+                  // Trigger resend-otp API call
+                  const resendRes = await fetch(`${API_URL}/resend-otp`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username })
+                  });
+                  const resendResult = await resendRes.json();
+                  
+                  if (!resendRes.ok) throw new Error(resendResult.error || 'Error al enviar OTP');
+                  
+                  // Hide pending modal
+                  pendingModal.style.display = 'none';
+                  
+                  // Open OTP verification modal
+                  openModal(otpModal);
+                  document.getElementById('otp-username').value = username;
+                  document.getElementById('otp-code').value = '';
+                  document.getElementById('otp-error').textContent = '';
+                  
+                  const otpSuccessEl = document.getElementById('otp-success');
+                  if (otpSuccessEl) {
+                    otpSuccessEl.textContent = 'Código enviado con éxito. Revisa tu correo.';
+                    otpSuccessEl.style.display = 'block';
+                  }
+                  
+                  // Start countdown timer if function exists
+                  if (typeof startResendCountdown === 'function') {
+                    startResendCountdown();
+                  }
+                } catch (resendErr) {
+                  alert(`Error: ${resendErr.message}`);
+                } finally {
+                  authBtn.disabled = false;
+                  authBtn.textContent = 'Autenticar cuenta';
+                }
+              };
+            }
           }
+          return;
+        } else if (result.error === 'user_expired') {
+          closeModal(loginModal);
+          const expiredModal = document.getElementById('expired-registration-modal');
+          if (expiredModal) expiredModal.style.display = 'flex';
+          return;
+        } else if (result.error === 'user_not_found') {
+          closeModal(loginModal);
+          const nonexistentModal = document.getElementById('nonexistent-user-modal');
+          if (nonexistentModal) nonexistentModal.style.display = 'flex';
           return;
         }
         throw new Error((result.details ? `${result.error} (${result.details})` : null) || result.error || 'Error al iniciar sesión');
@@ -352,15 +406,15 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         closeModal(registerModal);
         openModal(otpModal);
-        document.getElementById('otp-username').value = username;
-        document.getElementById('otp-code').value = '';
-        document.getElementById('otp-error').textContent = '';
-        const otpSuccessEl = document.getElementById('otp-success');
-        if (otpSuccessEl) {
-          otpSuccessEl.textContent = '';
-          otpSuccessEl.style.display = 'none';
-        }
-        successEl.style.display = 'none';
+         document.getElementById('otp-username').value = username;
+         document.getElementById('otp-code').value = '';
+         document.getElementById('otp-error').textContent = '';
+         const otpSuccessEl = document.getElementById('otp-success');
+         if (otpSuccessEl) {
+           otpSuccessEl.textContent = 'Código enviado con éxito. Revisa tu correo.';
+           otpSuccessEl.style.display = 'block';
+         }
+         successEl.style.display = 'none';
       }, 1500);
       
     } catch (err) {

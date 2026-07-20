@@ -1043,6 +1043,12 @@ function setupOnboarding() {
       icon: '🔍',
       color: '#00f0ff'
     },
+    'Local': {
+      price: '$40.00',
+      desc: 'Destinado para entrenador local. Acceso completo a herramientas de gestión, análisis táctico y visualización de entrenamientos locales por un precio único.',
+      icon: '🧢',
+      color: '#39ff14'
+    },
     'Plus': {
       price: '$19.99',
       desc: 'Métricas avanzadas de scouting, mapas de calor (heatmaps) dinámicos de rendimiento y reportes tácticos ejecutivos automatizados de Gemini IA en formato profesional.',

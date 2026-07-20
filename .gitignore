@@ -15,13 +15,8 @@ backend/database.sqlite
 backend/database.sqbpro
 *.sqlite
 *.db
-*.backup_*
 backend/updates.json
 backend/updates2.json
-
-# Large binaries and archives
-*.zip
-*.apk
 
 # Logs and system files
 logs/
@@ -36,6 +31,7 @@ err.txt
 # Diagnostic/Test files
 backend/err.txt
 backend/fake.png
+scratch/
 
 # OS metadata
 .DS_Store

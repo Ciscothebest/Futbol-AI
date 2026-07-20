@@ -3693,6 +3693,7 @@ window.openTacticalEditorModal = function() {
   };
 
   goToSection('my-club');
+  applyPlanPermissions();
 }
 
 // ─── Avatar URL helper (works in browser + Android WebView) ───────────────
@@ -3816,6 +3817,31 @@ function updateProfileUI(user) {
   if (userAvatarMobileEl && user.avatarUrl) {
     userAvatarMobileEl.src = getAbsoluteUrl(user.avatarUrl);
     userAvatarMobileEl.style.display = 'block';
+  }
+
+  applyPlanPermissions();
+}
+
+function applyPlanPermissions() {
+  const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  const isLocal = (user.selectedTier || '').toLowerCase() === 'local' || (user.role || '').toLowerCase() === 'local' || (user.role || '').toLowerCase() === 'entrenador local';
+  const restricted = ['players', 'my-club', 'compare', 'predictions', 'simulations'];
+
+  document.querySelectorAll('.nav-item').forEach(btn => {
+    const section = btn.dataset.section;
+    if (isLocal && restricted.includes(section)) {
+      btn.style.display = 'none';
+    } else if (section === 'my-club') {
+      btn.style.display = user.selectedClub ? 'block' : 'none';
+    } else {
+      btn.style.display = 'block';
+    }
+  });
+
+  const activeBtn = document.querySelector('.nav-item.active');
+  const currentSection = activeBtn ? activeBtn.dataset.section : 'players';
+  if (isLocal && (restricted.includes(currentSection) || currentSection === 'home')) {
+    goToSection('chat');
   }
 }
 
@@ -4861,6 +4887,43 @@ async function renderProfile() {
   }
   if (planEl) planEl.textContent = (user.selectedTier || 'Gratis').toUpperCase();
   if (planNameEl) planNameEl.textContent = user.selectedTier || 'Gratis';
+  
+  // Llenar tarjeta de Entrenador Local
+  const isLocalCoach = (user.selectedTier || '').toLowerCase() === 'local' || (user.role || '').toLowerCase() === 'local' || (user.role || '').toLowerCase() === 'entrenador local';
+  const localCardEl = document.getElementById('profile-local-coach-card');
+  if (localCardEl) {
+    if (isLocalCoach) {
+      localCardEl.style.display = 'block';
+      let data = {};
+      if (user.localCoachData) {
+        try {
+          data = typeof user.localCoachData === 'string' ? JSON.parse(user.localCoachData) : user.localCoachData;
+        } catch (e) {
+          console.error('Error parsing localCoachData:', e);
+        }
+      }
+      
+      const pClub = document.getElementById('profile-local-club');
+      const pAgeRange = document.getElementById('profile-local-age-range');
+      const pCountry = document.getElementById('profile-local-country');
+      const pAddress = document.getElementById('profile-local-address');
+      const pCode = document.getElementById('profile-local-code');
+      const pAdminPhone = document.getElementById('profile-local-admin-phone');
+      const pLeagues = document.getElementById('profile-local-leagues');
+      const pAwards = document.getElementById('profile-local-awards');
+      
+      if (pClub) pClub.textContent = data.club || 'No ingresado';
+      if (pAgeRange) pAgeRange.textContent = data.ageRange || 'No ingresado';
+      if (pCountry) pCountry.textContent = data.nationality || 'No ingresado';
+      if (pAddress) pAddress.textContent = data.address || 'No ingresado';
+      if (pCode) pCode.textContent = data.code || 'No ingresado';
+      if (pAdminPhone) pAdminPhone.textContent = data.adminPhone || 'No ingresado';
+      if (pLeagues) pLeagues.textContent = data.leagues || 'No ingresado';
+      if (pAwards) pAwards.textContent = data.awards || 'Ninguno';
+    } else {
+      localCardEl.style.display = 'none';
+    }
+  }
     
   let createdAtMs = NaN;
   if (user.createdAt) {
@@ -5186,6 +5249,14 @@ function setupNavigation() {
 }
 
 function goToSection(name) {
+  const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  const isLocal = (user.selectedTier || '').toLowerCase() === 'local' || (user.role || '').toLowerCase() === 'local' || (user.role || '').toLowerCase() === 'entrenador local';
+  const restricted = ['players', 'my-club', 'compare', 'predictions', 'simulations'];
+
+  if (isLocal && (restricted.includes(name) || name === 'home')) {
+    name = 'chat';
+  }
+
   document.querySelectorAll('.nav-item').forEach(b => {
     b.classList.toggle('active', b.dataset.section === name);
   });
@@ -7450,7 +7521,9 @@ window.pendingPaymentCard = null;
 
 // Prices map
 const TIER_PRICES = {
+  'Gratis': 0.00,
   'Pro': 9.99,
+  'Local': 40.00,
   'Plus': 19.99,
   'Enterprise': 49.99
 };
@@ -7570,7 +7643,7 @@ window.setupPaymentGateway = () => {
 };
 
 // Global modal trigger wrappers
-window.showPaymentModal = (tierName, price, cardElement) => {
+window.showPaymentModal = (tierName, price, cardElement, isUpgrade = false) => {
   window.pendingPaymentTier = tierName;
   window.pendingPaymentCard = cardElement;
 
@@ -7589,9 +7662,19 @@ window.showPaymentModal = (tierName, price, cardElement) => {
   if (successView) successView.style.display = 'none';
   if (roleView) roleView.style.display = 'none';
 
-  document.getElementById('payment-modal-title').textContent = `Activar Plan ${tierName}`;
-  const priceVal = TIER_PRICES[tierName] || 9.99;
-  document.getElementById('payment-modal-price').innerHTML = `$${priceVal} <span style="font-size: 13px; color: rgba(255,255,255,0.4); font-weight: 400;">/ mes</span>`;
+  let numericPrice = parseFloat(String(price).replace(/[^0-9\.]/g, ''));
+  if (isNaN(numericPrice)) {
+    numericPrice = TIER_PRICES[tierName] || 9.99;
+  }
+  window.pendingPaymentAmount = numericPrice;
+
+  if (isUpgrade) {
+    document.getElementById('payment-modal-title').textContent = `Mejorar Plan a ${tierName}`;
+    document.getElementById('payment-modal-price').innerHTML = `$${numericPrice.toFixed(2)} <span style="font-size: 13px; color: rgba(255,255,255,0.4); font-weight: 400;">(Diferencia única, luego $${(TIER_PRICES[tierName] || 0).toFixed(2)}/mes)</span>`;
+  } else {
+    document.getElementById('payment-modal-title').textContent = `Activar Plan ${tierName}`;
+    document.getElementById('payment-modal-price').innerHTML = `$${numericPrice.toFixed(2)} <span style="font-size: 13px; color: rgba(255,255,255,0.4); font-weight: 400;">/ mes</span>`;
+  }
 
   modal.style.display = 'flex';
 };
@@ -7624,6 +7707,22 @@ window.handleSuccessContinue = () => {
         roleInput.style.borderColor = 'rgba(0, 240, 255, 0.25)';
       }
     }
+  } else if (tier === 'Local') {
+    window.closePaymentModal();
+    const localScreen = document.getElementById('local-coach-onboarding-screen');
+    if (localScreen) {
+      localScreen.style.display = 'flex';
+      // Reset inputs
+      ['local-coach-club', 'local-coach-age-range', 
+       'local-coach-nationality', 'local-coach-code', 'local-coach-league-address', 
+       'local-coach-leagues-participating', 'local-coach-awards'].forEach(id => {
+         const el = document.getElementById(id);
+         if (el) {
+           el.value = '';
+           el.style.borderColor = 'rgba(0, 240, 255, 0.2)';
+         }
+       });
+    }
   } else {
     const onboardingScreen = document.getElementById('onboarding-screen');
     const isOnboarding = onboardingScreen && onboardingScreen.style.display !== 'none';
@@ -7639,6 +7738,156 @@ window.handleSuccessContinue = () => {
     } else {
       window.closeSuccessAndDashboard();
     }
+  }
+};
+
+window.showLocalCoachFormModal = () => {
+  window.closePaymentModal();
+  const upgradeModal = document.getElementById('upgrade-modal');
+  if (upgradeModal) {
+    window.closeUpgradeModal();
+  }
+  
+  const localScreen = document.getElementById('local-coach-onboarding-screen');
+  if (localScreen) {
+    localScreen.style.display = 'flex';
+    // Reset inputs
+    ['local-coach-club', 'local-coach-age-range', 
+     'local-coach-nationality', 'local-coach-code', 'local-coach-league-address', 
+     'local-coach-admin-phone', 'local-coach-leagues-participating', 'local-coach-awards'].forEach(id => {
+       const el = document.getElementById(id);
+       if (el) {
+         el.value = '';
+         el.style.borderColor = 'rgba(0, 240, 255, 0.2)';
+       }
+     });
+  }
+};
+
+window.confirmSuccessAndSaveLocalForm = async () => {
+  const club = document.getElementById('local-coach-club').value.trim();
+  const ageRange = document.getElementById('local-coach-age-range').value.trim();
+  const nationality = document.getElementById('local-coach-nationality').value.trim();
+  const code = document.getElementById('local-coach-code').value.trim();
+  const address = document.getElementById('local-coach-league-address').value.trim();
+  const adminPhone = document.getElementById('local-coach-admin-phone').value.trim();
+  const leagues = document.getElementById('local-coach-leagues-participating').value.trim();
+  const awards = document.getElementById('local-coach-awards').value.trim();
+  
+  let hasError = false;
+  
+  const fields = [
+    { id: 'local-coach-club', val: club },
+    { id: 'local-coach-age-range', val: ageRange },
+    { id: 'local-coach-nationality', val: nationality },
+    { id: 'local-coach-code', val: code },
+    { id: 'local-coach-league-address', val: address },
+    { id: 'local-coach-admin-phone', val: adminPhone },
+    { id: 'local-coach-leagues-participating', val: leagues }
+  ];
+  
+  fields.forEach(f => {
+    const el = document.getElementById(f.id);
+    if (!f.val) {
+      if (el) el.style.borderColor = '#ff4a4a';
+      hasError = true;
+    } else {
+      if (el) el.style.borderColor = 'rgba(0, 240, 255, 0.2)';
+    }
+  });
+  
+  if (hasError) {
+    showToast('⚠️ Por favor, completa todos los campos obligatorios.', 'error');
+    return;
+  }
+
+  // Validar que el teléfono administrativo sea diferente al teléfono de registro personal
+  const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  const personalPhone = user.telefono || '';
+  const cleanAdmin = adminPhone.replace(/[\s\-\+\(\)]/g, '');
+  const cleanPersonal = personalPhone.replace(/[\s\-\+\(\)]/g, '');
+  
+  if (cleanAdmin && cleanPersonal && cleanAdmin === cleanPersonal) {
+    const el = document.getElementById('local-coach-admin-phone');
+    if (el) el.style.borderColor = '#ff4a4a';
+    showToast('⚠️ El teléfono administrativo del club debe ser diferente a tu teléfono personal.', 'error');
+    return;
+  }
+  
+  const saveBtn = document.getElementById('btn-success-local-continue');
+  if (saveBtn) {
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+    saveBtn.disabled = true;
+  }
+  
+  const localCoachData = {
+    club,
+    ageRange,
+    nationality,
+    code,
+    address,
+    adminPhone,
+    leagues,
+    awards
+  };
+  
+  let isSaved = false;
+  try {
+    const token = localStorage.getItem('scout_ai_token');
+    const res = await fetch(`${API}/auth/onboarding`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ 
+        selectedClub: club,
+        selectedCountries: [nationality],
+        selectedTier: 'Local',
+        localCoachData
+      })
+    });
+    if (res.ok) isSaved = true;
+  } catch (err) {
+    console.warn('Saving local coach details failed (offline):', err);
+  }
+  
+  // Reuse the user object already declared above
+  user.onboardingComplete = true;
+  user.role = 'Entrenador Local';
+  user.selectedClub = club;
+  user.selectedCountry = nationality;
+  user.selectedTier = 'Local';
+  user.localCoachData = localCoachData;
+  localStorage.setItem('scout_ai_user', JSON.stringify(user));
+  localStorage.removeItem('scout_ai_swaps');
+  localStorage.removeItem('scout_ai_benched');
+  
+  if (!isSaved) {
+    showToast('ℹ️ Configuración guardada localmente (modo demo).', 'info');
+  }
+  
+  const localScreen = document.getElementById('local-coach-onboarding-screen');
+  if (localScreen) {
+    localScreen.style.display = 'none';
+  }
+  
+  window.closePaymentModal();
+  const upgradeModal = document.getElementById('upgrade-modal');
+  if (upgradeModal && upgradeModal.style.display !== 'none') {
+    window.closeUpgradeModal();
+  }
+  
+  // Exiting onboarding
+  const onboarding = document.getElementById('onboarding-screen');
+  if (onboarding) {
+    onboarding.style.opacity = '0';
+    setTimeout(() => { 
+      onboarding.style.display = 'none'; 
+      initDashboard(); 
+    }, 500);
+  } else {
+    initDashboard();
   }
 };
 
@@ -7717,7 +7966,7 @@ window.simulatePayment = async () => {
 
   const nameInput = document.getElementById('pay-card-name');
   const numInput = document.getElementById('pay-card-number');
-  const amount = TIER_PRICES[tier] || 9.99;
+  const amount = window.pendingPaymentAmount !== undefined ? window.pendingPaymentAmount : (TIER_PRICES[tier] || 9.99);
 
   payBtn.disabled = true;
 
@@ -7747,7 +7996,8 @@ window.simulatePayment = async () => {
             tier,
             cardholderName: nameInput.value.trim(),
             cardNumber: numInput.value,
-            amount
+            amount,
+            role: tier === 'Local' ? 'Entrenador Local' : undefined
           })
         });
 
@@ -7780,6 +8030,9 @@ window.simulatePayment = async () => {
         // 1. Update dynamic client states
         const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
         user.selectedTier = tier;
+        if (tier === 'Local') {
+          user.role = 'Entrenador Local';
+        }
         localStorage.setItem('scout_ai_user', JSON.stringify(user));
           
           showToast(`🎉 ¡Pago exitoso! Plan ${tier} activado. Txn ID: ${result.transaction.transactionId}`, 'success');
@@ -8057,12 +8310,18 @@ window.downloadInvoicePDF = () => {
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(9.5);
     doc.setTextColor(primarySlate[0], primarySlate[1], primarySlate[2]);
-    doc.text(`Suscripción Premium Mensual • Plan ${tier}`, 23, tableY + 14.5);
+    if (tier === 'Local') {
+      doc.text('Plan Entrenador Local (Pago Único)', 23, tableY + 14.5);
+    } else {
+      doc.text(`Suscripción Premium Mensual • Plan ${tier}`, 23, tableY + 14.5);
+    }
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8);
     doc.setTextColor(secondarySlate[0], secondarySlate[1], secondarySlate[2]);
-    const descText = 'Acceso completo a métricas avanzadas, predicciones IA, scouting global e informes tácticos.';
+    const descText = tier === 'Local' 
+      ? 'Acceso completo a métricas avanzadas y herramientas de scouting para entrenador local.' 
+      : 'Acceso completo a métricas avanzadas, predicciones IA, scouting global e informes tácticos.';
     const splitDesc = doc.splitTextToSize(descText, 90);
     doc.text(splitDesc, 23, tableY + 19.5);
 
@@ -8242,7 +8501,11 @@ window.showMiniAlert = (tierName, price, cardElement, isUpgradeContext = false) 
 
   if (titleEl) titleEl.textContent = `Plan ${tierName} Bloqueado`;
   if (descEl) {
-    descEl.innerHTML = `El plan <strong>${tierName}</strong> es una función premium que requiere una suscripción activa de <strong>${price}/mes</strong>. ¿Deseas proceder a la pasarela de pago seguro para desbloquearlo?`;
+    if (tierName === 'Local') {
+      descEl.innerHTML = `El plan <strong>${tierName}</strong> es una función premium destinada para entrenador local que requiere un pago único de <strong>${price}</strong>. ¿Deseas proceder a la pasarela de pago seguro para desbloquearlo?`;
+    } else {
+      descEl.innerHTML = `El plan <strong>${tierName}</strong> es una función premium que requiere una suscripción activa de <strong>${price}/mes</strong>. ¿Deseas proceder a la pasarela de pago seguro para desbloquearlo?`;
+    }
   }
 
   if (payBtn) {
@@ -8266,11 +8529,36 @@ window.openUpgradeModal = () => {
   
   const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
   const currentTier = user.selectedTier || 'Gratis';
+  const currentPrice = TIER_PRICES[currentTier] || 0;
   
   document.querySelectorAll('.upgrade-card').forEach(c => {
     c.style.borderColor = 'rgba(0, 240, 255, 0.15)';
     c.style.boxShadow = '0 4px 20px rgba(0,0,0,0.3)';
     c.querySelector('.tier-check').style.opacity = '0';
+    
+    // Obtener el tier de esta tarjeta
+    const cardId = c.id; // upgrade-card-pro, upgrade-card-local, etc.
+    const cardTierName = cardId.replace('upgrade-card-', '');
+    const formattedTierName = Object.keys(TIER_PRICES).find(k => k.toLowerCase() === cardTierName) || 'Gratis';
+    const newPrice = TIER_PRICES[formattedTierName] || 0;
+    
+    const lockEl = c.querySelector('.tier-lock');
+    if (lockEl) {
+      if (formattedTierName === currentTier) {
+        lockEl.style.display = 'none';
+        c.style.opacity = '1';
+      } else if (newPrice > currentPrice) {
+        // Upgrade: requiere pago de diferencia. Mostrar candado.
+        lockEl.style.display = 'block';
+        lockEl.textContent = '🔒';
+        c.style.opacity = '0.75';
+      } else {
+        // Downgrade: gratuito. Mostrar flecha indicadora.
+        lockEl.style.display = 'block';
+        lockEl.textContent = '👇';
+        c.style.opacity = '1';
+      }
+    }
   });
   
   const currentCard = document.getElementById(`upgrade-card-${currentTier.toLowerCase()}`);
@@ -8278,18 +8566,17 @@ window.openUpgradeModal = () => {
     currentCard.style.borderColor = '#00f0ff';
     currentCard.style.boxShadow = '0 0 25px rgba(0, 240, 255, 0.3)';
     currentCard.querySelector('.tier-check').style.opacity = '1';
-    
-    currentCard.style.opacity = '1';
     currentCard.style.background = 'rgba(10, 20, 35, 0.6)';
-    const lockEl = currentCard.querySelector('.tier-lock');
-    if (lockEl) lockEl.style.display = 'none';
   }
   
   selectedUpgradeTierName = currentTier;
   selectedUpgradeCardElement = currentCard;
   
   const confirmBtn = document.getElementById('btn-save-upgrade');
-  if (confirmBtn) confirmBtn.disabled = true;
+  if (confirmBtn) {
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = 'Confirmar Cambio de Plan';
+  }
 
   modal.style.display = 'flex';
 };
@@ -8302,6 +8589,8 @@ window.closeUpgradeModal = () => {
 window.selectUpgradeTier = (tierName, element) => {
   const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
   const currentTier = user.selectedTier || 'Gratis';
+  const currentPrice = TIER_PRICES[currentTier] || 0;
+  const newPrice = TIER_PRICES[tierName] || 0;
   
   selectedUpgradeTierName = tierName;
   selectedUpgradeCardElement = element;
@@ -8319,6 +8608,13 @@ window.selectUpgradeTier = (tierName, element) => {
   const confirmBtn = document.getElementById('btn-save-upgrade');
   if (confirmBtn) {
     confirmBtn.disabled = (tierName === currentTier);
+    if (tierName === currentTier) {
+      confirmBtn.textContent = 'Confirmar Cambio de Plan';
+    } else if (newPrice > currentPrice) {
+      confirmBtn.textContent = `Confirmar e ir al Pago (Upgrade: +$${(newPrice - currentPrice).toFixed(2)})`;
+    } else {
+      confirmBtn.textContent = 'Confirmar Cambio (Downgrade Gratuito)';
+    }
   }
 };
 
@@ -8326,17 +8622,43 @@ window.showUpgradePaymentModal = (tierName, price, cardElement) => {
   const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
   const currentTier = user.selectedTier || 'Gratis';
   
-  if (tierName === currentTier || cardElement.style.opacity === '1') {
+  const currentPrice = TIER_PRICES[currentTier] || 0;
+  const newPrice = TIER_PRICES[tierName] || 0;
+  
+  if (tierName === currentTier) {
     window.selectUpgradeTier(tierName, cardElement);
     return;
   }
   
-  window.showMiniAlert(tierName, price, cardElement, true);
+  if (newPrice <= currentPrice) {
+    // Downgrade: se selecciona directamente sin pasarela de pago fiduciaria
+    window.selectUpgradeTier(tierName, cardElement);
+    showToast(`👇 Has seleccionado cambiar al plan ${tierName} (Downgrade gratuito). Confirma tu cambio abajo.`, 'info');
+    return;
+  }
+  
+  // Upgrade: requiere pago de diferencia única
+  const difference = newPrice - currentPrice;
+  window.selectUpgradeTier(tierName, cardElement);
+  window.showMiniAlert(tierName, `$${difference.toFixed(2)}`, cardElement, true);
 };
 
 window.saveUpgradeTier = async () => {
   if (!selectedUpgradeTierName) return;
   
+  const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  const currentTier = user.selectedTier || 'Gratis';
+  const currentPrice = TIER_PRICES[currentTier] || 0;
+  const newPrice = TIER_PRICES[selectedUpgradeTierName] || 0;
+  
+  // Si requiere pago (es upgrade) y el usuario aún no lo ha pagado (tarjeta locked)
+  if (newPrice > currentPrice && selectedUpgradeCardElement && selectedUpgradeCardElement.style.opacity !== '1') {
+    // Si la opacidad de la tarjeta no es 1, significa que no ha completado el pago del upgrade
+    const difference = newPrice - currentPrice;
+    window.showPaymentModal(selectedUpgradeTierName, `$${difference.toFixed(2)}`, selectedUpgradeCardElement, true);
+    return;
+  }
+
   const saveBtn = document.getElementById('btn-save-upgrade');
   saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
   saveBtn.disabled = true;
@@ -8352,9 +8674,12 @@ window.saveUpgradeTier = async () => {
     
     if (res.ok) {
       // Update local storage user object
-      const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
-      user.selectedTier = selectedUpgradeTierName;
-      localStorage.setItem('scout_ai_user', JSON.stringify(user));
+      const userObj = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+      userObj.selectedTier = selectedUpgradeTierName;
+      if (selectedUpgradeTierName === 'Local') {
+        userObj.role = 'Entrenador Local';
+      }
+      localStorage.setItem('scout_ai_user', JSON.stringify(userObj));
       
       showToast('✅ Plan de suscripción actualizado con éxito!', 'success');
       
@@ -8363,18 +8688,36 @@ window.saveUpgradeTier = async () => {
       
       // Close the upgrade modal
       closeUpgradeModal();
+      
+      // Si el nuevo plan es Local y viene de un downgrade/upgrade, redirigir al formulario
+      if (selectedUpgradeTierName === 'Local') {
+        const localScreen = document.getElementById('local-coach-onboarding-screen');
+        if (localScreen) {
+          localScreen.style.display = 'flex';
+        }
+      }
     } else {
       showToast('⚠️ Error al actualizar el plan en el servidor.', 'error');
     }
   } catch (err) {
     console.error('Upgrade tier save error:', err);
     // Fallback: save locally
-    const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
-    user.selectedTier = selectedUpgradeTierName;
-    localStorage.setItem('scout_ai_user', JSON.stringify(user));
+    const userObj = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+    userObj.selectedTier = selectedUpgradeTierName;
+    if (selectedUpgradeTierName === 'Local') {
+      userObj.role = 'Entrenador Local';
+    }
+    localStorage.setItem('scout_ai_user', JSON.stringify(userObj));
     showToast('✅ Plan actualizado (Modo local)', 'success');
     renderProfile();
     closeUpgradeModal();
+    
+    if (selectedUpgradeTierName === 'Local') {
+      const localScreen = document.getElementById('local-coach-onboarding-screen');
+      if (localScreen) {
+        localScreen.style.display = 'flex';
+      }
+    }
   }
 };
 
