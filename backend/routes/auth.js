@@ -29,6 +29,9 @@ module.exports = ({ User, JWT_SECRET }) => {
         auth: {
           user: process.env.SMTP_USER,
           pass: process.env.SMTP_PASS
+        },
+        tls: {
+          rejectUnauthorized: false // Evita fallos de TLS / certificados autofirmados en hostings en la nube
         }
       })
     : null;
@@ -437,7 +440,46 @@ module.exports = ({ User, JWT_SECRET }) => {
     }
   });
 
-  router.get('/me', authenticate, async (req, res) => {
+  // Endpoint de Diagnóstico para probar SMTP en Producción
+  router.post('/test-smtp', async (req, res) => {
+    try {
+      const { email } = req.body;
+      if (!email) return res.status(400).json({ error: 'Email requerido' });
+
+      if (!transporter) {
+        return res.status(400).json({ 
+          error: 'El transporter SMTP no está configurado en las variables de entorno de Render.',
+          envDetected: {
+            SMTP_HOST: !!process.env.SMTP_HOST,
+            SMTP_USER: !!process.env.SMTP_USER,
+            SMTP_PASS: !!process.env.SMTP_PASS ? 'Configurado' : 'Faltante',
+            SMTP_PORT: process.env.SMTP_PORT
+          }
+        });
+      }
+
+      const mailOptions = {
+        from: process.env.SMTP_FROM || '"ScoutAI Diagnostico" <noreply@scoutai.com>',
+        to: email,
+        subject: 'Prueba de Conexión SMTP - ScoutAI',
+        text: 'Si estás leyendo esto, la comunicación entre el servidor de Render y Gmail funciona correctamente.'
+      };
+
+      await transporter.sendMail(mailOptions);
+      res.json({ success: true, message: `Correo de prueba enviado con éxito a: ${email}` });
+    } catch (err) {
+      console.error('SMTP test failure:', err);
+      res.status(500).json({ 
+        error: 'Error de conexión SMTP', 
+        message: err.message, 
+        code: err.code, 
+        command: err.command,
+        stack: err.stack 
+      });
+    }
+  });
+
+  router.get('/me', authenticate, async (req, res) =>>,StartLine:433,TargetContent: {
     try {
       const user = await User.findByPk(req.user.id);
       if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
