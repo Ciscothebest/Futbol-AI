@@ -40,6 +40,24 @@ document.addEventListener('DOMContentLoaded', () => {
   // Validation
   const isAlphanumeric = (str) => /^[a-zA-Z0-9]+$/.test(str);
 
+  // Show Premium Server Error Modal (500)
+  const showErrorModal = (message) => {
+    const modal = document.getElementById('server-error-modal');
+    const msgEl = document.getElementById('server-error-msg');
+    if (modal && msgEl) {
+      msgEl.textContent = message || 'Fallo de conexión en el backend.';
+      modal.style.display = 'flex';
+      
+      // Cerrar modales que pudieran estar abiertos para no empalmar
+      const loginModal = document.getElementById('login-modal');
+      const registerModal = document.getElementById('register-modal');
+      const otpModal = document.getElementById('otp-modal');
+      if (loginModal) loginModal.style.display = 'none';
+      if (registerModal) registerModal.style.display = 'none';
+      if (otpModal) otpModal.style.display = 'none';
+    }
+  };
+
   // Handle Auth
   const API_BASE = (() => {
     if (window.location.protocol === 'file:') {
@@ -163,6 +181,9 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
       console.error('Login error detail:', err);
       errorEl.textContent = `Error: ${err.message}`;
+      if (err.message.includes('500') || err.message.includes('502') || err.message.includes('504') || err.message.includes('sin formato JSON')) {
+        showErrorModal(err.message);
+      }
     } finally {
       spinner.style.display = 'none';
       btnText.style.display = 'inline-block';
@@ -436,6 +457,9 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
       console.error('Register error detail:', err);
       errorEl.textContent = `Error: ${err.message}`;
+      if (err.message.includes('500') || err.message.includes('502') || err.message.includes('504') || err.message.includes('sin formato JSON')) {
+        showErrorModal(err.message);
+      }
     } finally {
       spinner.style.display = 'none';
       btnText.style.display = 'inline-block';
@@ -490,6 +514,9 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
       console.error('OTP verification error:', err);
       errorEl.textContent = err.message;
+      if (err.message.includes('500') || err.message.includes('502') || err.message.includes('504') || err.message.includes('sin formato JSON')) {
+        showErrorModal(err.message);
+      }
     } finally {
       spinner.style.display = 'none';
       btnText.style.display = 'inline-block';
@@ -558,6 +585,9 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
       console.error('Resend OTP error:', err);
       errorEl.textContent = err.message;
+      if (err.message.includes('500') || err.message.includes('502') || err.message.includes('504') || err.message.includes('sin formato JSON')) {
+        showErrorModal(err.message);
+      }
       
       if (resendTimer) clearInterval(resendTimer);
       resendCooldown = false;

@@ -315,6 +315,37 @@
     </div>
   </div>
 
-  <script src="landing.js?v=5"></script>
+  <!-- Modal Error 500 / Fallo de Servidor -->
+  <div class="auth-overlay" id="server-error-modal" style="display:none; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 1100;">
+    <div class="auth-modal" style="text-align: center; padding: 40px 30px; background: #0d1117; border: 1.5px solid rgba(255, 74, 74, 0.35); border-radius: 16px; max-width: 440px; width: 90%; box-shadow: 0 0 35px rgba(255, 74, 74, 0.15); position: relative;">
+      <button class="auth-close" onclick="document.getElementById('server-error-modal').style.display='none'" style="position: absolute; right: 15px; top: 15px; background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; opacity: 0.7;">&times;</button>
+      
+      <!-- Warning Icon -->
+      <div style="display: inline-flex; align-items: center; justify-content: center; width: 60px; height: 60px; background: rgba(255, 74, 74, 0.1); border: 1px solid rgba(255, 74, 74, 0.3); border-radius: 50%; margin-bottom: 20px;">
+        <span style="font-size: 28px; color: #ff4a4a;">⚠️</span>
+      </div>
+
+      <div class="auth-modal-header" style="margin-bottom: 15px;">
+        <h2 style="color: #fff; font-size: 1.4rem; font-weight: 800; margin-bottom: 10px; letter-spacing: 0.5px; text-transform: uppercase; background: linear-gradient(135deg, #ff4a4a, #ff8a00); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Error de Infraestructura 500</h2>
+        <p style="color: #94a3b8; font-size: 0.9rem; line-height: 1.6; margin-bottom: 15px;">
+          El servidor de Render no pudo procesar tu solicitud. Esto ocurre habitualmente cuando las variables de envío de correo SMTP no están configuradas en el panel de Render.
+        </p>
+      </div>
+
+      <!-- Technical details box -->
+      <div style="background: rgba(255, 74, 74, 0.05); border: 1px solid rgba(255, 74, 74, 0.15); border-radius: 8px; padding: 12px 16px; margin-bottom: 24px; text-align: left;">
+        <div style="font-size: 0.7rem; font-weight: 700; color: rgba(255, 74, 74, 0.8); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Detalle del Servidor:</div>
+        <code id="server-error-msg" style="font-size: 0.8rem; color: #ff6b6b; word-break: break-all; font-family: monospace;">Fallo de conexión en el backend.</code>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+        <button class="auth-submit" onclick="document.getElementById('server-error-modal').style.display='none';" style="background: #ff4a4a; border: none; color: #fff; padding: 14px; border-radius: 8px; font-weight: 800; cursor: pointer; width: 100%; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 5px 20px rgba(255, 74, 74, 0.3); transition: all 0.2s;" onmouseover="this.style.background='#ff6b6b'" onmouseout="this.style.background='#ff4a4a'">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="landing.js?v=6"></script>
 </body>
 </html>
