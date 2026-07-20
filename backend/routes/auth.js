@@ -33,6 +33,7 @@ module.exports = ({ User, JWT_SECRET }) => {
         tls: {
           rejectUnauthorized: false // Evita fallos de TLS / certificados autofirmados en hostings en la nube
         },
+        family: 4, // Fuerza el uso de IPv4 (evita errores ENETUNREACH de IPv6 en hostings como Render)
         connectionTimeout: 8000, // 8 segundos de timeout para conectar
         greetingTimeout: 5000,   // 5 segundos de espera para el saludo SMTP
         socketTimeout: 10000     // 10 segundos de inactividad de socket
