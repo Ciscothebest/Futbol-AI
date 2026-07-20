@@ -21,24 +21,46 @@ module.exports = ({ User, JWT_SECRET }) => {
   });
 
   ExpiredRegistration.sync().catch(err => console.error('Error syncing ExpiredRegistration:', err));
-  const transporter = process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS
-    ? nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: parseInt(process.env.SMTP_PORT || '587'),
-        secure: process.env.SMTP_SECURE === 'true',
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS
-        },
-        tls: {
-          rejectUnauthorized: false // Evita fallos de TLS / certificados autofirmados en hostings en la nube
-        },
-        family: 4, // Fuerza el uso de IPv4 (evita errores ENETUNREACH de IPv6 en hostings como Render)
-        connectionTimeout: 8000, // 8 segundos de timeout para conectar
-        greetingTimeout: 5000,   // 5 segundos de espera para el saludo SMTP
-        socketTimeout: 10000     // 10 segundos de inactividad de socket
-      })
-    : null;
+  const dns = require('dns');
+  const getTransporter = async () => {
+    if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
+      return null;
+    }
+
+    // Resolver host a IPv4 de forma dinámica para eludir bugs de IPv6/ENETUNREACH en Render
+    let resolvedHost = process.env.SMTP_HOST;
+    try {
+      resolvedHost = await new Promise((resolve) => {
+        dns.lookup(process.env.SMTP_HOST, { family: 4 }, (err, address) => {
+          if (err) {
+            console.error(`❌ [DNS] Error resolviendo host ${process.env.SMTP_HOST} a IPv4:`, err.message);
+            resolve(process.env.SMTP_HOST);
+          } else {
+            console.log(`✅ [DNS] Host ${process.env.SMTP_HOST} resuelto a IPv4: ${address}`);
+            resolve(address);
+          }
+        });
+      });
+    } catch (dnsErr) {
+      console.error('❌ [DNS] Excepción durante la resolución:', dnsErr.message);
+    }
+
+    return nodemailer.createTransport({
+      host: resolvedHost,
+      port: parseInt(process.env.SMTP_PORT || '587'),
+      secure: process.env.SMTP_SECURE === 'true',
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS
+      },
+      tls: {
+        rejectUnauthorized: false // Evita fallos de TLS / certificados autofirmados en hostings en la nube
+      },
+      connectionTimeout: 8000, // 8 segundos de timeout para conectar
+      greetingTimeout: 5000,   // 5 segundos de espera para el saludo SMTP
+      socketTimeout: 10000     // 10 segundos de inactividad de socket
+    });
+  };
 
   const sendOTPEmail = async (email, otp) => {
     const mailOptions = {
@@ -86,6 +108,7 @@ module.exports = ({ User, JWT_SECRET }) => {
       `
     };
 
+    const transporter = await getTransporter();
     if (transporter) {
       try {
         await transporter.sendMail(mailOptions);
@@ -450,6 +473,7 @@ module.exports = ({ User, JWT_SECRET }) => {
       const { email } = req.body;
       if (!email) return res.status(400).json({ error: 'Email requerido' });
 
+      const transporter = await getTransporter();
       if (!transporter) {
         return res.status(400).json({ 
           error: 'El transporter SMTP no está configurado en las variables de entorno de Render.',
