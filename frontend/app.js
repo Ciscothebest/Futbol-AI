@@ -2470,8 +2470,8 @@ function renderDashboardPerformanceChart(teamColor) {
 
   const ctx2d = ctx.getContext('2d');
   const gradient = ctx2d.createLinearGradient(0, 0, 0, 120);
-  gradient.addColorStop(0, `${teamColor}55`);
-  gradient.addColorStop(1, `${teamColor}00`);
+  gradient.addColorStop(0, `${teamColor}`);
+  gradient.addColorStop(1, `${teamColor}`);
 
   const resultLabel = isEs
     ? { 'V': 'Victoria', 'W': 'Victoria', 'E': 'Empate', 'D': 'Derrota', 'L': 'Derrota' }
