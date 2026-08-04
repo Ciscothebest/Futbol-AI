@@ -1,0 +1,2351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FutbolAI — Diagrama Entidad-Relación (ERD)</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0f172a;
+      color: #f8fafc;
+      min-height: 100vh;
+    }
+
+    /* ─── TOP NAV ─── */
+    .topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 64px;
+      background: rgba(15,23,42,0.97);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #1e293b;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      z-index: 1000;
+      gap: 20px;
+    }
+
+    .topbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .brand-icon {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, #2563eb, #0d9488);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    .brand-text h1 { font-size: 16px; font-weight: 800; color: #fff; letter-spacing: 0.3px; }
+    .brand-text p  { font-size: 11px; color: #64748b; margin-top: 1px; }
+
+    .topbar-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ctrl-btn {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #94a3b8;
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .ctrl-btn:hover { background: #334155; color: #fff; border-color: #475569; }
+    .ctrl-btn.primary { background: #2563eb; border-color: #2563eb; color: #fff; }
+    .ctrl-btn.primary:hover { background: #1d4ed8; }
+
+    .zoom-label { font-size: 13px; font-weight: 700; color: #60a5fa; min-width: 44px; text-align: center; }
+
+    .stats-bar {
+      display: flex;
+      gap: 20px;
+    }
+    .stat { text-align: center; }
+    .stat-val { font-size: 18px; font-weight: 800; color: #60a5fa; line-height: 1; }
+    .stat-lbl { font-size: 10px; color: #64748b; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* ─── CANVAS AREA ─── */
+    .canvas-container {
+      margin-top: 64px;
+      overflow: auto;
+      width: 100vw;
+      height: calc(100vh - 64px);
+      cursor: grab;
+      background-image:
+        radial-gradient(circle, #1e293b 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+    .canvas-container:active { cursor: grabbing; }
+
+    #erd-wrapper {
+      transform-origin: 0 0;
+      display: inline-block;
+      padding: 40px;
+    }
+
+    /* ─── LEGEND PANEL ─── */
+    .legend-panel {
+      position: fixed;
+      bottom: 24px; right: 24px;
+      background: rgba(15,23,42,0.97);
+      backdrop-filter: blur(12px);
+      border: 1px solid #334155;
+      border-radius: 14px;
+      padding: 0;
+      width: 400px;
+      z-index: 999;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+      transition: box-shadow 0.2s;
+    }
+    .legend-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      cursor: pointer;
+      user-select: none;
+      border-radius: 14px;
+      transition: background 0.15s;
+    }
+    .legend-header:hover { background: rgba(255,255,255,0.04); }
+    .legend-header h3 {
+      font-size: 12px; font-weight: 700; color: #94a3b8;
+      text-transform: uppercase; letter-spacing: 0.8px;
+      margin: 0; border: none; padding: 0;
+    }
+    .legend-chevron {
+      font-size: 14px;
+      color: #60a5fa;
+      transition: transform 0.25s ease;
+      line-height: 1;
+    }
+    .legend-panel.collapsed .legend-chevron { transform: rotate(-180deg); }
+    .legend-body {
+      padding: 0 18px 16px;
+      max-height: 60vh;
+      overflow-y: auto;
+      border-top: 1px solid #1e293b;
+      /* Smooth open/close */
+      display: grid;
+      grid-template-rows: 1fr;
+      transition: grid-template-rows 0.28s ease, opacity 0.28s ease;
+      opacity: 1;
+    }
+    .legend-panel.collapsed .legend-body {
+      grid-template-rows: 0fr;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .legend-body-inner { overflow: hidden; padding-top: 14px; }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      padding: 5px 0;
+      border-bottom: 1px solid #1e293b;
+    }
+    .legend-item:last-child { border-bottom: none; }
+    .legend-badges {
+      display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap;
+    }
+    .lbadge {
+      padding: 3px 10px; border-radius: 5px; font-size: 11px; font-weight: 700;
+    }
+    .lb-pk  { background: #fef3c7; color: #b45309; }
+    .lb-fk  { background: #e0e7ff; color: #3730a3; }
+    .lb-null { background: #1e293b; color: #94a3b8; }
+    .lb-nn  { background: #450a0a; color: #ef4444; border: 1px solid #7f1d1d; }
+  </style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-brand">
+    <div class="brand-icon">⚽</div>
+    <div class="brand-text">
+      <h1>FUTBOL AI — DIAGRAMA ENTIDAD-RELACIÓN MASTER</h1>
+      <p>Microsoft SQL Server · Base de datos: FutbolAI · Generado el 27 de julio de 2026</p>
+    </div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-val">15</div><div class="stat-lbl">Tablas</div></div>
+    <div class="stat"><div class="stat-val">186</div><div class="stat-lbl">Campos</div></div>
+    <div class="stat"><div class="stat-val">12</div><div class="stat-lbl">Relaciones FK</div></div>
+  </div>
+
+  <div class="topbar-controls">
+    <button class="ctrl-btn" id="btn-zoom-out">− Alejar</button>
+    <span class="zoom-label" id="zoom-label">100%</span>
+    <button class="ctrl-btn" id="btn-zoom-in">+ Acercar</button>
+    <button class="ctrl-btn primary" id="btn-fit">⊞ Ajustar</button>
+    <button class="ctrl-btn" id="btn-reset">↺ Reset</button>
+  </div>
+</div>
+
+<!-- CANVAS AREA -->
+<div class="canvas-container" id="canvas">
+  <div id="erd-wrapper">
+    <svg id="erd-svg" width="3260" height="2162" xmlns="http://www.w3.org/2000/svg"
+         font-family="'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+
+      <!-- Connection Lines (drawn first so they appear below table boxes) -->
+      
+      <path d="M 540 479 C 678 479, 678 117, 900 117" stroke="#2563eb" stroke-width="2.5" fill="none" 
+            stroke-dasharray="8,4" opacity="0.9"
+            marker-end="url(#arrow-0)"/>
+      <defs>
+        <marker id="arrow-0" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="#2563eb" />
+        </marker>
+      </defs>
+      <!-- Origin dot -->
+      <circle cx="540" cy="479" r="5" fill="#2563eb" />
+    
+      <path d="M 540 703 C 692 703, 692 117, 900 117" stroke="#0891b2" stroke-width="2.5" fill="none" 
+            stroke-dasharray="8,4" opacity="0.9"
+            marker-end="url(#arrow-1)"/>
+      <defs>
+        <marker id="arrow-1" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="#0891b2" />
+        </marker>
+      </defs>
+      <!-- Origin dot -->
+      <circle cx="540" cy="703" r="5" fill="#0891b2" />
+    
+      <path d="M 540 729 C 706 729, 706 117, 900 117" stroke="#06b6d4" stroke-width="2.5" fill="none" 
+            stroke-dasharray="8,4" opacity="0.9"
+            marker-end="url(#arrow-2)"/>
+      <defs>
+        <marker id="arrow-2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="#06b6d4" />
+        </marker>
+      </defs>
+      <!-- Origin dot -->
+      <circle cx="540" cy="729" r="5" fill="#06b6d4" />
+    
+      <path d="M 540 1003 C 720 1003, 720 117, 900 117" stroke="#7c3aed" stroke-width="2.5" fill="none" 
+            stroke-dasharray="8,4" opacity="0.9"
+            marker-end="url(#arrow-3)"/>
+      <defs>
+        <marker id="arrow-3" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="#7c3aed" />
+        </marker>
+      </defs>
+      <!-- Origin dot -->
+      <circle cx="540" cy="1003" r="5" fill="#7c3aed" />
+    
+      <path d="M 540 1029 C 734 1029, 734 117, 900 117" stroke="#a855f7" stroke-width="2.5" fill="none" 
+            stroke-dasharray="8,4" opacity="0.9"
+            marker-end="url(#arrow-4)"/>
+      <defs>
+        <marker id="arrow-4" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="#a855f7" />
+        </marker>
+      </defs>
+      <!-- Origin dot -->
+      <circle cx="540" cy="1029" r="5" fill="#a855f7" />
+    
+      <path d="M 540 1371 C 748 1371, 748 117, 900 117" stroke="#e11d48" stroke-width="2.5" fill="none" 
+            stroke-dasharray="8,4" opacity="0.9"
+            marker-end="url(#arrow-5)"/>
+      <defs>
+        <marker id="arrow-5" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="#e11d48" />
+        </marker>
+      </defs>
+      <!-- Origin dot -->
+      <circle cx="540" cy="1371" r="5" fill="#e11d48" />
+    
+      <path d="M 540 1667 C 678 1667, 678 117, 900 117" stroke="#f43f5e" stroke-width="2.5" fill="none" 
+            stroke-dasharray="8,4" opacity="0.9"
+            marker-end="url(#arrow-6)"/>
+      <defs>
+        <marker id="arrow-6" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="#f43f5e" />
+        </marker>
+      </defs>
+      <!-- Origin dot -->
+      <circle cx="540" cy="1667" r="5" fill="#f43f5e" />
+    
+      <path d="M 540 1927 C 692 1927, 692 117, 900 117" stroke="#fb7185" stroke-width="2.5" fill="none" 
+            stroke-dasharray="8,4" opacity="0.9"
+            marker-end="url(#arrow-7)"/>
+      <defs>
+        <marker id="arrow-7" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="#fb7185" />
+        </marker>
+      </defs>
+      <!-- Origin dot -->
+      <circle cx="540" cy="1927" r="5" fill="#fb7185" />
+    
+      <path d="M 1800 897 C 1260 897, 1260 117, 1380 117" stroke="#10b981" stroke-width="2.5" fill="none" 
+            stroke-dasharray="8,4" opacity="0.9"
+            marker-end="url(#arrow-8)"/>
+      <defs>
+        <marker id="arrow-8" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="#10b981" />
+        </marker>
+      </defs>
+      <!-- Origin dot -->
+      <circle cx="1800" cy="897" r="5" fill="#10b981" />
+    
+      <path d="M 1800 1183 C 1240 1183, 1240 117, 1380 117" stroke="#f59e0b" stroke-width="2.5" fill="none" 
+            stroke-dasharray="8,4" opacity="0.9"
+            marker-end="url(#arrow-9)"/>
+      <defs>
+        <marker id="arrow-9" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="#f59e0b" />
+        </marker>
+      </defs>
+      <!-- Origin dot -->
+      <circle cx="1800" cy="1183" r="5" fill="#f59e0b" />
+    
+      <path d="M 1800 1777 C 1320 1777, 1320 117, 1380 117" stroke="#f97316" stroke-width="2.5" fill="none" 
+            stroke-dasharray="8,4" opacity="0.9"
+            marker-end="url(#arrow-10)"/>
+      <defs>
+        <marker id="arrow-10" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="#f97316" />
+        </marker>
+      </defs>
+      <!-- Origin dot -->
+      <circle cx="1800" cy="1777" r="5" fill="#f97316" />
+    
+      <path d="M 2700 143 C 1300 143, 1300 117, 1380 117" stroke="#22c55e" stroke-width="2.5" fill="none" 
+            stroke-dasharray="8,4" opacity="0.9"
+            marker-end="url(#arrow-11)"/>
+      <defs>
+        <marker id="arrow-11" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="#22c55e" />
+        </marker>
+      </defs>
+      <!-- Origin dot -->
+      <circle cx="2700" cy="143" r="5" fill="#22c55e" />
+    
+
+      <!-- Table Boxes -->
+      
+    <g transform="translate(60, 60)">
+      <!-- Shadow -->
+      <rect x="4" y="4" width="480" height="104" rx="8" fill="rgba(0,0,0,0.15)"/>
+      <!-- Body -->
+      <rect x="0" y="0" width="480" height="104" rx="8" fill="white" stroke="#2563eb" stroke-width="2"/>
+      <!-- Header -->
+      <rect x="0" y="0" width="480" height="44" rx="8" fill="#1e3a8a"/>
+      <rect x="0" y="36" width="480" height="8" fill="#1e3a8a"/>
+      <!-- Table Name -->
+      <text x="14" y="20" font-size="14" font-weight="800" fill="white" font-family="'Segoe UI',Roboto,Helvetica,sans-serif">EXPIRED_REGISTRATIONS</text>
+      <!-- Column count badge -->
+      <rect x="380" y="8" width="88" height="20" rx="10" fill="rgba(255,255,255,0.2)"/>
+      <text x="424" y="22" font-size="10" fill="white" text-anchor="middle">2 campos · 0 FK</text>
+      <!-- Rows -->
+      
+      <rect x="0" y="44" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="44" x2="480" y2="44" stroke="#e2e8f0" stroke-width="0.5"/>
+      <rect x="8" y="48" width="30" height="16" rx="3" fill="#fef3c7"/>
+        <text x="23" y="60" font-size="9" font-weight="700" fill="#b45309" text-anchor="middle">PK</text>
+      <text x="44" y="61" font-size="12" font-weight="bold" fill="#b45309" font-family="'Consolas','Courier New',monospace">username</text>
+      
+      <text x="472" y="61" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="67" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="70" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="70" x2="480" y2="70" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="87" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">expiredAt</text>
+      
+      <text x="472" y="87" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">datetimeoffset</text>
+      <text x="472" y="93" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <!-- Bottom border -->
+      <rect x="0" y="103" width="480" height="1" fill="#2563eb"/>
+    </g>
+  
+    <g transform="translate(60, 240)">
+      <!-- Shadow -->
+      <rect x="4" y="4" width="480" height="260" rx="8" fill="rgba(0,0,0,0.15)"/>
+      <!-- Body -->
+      <rect x="0" y="0" width="480" height="260" rx="8" fill="white" stroke="#2563eb" stroke-width="2"/>
+      <!-- Header -->
+      <rect x="0" y="0" width="480" height="44" rx="8" fill="#1e3a8a"/>
+      <rect x="0" y="36" width="480" height="8" fill="#1e3a8a"/>
+      <!-- Table Name -->
+      <text x="14" y="20" font-size="14" font-weight="800" fill="white" font-family="'Segoe UI',Roboto,Helvetica,sans-serif">PASSKEYS</text>
+      <!-- Column count badge -->
+      <rect x="380" y="8" width="88" height="20" rx="10" fill="rgba(255,255,255,0.2)"/>
+      <text x="424" y="22" font-size="10" fill="white" text-anchor="middle">8 campos · 1 FK</text>
+      <!-- Rows -->
+      
+      <rect x="0" y="44" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="44" x2="480" y2="44" stroke="#e2e8f0" stroke-width="0.5"/>
+      <rect x="8" y="48" width="30" height="16" rx="3" fill="#fef3c7"/>
+        <text x="23" y="60" font-size="9" font-weight="700" fill="#b45309" text-anchor="middle">PK</text>
+      <text x="44" y="61" font-size="12" font-weight="bold" fill="#b45309" font-family="'Consolas','Courier New',monospace">id</text>
+      
+      <text x="472" y="61" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">char(36)</text>
+      <text x="472" y="67" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="70" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="70" x2="480" y2="70" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="87" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">credentialId</text>
+      
+      <text x="472" y="87" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(512)</text>
+      <text x="472" y="93" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="96" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="96" x2="480" y2="96" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="113" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">publicKey</text>
+      
+      <text x="472" y="113" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(MAX)</text>
+      <text x="472" y="119" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="122" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="122" x2="480" y2="122" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="139" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">counter</text>
+      
+      <text x="472" y="139" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">bigint</text>
+      <text x="472" y="145" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="148" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="148" x2="480" y2="148" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="165" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">transports</text>
+      
+      <text x="472" y="165" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="171" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="174" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="174" x2="480" y2="174" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="191" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">createdAt</text>
+      
+      <text x="472" y="191" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">datetimeoffset</text>
+      <text x="472" y="197" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="200" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="200" x2="480" y2="200" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="217" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">updatedAt</text>
+      
+      <text x="472" y="217" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">datetimeoffset</text>
+      <text x="472" y="223" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="226" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="226" x2="480" y2="226" stroke="#e2e8f0" stroke-width="0.5"/>
+      <rect x="8" y="230" width="30" height="16" rx="3" fill="#e0e7ff"/>
+        <text x="23" y="242" font-size="9" font-weight="700" fill="#3730a3" text-anchor="middle">FK</text>
+      <text x="44" y="243" font-size="12" font-weight="bold" fill="#3730a3" font-family="'Consolas','Courier New',monospace">userId</text>
+      <text x="204" y="243" font-size="10" fill="#60a5fa" font-style="italic">→ users.id</text>
+      <text x="472" y="243" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">char(36)</text>
+      <text x="472" y="249" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <!-- Bottom border -->
+      <rect x="0" y="259" width="480" height="1" fill="#2563eb"/>
+    </g>
+  
+    <g transform="translate(60, 620)">
+      <!-- Shadow -->
+      <rect x="4" y="4" width="480" height="234" rx="8" fill="rgba(0,0,0,0.15)"/>
+      <!-- Body -->
+      <rect x="0" y="0" width="480" height="234" rx="8" fill="white" stroke="#0891b2" stroke-width="2"/>
+      <!-- Header -->
+      <rect x="0" y="0" width="480" height="44" rx="8" fill="#0369a1"/>
+      <rect x="0" y="36" width="480" height="8" fill="#0369a1"/>
+      <!-- Table Name -->
+      <text x="14" y="20" font-size="14" font-weight="800" fill="white" font-family="'Segoe UI',Roboto,Helvetica,sans-serif">DIRECT_MESSAGES</text>
+      <!-- Column count badge -->
+      <rect x="380" y="8" width="88" height="20" rx="10" fill="rgba(255,255,255,0.2)"/>
+      <text x="424" y="22" font-size="10" fill="white" text-anchor="middle">7 campos · 2 FK</text>
+      <!-- Rows -->
+      
+      <rect x="0" y="44" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="44" x2="480" y2="44" stroke="#e2e8f0" stroke-width="0.5"/>
+      <rect x="8" y="48" width="30" height="16" rx="3" fill="#fef3c7"/>
+        <text x="23" y="60" font-size="9" font-weight="700" fill="#b45309" text-anchor="middle">PK</text>
+      <text x="44" y="61" font-size="12" font-weight="bold" fill="#b45309" font-family="'Consolas','Courier New',monospace">id</text>
+      
+      <text x="472" y="61" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">char(36)</text>
+      <text x="472" y="67" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="70" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="70" x2="480" y2="70" stroke="#e2e8f0" stroke-width="0.5"/>
+      <rect x="8" y="74" width="30" height="16" rx="3" fill="#e0e7ff"/>
+        <text x="23" y="86" font-size="9" font-weight="700" fill="#3730a3" text-anchor="middle">FK</text>
+      <text x="44" y="87" font-size="12" font-weight="bold" fill="#3730a3" font-family="'Consolas','Courier New',monospace">senderId</text>
+      <text x="204" y="87" font-size="10" fill="#60a5fa" font-style="italic">→ users.id</text>
+      <text x="472" y="87" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">char(36)</text>
+      <text x="472" y="93" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="96" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="96" x2="480" y2="96" stroke="#e2e8f0" stroke-width="0.5"/>
+      <rect x="8" y="100" width="30" height="16" rx="3" fill="#e0e7ff"/>
+        <text x="23" y="112" font-size="9" font-weight="700" fill="#3730a3" text-anchor="middle">FK</text>
+      <text x="44" y="113" font-size="12" font-weight="bold" fill="#3730a3" font-family="'Consolas','Courier New',monospace">receiverId</text>
+      <text x="204" y="113" font-size="10" fill="#60a5fa" font-style="italic">→ users.id</text>
+      <text x="472" y="113" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">char(36)</text>
+      <text x="472" y="119" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="122" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="122" x2="480" y2="122" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="139" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">content</text>
+      
+      <text x="472" y="139" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(MAX)</text>
+      <text x="472" y="145" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="148" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="148" x2="480" y2="148" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="165" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">isRead</text>
+      
+      <text x="472" y="165" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">bit</text>
+      <text x="472" y="171" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="174" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="174" x2="480" y2="174" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="191" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">createdAt</text>
+      
+      <text x="472" y="191" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">datetimeoffset</text>
+      <text x="472" y="197" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="200" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="200" x2="480" y2="200" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="217" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">updatedAt</text>
+      
+      <text x="472" y="217" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">datetimeoffset</text>
+      <text x="472" y="223" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <!-- Bottom border -->
+      <rect x="0" y="233" width="480" height="1" fill="#0891b2"/>
+    </g>
+  
+    <g transform="translate(60, 920)">
+      <!-- Shadow -->
+      <rect x="4" y="4" width="480" height="208" rx="8" fill="rgba(0,0,0,0.15)"/>
+      <!-- Body -->
+      <rect x="0" y="0" width="480" height="208" rx="8" fill="white" stroke="#0891b2" stroke-width="2"/>
+      <!-- Header -->
+      <rect x="0" y="0" width="480" height="44" rx="8" fill="#0369a1"/>
+      <rect x="0" y="36" width="480" height="8" fill="#0369a1"/>
+      <!-- Table Name -->
+      <text x="14" y="20" font-size="14" font-weight="800" fill="white" font-family="'Segoe UI',Roboto,Helvetica,sans-serif">USER_CONTACTS</text>
+      <!-- Column count badge -->
+      <rect x="380" y="8" width="88" height="20" rx="10" fill="rgba(255,255,255,0.2)"/>
+      <text x="424" y="22" font-size="10" fill="white" text-anchor="middle">6 campos · 2 FK</text>
+      <!-- Rows -->
+      
+      <rect x="0" y="44" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="44" x2="480" y2="44" stroke="#e2e8f0" stroke-width="0.5"/>
+      <rect x="8" y="48" width="30" height="16" rx="3" fill="#fef3c7"/>
+        <text x="23" y="60" font-size="9" font-weight="700" fill="#b45309" text-anchor="middle">PK</text>
+      <text x="44" y="61" font-size="12" font-weight="bold" fill="#b45309" font-family="'Consolas','Courier New',monospace">id</text>
+      
+      <text x="472" y="61" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">char(36)</text>
+      <text x="472" y="67" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="70" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="70" x2="480" y2="70" stroke="#e2e8f0" stroke-width="0.5"/>
+      <rect x="8" y="74" width="30" height="16" rx="3" fill="#e0e7ff"/>
+        <text x="23" y="86" font-size="9" font-weight="700" fill="#3730a3" text-anchor="middle">FK</text>
+      <text x="44" y="87" font-size="12" font-weight="bold" fill="#3730a3" font-family="'Consolas','Courier New',monospace">userId</text>
+      <text x="204" y="87" font-size="10" fill="#60a5fa" font-style="italic">→ users.id</text>
+      <text x="472" y="87" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">char(36)</text>
+      <text x="472" y="93" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="96" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="96" x2="480" y2="96" stroke="#e2e8f0" stroke-width="0.5"/>
+      <rect x="8" y="100" width="30" height="16" rx="3" fill="#e0e7ff"/>
+        <text x="23" y="112" font-size="9" font-weight="700" fill="#3730a3" text-anchor="middle">FK</text>
+      <text x="44" y="113" font-size="12" font-weight="bold" fill="#3730a3" font-family="'Consolas','Courier New',monospace">contactUserId</text>
+      <text x="204" y="113" font-size="10" fill="#60a5fa" font-style="italic">→ users.id</text>
+      <text x="472" y="113" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">char(36)</text>
+      <text x="472" y="119" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="122" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="122" x2="480" y2="122" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="139" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">nickname</text>
+      
+      <text x="472" y="139" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(100)</text>
+      <text x="472" y="145" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="148" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="148" x2="480" y2="148" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="165" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">createdAt</text>
+      
+      <text x="472" y="165" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">datetimeoffset</text>
+      <text x="472" y="171" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="174" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="174" x2="480" y2="174" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="191" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">updatedAt</text>
+      
+      <text x="472" y="191" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">datetimeoffset</text>
+      <text x="472" y="197" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <!-- Bottom border -->
+      <rect x="0" y="207" width="480" height="1" fill="#0891b2"/>
+    </g>
+  
+    <g transform="translate(60, 1210)">
+      <!-- Shadow -->
+      <rect x="4" y="4" width="480" height="182" rx="8" fill="rgba(0,0,0,0.15)"/>
+      <!-- Body -->
+      <rect x="0" y="0" width="480" height="182" rx="8" fill="white" stroke="#e11d48" stroke-width="2"/>
+      <!-- Header -->
+      <rect x="0" y="0" width="480" height="44" rx="8" fill="#9f1239"/>
+      <rect x="0" y="36" width="480" height="8" fill="#9f1239"/>
+      <!-- Table Name -->
+      <text x="14" y="20" font-size="14" font-weight="800" fill="white" font-family="'Segoe UI',Roboto,Helvetica,sans-serif">QUERY_LOGS</text>
+      <!-- Column count badge -->
+      <rect x="380" y="8" width="88" height="20" rx="10" fill="rgba(255,255,255,0.2)"/>
+      <text x="424" y="22" font-size="10" fill="white" text-anchor="middle">5 campos · 1 FK</text>
+      <!-- Rows -->
+      
+      <rect x="0" y="44" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="44" x2="480" y2="44" stroke="#e2e8f0" stroke-width="0.5"/>
+      <rect x="8" y="48" width="30" height="16" rx="3" fill="#fef3c7"/>
+        <text x="23" y="60" font-size="9" font-weight="700" fill="#b45309" text-anchor="middle">PK</text>
+      <text x="44" y="61" font-size="12" font-weight="bold" fill="#b45309" font-family="'Consolas','Courier New',monospace">id</text>
+      
+      <text x="472" y="61" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">int</text>
+      <text x="472" y="67" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="70" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="70" x2="480" y2="70" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="87" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">message</text>
+      
+      <text x="472" y="87" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(MAX)</text>
+      <text x="472" y="93" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="96" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="96" x2="480" y2="96" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="113" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">createdAt</text>
+      
+      <text x="472" y="113" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">datetimeoffset</text>
+      <text x="472" y="119" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="122" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="122" x2="480" y2="122" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="139" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">updatedAt</text>
+      
+      <text x="472" y="139" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">datetimeoffset</text>
+      <text x="472" y="145" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="148" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="148" x2="480" y2="148" stroke="#e2e8f0" stroke-width="0.5"/>
+      <rect x="8" y="152" width="30" height="16" rx="3" fill="#e0e7ff"/>
+        <text x="23" y="164" font-size="9" font-weight="700" fill="#3730a3" text-anchor="middle">FK</text>
+      <text x="44" y="165" font-size="12" font-weight="bold" fill="#3730a3" font-family="'Consolas','Courier New',monospace">userId</text>
+      <text x="204" y="165" font-size="10" fill="#60a5fa" font-style="italic">→ users.id</text>
+      <text x="472" y="165" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">char(36)</text>
+      <text x="472" y="171" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <!-- Bottom border -->
+      <rect x="0" y="181" width="480" height="1" fill="#e11d48"/>
+    </g>
+  
+    <g transform="translate(60, 1480)">
+      <!-- Shadow -->
+      <rect x="4" y="4" width="480" height="208" rx="8" fill="rgba(0,0,0,0.15)"/>
+      <!-- Body -->
+      <rect x="0" y="0" width="480" height="208" rx="8" fill="white" stroke="#e11d48" stroke-width="2"/>
+      <!-- Header -->
+      <rect x="0" y="0" width="480" height="44" rx="8" fill="#9f1239"/>
+      <rect x="0" y="36" width="480" height="8" fill="#9f1239"/>
+      <!-- Table Name -->
+      <text x="14" y="20" font-size="14" font-weight="800" fill="white" font-family="'Segoe UI',Roboto,Helvetica,sans-serif">COMPARISON_LOGS</text>
+      <!-- Column count badge -->
+      <rect x="380" y="8" width="88" height="20" rx="10" fill="rgba(255,255,255,0.2)"/>
+      <text x="424" y="22" font-size="10" fill="white" text-anchor="middle">6 campos · 1 FK</text>
+      <!-- Rows -->
+      
+      <rect x="0" y="44" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="44" x2="480" y2="44" stroke="#e2e8f0" stroke-width="0.5"/>
+      <rect x="8" y="48" width="30" height="16" rx="3" fill="#fef3c7"/>
+        <text x="23" y="60" font-size="9" font-weight="700" fill="#b45309" text-anchor="middle">PK</text>
+      <text x="44" y="61" font-size="12" font-weight="bold" fill="#b45309" font-family="'Consolas','Courier New',monospace">id</text>
+      
+      <text x="472" y="61" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">int</text>
+      <text x="472" y="67" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="70" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="70" x2="480" y2="70" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="87" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">player1Id</text>
+      
+      <text x="472" y="87" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="93" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="96" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="96" x2="480" y2="96" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="113" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">player2Id</text>
+      
+      <text x="472" y="113" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="119" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="122" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="122" x2="480" y2="122" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="139" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">createdAt</text>
+      
+      <text x="472" y="139" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">datetimeoffset</text>
+      <text x="472" y="145" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="148" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="148" x2="480" y2="148" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="165" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">updatedAt</text>
+      
+      <text x="472" y="165" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">datetimeoffset</text>
+      <text x="472" y="171" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="174" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="174" x2="480" y2="174" stroke="#e2e8f0" stroke-width="0.5"/>
+      <rect x="8" y="178" width="30" height="16" rx="3" fill="#e0e7ff"/>
+        <text x="23" y="190" font-size="9" font-weight="700" fill="#3730a3" text-anchor="middle">FK</text>
+      <text x="44" y="191" font-size="12" font-weight="bold" fill="#3730a3" font-family="'Consolas','Courier New',monospace">userId</text>
+      <text x="204" y="191" font-size="10" fill="#60a5fa" font-style="italic">→ users.id</text>
+      <text x="472" y="191" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">char(36)</text>
+      <text x="472" y="197" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <!-- Bottom border -->
+      <rect x="0" y="207" width="480" height="1" fill="#e11d48"/>
+    </g>
+  
+    <g transform="translate(60, 1740)">
+      <!-- Shadow -->
+      <rect x="4" y="4" width="480" height="208" rx="8" fill="rgba(0,0,0,0.15)"/>
+      <!-- Body -->
+      <rect x="0" y="0" width="480" height="208" rx="8" fill="white" stroke="#e11d48" stroke-width="2"/>
+      <!-- Header -->
+      <rect x="0" y="0" width="480" height="44" rx="8" fill="#9f1239"/>
+      <rect x="0" y="36" width="480" height="8" fill="#9f1239"/>
+      <!-- Table Name -->
+      <text x="14" y="20" font-size="14" font-weight="800" fill="white" font-family="'Segoe UI',Roboto,Helvetica,sans-serif">FAVORITE_LOGS</text>
+      <!-- Column count badge -->
+      <rect x="380" y="8" width="88" height="20" rx="10" fill="rgba(255,255,255,0.2)"/>
+      <text x="424" y="22" font-size="10" fill="white" text-anchor="middle">6 campos · 1 FK</text>
+      <!-- Rows -->
+      
+      <rect x="0" y="44" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="44" x2="480" y2="44" stroke="#e2e8f0" stroke-width="0.5"/>
+      <rect x="8" y="48" width="30" height="16" rx="3" fill="#fef3c7"/>
+        <text x="23" y="60" font-size="9" font-weight="700" fill="#b45309" text-anchor="middle">PK</text>
+      <text x="44" y="61" font-size="12" font-weight="bold" fill="#b45309" font-family="'Consolas','Courier New',monospace">id</text>
+      
+      <text x="472" y="61" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">int</text>
+      <text x="472" y="67" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="70" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="70" x2="480" y2="70" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="87" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">playerId</text>
+      
+      <text x="472" y="87" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="93" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="96" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="96" x2="480" y2="96" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="113" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">action</text>
+      
+      <text x="472" y="113" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="119" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="122" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="122" x2="480" y2="122" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="139" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">createdAt</text>
+      
+      <text x="472" y="139" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">datetimeoffset</text>
+      <text x="472" y="145" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="148" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="148" x2="480" y2="148" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="165" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">updatedAt</text>
+      
+      <text x="472" y="165" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">datetimeoffset</text>
+      <text x="472" y="171" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="174" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="174" x2="480" y2="174" stroke="#e2e8f0" stroke-width="0.5"/>
+      <rect x="8" y="178" width="30" height="16" rx="3" fill="#e0e7ff"/>
+        <text x="23" y="190" font-size="9" font-weight="700" fill="#3730a3" text-anchor="middle">FK</text>
+      <text x="44" y="191" font-size="12" font-weight="bold" fill="#3730a3" font-family="'Consolas','Courier New',monospace">userId</text>
+      <text x="204" y="191" font-size="10" fill="#60a5fa" font-style="italic">→ users.id</text>
+      <text x="472" y="191" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">char(36)</text>
+      <text x="472" y="197" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <!-- Bottom border -->
+      <rect x="0" y="207" width="480" height="1" fill="#e11d48"/>
+    </g>
+  
+    <g transform="translate(900, 60)">
+      <!-- Shadow -->
+      <rect x="4" y="4" width="480" height="1248" rx="8" fill="rgba(0,0,0,0.15)"/>
+      <!-- Body -->
+      <rect x="0" y="0" width="480" height="1248" rx="8" fill="white" stroke="#2563eb" stroke-width="2"/>
+      <!-- Header -->
+      <rect x="0" y="0" width="480" height="44" rx="8" fill="#1e3a8a"/>
+      <rect x="0" y="36" width="480" height="8" fill="#1e3a8a"/>
+      <!-- Table Name -->
+      <text x="14" y="20" font-size="14" font-weight="800" fill="white" font-family="'Segoe UI',Roboto,Helvetica,sans-serif">USERS</text>
+      <!-- Column count badge -->
+      <rect x="380" y="8" width="88" height="20" rx="10" fill="rgba(255,255,255,0.2)"/>
+      <text x="424" y="22" font-size="10" fill="white" text-anchor="middle">46 campos · 0 FK</text>
+      <!-- Rows -->
+      
+      <rect x="0" y="44" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="44" x2="480" y2="44" stroke="#e2e8f0" stroke-width="0.5"/>
+      <rect x="8" y="48" width="30" height="16" rx="3" fill="#fef3c7"/>
+        <text x="23" y="60" font-size="9" font-weight="700" fill="#b45309" text-anchor="middle">PK</text>
+      <text x="44" y="61" font-size="12" font-weight="bold" fill="#b45309" font-family="'Consolas','Courier New',monospace">id</text>
+      
+      <text x="472" y="61" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">char(36)</text>
+      <text x="472" y="67" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="70" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="70" x2="480" y2="70" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="87" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">username</text>
+      
+      <text x="472" y="87" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(100)</text>
+      <text x="472" y="93" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="96" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="96" x2="480" y2="96" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="113" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">passwordHash</text>
+      
+      <text x="472" y="113" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="119" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="122" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="122" x2="480" y2="122" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="139" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">role</text>
+      
+      <text x="472" y="139" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(150)</text>
+      <text x="472" y="145" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="148" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="148" x2="480" y2="148" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="165" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">avatarUrl</text>
+      
+      <text x="472" y="165" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(500)</text>
+      <text x="472" y="171" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="174" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="174" x2="480" y2="174" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="191" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">isActive</text>
+      
+      <text x="472" y="191" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">bit</text>
+      <text x="472" y="197" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="200" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="200" x2="480" y2="200" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="217" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">lastLogin</text>
+      
+      <text x="472" y="217" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">datetimeoffset</text>
+      <text x="472" y="223" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="226" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="226" x2="480" y2="226" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="243" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">createdAt</text>
+      
+      <text x="472" y="243" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">datetimeoffset</text>
+      <text x="472" y="249" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="252" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="252" x2="480" y2="252" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="269" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">updatedAt</text>
+      
+      <text x="472" y="269" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">datetimeoffset</text>
+      <text x="472" y="275" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="278" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="278" x2="480" y2="278" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="295" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">onboardingComplete</text>
+      
+      <text x="472" y="295" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">bit</text>
+      <text x="472" y="301" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="304" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="304" x2="480" y2="304" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="321" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">selectedCountry</text>
+      
+      <text x="472" y="321" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(100)</text>
+      <text x="472" y="327" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="330" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="330" x2="480" y2="330" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="347" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">selectedClub</text>
+      
+      <text x="472" y="347" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(100)</text>
+      <text x="472" y="353" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="356" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="356" x2="480" y2="356" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="373" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">preferredFormation</text>
+      
+      <text x="472" y="373" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(50)</text>
+      <text x="472" y="379" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="382" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="382" x2="480" y2="382" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="399" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">preferredStyle</text>
+      
+      <text x="472" y="399" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(50)</text>
+      <text x="472" y="405" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="408" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="408" x2="480" y2="408" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="425" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">selectedTier</text>
+      
+      <text x="472" y="425" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(50)</text>
+      <text x="472" y="431" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="434" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="434" x2="480" y2="434" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="451" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">nombres</text>
+      
+      <text x="472" y="451" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(100)</text>
+      <text x="472" y="457" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="460" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="460" x2="480" y2="460" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="477" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">apellidos</text>
+      
+      <text x="472" y="477" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(100)</text>
+      <text x="472" y="483" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="486" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="486" x2="480" y2="486" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="503" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">telefono</text>
+      
+      <text x="472" y="503" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(50)</text>
+      <text x="472" y="509" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="512" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="512" x2="480" y2="512" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="529" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">email</text>
+      
+      <text x="472" y="529" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(150)</text>
+      <text x="472" y="535" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="538" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="538" x2="480" y2="538" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="555" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">isVerified</text>
+      
+      <text x="472" y="555" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">bit</text>
+      <text x="472" y="561" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="564" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="564" x2="480" y2="564" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="581" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">otpCode</text>
+      
+      <text x="472" y="581" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(6)</text>
+      <text x="472" y="587" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="590" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="590" x2="480" y2="590" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="607" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">otpExpires</text>
+      
+      <text x="472" y="607" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">datetimeoffset</text>
+      <text x="472" y="613" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="616" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="616" x2="480" y2="616" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="633" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">localCoachData</text>
+      
+      <text x="472" y="633" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(MAX)</text>
+      <text x="472" y="639" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="642" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="642" x2="480" y2="642" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="659" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">maxPaidTier</text>
+      
+      <text x="472" y="659" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(50)</text>
+      <text x="472" y="665" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="668" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="668" x2="480" y2="668" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="685" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">billingCycleStart</text>
+      
+      <text x="472" y="685" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">datetimeoffset</text>
+      <text x="472" y="691" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="694" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="694" x2="480" y2="694" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="711" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">savedCardholderName</text>
+      
+      <text x="472" y="711" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(100)</text>
+      <text x="472" y="717" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="720" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="720" x2="480" y2="720" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="737" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">savedCardLast4</text>
+      
+      <text x="472" y="737" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(4)</text>
+      <text x="472" y="743" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="746" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="746" x2="480" y2="746" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="763" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">savedCardBrand</text>
+      
+      <text x="472" y="763" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(20)</text>
+      <text x="472" y="769" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="772" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="772" x2="480" y2="772" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="789" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">savedCardExp</text>
+      
+      <text x="472" y="789" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(7)</text>
+      <text x="472" y="795" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="798" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="798" x2="480" y2="798" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="815" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">autoRenew</text>
+      
+      <text x="472" y="815" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">bit</text>
+      <text x="472" y="821" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="824" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="824" x2="480" y2="824" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="841" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">savedCardExpMonth</text>
+      
+      <text x="472" y="841" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(2)</text>
+      <text x="472" y="847" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="850" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="850" x2="480" y2="850" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="867" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">savedCardExpYear</text>
+      
+      <text x="472" y="867" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(4)</text>
+      <text x="472" y="873" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="876" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="876" x2="480" y2="876" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="893" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">savedCardHolder</text>
+      
+      <text x="472" y="893" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(100)</text>
+      <text x="472" y="899" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="902" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="902" x2="480" y2="902" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="919" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">billingCycleEnd</text>
+      
+      <text x="472" y="919" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">datetimeoffset</text>
+      <text x="472" y="925" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="928" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="928" x2="480" y2="928" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="945" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">maxPaidTierInCycle</text>
+      
+      <text x="472" y="945" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(50)</text>
+      <text x="472" y="951" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="954" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="954" x2="480" y2="954" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="971" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">hasPasskey</text>
+      
+      <text x="472" y="971" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">bit</text>
+      <text x="472" y="977" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="980" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="980" x2="480" y2="980" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="997" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">passkeyCredentialId</text>
+      
+      <text x="472" y="997" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(MAX)</text>
+      <text x="472" y="1003" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="1006" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="1006" x2="480" y2="1006" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="1023" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">passkeyPublicKey</text>
+      
+      <text x="472" y="1023" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(MAX)</text>
+      <text x="472" y="1029" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="1032" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="1032" x2="480" y2="1032" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="1049" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">passkeyCounter</text>
+      
+      <text x="472" y="1049" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">int</text>
+      <text x="472" y="1055" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="1058" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="1058" x2="480" y2="1058" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="1075" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">passkeyPinHash</text>
+      
+      <text x="472" y="1075" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="1081" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="1084" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="1084" x2="480" y2="1084" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="1101" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">passkeyChallenge</text>
+      
+      <text x="472" y="1101" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="1107" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="1110" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="1110" x2="480" y2="1110" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="1127" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">passkeyDeviceInfo</text>
+      
+      <text x="472" y="1127" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(MAX)</text>
+      <text x="472" y="1133" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="1136" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="1136" x2="480" y2="1136" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="1153" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">passkeyWebAuthnDevice</text>
+      
+      <text x="472" y="1153" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(MAX)</text>
+      <text x="472" y="1159" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="1162" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="1162" x2="480" y2="1162" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="1179" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">passkeyPinDevice</text>
+      
+      <text x="472" y="1179" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(MAX)</text>
+      <text x="472" y="1185" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="1188" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="1188" x2="480" y2="1188" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="1205" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">securityQuestions</text>
+      
+      <text x="472" y="1205" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(MAX)</text>
+      <text x="472" y="1211" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="1214" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="1214" x2="480" y2="1214" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="1231" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">featureSettings</text>
+      
+      <text x="472" y="1231" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(MAX)</text>
+      <text x="472" y="1237" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <!-- Bottom border -->
+      <rect x="0" y="1247" width="480" height="1" fill="#2563eb"/>
+    </g>
+  
+    <g transform="translate(900, 1480)">
+      <!-- Shadow -->
+      <rect x="4" y="4" width="480" height="156" rx="8" fill="rgba(0,0,0,0.15)"/>
+      <!-- Body -->
+      <rect x="0" y="0" width="480" height="156" rx="8" fill="white" stroke="#7c3aed" stroke-width="2"/>
+      <!-- Header -->
+      <rect x="0" y="0" width="480" height="44" rx="8" fill="#581c87"/>
+      <rect x="0" y="36" width="480" height="8" fill="#581c87"/>
+      <!-- Table Name -->
+      <text x="14" y="20" font-size="14" font-weight="800" fill="white" font-family="'Segoe UI',Roboto,Helvetica,sans-serif">LEAGUES</text>
+      <!-- Column count badge -->
+      <rect x="380" y="8" width="88" height="20" rx="10" fill="rgba(255,255,255,0.2)"/>
+      <text x="424" y="22" font-size="10" fill="white" text-anchor="middle">4 campos · 0 FK</text>
+      <!-- Rows -->
+      
+      <rect x="0" y="44" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="44" x2="480" y2="44" stroke="#e2e8f0" stroke-width="0.5"/>
+      <rect x="8" y="48" width="30" height="16" rx="3" fill="#fef3c7"/>
+        <text x="23" y="60" font-size="9" font-weight="700" fill="#b45309" text-anchor="middle">PK</text>
+      <text x="44" y="61" font-size="12" font-weight="bold" fill="#b45309" font-family="'Consolas','Courier New',monospace">id</text>
+      
+      <text x="472" y="61" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">int</text>
+      <text x="472" y="67" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="70" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="70" x2="480" y2="70" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="87" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">name</text>
+      
+      <text x="472" y="87" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="93" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="96" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="96" x2="480" y2="96" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="113" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">country</text>
+      
+      <text x="472" y="113" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="119" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="122" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="122" x2="480" y2="122" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="139" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">flagIso</text>
+      
+      <text x="472" y="139" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="145" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <!-- Bottom border -->
+      <rect x="0" y="155" width="480" height="1" fill="#7c3aed"/>
+    </g>
+  
+    <g transform="translate(900, 1680)">
+      <!-- Shadow -->
+      <rect x="4" y="4" width="480" height="156" rx="8" fill="rgba(0,0,0,0.15)"/>
+      <!-- Body -->
+      <rect x="0" y="0" width="480" height="156" rx="8" fill="white" stroke="#7c3aed" stroke-width="2"/>
+      <!-- Header -->
+      <rect x="0" y="0" width="480" height="44" rx="8" fill="#581c87"/>
+      <rect x="0" y="36" width="480" height="8" fill="#581c87"/>
+      <!-- Table Name -->
+      <text x="14" y="20" font-size="14" font-weight="800" fill="white" font-family="'Segoe UI',Roboto,Helvetica,sans-serif">TEAMS</text>
+      <!-- Column count badge -->
+      <rect x="380" y="8" width="88" height="20" rx="10" fill="rgba(255,255,255,0.2)"/>
+      <text x="424" y="22" font-size="10" fill="white" text-anchor="middle">4 campos · 0 FK</text>
+      <!-- Rows -->
+      
+      <rect x="0" y="44" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="44" x2="480" y2="44" stroke="#e2e8f0" stroke-width="0.5"/>
+      <rect x="8" y="48" width="30" height="16" rx="3" fill="#fef3c7"/>
+        <text x="23" y="60" font-size="9" font-weight="700" fill="#b45309" text-anchor="middle">PK</text>
+      <text x="44" y="61" font-size="12" font-weight="bold" fill="#b45309" font-family="'Consolas','Courier New',monospace">id</text>
+      
+      <text x="472" y="61" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">int</text>
+      <text x="472" y="67" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="70" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="70" x2="480" y2="70" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="87" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">name</text>
+      
+      <text x="472" y="87" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="93" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="96" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="96" x2="480" y2="96" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="113" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">leagueName</text>
+      
+      <text x="472" y="113" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="119" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="122" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="122" x2="480" y2="122" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="139" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">country</text>
+      
+      <text x="472" y="139" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="145" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <!-- Bottom border -->
+      <rect x="0" y="155" width="480" height="1" fill="#7c3aed"/>
+    </g>
+  
+    <g transform="translate(900, 1900)">
+      <!-- Shadow -->
+      <rect x="4" y="4" width="480" height="182" rx="8" fill="rgba(0,0,0,0.15)"/>
+      <!-- Body -->
+      <rect x="0" y="0" width="480" height="182" rx="8" fill="white" stroke="#6b7280" stroke-width="2"/>
+      <!-- Header -->
+      <rect x="0" y="0" width="480" height="44" rx="8" fill="#374151"/>
+      <rect x="0" y="36" width="480" height="8" fill="#374151"/>
+      <!-- Table Name -->
+      <text x="14" y="20" font-size="14" font-weight="800" fill="white" font-family="'Segoe UI',Roboto,Helvetica,sans-serif">SYSDIAGRAMS</text>
+      <!-- Column count badge -->
+      <rect x="380" y="8" width="88" height="20" rx="10" fill="rgba(255,255,255,0.2)"/>
+      <text x="424" y="22" font-size="10" fill="white" text-anchor="middle">5 campos · 0 FK</text>
+      <!-- Rows -->
+      
+      <rect x="0" y="44" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="44" x2="480" y2="44" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="61" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">name</text>
+      
+      <text x="472" y="61" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(128)</text>
+      <text x="472" y="67" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="70" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="70" x2="480" y2="70" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="87" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">principal_id</text>
+      
+      <text x="472" y="87" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">int</text>
+      <text x="472" y="93" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="96" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="96" x2="480" y2="96" stroke="#e2e8f0" stroke-width="0.5"/>
+      <rect x="8" y="100" width="30" height="16" rx="3" fill="#fef3c7"/>
+        <text x="23" y="112" font-size="9" font-weight="700" fill="#b45309" text-anchor="middle">PK</text>
+      <text x="44" y="113" font-size="12" font-weight="bold" fill="#b45309" font-family="'Consolas','Courier New',monospace">diagram_id</text>
+      
+      <text x="472" y="113" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">int</text>
+      <text x="472" y="119" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="122" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="122" x2="480" y2="122" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="139" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">version</text>
+      
+      <text x="472" y="139" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">int</text>
+      <text x="472" y="145" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="148" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="148" x2="480" y2="148" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="165" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">definition</text>
+      
+      <text x="472" y="165" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">varbinary(MAX)</text>
+      <text x="472" y="171" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <!-- Bottom border -->
+      <rect x="0" y="181" width="480" height="1" fill="#6b7280"/>
+    </g>
+  
+    <g transform="translate(1800, 60)">
+      <!-- Shadow -->
+      <rect x="4" y="4" width="480" height="858" rx="8" fill="rgba(0,0,0,0.15)"/>
+      <!-- Body -->
+      <rect x="0" y="0" width="480" height="858" rx="8" fill="white" stroke="#059669" stroke-width="2"/>
+      <!-- Header -->
+      <rect x="0" y="0" width="480" height="44" rx="8" fill="#065f46"/>
+      <rect x="0" y="36" width="480" height="8" fill="#065f46"/>
+      <!-- Table Name -->
+      <text x="14" y="20" font-size="14" font-weight="800" fill="white" font-family="'Segoe UI',Roboto,Helvetica,sans-serif">PLAYERS</text>
+      <!-- Column count badge -->
+      <rect x="380" y="8" width="88" height="20" rx="10" fill="rgba(255,255,255,0.2)"/>
+      <text x="424" y="22" font-size="10" fill="white" text-anchor="middle">31 campos · 0 FK</text>
+      <!-- Rows -->
+      
+      <rect x="0" y="44" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="44" x2="480" y2="44" stroke="#e2e8f0" stroke-width="0.5"/>
+      <rect x="8" y="48" width="30" height="16" rx="3" fill="#fef3c7"/>
+        <text x="23" y="60" font-size="9" font-weight="700" fill="#b45309" text-anchor="middle">PK</text>
+      <text x="44" y="61" font-size="12" font-weight="bold" fill="#b45309" font-family="'Consolas','Courier New',monospace">id</text>
+      
+      <text x="472" y="61" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="67" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="70" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="70" x2="480" y2="70" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="87" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">name</text>
+      
+      <text x="472" y="87" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="93" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="96" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="96" x2="480" y2="96" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="113" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">photoId</text>
+      
+      <text x="472" y="113" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="119" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="122" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="122" x2="480" y2="122" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="139" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">nickname</text>
+      
+      <text x="472" y="139" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="145" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="148" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="148" x2="480" y2="148" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="165" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">age</text>
+      
+      <text x="472" y="165" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">int</text>
+      <text x="472" y="171" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="174" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="174" x2="480" y2="174" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="191" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">nationality</text>
+      
+      <text x="472" y="191" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="197" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="200" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="200" x2="480" y2="200" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="217" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">nationalityEs</text>
+      
+      <text x="472" y="217" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="223" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="226" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="226" x2="480" y2="226" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="243" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">flag</text>
+      
+      <text x="472" y="243" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="249" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="252" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="252" x2="480" y2="252" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="269" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">position</text>
+      
+      <text x="472" y="269" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="275" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="278" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="278" x2="480" y2="278" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="295" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">positionEs</text>
+      
+      <text x="472" y="295" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="301" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="304" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="304" x2="480" y2="304" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="321" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">currentTeam</text>
+      
+      <text x="472" y="321" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="327" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="330" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="330" x2="480" y2="330" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="347" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">league</text>
+      
+      <text x="472" y="347" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="353" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="356" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="356" x2="480" y2="356" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="373" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">country</text>
+      
+      <text x="472" y="373" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="379" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="382" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="382" x2="480" y2="382" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="399" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">jerseyNumber</text>
+      
+      <text x="472" y="399" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">int</text>
+      <text x="472" y="405" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="408" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="408" x2="480" y2="408" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="425" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">height</text>
+      
+      <text x="472" y="425" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">int</text>
+      <text x="472" y="431" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="434" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="434" x2="480" y2="434" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="451" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">weight</text>
+      
+      <text x="472" y="451" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">int</text>
+      <text x="472" y="457" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="460" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="460" x2="480" y2="460" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="477" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">preferredFoot</text>
+      
+      <text x="472" y="477" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="483" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="486" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="486" x2="480" y2="486" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="503" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">marketValue</text>
+      
+      <text x="472" y="503" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">bigint</text>
+      <text x="472" y="509" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="512" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="512" x2="480" y2="512" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="529" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">overallRating</text>
+      
+      <text x="472" y="529" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">float</text>
+      <text x="472" y="535" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="538" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="538" x2="480" y2="538" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="555" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">stats</text>
+      
+      <text x="472" y="555" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(MAX)</text>
+      <text x="472" y="561" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="564" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="564" x2="480" y2="564" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="581" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">careerTotals</text>
+      
+      <text x="472" y="581" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(MAX)</text>
+      <text x="472" y="587" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="590" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="590" x2="480" y2="590" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="607" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">trophies</text>
+      
+      <text x="472" y="607" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(MAX)</text>
+      <text x="472" y="613" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="616" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="616" x2="480" y2="616" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="633" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">transfers</text>
+      
+      <text x="472" y="633" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(MAX)</text>
+      <text x="472" y="639" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="642" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="642" x2="480" y2="642" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="659" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">bio</text>
+      
+      <text x="472" y="659" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(MAX)</text>
+      <text x="472" y="665" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="668" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="668" x2="480" y2="668" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="685" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">bioEs</text>
+      
+      <text x="472" y="685" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(MAX)</text>
+      <text x="472" y="691" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="694" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="694" x2="480" y2="694" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="711" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">strengths</text>
+      
+      <text x="472" y="711" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(MAX)</text>
+      <text x="472" y="717" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="720" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="720" x2="480" y2="720" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="737" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">tags</text>
+      
+      <text x="472" y="737" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(MAX)</text>
+      <text x="472" y="743" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="746" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="746" x2="480" y2="746" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="763" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">history</text>
+      
+      <text x="472" y="763" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(MAX)</text>
+      <text x="472" y="769" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="772" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="772" x2="480" y2="772" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="789" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">createdAt</text>
+      
+      <text x="472" y="789" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">datetimeoffset</text>
+      <text x="472" y="795" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="798" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="798" x2="480" y2="798" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="815" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">updatedAt</text>
+      
+      <text x="472" y="815" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">datetimeoffset</text>
+      <text x="472" y="821" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="824" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="824" x2="480" y2="824" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="841" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">userId</text>
+      
+      <text x="472" y="841" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">char(36)</text>
+      <text x="472" y="847" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <!-- Bottom border -->
+      <rect x="0" y="857" width="480" height="1" fill="#059669"/>
+    </g>
+  
+    <g transform="translate(1800, 1100)">
+      <!-- Shadow -->
+      <rect x="4" y="4" width="480" height="364" rx="8" fill="rgba(0,0,0,0.15)"/>
+      <!-- Body -->
+      <rect x="0" y="0" width="480" height="364" rx="8" fill="white" stroke="#d97706" stroke-width="2"/>
+      <!-- Header -->
+      <rect x="0" y="0" width="480" height="44" rx="8" fill="#78350f"/>
+      <rect x="0" y="36" width="480" height="8" fill="#78350f"/>
+      <!-- Table Name -->
+      <text x="14" y="20" font-size="14" font-weight="800" fill="white" font-family="'Segoe UI',Roboto,Helvetica,sans-serif">PAYMENT_METHODS</text>
+      <!-- Column count badge -->
+      <rect x="380" y="8" width="88" height="20" rx="10" fill="rgba(255,255,255,0.2)"/>
+      <text x="424" y="22" font-size="10" fill="white" text-anchor="middle">12 campos · 0 FK</text>
+      <!-- Rows -->
+      
+      <rect x="0" y="44" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="44" x2="480" y2="44" stroke="#e2e8f0" stroke-width="0.5"/>
+      <rect x="8" y="48" width="30" height="16" rx="3" fill="#fef3c7"/>
+        <text x="23" y="60" font-size="9" font-weight="700" fill="#b45309" text-anchor="middle">PK</text>
+      <text x="44" y="61" font-size="12" font-weight="bold" fill="#b45309" font-family="'Consolas','Courier New',monospace">id</text>
+      
+      <text x="472" y="61" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">int</text>
+      <text x="472" y="67" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="70" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="70" x2="480" y2="70" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="87" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">userId</text>
+      
+      <text x="472" y="87" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="93" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="96" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="96" x2="480" y2="96" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="113" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">cardholderName</text>
+      
+      <text x="472" y="113" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="119" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="122" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="122" x2="480" y2="122" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="139" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">cardBrand</text>
+      
+      <text x="472" y="139" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(50)</text>
+      <text x="472" y="145" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="148" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="148" x2="480" y2="148" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="165" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">last4</text>
+      
+      <text x="472" y="165" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(4)</text>
+      <text x="472" y="171" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="174" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="174" x2="480" y2="174" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="191" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">expMonth</text>
+      
+      <text x="472" y="191" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(2)</text>
+      <text x="472" y="197" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="200" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="200" x2="480" y2="200" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="217" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">expYear</text>
+      
+      <text x="472" y="217" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(4)</text>
+      <text x="472" y="223" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="226" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="226" x2="480" y2="226" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="243" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">encryptedCardDetails</text>
+      
+      <text x="472" y="243" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(MAX)</text>
+      <text x="472" y="249" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="252" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="252" x2="480" y2="252" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="269" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">isDefault</text>
+      
+      <text x="472" y="269" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">bit</text>
+      <text x="472" y="275" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="278" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="278" x2="480" y2="278" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="295" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">userAccount</text>
+      
+      <text x="472" y="295" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(100)</text>
+      <text x="472" y="301" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="304" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="304" x2="480" y2="304" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="321" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">createdAt</text>
+      
+      <text x="472" y="321" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">datetimeoffset</text>
+      <text x="472" y="327" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="330" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="330" x2="480" y2="330" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="347" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">updatedAt</text>
+      
+      <text x="472" y="347" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">datetimeoffset</text>
+      <text x="472" y="353" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <!-- Bottom border -->
+      <rect x="0" y="363" width="480" height="1" fill="#d97706"/>
+    </g>
+  
+    <g transform="translate(1800, 1460)">
+      <!-- Shadow -->
+      <rect x="4" y="4" width="480" height="416" rx="8" fill="rgba(0,0,0,0.15)"/>
+      <!-- Body -->
+      <rect x="0" y="0" width="480" height="416" rx="8" fill="white" stroke="#d97706" stroke-width="2"/>
+      <!-- Header -->
+      <rect x="0" y="0" width="480" height="44" rx="8" fill="#78350f"/>
+      <rect x="0" y="36" width="480" height="8" fill="#78350f"/>
+      <!-- Table Name -->
+      <text x="14" y="20" font-size="14" font-weight="800" fill="white" font-family="'Segoe UI',Roboto,Helvetica,sans-serif">PAYMENTS</text>
+      <!-- Column count badge -->
+      <rect x="380" y="8" width="88" height="20" rx="10" fill="rgba(255,255,255,0.2)"/>
+      <text x="424" y="22" font-size="10" fill="white" text-anchor="middle">14 campos · 1 FK</text>
+      <!-- Rows -->
+      
+      <rect x="0" y="44" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="44" x2="480" y2="44" stroke="#e2e8f0" stroke-width="0.5"/>
+      <rect x="8" y="48" width="30" height="16" rx="3" fill="#fef3c7"/>
+        <text x="23" y="60" font-size="9" font-weight="700" fill="#b45309" text-anchor="middle">PK</text>
+      <text x="44" y="61" font-size="12" font-weight="bold" fill="#b45309" font-family="'Consolas','Courier New',monospace">id</text>
+      
+      <text x="472" y="61" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">int</text>
+      <text x="472" y="67" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="70" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="70" x2="480" y2="70" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="87" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">transactionId</text>
+      
+      <text x="472" y="87" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(100)</text>
+      <text x="472" y="93" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="96" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="96" x2="480" y2="96" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="113" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">amount</text>
+      
+      <text x="472" y="113" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">float</text>
+      <text x="472" y="119" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="122" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="122" x2="480" y2="122" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="139" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">currency</text>
+      
+      <text x="472" y="139" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(10)</text>
+      <text x="472" y="145" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="148" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="148" x2="480" y2="148" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="165" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">tier</text>
+      
+      <text x="472" y="165" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(50)</text>
+      <text x="472" y="171" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="174" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="174" x2="480" y2="174" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="191" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">cardholderName</text>
+      
+      <text x="472" y="191" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="197" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="200" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="200" x2="480" y2="200" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="217" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">cardLast4</text>
+      
+      <text x="472" y="217" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(4)</text>
+      <text x="472" y="223" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="226" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="226" x2="480" y2="226" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="243" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">status</text>
+      
+      <text x="472" y="243" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(50)</text>
+      <text x="472" y="249" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="252" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="252" x2="480" y2="252" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="269" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">createdAt</text>
+      
+      <text x="472" y="269" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">datetimeoffset</text>
+      <text x="472" y="275" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="278" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="278" x2="480" y2="278" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="295" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">updatedAt</text>
+      
+      <text x="472" y="295" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">datetimeoffset</text>
+      <text x="472" y="301" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="304" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="304" x2="480" y2="304" stroke="#e2e8f0" stroke-width="0.5"/>
+      <rect x="8" y="308" width="30" height="16" rx="3" fill="#e0e7ff"/>
+        <text x="23" y="320" font-size="9" font-weight="700" fill="#3730a3" text-anchor="middle">FK</text>
+      <text x="44" y="321" font-size="12" font-weight="bold" fill="#3730a3" font-family="'Consolas','Courier New',monospace">userId</text>
+      <text x="204" y="321" font-size="10" fill="#60a5fa" font-style="italic">→ users.id</text>
+      <text x="472" y="321" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">char(36)</text>
+      <text x="472" y="327" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="330" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="330" x2="480" y2="330" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="347" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">userAccount</text>
+      
+      <text x="472" y="347" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(100)</text>
+      <text x="472" y="353" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="356" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="356" x2="480" y2="356" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="373" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">userEmail</text>
+      
+      <text x="472" y="373" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="379" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="382" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="382" x2="480" y2="382" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="399" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">pdfUrl</text>
+      
+      <text x="472" y="399" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(500)</text>
+      <text x="472" y="405" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <!-- Bottom border -->
+      <rect x="0" y="415" width="480" height="1" fill="#d97706"/>
+    </g>
+  
+    <g transform="translate(2700, 60)">
+      <!-- Shadow -->
+      <rect x="4" y="4" width="480" height="988" rx="8" fill="rgba(0,0,0,0.15)"/>
+      <!-- Body -->
+      <rect x="0" y="0" width="480" height="988" rx="8" fill="white" stroke="#059669" stroke-width="2"/>
+      <!-- Header -->
+      <rect x="0" y="0" width="480" height="44" rx="8" fill="#065f46"/>
+      <rect x="0" y="36" width="480" height="8" fill="#065f46"/>
+      <!-- Table Name -->
+      <text x="14" y="20" font-size="14" font-weight="800" fill="white" font-family="'Segoe UI',Roboto,Helvetica,sans-serif">PROSPECTS</text>
+      <!-- Column count badge -->
+      <rect x="380" y="8" width="88" height="20" rx="10" fill="rgba(255,255,255,0.2)"/>
+      <text x="424" y="22" font-size="10" fill="white" text-anchor="middle">36 campos · 1 FK</text>
+      <!-- Rows -->
+      
+      <rect x="0" y="44" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="44" x2="480" y2="44" stroke="#e2e8f0" stroke-width="0.5"/>
+      <rect x="8" y="48" width="30" height="16" rx="3" fill="#fef3c7"/>
+        <text x="23" y="60" font-size="9" font-weight="700" fill="#b45309" text-anchor="middle">PK</text>
+      <text x="44" y="61" font-size="12" font-weight="bold" fill="#b45309" font-family="'Consolas','Courier New',monospace">id</text>
+      
+      <text x="472" y="61" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="67" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="70" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="70" x2="480" y2="70" stroke="#e2e8f0" stroke-width="0.5"/>
+      <rect x="8" y="74" width="30" height="16" rx="3" fill="#e0e7ff"/>
+        <text x="23" y="86" font-size="9" font-weight="700" fill="#3730a3" text-anchor="middle">FK</text>
+      <text x="44" y="87" font-size="12" font-weight="bold" fill="#3730a3" font-family="'Consolas','Courier New',monospace">userId</text>
+      <text x="204" y="87" font-size="10" fill="#60a5fa" font-style="italic">→ users.id</text>
+      <text x="472" y="87" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">char(36)</text>
+      <text x="472" y="93" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="96" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="96" x2="480" y2="96" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="113" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">name</text>
+      
+      <text x="472" y="113" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="119" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="122" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="122" x2="480" y2="122" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="139" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">nickname</text>
+      
+      <text x="472" y="139" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="145" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="148" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="148" x2="480" y2="148" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="165" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">age</text>
+      
+      <text x="472" y="165" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">int</text>
+      <text x="472" y="171" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="174" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="174" x2="480" y2="174" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="191" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">jerseyNumber</text>
+      
+      <text x="472" y="191" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">int</text>
+      <text x="472" y="197" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="200" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="200" x2="480" y2="200" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="217" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">position</text>
+      
+      <text x="472" y="217" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="223" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="226" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="226" x2="480" y2="226" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="243" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">positionEs</text>
+      
+      <text x="472" y="243" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="249" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="252" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="252" x2="480" y2="252" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="269" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">overallRating</text>
+      
+      <text x="472" y="269" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">float</text>
+      <text x="472" y="275" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="278" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="278" x2="480" y2="278" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="295" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">category</text>
+      
+      <text x="472" y="295" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="301" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="304" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="304" x2="480" y2="304" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="321" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">preferredFoot</text>
+      
+      <text x="472" y="321" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="327" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="330" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="330" x2="480" y2="330" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="347" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">height</text>
+      
+      <text x="472" y="347" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">int</text>
+      <text x="472" y="353" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="356" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="356" x2="480" y2="356" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="373" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">weight</text>
+      
+      <text x="472" y="373" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">int</text>
+      <text x="472" y="379" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="382" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="382" x2="480" y2="382" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="399" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">medicalStatus</text>
+      
+      <text x="472" y="399" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="405" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="408" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="408" x2="480" y2="408" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="425" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">photoUrl</text>
+      
+      <text x="472" y="425" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(MAX)</text>
+      <text x="472" y="431" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="434" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="434" x2="480" y2="434" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="451" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">photoId</text>
+      
+      <text x="472" y="451" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="457" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="460" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="460" x2="480" y2="460" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="477" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">currentTeam</text>
+      
+      <text x="472" y="477" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="483" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="486" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="486" x2="480" y2="486" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="503" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">league</text>
+      
+      <text x="472" y="503" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="509" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="512" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="512" x2="480" y2="512" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="529" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">country</text>
+      
+      <text x="472" y="529" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="535" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="538" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="538" x2="480" y2="538" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="555" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">nationality</text>
+      
+      <text x="472" y="555" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="561" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="564" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="564" x2="480" y2="564" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="581" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">nationalityEs</text>
+      
+      <text x="472" y="581" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="587" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="590" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="590" x2="480" y2="590" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="607" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">flag</text>
+      
+      <text x="472" y="607" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(255)</text>
+      <text x="472" y="613" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="616" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="616" x2="480" y2="616" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="633" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">marketValue</text>
+      
+      <text x="472" y="633" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">bigint</text>
+      <text x="472" y="639" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="642" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="642" x2="480" y2="642" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="659" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">bio</text>
+      
+      <text x="472" y="659" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(MAX)</text>
+      <text x="472" y="665" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="668" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="668" x2="480" y2="668" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="685" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">bioEs</text>
+      
+      <text x="472" y="685" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(MAX)</text>
+      <text x="472" y="691" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="694" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="694" x2="480" y2="694" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="711" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">stats</text>
+      
+      <text x="472" y="711" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(MAX)</text>
+      <text x="472" y="717" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="720" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="720" x2="480" y2="720" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="737" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">strengths</text>
+      
+      <text x="472" y="737" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(MAX)</text>
+      <text x="472" y="743" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="746" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="746" x2="480" y2="746" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="763" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">trophies</text>
+      
+      <text x="472" y="763" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(MAX)</text>
+      <text x="472" y="769" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="772" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="772" x2="480" y2="772" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="789" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">tags</text>
+      
+      <text x="472" y="789" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(MAX)</text>
+      <text x="472" y="795" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="798" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="798" x2="480" y2="798" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="815" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">history</text>
+      
+      <text x="472" y="815" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(MAX)</text>
+      <text x="472" y="821" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="824" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="824" x2="480" y2="824" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="841" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">createdAt</text>
+      
+      <text x="472" y="841" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">datetimeoffset</text>
+      <text x="472" y="847" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="850" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="850" x2="480" y2="850" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="867" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">updatedAt</text>
+      
+      <text x="472" y="867" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">datetimeoffset</text>
+      <text x="472" y="873" font-size="8.5" fill="#ef4444" text-anchor="end" font-weight="600">NOT NULL</text>
+    
+      <rect x="0" y="876" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="876" x2="480" y2="876" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="893" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">improvements</text>
+      
+      <text x="472" y="893" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(MAX)</text>
+      <text x="472" y="899" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="902" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="902" x2="480" y2="902" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="919" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">weaknesses</text>
+      
+      <text x="472" y="919" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(MAX)</text>
+      <text x="472" y="925" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="928" width="480" height="26" fill="#ffffff"/>
+      <line x1="0" y1="928" x2="480" y2="928" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="945" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">tacticalNotes</text>
+      
+      <text x="472" y="945" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(MAX)</text>
+      <text x="472" y="951" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <rect x="0" y="954" width="480" height="26" fill="#f8fafc"/>
+      <line x1="0" y1="954" x2="480" y2="954" stroke="#e2e8f0" stroke-width="0.5"/>
+      
+      <text x="14" y="971" font-size="12" font-weight="normal" fill="#1e293b" font-family="'Consolas','Courier New',monospace">highlightUrl</text>
+      
+      <text x="472" y="971" font-size="10" fill="#64748b" text-anchor="end" font-family="monospace">nvarchar(MAX)</text>
+      <text x="472" y="977" font-size="8.5" fill="#94a3b8" text-anchor="end" font-weight="600">NULL</text>
+    
+      <!-- Bottom border -->
+      <rect x="0" y="987" width="480" height="1" fill="#059669"/>
+    </g>
+  
+
+    </svg>
+  </div>
+</div>
+
+<!-- LEGEND PANEL -->
+<div class="legend-panel" id="legend-panel">
+  <!-- Clickable header always visible -->
+  <div class="legend-header" id="legend-toggle-btn" title="Mostrar/Ocultar leyenda">
+    <h3>📌 LEYENDA DE RELACIONES Y SÍMBOLOS</h3>
+    <span class="legend-chevron" id="legend-chevron">▲</span>
+  </div>
+  <!-- Collapsible body -->
+  <div class="legend-body" id="legend-body">
+  <div class="legend-body-inner">
+
+  <div class="legend-badges">
+    <span class="lbadge lb-pk">PK — Primary Key</span>
+    <span class="lbadge lb-fk">FK — Foreign Key</span>
+    <span class="lbadge lb-nn">NOT NULL — Requerido</span>
+    <span class="lbadge lb-null">NULL — Opcional</span>
+  </div>
+
+  <div style="font-size:11px;color:#64748b;margin-bottom:12px;font-weight:600;">CONEXIONES FK (campo origen → campo destino):</div>
+  <div class="legend-item">
+      <svg width="32" height="10"><line x1="0" y1="5" x2="32" y2="5" stroke="#2563eb" stroke-width="2.5" stroke-dasharray="6,3"/></svg>
+      <span style="color:#2563eb;font-weight:700">passkeys.userId</span>
+      <span style="color:#64748b">→</span>
+      <span style="color:#94a3b8">users.id</span>
+    </div><div class="legend-item">
+      <svg width="32" height="10"><line x1="0" y1="5" x2="32" y2="5" stroke="#0891b2" stroke-width="2.5" stroke-dasharray="6,3"/></svg>
+      <span style="color:#0891b2;font-weight:700">direct_messages.senderId</span>
+      <span style="color:#64748b">→</span>
+      <span style="color:#94a3b8">users.id</span>
+    </div><div class="legend-item">
+      <svg width="32" height="10"><line x1="0" y1="5" x2="32" y2="5" stroke="#06b6d4" stroke-width="2.5" stroke-dasharray="6,3"/></svg>
+      <span style="color:#06b6d4;font-weight:700">direct_messages.receiverId</span>
+      <span style="color:#64748b">→</span>
+      <span style="color:#94a3b8">users.id</span>
+    </div><div class="legend-item">
+      <svg width="32" height="10"><line x1="0" y1="5" x2="32" y2="5" stroke="#7c3aed" stroke-width="2.5" stroke-dasharray="6,3"/></svg>
+      <span style="color:#7c3aed;font-weight:700">user_contacts.userId</span>
+      <span style="color:#64748b">→</span>
+      <span style="color:#94a3b8">users.id</span>
+    </div><div class="legend-item">
+      <svg width="32" height="10"><line x1="0" y1="5" x2="32" y2="5" stroke="#a855f7" stroke-width="2.5" stroke-dasharray="6,3"/></svg>
+      <span style="color:#a855f7;font-weight:700">user_contacts.contactUserId</span>
+      <span style="color:#64748b">→</span>
+      <span style="color:#94a3b8">users.id</span>
+    </div><div class="legend-item">
+      <svg width="32" height="10"><line x1="0" y1="5" x2="32" y2="5" stroke="#e11d48" stroke-width="2.5" stroke-dasharray="6,3"/></svg>
+      <span style="color:#e11d48;font-weight:700">query_logs.userId</span>
+      <span style="color:#64748b">→</span>
+      <span style="color:#94a3b8">users.id</span>
+    </div><div class="legend-item">
+      <svg width="32" height="10"><line x1="0" y1="5" x2="32" y2="5" stroke="#f43f5e" stroke-width="2.5" stroke-dasharray="6,3"/></svg>
+      <span style="color:#f43f5e;font-weight:700">comparison_logs.userId</span>
+      <span style="color:#64748b">→</span>
+      <span style="color:#94a3b8">users.id</span>
+    </div><div class="legend-item">
+      <svg width="32" height="10"><line x1="0" y1="5" x2="32" y2="5" stroke="#fb7185" stroke-width="2.5" stroke-dasharray="6,3"/></svg>
+      <span style="color:#fb7185;font-weight:700">favorite_logs.userId</span>
+      <span style="color:#64748b">→</span>
+      <span style="color:#94a3b8">users.id</span>
+    </div><div class="legend-item">
+      <svg width="32" height="10"><line x1="0" y1="5" x2="32" y2="5" stroke="#10b981" stroke-width="2.5" stroke-dasharray="6,3"/></svg>
+      <span style="color:#10b981;font-weight:700">players.userId</span>
+      <span style="color:#64748b">→</span>
+      <span style="color:#94a3b8">users.id</span>
+    </div><div class="legend-item">
+      <svg width="32" height="10"><line x1="0" y1="5" x2="32" y2="5" stroke="#f59e0b" stroke-width="2.5" stroke-dasharray="6,3"/></svg>
+      <span style="color:#f59e0b;font-weight:700">payment_methods.userId</span>
+      <span style="color:#64748b">→</span>
+      <span style="color:#94a3b8">users.id</span>
+    </div><div class="legend-item">
+      <svg width="32" height="10"><line x1="0" y1="5" x2="32" y2="5" stroke="#f97316" stroke-width="2.5" stroke-dasharray="6,3"/></svg>
+      <span style="color:#f97316;font-weight:700">payments.userId</span>
+      <span style="color:#64748b">→</span>
+      <span style="color:#94a3b8">users.id</span>
+    </div><div class="legend-item">
+      <svg width="32" height="10"><line x1="0" y1="5" x2="32" y2="5" stroke="#22c55e" stroke-width="2.5" stroke-dasharray="6,3"/></svg>
+      <span style="color:#22c55e;font-weight:700">Prospects.userId</span>
+      <span style="color:#64748b">→</span>
+      <span style="color:#94a3b8">users.id</span>
+    </div>
+  </div>
+  </div>
+</div>
+
+<script>
+  // ─── ZOOM & PAN ───────────────────────────────────────────────────────────
+  const canvas  = document.getElementById('canvas');
+  const wrapper = document.getElementById('erd-wrapper');
+  const zoomLabel = document.getElementById('zoom-label');
+
+  let scale = 1;
+  let panX = 0, panY = 0;
+  let isPanning = false, startX = 0, startY = 0;
+
+  function applyTransform() {
+    wrapper.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+    zoomLabel.textContent = Math.round(scale * 100) + '%';
+  }
+
+  // Zoom with mouse wheel
+  canvas.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.08 : 0.08;
+    scale = Math.min(Math.max(scale + delta, 0.2), 2.5);
+    applyTransform();
+  }, { passive: false });
+
+  // Pan with mouse drag
+  canvas.addEventListener('mousedown', (e) => {
+    isPanning = true;
+    startX = e.clientX - panX;
+    startY = e.clientY - panY;
+  });
+  window.addEventListener('mousemove', (e) => {
+    if (!isPanning) return;
+    panX = e.clientX - startX;
+    panY = e.clientY - startY;
+    applyTransform();
+  });
+  window.addEventListener('mouseup', () => { isPanning = false; });
+
+  // Buttons
+  document.getElementById('btn-zoom-in').onclick  = () => { scale = Math.min(scale + 0.1, 2.5); applyTransform(); };
+  document.getElementById('btn-zoom-out').onclick = () => { scale = Math.max(scale - 0.1, 0.2); applyTransform(); };
+  document.getElementById('btn-reset').onclick    = () => { scale = 1; panX = 0; panY = 0; applyTransform(); };
+  document.getElementById('btn-fit').onclick      = () => {
+    const svgEl = document.getElementById('erd-svg');
+    const svgW  = svgEl.getAttribute('width');
+    const svgH  = svgEl.getAttribute('height');
+    const fitScaleX = (canvas.clientWidth  - 80) / svgW;
+    const fitScaleY = (canvas.clientHeight - 80) / svgH;
+    scale = Math.min(fitScaleX, fitScaleY);
+    panX  = (canvas.clientWidth  - svgW * scale) / 2;
+    panY  = (canvas.clientHeight - svgH * scale) / 2;
+    applyTransform();
+  };
+
+  // Auto fit on load
+  window.addEventListener('load', () => {
+    document.getElementById('btn-fit').click();
+  });
+
+  // ─── LEGEND TOGGLE ─────────────────────────────────────────────────────────
+  const legendPanel  = document.getElementById('legend-panel');
+  const legendToggle = document.getElementById('legend-toggle-btn');
+  const legendChevron = document.getElementById('legend-chevron');
+
+  legendToggle.addEventListener('click', () => {
+    const isCollapsed = legendPanel.classList.toggle('collapsed');
+    legendChevron.textContent = isCollapsed ? '▲' : '▲';
+    legendChevron.style.transform = isCollapsed ? 'rotate(-180deg)' : 'rotate(0deg)';
+  });
+</script>
+</body>
+</html>

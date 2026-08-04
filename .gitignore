@@ -33,6 +33,17 @@ backend/err.txt
 backend/fake.png
 scratch/
 
+# Temp build/extraction files
+temp_docx_*/
+pdf_extracted.txt
+temp_report.html
+backend/temp_report.html
+inventory_parsed_exact.json
+db_full_inventory.json
+backend/schema_full.json
+verify_api_connection.js
+generate_docx.js
+
 # OS metadata
 .DS_Store
 Thumbs.db

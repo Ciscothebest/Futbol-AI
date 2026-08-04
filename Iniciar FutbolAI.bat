@@ -1,4 +1,4 @@
-﻿@echo off
+@echo off
 title FutbolAI â€” Iniciando...
 color 0A
 
@@ -31,8 +31,8 @@ echo.
 echo  Abriendo FutbolAI en el navegador...
 echo.
 
-:: Abrir el frontend en el navegador por defecto
-start "" "%~dp0frontend\index.html"
+:: Abrir el frontend en el navegador por defecto (usando localhost para compatibilidad con Passkeys WebAuthn)
+start "" "http://localhost:3001"
 
 echo  âœ… FutbolAI iniciado correctamente
 echo.

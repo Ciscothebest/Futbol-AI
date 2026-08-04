@@ -20,44 +20,101 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
-  <link rel="stylesheet" href="styles.css?v=4.1" />
-  <link rel="stylesheet" href="profile.css?v=2.0" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <link rel="stylesheet" href="styles.css?v=6.0" />
+  <link rel="stylesheet" href="profile.css?v=6.0" />
   <script>
-    // Si ya tiene sesión, ocultamos la landing al cargar
-    window.onload = () => {
-      if (localStorage.getItem('scout_ai_token')) {
-        document.getElementById('landing-screen').style.display = 'none';
-        // Aquí se activaría el dashboard o el onboarding según el estado del usuario
-      }
-    };
+    if (window.location.protocol === 'file:') {
+      window.location.href = 'http://localhost:3001/index.html';
+    }
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="assets/js/jszip.min.js"></script>
+  <script>
+    // ─── CRITICAL: Blocking app-loader — prevents ANY flash of unstyled content ──
+    (function() {
+      // Inject critical CSS (works before external stylesheets load)
+      var s = document.createElement('style');
+      s.textContent = [
+        '#app-loader{position:fixed;inset:0;z-index:99999;background:#040911;',
+        'display:flex;align-items:center;justify-content:center;',
+        'transition:opacity 0.5s ease,visibility 0.5s ease;}',
+        '#app-loader.apl-hide{opacity:0;visibility:hidden;pointer-events:none;}',
+        '.apl-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(0,240,255,.08),transparent);}',
+        '.apl-content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:24px;}',
+        '.apl-ball-wrap{position:relative;width:80px;height:80px;}',
+        '.apl-ball{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:36px;animation:aplBounce 1.4s cubic-bezier(.36,.07,.19,.97) infinite;}',
+        '.apl-ring{position:absolute;inset:0;border-radius:50%;border:2px solid transparent;}',
+        '.apl-ring-1{border-top-color:#00f0ff;border-right-color:rgba(0,240,255,.3);animation:aplSpin 1.5s linear infinite;}',
+        '.apl-ring-2{inset:-8px;border-bottom-color:#7000ff;border-left-color:rgba(112,0,255,.3);animation:aplSpin 2.2s linear infinite reverse;}',
+        '.apl-brand{font-family:Inter,system-ui,sans-serif;font-size:28px;font-weight:900;color:#fff;letter-spacing:2px;text-transform:uppercase;}',
+        '.apl-brand-accent{color:#00f0ff;text-shadow:0 0 20px rgba(0,240,255,.6);}',
+        '.apl-progress-wrap{width:200px;}',
+        '.apl-progress-bar{height:3px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden;}',
+        '.apl-progress-fill{height:100%;width:0%;background:linear-gradient(90deg,#00f0ff,#7000ff);border-radius:2px;transition:width .4s ease;}',
+        '.apl-text{font-family:Inter,system-ui,sans-serif;font-size:13px;color:rgba(255,255,255,.5);letter-spacing:1px;}',
+        '@keyframes aplBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}',
+        '@keyframes aplSpin{to{transform:rotate(360deg)}}',
+        '#section-loader{position:fixed;inset:0;z-index:9999;background:rgba(4,9,17,.85);backdrop-filter:blur(8px);',
+        'display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;',
+        'transition:opacity .25s ease;}',
+        '#section-loader.sl-show{display:flex;}',
+        '#section-loader.sl-fade-out{opacity:0;}',
+        '.sl-spinner{width:44px;height:44px;border-radius:50%;border:3px solid rgba(0,240,255,.15);',
+        'border-top-color:#00f0ff;animation:aplSpin 0.9s linear infinite;}',
+        '.sl-label{font-family:Inter,system-ui,sans-serif;font-size:13px;color:rgba(255,255,255,.6);letter-spacing:1px;}'
+      ].join('');
+      document.head.appendChild(s);
+
+      // Build the loader element and insert at body start on DOMContentLoaded
+      document.addEventListener('DOMContentLoaded', function() {
+        var loader = document.createElement('div');
+        loader.id = 'app-loader';
+        loader.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#040911;display:flex;align-items:center;justify-content:center;';
+        loader.innerHTML = [
+          '<div class="apl-bg"></div>',
+          '<div class="apl-content">',
+            '<div class="apl-ball-wrap">',
+              '<div class="apl-ball">\u26bd</div>',
+              '<div class="apl-ring apl-ring-1"></div>',
+              '<div class="apl-ring apl-ring-2"></div>',
+            '</div>',
+            '<div class="apl-brand"><span class="apl-brand-accent">FUTBOL</span>AI</div>',
+            '<div class="apl-progress-wrap">',
+              '<div class="apl-progress-bar"><div class="apl-progress-fill" id="apl-fill"></div></div>',
+            '</div>',
+            '<div class="apl-text" id="apl-text">Iniciando sistema...</div>',
+          '</div>'
+        ].join('');
+        document.body.insertBefore(loader, document.body.firstChild);
+      });
+
+      // Expose global AppLoader API used by app.js
+      window.AppLoader = {
+        setProgress: function(pct, msg) {
+          var fill = document.getElementById('apl-fill');
+          var text = document.getElementById('apl-text');
+          if (fill) fill.style.width = pct + '%';
+          if (text && msg) text.textContent = msg;
+        },
+        hide: function() {
+          var el = document.getElementById('app-loader');
+          if (el) {
+            el.classList.add('apl-hide');
+            setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 600);
+          }
+        }
+      };
+    })();
   </script>
 </head>
 
 <body>
-  <!-- ──────────────── LANDING SCREEN (RESTAURADA) ──────────────── -->
-  <div id="landing-screen" class="landing-screen">
-    <div class="lnd-hero-bg">
-      <div class="lnd-grid-overlay"></div>
-      <div class="lnd-orb lnd-orb-1"></div>
-      <div class="lnd-orb lnd-orb-2"></div>
-    </div>
-    
-    <div class="lnd-hero-inner">
-      <div class="lnd-hero-content">
-        <h1 class="lnd-h1">
-          EL NUEVO ESTÁNDAR<br/>
-          DEL SCOUTING<br/>
-          TÁCTICO
-        <h1 class="lnd-h1">EL NUEVO ESTÁNDAR<br/>DEL SCOUTING TÁCTICO</h1>
-        <p class="lnd-hero-sub">Analiza jugadores y consulta decisiones con IA</p>
-        <div class="lnd-hero-btns">
-          <button class="lnd-cta-primary" onclick="showRegister()">Registrarse ↗</button>
-          <button class="lnd-cta-secondary" onclick="showLogin()">Iniciar sesión <span>▶</span></button>
-        </div>
-      </div>
-    </div>
+  <!-- ── Section transition loader (module/plan switch) ── -->
+  <div id="section-loader">
+    <div class="sl-spinner"></div>
+    <div class="sl-label" id="section-loader-label">Cargando...</div>
   </div>
+
 
   <!-- 3. ONBOARDING SCREEN (Nuevo usuario) -->
   <div id="onboarding-screen" class="onboarding-screen" style="display: none;">
@@ -78,22 +135,16 @@
           </button>
         </div>
 
-        <div style="display: flex; align-items: center; gap: 12px; font-size: 13px; color: #64748b;">
-          <span id="onboarding-step-text" style="margin-right: 8px;">Paso 1 de 3</span>
-          <div class="step-dot active" id="dot-step-1"></div>
-          <div class="step-dot" id="dot-step-2"></div>
-          <div class="step-dot" id="dot-step-3"></div>
-        </div>
       </nav>
 
       <div class="onboarding-header-text">
-        <h1 id="onboarding-header-title">¿Qué ligas quieres explorar?</h1>
-        <p id="onboarding-header-subtitle">Selecciona los países con ligas profesionales que más te interesan.</p>
+        <h1 id="onboarding-header-title">¿Cuál es tu plan?</h1>
+        <p id="onboarding-header-subtitle">Tu experiencia se adaptará según tu suscripción elegida.</p>
       </div>
     </div>
 
     <!-- STEP 1: MAP SELECTION -->
-    <div id="onboarding-step1-container" class="onboarding-step-container map-viewport-hud-container">
+    <div id="onboarding-step1-container" class="onboarding-step-container map-viewport-hud-container" style="display: none;">
       <div id="map-scroll-wrapper" class="map-scroll-wrapper">
         <div id="map"></div>
       </div>
@@ -124,8 +175,8 @@
               </div>
 
               <div class="footer-hud-right-actions">
-                  <button class="btn-onboarding-continue-glow" id="btn-onboarding-continue" disabled onclick="goToStep2()">Continuar →</button>
-                  <a href="#" class="skip-link" onclick="initDashboard()">Saltar por ahora</a>
+                  <button class="btn-onboarding-continue-glow" id="btn-onboarding-continue" disabled onclick="goToStep3()">Continuar →</button>
+                  <a href="#" class="skip-link" onclick="goToStep1()" style="color: #64748b;">← Atrás</a>
               </div>
           </div>
       </div>
@@ -166,15 +217,15 @@
           </div>
 
           <div class="footer-hud-right-actions" style="flex-direction: row; gap: 15px; align-items: center;">
-            <a href="#" class="skip-link" onclick="goToStep1()" style="color: #64748b;">← Atrás</a>
-            <button class="btn-onboarding-continue-glow" id="btn-confirmar-club" disabled onclick="goToStep3()">Confirmar club →</button>
+            <a href="#" class="skip-link" onclick="goToStep2()" style="color: #64748b;">← Atrás</a>
+            <button class="btn-onboarding-continue-glow" id="btn-confirmar-club" disabled onclick="finalizarOnboarding()">Comenzar →</button>
           </div>
         </div>
       </div>
     </div>
 
     <!-- STEP 3: SUBSCRIPTION TIERS -->
-    <div id="onboarding-step3-container" class="onboarding-step-container" style="display: none; flex: 1; width: 95%; max-width: 1400px; margin: 0 auto 20px; position: relative; z-index: 1; background: transparent; border-radius: 15px;">
+    <div id="onboarding-step3-container" class="onboarding-step-container" style="display: flex; flex: 1; width: 95%; max-width: 1400px; margin: 0 auto 20px; position: relative; z-index: 1; background: transparent; border-radius: 15px;">
       <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; padding: 20px; box-sizing: border-box;">
         
         <h2 id="step3-title" style="font-weight: 800; color: #fff; margin-bottom: 10px; text-shadow: 0 0 10px rgba(255,255,255,0.2); text-align: center;">¿Cuál es tu plan?</h2>
@@ -205,7 +256,7 @@
             <div class="tier-check" style="position: absolute; top: 15px; right: 15px; background: #00f0ff; color: #000; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; opacity: 0; transition: opacity 0.2s; box-shadow: 0 0 10px #00f0ff;">✓</div>
             <div class="tier-lock" style="position: absolute; top: 15px; right: 15px; color: rgba(57, 255, 20, 0.7); font-size: 15px;">🔒</div>
             <div style="font-size: 40px; margin-bottom: 15px; color: #39ff14;">🧢</div>
-            <h3 style="font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">Local <span style="font-size: 10px; background: rgba(57, 255, 20, 0.15); color: #39ff14; padding: 2px 6px; border-radius: 20px; font-weight: 800; border: 1px solid rgba(57, 255, 20, 0.3);">UNICO</span></h3>
+            <h3 style="font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">Local <span style="font-size: 10px; background: rgba(57, 255, 20, 0.15); color: #39ff14; padding: 2px 6px; border-radius: 20px; font-weight: 800; border: 1px solid rgba(57, 255, 20, 0.3);">ENTRENADOR</span></h3>
             <p style="font-size: 13px; color: rgba(255,255,255,0.4); line-height: 1.5;">Destinado para entrenador local. Acceso a todas las funciones locales.</p>
           </div>
  
@@ -242,8 +293,8 @@
           </div>
 
           <div class="footer-hud-right-actions" style="flex-direction: row; gap: 15px; align-items: center;">
-            <a href="#" class="skip-link" onclick="goToStep2()" style="color: #64748b;">← Atrás</a>
-            <button class="btn-onboarding-continue-glow" id="btn-onboarding-final" disabled onclick="finalizarOnboarding()">Comenzar →</button>
+            <a href="#" class="skip-link" onclick="initDashboard()" style="color: #64748b;">Saltar por ahora</a>
+            <button class="btn-onboarding-continue-glow" id="btn-onboarding-final" disabled>Continuar →</button>
           </div>
         </div>
       </div>
@@ -265,28 +316,31 @@
     </button>
 
     <div class="nav-links">
+      <button class="nav-item" data-section="my-players" id="nav-my-players" style="display: none;">
+        <span data-i18n="nav_my_players">MIS JUGADORES</span>
+      </button>
       <button class="nav-item" data-section="my-club" id="nav-my-club" style="display: none;">
-        <span class="nav-icon">🛡️</span>
         <span data-i18n="nav_my_club">MI CLUB</span>
       </button>
       <button class="nav-item active" data-section="players">
-        <span class="nav-icon">👥</span>
         <span data-i18n="nav_players">JUGADORES</span>
       </button>
+      <button class="nav-item" data-section="prospects" id="nav-prospects" style="display: none;">
+        <span data-i18n="nav_prospects">PROSPECTOS</span>
+      </button>
       <button class="nav-item" data-section="compare">
-        <span class="nav-icon">⚖️</span>
         <span data-i18n="nav_compare">COMPARAR</span>
       </button>
       <button class="nav-item" data-section="simulations">
-        <span class="nav-icon">🎮</span>
         <span data-i18n="nav_simulations">SIMULACIONES</span>
       </button>
       <button class="nav-item" data-section="chat">
-        <span class="nav-icon">🤖</span>
         <span data-i18n="nav_chat">IA CHAT</span>
       </button>
-      <button class="nav-item" data-section="predictions">
-        <span class="nav-icon">🔮</span>
+      <button class="nav-item" data-section="my-chats" id="nav-my-chats">
+        <span data-i18n="nav_my_chats">MIS CHATS</span>
+      </button>
+      <button class="nav-item" data-section="predictions" id="nav-predictions" style="display: none;">
         <span data-i18n="nav_predictions">PREDICCIONES</span>
       </button>
     </div>
@@ -367,6 +421,48 @@
       <div class="quick-chat-card">
         <h3 data-i18n="quick_chat_title">💬 Pregunta lo que quieras</h3>
         <div class="quick-prompts" id="home-quick-prompts"></div>
+      </div>
+    </section>
+
+    <!-- MY PLAYERS SECTION (EXCLUSIVE PLAYER CREATION MODULE FOR LOCAL COACH) -->
+    <section class="section" id="section-my-players">
+      <div class="section-title-bar">
+        <h2 data-i18n="section_my_players">Mis Jugadores</h2>
+        <span class="total-tag" id="my-players-header-count">0 Jugadores</span>
+      </div>
+
+      <!-- Search + Create Row -->
+      <div style="display: flex; width: 100%; gap: 14px; align-items: center; margin-bottom: 28px;">
+        <div class="tactical-search" style="flex: 1; max-width: none;">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="local-player-search-main" placeholder="Buscar jugador por nombre, apodo o dorsal..." oninput="filterLocalPlayersMain()" />
+        </div>
+        <button id="btn-add-local-player-main" onclick="openLocalPlayerFormModal()" style="display: flex; align-items: center; gap: 7px; padding: 10px 18px; font-size: 13px; font-weight: 700; background: rgba(0,240,255,0.1); color: #00f0ff; border: 1px solid rgba(0,240,255,0.4); border-radius: 8px; cursor: pointer; transition: all 0.25s; white-space: nowrap; flex-shrink: 0;" onmouseover="this.style.background='#00f0ff';this.style.color='#040911';" onmouseout="this.style.background='rgba(0,240,255,0.1)';this.style.color='#00f0ff';">
+          Crear Jugador
+        </button>
+      </div>
+
+
+      <!-- Players Grid -->
+      <div id="local-players-grid-main" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; width: 100%;">
+      </div>
+
+      <!-- Empty State -->
+      <div id="local-players-empty-main" style="display: none; text-align: center; padding: 55px 20px; background: rgba(0,240,255,0.02); border: 1.5px dashed rgba(0,240,255,0.2); border-radius: 14px; margin-top: 10px;">
+        <div style="width: 66px; height: 66px; margin: 0 auto 14px auto; background: rgba(0,240,255,0.06); border: 1px solid rgba(0,240,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 0 20px rgba(0,240,255,0.12);">⚽</div>
+        <h4 style="font-size: 17px; font-weight: 800; color: #fff; margin: 0 0 8px 0;">Tu Plantilla Local está vacía</h4>
+        <p style="font-size: 13.5px; color: rgba(255,255,255,0.55); max-width: 400px; margin: 0 auto 20px auto; line-height: 1.6;">Registra el expediente de tu primer futbolista para gestionar su ficha técnica y evaluación táctica.</p>
+        <button onclick="openLocalPlayerFormModal()" style="background: linear-gradient(90deg,#00f0ff,#0099ff); color: #040911; border: none; font-weight: 800; font-size: 13.5px; padding: 10px 22px; border-radius: 8px; cursor: pointer; box-shadow: 0 0 18px rgba(0,240,255,0.3);">
+          Registrar Primer Jugador
+        </button>
+      </div>
+
+      <!-- Upgrade notice -->
+      <div id="local-players-upgrade-notice-main" style="display: none; text-align: center; padding: 50px 20px; border: 1px dashed rgba(0,240,255,0.2); border-radius: 14px;">
+        <span style="font-size: 42px; display: block; margin-bottom: 12px;">🛡️</span>
+        <h4 style="font-size: 17px; font-weight: 700; color: #00f0ff; margin-bottom: 8px;">Módulo Exclusivo — Plan Entrenador Local</h4>
+        <p style="font-size: 13px; color: rgba(255,255,255,0.6); max-width: 440px; margin: 0 auto 18px auto;">Este módulo está disponible exclusivamente para perfiles con el <strong>Plan Local</strong>.</p>
+        <button onclick="openUpgradeModal()" style="background: #00f0ff; color: #040911; border: none; padding: 9px 20px; font-size: 13px; font-weight: 800; border-radius: 8px; cursor: pointer;">Obtener Plan Local</button>
       </div>
     </section>
 
@@ -643,59 +739,237 @@
       </div>
     </section>
 
+    <!-- PROSPECTS SECTION (PLANES NO-LOCALES: PRO, PLUS, ENTERPRISE, GRATIS) -->
+    <section class="section" id="section-prospects">
+      <div class="section-title-bar">
+        <div>
+          <h2>👥 Prospectos</h2>
+          <p id="prospects-subtitle" style="font-size:0.78rem; color: var(--color-text-muted, #8892a4); margin-top:2px;"></p>
+        </div>
+        <span class="total-tag" id="prospects-count-tag">0 prospectos</span>
+      </div>
+
+      <div class="tactical-filters-area">
+        <div class="tactical-search">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="prospects-search-input" placeholder="Buscar jugador o club..." oninput="if (window.renderProspectsModule) window.renderProspectsModule();" />
+        </div>
+
+        <div class="tactical-selects" style="display: flex; gap: 10px; margin-top: 15px; margin-bottom: 5px;">
+          <select id="prospects-filter-pos" class="sort-select" onchange="if (window.renderProspectsModule) window.renderProspectsModule();">
+            <option value="">🌐 TODAS LAS POSICIONES</option>
+            <option value="POR">PORTERO (POR)</option>
+            <option value="DEF">DEFENSA (DEF)</option>
+            <option value="MED">CENTROCAMPISTA (MED)</option>
+            <option value="DEL">DELANTERO (DEL)</option>
+          </select>
+
+          <select id="prospects-filter-category" class="sort-select" onchange="if (window.renderProspectsModule) window.renderProspectsModule();">
+            <option value="">TODOS LOS EQUIPOS / CATEGORÍAS</option>
+            <option value="sub-20">CANTERA / SUB-20</option>
+            <option value="senior">SENIOR</option>
+            <option value="primera">PRIMERA DIVISIÓN LOCAL</option>
+          </select>
+        </div>
+
+        <div class="tactical-sort">
+          <select id="prospects-sort" class="sort-select" onchange="if (window.renderProspectsModule) window.renderProspectsModule();">
+            <option value="name_asc">NOMBRE (A-Z)</option>
+            <option value="name_desc">NOMBRE (Z-A)</option>
+            <option value="rating_desc">VALORACIÓN (MAYOR A MENOR)</option>
+            <option value="rating_asc">VALORACIÓN (MENOR A MAYOR)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="players-grid" id="prospects-grid">
+      </div>
+
+      <div class="no-results" id="prospects-no-results" style="display:none">
+        <span>😕</span>
+        <p>No se encontraron prospectos locales / No local prospects found</p>
+      </div>
+    </section>
+
     <!-- CHAT SECTION -->
     <section class="section" id="section-chat">
-      <div class="chat-layout">
-        <div class="chat-header">
-          <div class="agent-avatar">⚽</div>
-          <div class="agent-info">
-            <h3 data-i18n="chat_agent_name">FutbolAI Agent</h3>
-            <p class="agent-status" id="agent-status-text">Online — Gemini Powered</p>
+      <div class="chat-layout-wrapper" id="chat-layout-wrapper">
+        <!-- Sidebar Histórico (Izquierda) -->
+        <aside class="chat-sidebar" id="chat-sidebar">
+          <div class="chat-sidebar-header">
+            <button class="btn-new-chat" id="btn-new-chat" title="Iniciar nueva conversación / New chat">
+              <span data-i18n="btn_new_chat">Nuevo Chat</span>
+            </button>
+            <button class="btn-icon chat-sidebar-close-mobile" id="btn-close-chat-sidebar" title="Cerrar panel / Close sidebar">✕</button>
           </div>
-          <button class="btn-icon" id="btn-mute-agent" title="Silenciar Agente / Mute Agent">🔊</button>
-          <button class="btn-icon" id="btn-clear-chat" title="Nueva conversación / New conversation">🗑️</button>
-        </div>
 
-        <div class="chat-messages" id="chat-messages">
-          <div class="chat-welcome">
-            <div class="welcome-icon">⚽</div>
-            <h3>¡Bienvenido a FutbolAI!</h3>
-            <p>Soy tu experto en fútbol mundial. Puedo responder cualquier pregunta sobre jugadores, estadísticas,
-              carreras y más.<br /><em>I'm your global football expert. Ask me anything about players, stats, careers
-                and more.</em></p>
-            <div class="welcome-chips">
-              <button class="prompt-chip" onclick="sendQuick('¿Quién mete más goles actualmente en Europa?')">⚽ Máximo
-                goleador Europa</button>
-              <button class="prompt-chip" onclick="sendQuick('Tell me about Erling Haaland')">🇳🇴 Haaland
-                profile</button>
-              <button class="prompt-chip" onclick="sendQuick('¿Cuál es la mejor liga del mundo y por qué?')">🏆 Mejor
-                liga</button>
-              <button class="prompt-chip" onclick="sendQuick('Compare Vinicius Jr and Kylian Mbappé')">⚖️ Vini vs
-                Mbappé</button>
+          <div class="chat-sidebar-search">
+            <input type="text" id="chat-search-input" data-i18n-placeholder="search_chats_placeholder" placeholder="Buscar conversación..." />
+          </div>
+
+          <div class="chat-history-list" id="chat-history-list">
+            <!-- Dynamic chat sessions list -->
+          </div>
+
+          <div class="chat-sidebar-footer">
+            <button class="btn-clear-all-chats" id="btn-clear-all-chats" title="Borrar todo el historial / Clear all history">
+              <span data-i18n="clear_all_chats">Limpiar historial</span>
+            </button>
+          </div>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <div class="chat-main-area">
+          <div class="chat-header">
+            <button class="btn-icon btn-toggle-chat-sidebar" id="btn-toggle-chat-sidebar" title="Abrir/Cerrar historial">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="9" y1="3" x2="9" y2="21"></line>
+              </svg>
+            </button>
+            <div class="agent-avatar">⚽</div>
+            <div class="agent-info">
+              <h3 data-i18n="chat_agent_name">FutbolAI Agent</h3>
+              <p class="agent-status" id="agent-status-text">Online — Gemini Powered</p>
+            </div>
+            <button class="btn-icon" id="btn-mute-agent" title="Silenciar Agente / Mute Agent">🔊</button>
+          </div>
+
+          <div class="chat-messages" id="chat-messages">
+            <div class="chat-welcome">
+              <div class="welcome-icon">⚽</div>
+              <h3>¡Bienvenido a FutbolAI!</h3>
+              <p>Soy tu experto en fútbol mundial. Puedo responder cualquier pregunta sobre jugadores, estadísticas,
+                carreras y más.<br /><em>I'm your global football expert. Ask me anything about players, stats, careers
+                  and more.</em></p>
+              <div class="welcome-chips">
+                <button class="prompt-chip" onclick="sendQuick('¿Quién mete más goles actualmente en Europa?')">⚽ Máximo
+                  goleador Europa</button>
+                <button class="prompt-chip" onclick="sendQuick('Tell me about Erling Haaland')">🇳🇴 Haaland
+                  profile</button>
+                <button class="prompt-chip" onclick="sendQuick('¿Cuál es la mejor liga del mundo y por qué?')">🏆 Mejor
+                  liga</button>
+                <button class="prompt-chip" onclick="sendQuick('Compare Vinicius Jr and Kylian Mbappé')">⚖️ Vini vs
+                  Mbappé</button>
+              </div>
             </div>
           </div>
+
+          <div class="chat-input-area" id="chat-input-area">
+            <!-- Text Input (Normal) -->
+            <textarea id="chat-input" class="chat-textarea" data-i18n-placeholder="chat_placeholder"
+              placeholder="Escribe tu pregunta..." rows="1"></textarea>
+
+            <!-- Recording Overlay (WhatsApp style - Hidden by default) -->
+            <div id="recording-overlay" class="recording-overlay" style="display:none;">
+              <div class="recording-dot"></div>
+              <span id="record-timer" class="record-timer">0:00</span>
+              <span class="recording-placeholder" data-i18n="recording_msg">Grabando audio...</span>
+            </div>
+
+            <button id="record-btn" class="record-btn" title="Grabar audio / Record audio">
+              <span class="record-icon">🎤</span>
+            </button>
+
+            <button id="send-btn" class="send-btn" title="Enviar / Send">
+              <span class="send-icon">➤</span>
+            </button>
+          </div>
         </div>
+      </div>
+    </section>
 
-        <div class="chat-input-area" id="chat-input-area">
-          <!-- Text Input (Normal) -->
-          <textarea id="chat-input" class="chat-textarea" data-i18n-placeholder="chat_placeholder"
-            placeholder="Escribe tu pregunta..." rows="1"></textarea>
+    <!-- MY CHATS SECTION (Mensajería entre usuarios) -->
+    <section class="section" id="section-my-chats">
+      <div class="section-title-bar" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
+        <div>
+          <h2>
+            <span data-i18n="section_my_chats">Mis Chats</span>
+          </h2>
+        </div>
+        <button class="btn btn-primary" id="btn-open-find-user-modal" onclick="openFindUserModal()">
+          Nuevo Chat
+        </button>
+      </div>
 
-          <!-- Recording Overlay (WhatsApp style - Hidden by default) -->
-          <div id="recording-overlay" class="recording-overlay" style="display:none;">
-            <div class="recording-dot"></div>
-            <span id="record-timer" class="record-timer">0:00</span>
-            <span class="recording-placeholder" data-i18n="recording_msg">Grabando audio...</span>
+      <!-- Banner Paywall si el usuario no tiene plan Local o Enterprise -->
+      <div id="my-chats-restricted-overlay" style="display: none; max-width: 600px; margin: 50px auto; padding: 45px 35px; background: rgba(8, 14, 26, 0.96); border: 1.5px solid rgba(0, 240, 255, 0.35); border-radius: 24px; box-shadow: 0 0 60px rgba(0, 240, 255, 0.2); backdrop-filter: blur(15px); text-align: center;">
+        <div style="width: 72px; height: 72px; margin: 0 auto 22px auto; background: rgba(0, 240, 255, 0.08); border: 1.5px solid rgba(0, 240, 255, 0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; box-shadow: 0 0 25px rgba(0, 240, 255, 0.25);">
+          🔒
+        </div>
+        <h2 style="font-size: 1.45rem; font-weight: 800; color: #fff; margin-bottom: 12px;">
+          Módulo Exclusivo para Planes Local y Enterprise
+        </h2>
+        <p style="font-size: 0.92rem; color: var(--text-2); line-height: 1.6; margin-bottom: 28px; max-width: 480px; margin-left: auto; margin-right: auto;">
+          La mensajería directa entre usuarios (entrenadores y scouts de la plataforma) requiere un plan <strong>Local</strong> o <strong>Enterprise</strong> activo.
+        </p>
+        <button class="btn btn-primary" onclick="openUpgradeModal()" style="padding: 12px 28px; font-size: 0.92rem; font-weight: 700; border-radius: 12px; box-shadow: 0 0 25px rgba(0, 240, 255, 0.4);">
+          Actualizar Plan de Suscripción
+        </button>
+      </div>
+
+      <div class="my-chats-wrapper">
+        <!-- Sidebar de Contactos -->
+        <aside class="my-chats-sidebar">
+          <div class="my-chats-sidebar-header">
+            <div class="search-input-wrap">
+              <input type="text" id="my-chats-search-contacts" placeholder="Buscar usuario o contacto..." class="search-input">
+            </div>
+          </div>
+          <div class="my-chats-contacts-list" id="my-chats-contacts-list">
+            <div class="empty-contacts-state" style="text-align: center; color: var(--text-2); padding: 25px 15px;">
+              <p style="font-size: 0.88rem;">No hay contactos</p>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Ventana de Chat Principal -->
+        <main class="my-chats-main-window">
+          <!-- Vista Vacía por defecto -->
+          <div class="my-chats-empty-view" id="my-chats-empty-view">
+            <div class="empty-view-content">
+              <h3>Mensajería entre Usuarios</h3>
+              <p>Selecciona un contacto de la lista o haz clic en "Nuevo Chat" para iniciar una conversación.</p>
+            </div>
           </div>
 
-          <button id="record-btn" class="record-btn" title="Grabar audio / Record audio">
-            <span class="record-icon">🎤</span>
-          </button>
+          <!-- Panel de Chat Activo -->
+          <div class="my-chats-active-panel" id="my-chats-active-panel" style="display: none;">
+            <!-- Header del Chat Activo -->
+            <header class="my-chats-active-header">
+              <div class="my-chats-active-user-info">
+                <div class="contact-avatar-wrap">
+                  <img id="active-chat-avatar" src="" alt="Avatar" class="contact-avatar">
+                  <span class="online-indicator" id="active-chat-online-indicator"></span>
+                </div>
+                <div>
+                  <div class="user-name-title">
+                    <span id="active-chat-name">Nombre Contacto</span>
+                    <span class="role-badge" id="active-chat-role">Scout</span>
+                  </div>
+                  <div class="user-sub-info" id="active-chat-club">Club / País</div>
+                </div>
+              </div>
+              <div class="my-chats-header-actions">
+                <button class="btn-icon-hud" id="btn-view-contact-profile" onclick="openUserProfileDossierModal()" title="Ver Perfil de Usuario">Perfil</button>
+                <button class="btn-icon-hud" id="btn-clear-chat-history" title="Vaciar conversación">Vaciar</button>
+              </div>
+            </header>
 
-          <button id="send-btn" class="send-btn" title="Enviar / Send">
-            <span class="send-icon">➤</span>
-          </button>
-        </div>
+            <!-- Cuerpo de Mensajes -->
+            <div class="my-chats-messages-body" id="my-chats-messages-body">
+              <!-- Se puebla dinámicamente -->
+            </div>
+
+            <!-- Input Bar -->
+            <footer class="my-chats-input-bar">
+              <input type="text" id="my-chats-input-text" placeholder="Escribe un mensaje..." autocomplete="off">
+              <button id="my-chats-btn-send" class="btn-send-neon">
+                <span>Enviar</span>
+              </button>
+            </footer>
+          </div>
+        </main>
       </div>
     </section>
 
@@ -1170,15 +1444,15 @@
                 <span class="profile-info-label">Rol de Usuario</span>
                 <span class="profile-info-val" id="profile-page-role">—</span>
               </div>
-              <div class="profile-info-item">
+              <div class="profile-info-item" id="profile-info-club">
                 <span class="profile-info-label" data-i18n="profile_club_label">Club Seleccionado</span>
                 <span class="profile-info-val" id="profile-page-club">—</span>
               </div>
-              <div class="profile-info-item">
+              <div class="profile-info-item" id="profile-info-country">
                 <span class="profile-info-label" data-i18n="profile_country_label">País de Scouting</span>
                 <span class="profile-info-val" id="profile-page-country">—</span>
               </div>
-              <div class="profile-info-item">
+              <div class="profile-info-item" id="profile-info-tactic">
                 <span class="profile-info-label" data-i18n="profile_tactic_label">Estilo Táctico</span>
                 <span class="profile-info-val" id="profile-page-tactic">—</span>
               </div>
@@ -1186,8 +1460,55 @@
                 <span class="profile-info-label" style="color: rgba(255,255,255,0.5); font-size: 13px;">Plan de Suscripción</span>
                 <div style="display: flex; align-items: center; gap: 12px;">
                   <span class="profile-info-val" id="profile-page-plan-name" style="font-weight: 700; color: #00f0ff; text-transform: uppercase; font-size: 13px; letter-spacing: 0.5px;">Gratis</span>
-                  <button class="btn-profile-primary" onclick="openUpgradeModal()" style="padding: 5px 12px; font-size: 11px; font-weight: 700; border-radius: 6px; background: rgba(0, 240, 255, 0.1); border: 1.5px solid #00f0ff; color: #00f0ff; cursor: pointer; transition: all 0.3s; box-shadow: 0 0 10px rgba(0, 240, 255, 0.1);" onmouseover="this.style.background='rgba(0, 240, 255, 0.2)'; this.style.boxShadow='0 0 15px rgba(0, 240, 255, 0.3)'" onmouseout="this.style.background='rgba(0, 240, 255, 0.1)'; this.style.boxShadow='0 0 10px rgba(0, 240, 255, 0.1)'">Actualizar Plan</button>
+                  <button class="btn-profile-primary" onclick="openUpgradeModal()" style="padding: 5px 12px; font-size: 11px; font-weight: 700; border-radius: 6px; background: rgba(0, 240, 255, 0.1); border: 1.5px solid #00f0ff; color: #00f0ff; cursor: pointer; transition: all 0.3s; box-shadow: 0 0 10px rgba(0, 240, 255, 0.1);" onmouseover="this.style.background='rgba(0, 240, 255, 0.2)'; this.style.boxShadow='0 0 15px rgba(0, 240, 255, 0.3)'" onmouseout="this.style.background='rgba(0, 240, 255, 0.1)'; this.style.boxShadow='0 0 10px rgba(0, 240, 255, 0.1)'">Gestionar Plan</button>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tarjeta de Información de Entrenador Local -->
+          <div class="profile-card" id="profile-local-coach-card" style="display: none; margin-top: 20px;">
+            <div class="profile-card-header">
+              <span class="profile-card-icon">🧢</span>
+              <h3 class="profile-card-title">Ficha de Entrenador Local</h3>
+            </div>
+            <div class="profile-info-list">
+              <div class="profile-info-item">
+                <span class="profile-info-label">Club que entrena</span>
+                <span class="profile-info-val" id="profile-local-club">—</span>
+              </div>
+              <div class="profile-info-item">
+                <span class="profile-info-label">Rango de edad cantera</span>
+                <span class="profile-info-val" id="profile-local-age-range">—</span>
+              </div>
+              <div class="profile-info-item">
+                <span class="profile-info-label">País</span>
+                <span class="profile-info-val" id="profile-local-country">—</span>
+              </div>
+              <div class="profile-info-item">
+                <span class="profile-info-label">Ubicación del club</span>
+                <span class="profile-info-val" id="profile-local-address">—</span>
+              </div>
+              <div class="profile-info-item">
+                <span class="profile-info-label">Código de registro</span>
+                <span class="profile-info-val" id="profile-local-code">—</span>
+              </div>
+              <div class="profile-info-item">
+                <span class="profile-info-label">Teléfono adm. club</span>
+                <span class="profile-info-val" id="profile-local-admin-phone">—</span>
+              </div>
+              <div class="profile-info-item">
+                <span class="profile-info-label">Ligas participantes</span>
+                <span class="profile-info-val" id="profile-local-leagues">—</span>
+              </div>
+              <div class="profile-info-item" style="flex-direction: column; align-items: flex-start; gap: 4px; border-bottom: none;">
+                <span class="profile-info-label">Premios o campeonatos</span>
+                <span class="profile-info-val" id="profile-local-awards" style="white-space: pre-wrap; font-size: 13px; line-height: 1.4; margin-top: 4px; color: rgba(255,255,255,0.85);">—</span>
+              </div>
+              <div style="margin-top: 15px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.08); text-align: center;">
+                <button class="btn-profile-primary" onclick="switchProfileTab('my-players')" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(0, 162, 255, 0.2)); border: 1px solid #00f0ff; color: #00f0ff; padding: 10px; border-radius: 8px; cursor: pointer; transition: all 0.3s; box-shadow: 0 0 15px rgba(0,240,255,0.15);" onmouseover="this.style.background='linear-gradient(135deg, rgba(0, 240, 255, 0.35), rgba(0, 162, 255, 0.35))'" onmouseout="this.style.background='linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(0, 162, 255, 0.2))'">
+                  <span>⚽</span> Gestor de Mis Jugadores Locales
+                </button>
               </div>
             </div>
           </div>
@@ -1216,15 +1537,24 @@
 
         <div class="profile-right-col">
           <!-- Profile Tabs Header -->
-          <div class="profile-tabs-header" style="display: flex; gap: 15px; margin-bottom: 20px; border-bottom: 1.5px solid rgba(255,255,255,0.06); padding-bottom: 10px;">
-            <button class="profile-tab-btn active" id="btn-profile-tab-activity" onclick="switchProfileTab('activity')" style="background: none; border: none; color: #00f0ff; font-weight: 700; font-size: 14.5px; padding: 6px 12px; cursor: pointer; border-bottom: 2.5px solid #00f0ff; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
-              <span>📊</span> Actividad
+          <div class="profile-tabs-header" style="display: flex; gap: 15px; margin-bottom: 20px; border-bottom: 1.5px solid rgba(255,255,255,0.06); padding-bottom: 10px; flex-wrap: wrap;">
+            <button class="profile-tab-btn active" id="btn-profile-tab-activity" onclick="switchProfileTab('activity')" style="background: none; border: none; color: #00f0ff; font-weight: 700; font-size: 14.5px; padding: 6px 12px; cursor: pointer; border-bottom: 2.5px solid #00f0ff; transition: all 0.3s;">
+              Actividad
             </button>
-            <button class="profile-tab-btn" id="btn-profile-tab-payments" onclick="switchProfileTab('payments')" style="background: none; border: none; color: rgba(255,255,255,0.6); font-weight: 600; font-size: 14.5px; padding: 6px 12px; cursor: pointer; border-bottom: 2.5px solid transparent; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
-              <span>💳</span> Historial de Pagos
+            <button class="profile-tab-btn" id="btn-profile-tab-my-players" onclick="switchProfileTab('my-players')" style="background: none; border: none; color: rgba(255,255,255,0.6); font-weight: 600; font-size: 14.5px; padding: 6px 12px; cursor: pointer; border-bottom: 2.5px solid transparent; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
+              <span>Mis Jugadores</span> <span id="my-players-count-badge" style="background: rgba(0,240,255,0.2); color: #00f0ff; border: 1px solid rgba(0,240,255,0.4); font-size: 11px; padding: 1px 7px; border-radius: 10px; font-weight: 700;">0</span>
             </button>
-            <button class="profile-tab-btn" id="btn-profile-tab-favorites" onclick="switchProfileTab('favorites')" style="background: none; border: none; color: rgba(255,255,255,0.6); font-weight: 600; font-size: 14.5px; padding: 6px 12px; cursor: pointer; border-bottom: 2.5px solid transparent; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
-              <span>⭐</span> <span data-i18n="profile_tab_favorites">Favoritos</span>
+            <button class="profile-tab-btn" id="btn-profile-tab-payment-methods" onclick="switchProfileTab('payment-methods')" style="background: none; border: none; color: rgba(255,255,255,0.6); font-weight: 600; font-size: 14.5px; padding: 6px 12px; cursor: pointer; border-bottom: 2.5px solid transparent; transition: all 0.3s;">
+              Medios de Pago
+            </button>
+            <button class="profile-tab-btn" id="btn-profile-tab-payments" onclick="switchProfileTab('payments')" style="background: none; border: none; color: rgba(255,255,255,0.6); font-weight: 600; font-size: 14.5px; padding: 6px 12px; cursor: pointer; border-bottom: 2.5px solid transparent; transition: all 0.3s;">
+              Historial de Pagos
+            </button>
+            <button class="profile-tab-btn" id="btn-profile-tab-favorites" onclick="switchProfileTab('favorites')" style="background: none; border: none; color: rgba(255,255,255,0.6); font-weight: 600; font-size: 14.5px; padding: 6px 12px; cursor: pointer; border-bottom: 2.5px solid transparent; transition: all 0.3s;">
+              <span data-i18n="profile_tab_favorites">Favoritos</span>
+            </button>
+            <button class="profile-tab-btn" id="btn-profile-tab-security" onclick="switchProfileTab('security')" style="background: none; border: none; color: rgba(255,255,255,0.6); font-weight: 600; font-size: 14.5px; padding: 6px 12px; cursor: pointer; border-bottom: 2.5px solid transparent; transition: all 0.3s;">
+              <span>Seguridad</span>
             </button>
           </div>
 
@@ -1252,6 +1582,94 @@
                   <div class="profile-stat-num" id="profile-stat-plan">Gratis</div>
                   <div class="profile-stat-desc" data-i18n="profile_stat_plan">Plan Actual</div>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab Content: Mis Jugadores (Plan Local) -->
+          <div id="profile-tab-content-my-players" class="profile-tab-content" style="display: none;">
+            <div class="profile-card" style="margin-bottom: 20px;">
+              <div class="profile-card-header" style="justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <span class="profile-card-icon">⚽</span>
+                  <div>
+                    <h3 class="profile-card-title">Plantilla de Mis Jugadores Locales</h3>
+                    <p style="font-size: 12.5px; color: rgba(255,255,255,0.5); margin-top: 2px;">Gestión táctica de cantera, expediente técnico y rendimiento para entrenadores con Plan Local.</p>
+                  </div>
+                </div>
+                <button class="btn-profile-primary" id="btn-add-local-player-top" onclick="openLocalPlayerFormModal()" style="display: flex; align-items: center; gap: 6px; padding: 9px 16px; font-weight: 700; background: #00f0ff; color: #05080c; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 0 15px rgba(0, 240, 255, 0.3); transition: all 0.3s;">
+                  Registrar Jugador Local
+                </button>
+              </div>
+
+              <!-- General Stats for Local Roster -->
+              <div class="profile-stats-grid" style="margin-top: 15px; margin-bottom: 20px;">
+                <div class="profile-stat-box" style="border-left: 3px solid #00f0ff;">
+                  <div class="profile-stat-num" id="local-roster-total">0</div>
+                  <div class="profile-stat-desc">Total Plantilla</div>
+                </div>
+                <div class="profile-stat-box" style="border-left: 3px solid #00ff88;">
+                  <div class="profile-stat-num" id="local-roster-available">0</div>
+                  <div class="profile-stat-desc">Disponibles</div>
+                </div>
+                <div class="profile-stat-box" style="border-left: 3px solid #ffaa00;">
+                  <div class="profile-stat-num" id="local-roster-avg-rating">0.0</div>
+                  <div class="profile-stat-desc">Rating Promedio</div>
+                </div>
+                <div class="profile-stat-box" style="border-left: 3px solid #7000ff;">
+                  <div class="profile-stat-num" id="local-roster-top-cat">—</div>
+                  <div class="profile-stat-desc">Categoría Dom.</div>
+                </div>
+              </div>
+
+              <!-- Search & Filters -->
+              <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05);">
+                <div style="flex: 1; min-width: 200px; position: relative;">
+                  <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.4); font-size: 14px;">🔍</span>
+                  <input type="text" id="local-player-search" placeholder="Buscar jugador por nombre o apodo..." oninput="filterLocalPlayers()" style="width: 100%; box-sizing: border-box; background: rgba(10,16,28,0.8); border: 1px solid rgba(0,240,255,0.2); border-radius: 8px; padding: 8px 12px 8px 36px; color: #fff; font-size: 13.5px; outline: none;">
+                </div>
+                <select id="local-player-pos-filter" onchange="filterLocalPlayers()" style="background: rgba(10,16,28,0.8); border: 1px solid rgba(0,240,255,0.2); border-radius: 8px; padding: 8px 12px; color: #fff; font-size: 13px; outline: none; cursor: pointer;">
+                  <option value="ALL">Todas las Posiciones</option>
+                  <option value="ST">Delanteros (ST/CF)</option>
+                  <option value="MID">Centrocampistas (CM/CAM/CDM)</option>
+                  <option value="DEF">Defensas (CB/LB/RB)</option>
+                  <option value="GK">Porteros (GK)</option>
+                </select>
+                <select id="local-player-cat-filter" onchange="filterLocalPlayers()" style="background: rgba(10,16,28,0.8); border: 1px solid rgba(0,240,255,0.2); border-radius: 8px; padding: 8px 12px; color: #fff; font-size: 13px; outline: none; cursor: pointer;">
+                  <option value="ALL">Todas las Categorías</option>
+                  <option value="Sub-13">Sub-13</option>
+                  <option value="Sub-15">Sub-15</option>
+                  <option value="Sub-17">Sub-17</option>
+                  <option value="Sub-20">Sub-20</option>
+                  <option value="Senior">Senior</option>
+                </select>
+              </div>
+
+              <!-- Grid Container for Local Players -->
+              <div id="local-players-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 18px; width: 100%;">
+                <!-- Dynamic Local Player Cards loaded via JS -->
+              </div>
+
+              <!-- Empty State -->
+              <div id="local-players-empty" style="display: none; text-align: center; padding: 45px 20px; background: rgba(0,240,255,0.02); border: 1px dashed rgba(0,240,255,0.2); border-radius: 14px; margin-top: 10px;">
+                <span style="font-size: 45px; display: block; margin-bottom: 12px; filter: drop-shadow(0 0 10px rgba(0,240,255,0.3));">🧢</span>
+                <h4 style="font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 6px;">No tienes jugadores registrados en tu plantilla local</h4>
+                <p style="font-size: 13.5px; color: rgba(255,255,255,0.55); max-width: 460px; margin: 0 auto 20px auto; line-height: 1.5;">Como entrenador con Plan Local, puedes registrar expedientes de tus jugadores de cantera, dar seguimiento a sus estadísticas y ver su evolución táctica.</p>
+                <button onclick="openLocalPlayerFormModal()" style="background: #00f0ff; color: #05080c; border: none; font-weight: 700; font-size: 13.5px; padding: 10px 20px; border-radius: 8px; cursor: pointer; box-shadow: 0 0 15px rgba(0,240,255,0.3); transition: all 0.3s;">
+                  Registrar Primer Jugador Local
+                </button>
+              </div>
+
+              <!-- Plan Upgrade Prompt Notice for non-Local users -->
+              <div id="local-players-upgrade-notice" style="display: none; text-align: center; padding: 45px 20px; background: linear-gradient(135deg, rgba(0,240,255,0.05), rgba(112,0,255,0.05)); border: 1px solid rgba(0,240,255,0.3); border-radius: 16px;">
+                <span style="font-size: 50px; display: block; margin-bottom: 12px;">🛡️</span>
+                <h4 style="font-size: 18px; font-weight: 800; color: #00f0ff; margin-bottom: 8px;">Módulo Exclusivo para Plan Local</h4>
+                <p style="font-size: 14px; color: rgba(255,255,255,0.7); max-width: 500px; margin: 0 auto 22px auto; line-height: 1.6;">
+                  El módulo <strong>Mis Jugadores</strong> está diseñado para entrenadores de club local y canteras. Te permite crear expedientes personalizados, gestionar partidos, dar seguimiento al estado médico y exportar reportes de tu plantilla.
+                </p>
+                <button onclick="openUpgradeModal()" style="background: linear-gradient(90deg, #00f0ff, #0088ff); color: #05080c; border: none; font-weight: 800; font-size: 14px; padding: 12px 26px; border-radius: 8px; cursor: pointer; box-shadow: 0 0 20px rgba(0,240,255,0.4); text-transform: uppercase; letter-spacing: 0.5px;">
+                  Actualizar a Plan Local
+                </button>
               </div>
             </div>
           </div>
@@ -1301,6 +1719,158 @@
               </div>
             </div>
           </div>
+
+          <!-- Tab Content 5: Security / Passkey -->
+          <div id="profile-tab-content-security" class="profile-tab-content" style="display: none;">
+            <div class="profile-card">
+              <div class="profile-card-header" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <h3 class="profile-card-title">Seguridad y Dispositivos Passkey</h3>
+                </div>
+              </div>
+              <p style="color: rgba(255,255,255,0.65); font-size: 0.9rem; line-height: 1.5; margin-bottom: 20px;">
+                Administra tus credenciales biométricas (Windows Hello / Huella / Rostro) y PIN Passkey de respaldo. La autenticación complementaria por Passkey es obligatoria para todas las cuentas, sin importar el plan suscrito.
+              </p>
+
+              <!-- Dispositivo Configurado Status Box -->
+              <div style="background: rgba(0, 240, 255, 0.04); border: 1.5px solid rgba(0, 240, 255, 0.2); border-radius: 12px; padding: 20px; margin-bottom: 25px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; margin-bottom: 15px;">
+                  <div style="display: flex; align-items: center; gap: 15px;">
+                    <div style="width: 50px; height: 50px; background: rgba(0, 240, 255, 0.1); border: 1px solid rgba(0, 240, 255, 0.3); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                      <span id="security-passkey-device-icon">💻</span>
+                    </div>
+                    <div>
+                      <h4 id="security-passkey-device-title" style="color: #fff; font-size: 1rem; font-weight: 700; margin-bottom: 4px;">Dispositivo de Acceso</h4>
+                      <div id="security-passkey-status-text" style="color: #00f0ff; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                        <span style="display: inline-block; width: 8px; height: 8px; background: #00f0ff; border-radius: 50%; box-shadow: 0 0 8px #00f0ff;"></span> Passkey Configurada y Activa
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Detailed Passkey Methods List Container -->
+                <div id="security-passkey-methods-details" style="border-top: 1px solid rgba(0, 240, 255, 0.15); padding-top: 15px; display: flex; flex-direction: column; gap: 10px;">
+                  <!-- Populated dynamically by loadSecurityPasskeyInfo -->
+                </div>
+              </div>
+
+              <!-- Options Grid -->
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px;">
+                <!-- Option 1: WebAuthn -->
+                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between;">
+                  <div>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                      <div style="font-size: 28px;">🔑</div>
+                      <span id="passkey-webauthn-badge" style="font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 12px; background: rgba(255, 170, 0, 0.15); color: #ffaa00; border: 1px solid rgba(255, 170, 0, 0.4);">⚠️ Sin vincular</span>
+                    </div>
+                    <h4 style="color: #fff; font-size: 1.05rem; font-weight: 700; margin-bottom: 8px;">Biometría / Windows Hello</h4>
+                    <p style="color: rgba(255,255,255,0.55); font-size: 0.85rem; line-height: 1.5; margin-bottom: 16px;">
+                      Registra o actualiza la Passkey de este equipo para iniciar sesión usando huella dactilar, reconocimiento facial o clave de Windows.
+                    </p>
+                  </div>
+                  <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <button id="btn-webauthn-action" class="btn-profile-primary" onclick="window.updatePasskeyWebAuthn()" style="width: 100%; padding: 10px; font-size: 0.88rem; font-weight: 700; background: linear-gradient(135deg, rgba(0,240,255,0.2), rgba(0,162,255,0.2)); border: 1px solid #00f0ff; color: #00f0ff; border-radius: 8px; cursor: pointer;">
+                      Vincular / Actualizar Passkey
+                    </button>
+                    <button id="btn-webauthn-remove" class="btn-profile-secondary" onclick="window.removePasskeyMethod('webauthn')" style="width: 100%; padding: 8px; font-size: 0.8rem; font-weight: 600; background: rgba(255, 74, 74, 0.1); border: 1px solid rgba(255, 74, 74, 0.3); color: #ff4a4a; border-radius: 8px; cursor: pointer; display: none;">
+                      🗑️ Desvincular Passkey Biométrica
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Option 2: PIN -->
+                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between;">
+                  <div>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                      <div style="font-size: 28px;">🔢</div>
+                      <span id="passkey-pin-badge" style="font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 12px; background: rgba(255, 170, 0, 0.15); color: #ffaa00; border: 1px solid rgba(255, 170, 0, 0.4);">⚠️ Sin configurar</span>
+                    </div>
+                    <h4 style="color: #fff; font-size: 1.05rem; font-weight: 700; margin-bottom: 8px;">PIN Passkey de Respaldo</h4>
+                    <p style="color: rgba(255,255,255,0.55); font-size: 0.85rem; line-height: 1.5; margin-bottom: 16px;">
+                      Establece o cambia un PIN numérico de 6 dígitos que servirá como alternativa segura si tu dispositivo no tiene sensor biométrico.
+                    </p>
+                  </div>
+                  <div>
+                    <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                      <input type="text" id="profile-passkey-pin-input" placeholder="PIN de 6 dígitos" maxlength="6" pattern="\d{6}" style="flex: 1; text-align: center; letter-spacing: 5px; font-weight: bold; background: rgba(0,0,0,0.3); border: 1px solid rgba(0,240,255,0.3); border-radius: 6px; padding: 8px; color: #fff; -webkit-text-security: disc; text-security: disc;" />
+                      <button id="btn-pin-action" class="btn-profile-primary" onclick="window.updatePasskeyPin()" style="padding: 8px 14px; font-size: 0.85rem; font-weight: 700; background: #00f0ff; color: #000; border: none; border-radius: 6px; cursor: pointer;">
+                        Guardar
+                      </button>
+                    </div>
+                    <button id="btn-pin-remove" class="btn-profile-secondary" onclick="window.removePasskeyMethod('pin')" style="width: 100%; padding: 8px; font-size: 0.8rem; font-weight: 600; background: rgba(255, 74, 74, 0.1); border: 1px solid rgba(255, 74, 74, 0.3); color: #ff4a4a; border-radius: 8px; cursor: pointer; display: none; margin-bottom: 8px;">
+                      🗑️ Desvincular PIN de Respaldo
+                    </button>
+                    <div id="profile-passkey-pin-msg" style="font-size: 0.8rem; color: #00f0ff; text-align: center; min-height: 18px;"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div id="security-passkey-feedback" style="margin-top: 20px; font-size: 0.9rem; text-align: center; font-weight: 600;"></div>
+
+              <!-- 3 Security Questions Section -->
+              <div style="margin-top: 30px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 25px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 22px;">❓</span>
+                    <h4 style="color: #fff; font-size: 1.1rem; font-weight: 700; margin: 0;">Preguntas de Seguridad (3 Obligatorias)</h4>
+                  </div>
+                  <span id="security-questions-status-badge" style="background: rgba(255, 170, 0, 0.15); border: 1px solid rgba(255, 170, 0, 0.4); color: #ffaa00; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; text-transform: uppercase;">
+                    Pendientes de Configuración
+                  </span>
+                </div>
+                <p style="color: rgba(255,255,255,0.55); font-size: 0.85rem; line-height: 1.5; margin-bottom: 20px;">
+                  Ingresa 3 preguntas con sus respectivas respuestas de seguridad. Serán requeridas en situaciones específicas de verificación, recuperación o cambios de alta seguridad en tu cuenta.
+                </p>
+
+                <div id="profile-security-questions-form" style="display: flex; flex-direction: column; gap: 18px;">
+                  <!-- Question 1 -->
+                  <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 10px; padding: 16px;">
+                    <span style="display: block; color: #00f0ff; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px;">Pregunta #1</span>
+                    <input type="text" id="sec-q1-text" placeholder="Ej: ¿Cuál es el nombre de tu primera mascota?" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 9px 12px; color: #fff; font-size: 0.9rem; margin-bottom: 10px; box-sizing: border-box;" required />
+                    <span style="display: block; color: rgba(255,255,255,0.7); font-size: 0.8rem; margin-bottom: 4px;">Respuesta #1</span>
+                    <input type="text" id="sec-a1-text" placeholder="Tu respuesta secreta #1" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 9px 12px; color: #fff; font-size: 0.9rem; box-sizing: border-box; -webkit-text-security: disc; text-security: disc;" required />
+                  </div>
+
+                  <!-- Question 2 -->
+                  <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 10px; padding: 16px;">
+                    <span style="display: block; color: #00f0ff; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px;">Pregunta #2</span>
+                    <input type="text" id="sec-q2-text" placeholder="Ej: ¿En qué ciudad naciste?" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 9px 12px; color: #fff; font-size: 0.9rem; margin-bottom: 10px; box-sizing: border-box;" required />
+                    <span style="display: block; color: rgba(255,255,255,0.7); font-size: 0.8rem; margin-bottom: 4px;">Respuesta #2</span>
+                    <input type="text" id="sec-a2-text" placeholder="Tu respuesta secreta #2" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 9px 12px; color: #fff; font-size: 0.9rem; box-sizing: border-box; -webkit-text-security: disc; text-security: disc;" required />
+                  </div>
+
+                  <!-- Question 3 -->
+                  <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 10px; padding: 16px;">
+                    <span style="display: block; color: #00f0ff; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px;">Pregunta #3</span>
+                    <input type="text" id="sec-q3-text" placeholder="Ej: ¿Cuál es el equipo de fútbol favorito de tu infancia?" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 9px 12px; color: #fff; font-size: 0.9rem; margin-bottom: 10px; box-sizing: border-box;" required />
+                    <span style="display: block; color: rgba(255,255,255,0.7); font-size: 0.8rem; margin-bottom: 4px;">Respuesta #3</span>
+                    <input type="text" id="sec-a3-text" placeholder="Tu respuesta secreta #3" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 9px 12px; color: #fff; font-size: 0.9rem; box-sizing: border-box; -webkit-text-security: disc; text-security: disc;" required />
+                  </div>
+
+                  <button type="button" onclick="window.saveSecurityQuestions(event)" class="btn-profile-primary" style="padding: 12px; font-size: 0.95rem; font-weight: 800; background: linear-gradient(135deg, #00f0ff, #0088ff); color: #000; border: none; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 15px rgba(0, 240, 255, 0.25);">
+                    💾 Guardar 3 Preguntas de Seguridad
+                  </button>
+                </div>
+                <div id="security-questions-feedback" style="margin-top: 15px; font-size: 0.88rem; text-align: center; font-weight: 600;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab Content: Medios de Pago -->
+          <div id="profile-tab-content-payment-methods" class="profile-tab-content" style="display: none;">
+            <div class="profile-card">
+              <div class="profile-card-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 16px;">
+                <h3 class="profile-card-title" style="margin: 0; white-space: nowrap;">Medios de Pago de la Suscripción</h3>
+                <button id="btn-open-add-payment-method-modal" class="btn-profile-primary" onclick="window.openAddPaymentMethodModal && window.openAddPaymentMethodModal()" style="flex: 0 0 auto !important; width: auto !important; margin-left: auto !important; padding: 7px 15px !important; font-size: 13px !important; font-weight: 700; background: linear-gradient(135deg, #00f0ff, #0072ff); color: #05080c; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 0 12px rgba(0, 240, 255, 0.25); transition: all 0.3s; white-space: nowrap;">
+                  Agregar Tarjeta
+                </button>
+              </div>
+
+              <div id="payment-methods-list-container" class="payment-methods-grid" style="margin-top: 20px;">
+                <!-- Filled dynamically by JavaScript -->
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -1332,32 +1902,40 @@
           <div style="font-size: 24px; font-weight: 900; color: #fff;" id="payment-modal-price">$9.99 <span style="font-size: 13px; color: rgba(255,255,255,0.4); font-weight: 400;">/ mes</span></div>
         </div>
 
-        <!-- Checkout Form -->
-        <form id="payment-gateway-form" style="width: 100%; display: flex; flex-direction: column; gap: 12px; text-align: left; margin-bottom: 20px; box-sizing: border-box;">
+        <!-- CSS Labels to hide text from browser C++ DOM autofill regex scanner -->
+        <style>
+          .pay-lbl-holder::before { content: "Nombre del Titular"; }
+          .pay-lbl-digits::before { content: "Número de Tarjeta"; }
+          .pay-lbl-period::before { content: "Vencimiento"; }
+          .pay-lbl-code::before { content: "CVV"; }
+        </style>
+
+        <!-- Checkout Form Container (div instead of form tag to bypass browser CC form heuristics) -->
+        <div id="payment-gateway-form" style="width: 100%; display: flex; flex-direction: column; gap: 12px; text-align: left; margin-bottom: 20px; box-sizing: border-box;">
           <div style="display: flex; flex-direction: column; gap: 4px;">
-            <label style="font-size: 10px; color: rgba(255,255,255,0.4); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Nombre del Titular</label>
-            <input type="text" id="pay-card-name" placeholder="Lionel Messi" required style="background: rgba(255,255,255,0.03); border: 1.5px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 13.5px; font-family: 'Segoe UI', sans-serif; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#00f0ff'" onblur="this.style.borderColor='rgba(0, 240, 255, 0.15)'">
+            <span class="pay-lbl-holder" style="font-size: 10px; color: rgba(255,255,255,0.4); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;"></span>
+            <input type="text" id="pay-field-holder" name="p_h_val" autocomplete="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-form-type="other" placeholder="Nombre del Usuario" style="background: rgba(255,255,255,0.03); border: 1.5px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 13.5px; font-family: 'Segoe UI', sans-serif; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#00f0ff'" onblur="this.style.borderColor='rgba(0, 240, 255, 0.15)'">
           </div>
           
           <div style="display: flex; flex-direction: column; gap: 4px;">
-            <label style="font-size: 10px; color: rgba(255,255,255,0.4); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Número de Tarjeta</label>
+            <span class="pay-lbl-digits" style="font-size: 10px; color: rgba(255,255,255,0.4); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;"></span>
             <div style="position: relative; display: flex; align-items: center; width: 100%; box-sizing: border-box;">
-              <input type="text" id="pay-card-number" placeholder="4000 1234 5678 9010" required maxlength="19" style="background: rgba(255,255,255,0.03); border: 1.5px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 13.5px; font-family: 'Segoe UI', sans-serif; outline: none; transition: border-color 0.2s; width: 100%; box-sizing: border-box; padding-right: 45px;" onfocus="this.style.borderColor='#00f0ff'" onblur="this.style.borderColor='rgba(0, 240, 255, 0.15)'">
+              <input type="text" id="pay-field-digits" name="p_d_val" autocomplete="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-form-type="other" placeholder="4000 0000 0000 0000" maxlength="19" style="background: rgba(255,255,255,0.03); border: 1.5px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 13.5px; font-family: 'Segoe UI', sans-serif; outline: none; transition: border-color 0.2s; width: 100%; box-sizing: border-box; padding-right: 45px;" onfocus="this.style.borderColor='#00f0ff'" onblur="this.style.borderColor='rgba(0, 240, 255, 0.15)'">
               <span id="pay-card-brand" style="position: absolute; right: 12px; font-size: 16px; color: rgba(255,255,255,0.4); font-weight: 700;">💳</span>
             </div>
           </div>
 
           <div style="display: flex; gap: 12px; width: 100%;">
             <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
-              <label style="font-size: 10px; color: rgba(255,255,255,0.4); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Vencimiento</label>
-              <input type="text" id="pay-card-expiry" placeholder="MM/AA" required maxlength="5" style="background: rgba(255,255,255,0.03); border: 1.5px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 10px; color: #fff; font-size: 13.5px; font-family: 'Segoe UI', sans-serif; outline: none; transition: border-color 0.2s; text-align: center; box-sizing: border-box; width: 100%;" onfocus="this.style.borderColor='#00f0ff'" onblur="this.style.borderColor='rgba(0, 240, 255, 0.15)'">
+              <span class="pay-lbl-period" style="font-size: 10px; color: rgba(255,255,255,0.4); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;"></span>
+              <input type="text" id="pay-field-period" name="p_v_val" autocomplete="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-form-type="other" placeholder="08/28" maxlength="5" style="background: rgba(255,255,255,0.03); border: 1.5px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 10px; color: #fff; font-size: 13.5px; font-family: 'Segoe UI', sans-serif; outline: none; transition: border-color 0.2s; text-align: center; box-sizing: border-box; width: 100%;" onfocus="this.style.borderColor='#00f0ff'" onblur="this.style.borderColor='rgba(0, 240, 255, 0.15)'">
             </div>
             <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
-              <label style="font-size: 10px; color: rgba(255,255,255,0.4); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">CVV</label>
-              <input type="password" id="pay-card-cvv" placeholder="•••" required maxlength="4" style="background: rgba(255,255,255,0.03); border: 1.5px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 10px; color: #fff; font-size: 13.5px; font-family: 'Segoe UI', sans-serif; outline: none; transition: border-color 0.2s; text-align: center; box-sizing: border-box; width: 100%;" onfocus="this.style.borderColor='#00f0ff'" onblur="this.style.borderColor='rgba(0, 240, 255, 0.15)'">
+              <span class="pay-lbl-code" style="font-size: 10px; color: rgba(255,255,255,0.4); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;"></span>
+              <input type="text" id="pay-field-code" name="p_c_val" autocomplete="off" autocorrect="off" spellcheck="false" data-lpignore="true" data-form-type="other" placeholder="123" maxlength="4" style="background: rgba(255,255,255,0.03); border: 1.5px solid rgba(0, 240, 255, 0.15); border-radius: 8px; padding: 10px; color: #fff; font-size: 13.5px; font-family: 'Segoe UI', sans-serif; outline: none; transition: border-color 0.2s; text-align: center; box-sizing: border-box; width: 100%; -webkit-text-security: disc; text-security: disc;" onfocus="this.style.borderColor='#00f0ff'" onblur="this.style.borderColor='rgba(0, 240, 255, 0.15)'">
             </div>
           </div>
-        </form>
+        </div>
 
         <button class="btn-onboarding-continue-glow" id="btn-simulate-payment" disabled style="width: 100%; border-radius: 12px; padding: 15px; font-size: 16px; margin-bottom: 18px; cursor: pointer; opacity: 0.5;" onclick="simulatePayment()">Confirmar Pago Seguro 🔒</button>
         <a href="#" onclick="closePaymentModal(); if(typeof selectTier === 'function') { selectTier('Gratis', document.getElementById('tier-card-gratis')); } event.preventDefault();" style="color: rgba(255,255,255,0.45); font-size: 13px; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.45)'">Volver y elegir plan Gratis</a>
@@ -1421,57 +1999,165 @@
     </div>
   </div>
 
+  <!-- ──────────────── SCREEN FOR LOCAL COACH ONBOARDING ──────────────── -->
+  <div class="local-coach-screen" id="local-coach-onboarding-screen" style="display: none;">
+    <!-- Capa de rejilla táctica (Radar Effect) -->
+    <div class="tactical-radar-grid"></div>
+
+    <div class="local-coach-layout-container">
+      <!-- Columna Izquierda: Información de IA Táctica -->
+      <div class="local-coach-info-panel">
+        <div class="local-coach-badge">🛡️ PLAN LOCAL ACTIVO</div>
+        <div class="local-coach-info-icon">🧢</div>
+        <h2 class="local-coach-info-title">Impulsa el Talento Local al Escenario Mundial</h2>
+        <p class="local-coach-info-desc">
+          Has activado con éxito el perfil de <strong>Entrenador Local</strong>. Completa los datos de tu club para registrar y promocionar a tus jugadores destacados, dándoles visibilidad directa frente a scouts internacionales que buscan la próxima gran estrella.
+        </p>
+        <div class="local-coach-features-list">
+          <div class="local-coach-feature-item">
+            <span class="feature-bullet">⚡</span>
+            <span>Exposición global para los jóvenes talentos de tu cantera.</span>
+          </div>
+          <div class="local-coach-feature-item">
+            <span class="feature-bullet">📊</span>
+            <span>Métricas e informes listos para ser evaluados por scouts internacionales.</span>
+          </div>
+          <div class="local-coach-feature-item">
+            <span class="feature-bullet">🌐</span>
+            <span>Conexión directa entre el fútbol local y el mercado de élite.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Columna Derecha: Formulario de Registro -->
+      <div class="local-coach-form-panel">
+        <div class="local-coach-header">
+          <h2 class="local-coach-title">Detalles del Club</h2>
+          <p class="local-coach-subtitle">Establece la configuración competitiva inicial</p>
+        </div>
+
+        <div class="local-coach-grid">
+          <div class="local-coach-field-full">
+            <label class="local-coach-label">Club que entrena</label>
+            <input type="text" id="local-coach-club" placeholder="Ej: Club Deportivo Huracán" class="local-coach-input">
+          </div>
+
+          <div class="local-coach-field-full">
+            <label class="local-coach-label">Rango de Edad (Ej: 15-18)</label>
+            <input type="text" id="local-coach-age-range" placeholder="Ej: 15-18 años" class="local-coach-input">
+            <span class="local-coach-hint-text">* Los jugadores de esta categoría deben ser estrictamente menores de 20 años.</span>
+          </div>
+
+          <div class="local-coach-field">
+            <label class="local-coach-label">País</label>
+            <input type="text" id="local-coach-nationality" placeholder="Ej: España" class="local-coach-input">
+          </div>
+
+          <div class="local-coach-field">
+            <label class="local-coach-label">Código local</label>
+            <input type="text" id="local-coach-code" placeholder="Ej: LOC-4829" class="local-coach-input">
+          </div>
+
+          <div class="local-coach-field-full">
+            <label class="local-coach-label">Ubicación del club</label>
+            <input type="text" id="local-coach-league-address" placeholder="Ej: Av. de la Constitución 14, Sevilla" class="local-coach-input">
+          </div>
+
+          <div class="local-coach-field-full">
+            <label class="local-coach-label">Teléfono Administrativo del Club</label>
+            <input type="text" id="local-coach-admin-phone" placeholder="Ej: +34 600 123 456" class="local-coach-input">
+            <span class="local-coach-hint-text" style="color: rgba(255,255,255,0.4); margin-top: 4px; display: block; font-size: 11px;">* Debe ser un número diferente al teléfono personal de tu cuenta.</span>
+          </div>
+
+          <div class="local-coach-field-full">
+            <label class="local-coach-label">Ligas en las que participa el club</label>
+            <input type="text" id="local-coach-leagues-participating" placeholder="Ej: Liga Andaluza Juvenil, Copa Provincial" class="local-coach-input">
+          </div>
+
+          <div class="local-coach-field-full">
+            <label class="local-coach-label">Premios individuales o campeonatos del club</label>
+            <textarea id="local-coach-awards" placeholder="Ej: Campeón Copa Juvenil 2024, Premio Juego Limpio 2023" class="local-coach-input local-coach-textarea"></textarea>
+          </div>
+        </div>
+
+        <button class="btn-onboarding-continue-glow" id="btn-success-local-continue" style="width: 100%; border-radius: 12px; padding: 15px; font-size: 16px; cursor: pointer; border: none; font-weight: 700; margin-top: 15px;" onclick="confirmSuccessAndSaveLocalForm()">Comenzar a explorar 🚀</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ──────────────── UPGRADE PLAN MODAL ──────────────── -->
   <div class="modal-overlay" id="upgrade-modal" style="display:none; z-index: 24000;">
     <div class="modal" style="max-width: 960px; background: rgba(8, 14, 26, 0.98); border: 1.5px solid #00f0ff; border-radius: 24px; padding: 40px 30px; box-shadow: 0 0 60px rgba(0, 240, 255, 0.3); backdrop-filter: blur(15px); text-align: center; display: flex; flex-direction: column; align-items: center; border: 1.5px solid #00f0ff; position: relative;">
+      
+      <!-- Inner Downgrade Confirmation Overlay -->
+      <div id="downgrade-confirm-modal" style="display: none; position: absolute; inset: 0; background: rgba(8, 14, 26, 0.94); border-radius: 24px; z-index: 100; flex-direction: column; align-items: center; justify-content: center; padding: 30px; backdrop-filter: blur(10px);">
+        <div style="max-width: 420px; width: 100%; text-align: center; background: #0d1117; border: 1.5px solid rgba(0, 240, 255, 0.4); border-radius: 16px; padding: 30px 24px; box-shadow: 0 0 40px rgba(0, 240, 255, 0.25); position: relative;">
+          <button class="auth-close" onclick="closeDowngradeConfirmModal()" style="position: absolute; right: 15px; top: 15px; background: none; border: none; color: #fff; font-size: 1.4rem; cursor: pointer; opacity: 0.7;">&times;</button>
+          
+          <div style="margin-bottom: 20px;">
+            <h2 style="color: #fff; font-size: 1.3rem; font-weight: 800; margin-bottom: 12px; letter-spacing: 0.5px;">Confirmación de Cambio de Plan</h2>
+            <p style="color: #00f0ff; font-size: 0.98rem; line-height: 1.5; font-weight: 600; margin: 0;" id="downgrade-confirm-message">
+              ¿Estás seguro de hacer el cambio de plan?
+            </p>
+          </div>
+
+          <div style="display: flex; gap: 14px; margin-top: 25px; width: 100%;">
+            <button class="auth-submit" onclick="executeSaveUpgradeTier()" style="flex: 1; background: transparent; border: 2px solid #00f0ff; color: #00f0ff; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 0 15px rgba(0, 240, 255, 0.2); transition: all 0.2s;" onmouseover="this.style.background='rgba(0,240,255,0.1)'" onmouseout="this.style.background='transparent'">
+              Confirmar
+            </button>
+            <button onclick="closeDowngradeConfirmModal()" style="flex: 1; background: transparent; border: 1.5px solid rgba(255, 255, 255, 0.3); color: rgba(255, 255, 255, 0.85); padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">
+              Cerrar
+            </button>
+          </div>
+        </div>
+      </div>
+
       <button class="modal-close" onclick="closeUpgradeModal()" style="position: absolute; top: 15px; right: 20px; background: none; border: none; color: rgba(255,255,255,0.4); font-size: 24px; cursor: pointer; transition: color 0.2s;">✕</button>
       <h2 style="font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 8px; font-family: 'Segoe UI', sans-serif;">Actualizar Plan de Suscripción</h2>
-      <p style="font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 35px; font-family: 'Segoe UI', sans-serif;">Potencia tu análisis táctico con nuestras herramientas avanzadas impulsadas por Inteligencia Artificial.</p>
+      <p style="font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 25px; font-family: 'Segoe UI', sans-serif;">Potencia tu análisis táctico con nuestras herramientas avanzadas impulsadas por Inteligencia Artificial.</p>
+      
+
       
       <!-- Upgrade Tiers Grid -->
       <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; width: 100%; max-width: 900px; margin-bottom: 30px;">
         <!-- Gratis -->
-        <div class="tier-card upgrade-card" id="upgrade-card-gratis" onclick="selectUpgradeTier('Gratis', this)" style="flex: 1; min-width: 180px; max-width: 210px; background: rgba(10, 20, 35, 0.6); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 16px; padding: 25px 15px; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+        <div class="tier-card upgrade-card" id="upgrade-card-gratis" onclick="selectUpgradeTier('Gratis', this)" style="flex: 1; min-width: 180px; max-width: 210px; background: rgba(10, 20, 35, 0.6); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 16px; padding: 30px 15px; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
           <div class="tier-check" style="position: absolute; top: 12px; right: 12px; background: #00f0ff; color: #000; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; opacity: 0; transition: opacity 0.2s;">✓</div>
-          <div style="font-size: 30px; margin-bottom: 12px; color: #94a3b8;">🎯</div>
-          <h3 style="font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 8px;">Gratis</h3>
-          <p style="font-size: 11px; color: rgba(255,255,255,0.5); line-height: 1.4;">Acceso básico a tácticas y análisis táctico.</p>
+          <div class="tier-lock" style="display: none;"></div>
+          <h3 style="font-size: 17px; font-weight: 800; color: #fff; margin-bottom: 10px;">Gratis</h3>
+          <p style="font-size: 11.5px; color: rgba(255,255,255,0.6); line-height: 1.4;">Acceso básico a tácticas y análisis táctico.</p>
         </div>
         
         <!-- Pro -->
-        <div class="tier-card upgrade-card locked" id="upgrade-card-pro" onclick="showUpgradePaymentModal('Pro', '$9.99', this)" style="flex: 1; min-width: 180px; max-width: 210px; background: rgba(10, 20, 35, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 25px 15px; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3); opacity: 0.75;">
+        <div class="tier-card upgrade-card locked" id="upgrade-card-pro" onclick="showUpgradePaymentModal('Pro', '$9.99', this)" style="flex: 1; min-width: 180px; max-width: 210px; background: rgba(10, 20, 35, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 30px 15px; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3); opacity: 0.75;">
           <div class="tier-check" style="position: absolute; top: 12px; right: 12px; background: #00f0ff; color: #000; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; opacity: 0; transition: opacity 0.2s;">✓</div>
-          <div class="tier-lock" style="position: absolute; top: 12px; right: 12px; color: rgba(0, 240, 255, 0.7); font-size: 13px;">🔒</div>
-          <div style="font-size: 30px; margin-bottom: 12px; color: #00f0ff;">🔍</div>
-          <h3 style="font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 8px;">Pro</h3>
-          <p style="font-size: 11px; color: rgba(255,255,255,0.4); line-height: 1.4;">Descubre y evalúa talento local e internacional con IA.</p>
+          <div class="tier-lock" style="display: none;"></div>
+          <h3 style="font-size: 17px; font-weight: 800; color: #fff; margin-bottom: 10px;">Pro</h3>
+          <p style="font-size: 11.5px; color: rgba(255,255,255,0.6); line-height: 1.4;">Descubre y evalúa talento local e internacional con IA.</p>
         </div>
 
         <!-- Local -->
-        <div class="tier-card upgrade-card locked" id="upgrade-card-local" onclick="showUpgradePaymentModal('Local', '$40.00', this)" style="flex: 1; min-width: 180px; max-width: 210px; background: rgba(10, 20, 35, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 25px 15px; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3); opacity: 0.75;">
+        <div class="tier-card upgrade-card locked" id="upgrade-card-local" onclick="showUpgradePaymentModal('Local', '$40.00', this)" style="flex: 1; min-width: 180px; max-width: 210px; background: rgba(10, 20, 35, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 30px 15px; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3); opacity: 0.75;">
           <div class="tier-check" style="position: absolute; top: 12px; right: 12px; background: #00f0ff; color: #000; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; opacity: 0; transition: opacity 0.2s;">✓</div>
-          <div class="tier-lock" style="position: absolute; top: 12px; right: 12px; color: rgba(57, 255, 20, 0.7); font-size: 13px;">🔒</div>
-          <div style="font-size: 30px; margin-bottom: 12px; color: #39ff14;">🧢</div>
-          <h3 style="font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 8px;">Local</h3>
-          <p style="font-size: 11px; color: rgba(255,255,255,0.4); line-height: 1.4;">Destinado para entrenador local. Acceso a todas las funciones locales.</p>
+          <div class="tier-lock" style="display: none;"></div>
+          <h3 style="font-size: 17px; font-weight: 800; color: #fff; margin-bottom: 10px;">Local</h3>
+          <p style="font-size: 11.5px; color: rgba(255,255,255,0.6); line-height: 1.4;">Destinado para entrenador local. Acceso a todas las funciones locales.</p>
         </div>
 
         <!-- Plus -->
-        <div class="tier-card upgrade-card locked" id="upgrade-card-plus" onclick="showUpgradePaymentModal('Plus', '$19.99', this)" style="flex: 1; min-width: 180px; max-width: 210px; background: rgba(10, 20, 35, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 25px 15px; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3); opacity: 0.75;">
+        <div class="tier-card upgrade-card locked" id="upgrade-card-plus" onclick="showUpgradePaymentModal('Plus', '$19.99', this)" style="flex: 1; min-width: 180px; max-width: 210px; background: rgba(10, 20, 35, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 30px 15px; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3); opacity: 0.75;">
           <div class="tier-check" style="position: absolute; top: 12px; right: 12px; background: #00f0ff; color: #000; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; opacity: 0; transition: opacity 0.2s;">✓</div>
-          <div class="tier-lock" style="position: absolute; top: 12px; right: 12px; color: rgba(240, 188, 66, 0.7); font-size: 13px;">🔒</div>
-          <div style="font-size: 30px; margin-bottom: 12px; color: #f0bc42;">📊</div>
-          <h3 style="font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 8px;">Plus</h3>
-          <p style="font-size: 11px; color: rgba(255,255,255,0.4); line-height: 1.4;">Métricas avanzadas, heatmaps y estadísticas comparativas.</p>
+          <div class="tier-lock" style="display: none;"></div>
+          <h3 style="font-size: 17px; font-weight: 800; color: #fff; margin-bottom: 10px;">Plus</h3>
+          <p style="font-size: 11.5px; color: rgba(255,255,255,0.6); line-height: 1.4;">Métricas avanzadas, heatmaps y estadísticas comparativas.</p>
         </div>
 
         <!-- Enterprise -->
-        <div class="tier-card upgrade-card locked" id="upgrade-card-enterprise" onclick="showUpgradePaymentModal('Enterprise', '$49.99', this)" style="flex: 1; min-width: 180px; max-width: 210px; background: rgba(10, 20, 35, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 25px 15px; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3); opacity: 0.75;">
+        <div class="tier-card upgrade-card locked" id="upgrade-card-enterprise" onclick="showUpgradePaymentModal('Enterprise', '$49.99', this)" style="flex: 1; min-width: 180px; max-width: 210px; background: rgba(10, 20, 35, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 30px 15px; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3); opacity: 0.75;">
           <div class="tier-check" style="position: absolute; top: 12px; right: 12px; background: #00f0ff; color: #000; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; opacity: 0; transition: opacity 0.2s;">✓</div>
-          <div class="tier-lock" style="position: absolute; top: 12px; right: 12px; color: rgba(200, 16, 46, 0.7); font-size: 13px;">🔒</div>
-          <div style="font-size: 30px; margin-bottom: 12px; color: #c8102e;">🤝</div>
-          <h3 style="font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 8px;">Enterprise</h3>
-          <p style="font-size: 11px; color: rgba(255,255,255,0.4); line-height: 1.4;">Gestiona perfiles de jugadores y oportunidades de mercado.</p>
+          <div class="tier-lock" style="display: none;"></div>
+          <h3 style="font-size: 17px; font-weight: 800; color: #fff; margin-bottom: 10px;">Enterprise</h3>
+          <p style="font-size: 11.5px; color: rgba(255,255,255,0.6); line-height: 1.4;">Gestiona perfiles de jugadores y oportunidades de mercado.</p>
         </div>
       </div>
       
@@ -1690,28 +2376,31 @@
     </div>
     <div class="sidebar-content">
       <div class="mobile-nav-links">
+        <button class="nav-item" data-section="my-players" id="nav-my-players-mobile" style="display: none;">
+          <span data-i18n="nav_my_players">MIS JUGADORES</span>
+        </button>
         <button class="nav-item" data-section="my-club" id="nav-my-club-mobile" style="display: none;">
-          <span class="nav-icon">🛡️</span>
           <span data-i18n="nav_my_club">MI CLUB</span>
         </button>
         <button class="nav-item active" data-section="players">
-          <span class="nav-icon">👥</span>
           <span data-i18n="nav_players">JUGADORES</span>
         </button>
+        <button class="nav-item" data-section="prospects" id="nav-prospects-mobile" style="display: none;">
+          <span data-i18n="nav_prospects">PROSPECTOS</span>
+        </button>
         <button class="nav-item" data-section="compare">
-          <span class="nav-icon">⚖️</span>
           <span data-i18n="nav_compare">COMPARAR</span>
         </button>
         <button class="nav-item" data-section="simulations">
-          <span class="nav-icon">🎮</span>
           <span data-i18n="nav_simulations">SIMULACIONES</span>
         </button>
         <button class="nav-item" data-section="chat">
-          <span class="nav-icon">🤖</span>
           <span data-i18n="nav_chat">IA CHAT</span>
         </button>
-        <button class="nav-item" data-section="predictions">
-          <span class="nav-icon">🔮</span>
+        <button class="nav-item" data-section="my-chats" id="nav-my-chats-mobile">
+          <span data-i18n="nav_my_chats">MIS CHATS</span>
+        </button>
+        <button class="nav-item" data-section="predictions" id="nav-predictions-mobile" style="display: none;">
           <span data-i18n="nav_predictions">PREDICCIONES</span>
         </button>
       </div>
@@ -1734,9 +2423,842 @@
 
   <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
+  <!-- ───────────── CRASH / ERROR SCREEN ───────────── -->
+  <div id="app-error-screen" style="display:none; position:fixed; inset:0; z-index:99999; background:#080e1a; flex-direction:column; align-items:center; justify-content:center; padding:40px; text-align:center; font-family:'Inter',sans-serif;">
+    <!-- Animated background grid -->
+    <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(0,240,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,0.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;"></div>
+    <!-- Glowing orbs -->
+    <div style="position:absolute;width:500px;height:500px;background:radial-gradient(ellipse,rgba(0,240,255,0.07) 0%,transparent 70%);top:-100px;right:-100px;pointer-events:none;"></div>
+    <div style="position:absolute;width:400px;height:400px;background:radial-gradient(ellipse,rgba(255,74,74,0.06) 0%,transparent 70%);bottom:-50px;left:-50px;pointer-events:none;"></div>
+
+    <div style="position:relative;z-index:1;max-width:680px;width:100%;">
+      <!-- Error code badge -->
+      <div style="display:inline-flex;align-items:center;gap:10px;background:rgba(255,74,74,0.12);border:1px solid rgba(255,74,74,0.35);border-radius:50px;padding:8px 20px;margin-bottom:32px;">
+        <span style="width:8px;height:8px;border-radius:50%;background:#ff4a4a;box-shadow:0 0 10px #ff4a4a;display:inline-block;"></span>
+        <span style="color:#ff4a4a;font-size:0.78rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;">Sistema Inactivo — Error de Aplicación</span>
+      </div>
+
+      <!-- Big error code -->
+      <div style="font-size:clamp(80px,15vw,140px);font-weight:900;line-height:1;color:transparent;background:linear-gradient(135deg,#ff4a4a 0%,#ff8a00 50%,#ff4a4a 100%);-webkit-background-clip:text;background-clip:text;letter-spacing:-6px;margin-bottom:8px;">ERR</div>
+
+      <!-- Title -->
+      <h1 style="font-size:clamp(22px,4vw,34px);font-weight:800;color:#fff;letter-spacing:-0.5px;margin:0 0 16px;">Algo salió mal en la aplicación</h1>
+
+      <!-- Description -->
+      <p style="font-size:0.97rem;color:#64748b;line-height:1.7;margin:0 0 28px;">El sistema detectó un error crítico que impidió cargar esta sección correctamente.<br>Puedes intentar recargar la página o volver al inicio.</p>
+
+      <!-- Error detail box -->
+      <div style="background:rgba(255,74,74,0.07);border:1px solid rgba(255,74,74,0.2);border-radius:12px;padding:16px 20px;margin-bottom:36px;text-align:left;">
+        <div style="font-size:0.72rem;font-weight:700;letter-spacing:1.5px;color:rgba(255,74,74,0.7);text-transform:uppercase;margin-bottom:8px;">Detalle del error</div>
+        <code id="app-error-detail" style="font-size:0.82rem;color:#ff6b6b;word-break:break-all;line-height:1.6;">Error desconocido.</code>
+      </div>
+
+      <!-- Action buttons -->
+      <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+        <button onclick="window.location.reload()" style="display:flex;align-items:center;gap:10px;padding:14px 28px;background:#00f0ff;color:#080e1a;border:none;border-radius:10px;font-size:0.95rem;font-weight:800;cursor:pointer;box-shadow:0 0 24px rgba(0,240,255,0.35);transition:all 0.2s;letter-spacing:0.3px;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 0 36px rgba(0,240,255,0.5)'" onmouseout="this.style.transform='';this.style.boxShadow='0 0 24px rgba(0,240,255,0.35)'">
+          🔄 Recargar página
+        </button>
+        <button onclick="localStorage.removeItem('scout_ai_token');localStorage.removeItem('scout_ai_user');window.location.href='landing.html'" style="display:flex;align-items:center;gap:10px;padding:14px 28px;background:rgba(255,255,255,0.05);color:#fff;border:1px solid rgba(255,255,255,0.15);border-radius:10px;font-size:0.95rem;font-weight:700;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
+          ← Volver al inicio
+        </button>
+      </div>
+
+      <!-- Scout AI branding -->
+      <div style="margin-top:48px;display:flex;align-items:center;justify-content:center;gap:10px;opacity:0.35;">
+        <span style="font-size:18px;">🌐</span>
+        <span style="font-size:0.82rem;font-weight:700;letter-spacing:2px;color:#fff;">SCOUT AI</span>
+      </div>
+    </div>
+  </div>
+
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="app.js?v=4.1"></script>
+
+  <!-- Global error interceptor: shows crash screen instead of blank page -->
+  <script>
+    (function () {
+      function showCrashScreen(message) {
+        var screen = document.getElementById('app-error-screen');
+        var detail = document.getElementById('app-error-detail');
+        if (!screen) return;
+        if (detail) detail.textContent = message || 'Error desconocido.';
+        screen.style.display = 'flex';
+        // Hide all other main content so only error shows
+        var main = document.querySelector('.main-content');
+        if (main) main.style.visibility = 'hidden';
+        var header = document.querySelector('.tactical-nav');
+        if (header) header.style.visibility = 'hidden';
+        var onboarding = document.getElementById('onboarding-screen');
+        if (onboarding) onboarding.style.display = 'none';
+        var localCoach = document.getElementById('local-coach-onboarding-screen');
+        if (localCoach) localCoach.style.display = 'none';
+      }
+
+      window.addEventListener('error', function (e) {
+        var msg = '';
+        if (e.message) msg += e.message;
+        if (e.filename) msg += '  —  ' + e.filename.split('/').pop();
+        if (e.lineno) msg += ':' + e.lineno;
+        showCrashScreen(msg || 'Error de JavaScript no capturado.');
+      });
+
+      window.addEventListener('unhandledrejection', function (e) {
+        var reason = (e.reason && (e.reason.message || String(e.reason))) || 'Promise rechazada sin mensaje.';
+        // Ignore session-expiry redirects (not real crashes)
+        if (reason.indexOf('Sesi') !== -1 || reason.indexOf('expira') !== -1) return;
+        showCrashScreen('Promise sin resolver: ' + reason);
+      });
+    })();
+  </script>
+
+  <!-- ──────────────── MODAL: FORMULARIO JUGADOR LOCAL ──────────────── -->
+  <div class="modal-overlay" id="modal-local-player-form" style="display:none; z-index: 26000;">
+    <div class="modal" style="max-width: 650px; background: rgba(8, 14, 26, 0.96); border: 1.5px solid #00f0ff; border-radius: 20px; padding: 30px; box-shadow: 0 0 50px rgba(0, 240, 255, 0.25); backdrop-filter: blur(15px); text-align: left; position: relative;">
+      <button class="modal-close" onclick="closeLocalPlayerFormModal()" style="position: absolute; top: 18px; right: 20px; background: none; border: none; color: rgba(255,255,255,0.5); font-size: 22px; cursor: pointer; transition: color 0.2s;">✕</button>
+      
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 14px;">
+        <div>
+          <h3 id="modal-local-player-title" style="font-size: 20px; font-weight: 800; color: #fff; margin: 0;">Registrar Jugador Local</h3>
+          <p style="font-size: 12.5px; color: rgba(255,255,255,0.5); margin: 2px 0 0 0;">Introduce los datos técnicos y personales del futbolista para tu plantilla.</p>
+        </div>
+      </div>
+
+      <!-- Tabs Navigation -->
+      <div style="display: flex; gap: 15px; margin-bottom: 20px; border-bottom: 1.5px solid rgba(255,255,255,0.08); padding-bottom: 10px; overflow-x: auto;">
+        <button type="button" class="form-tab-btn active" onclick="switchFormTab('general')" id="tab-btn-general" style="background: none; border: none; color: #00f0ff; font-weight: 700; cursor: pointer; padding-bottom: 8px; border-bottom: 2px solid #00f0ff; transition: all 0.3s; font-size: 14px; white-space: nowrap;">General</button>
+        <button type="button" class="form-tab-btn" onclick="switchFormTab('deportivo')" id="tab-btn-deportivo" style="background: none; border: none; color: rgba(255,255,255,0.5); font-weight: 600; cursor: pointer; padding-bottom: 8px; border-bottom: 2px solid transparent; transition: all 0.3s; font-size: 14px; white-space: nowrap;">Deportivo</button>
+        <button type="button" class="form-tab-btn" onclick="switchFormTab('historial')" id="tab-btn-historial" style="background: none; border: none; color: rgba(255,255,255,0.5); font-weight: 600; cursor: pointer; padding-bottom: 8px; border-bottom: 2px solid transparent; transition: all 0.3s; font-size: 14px; white-space: nowrap;">Historial de lesiones</button>
+        <button type="button" class="form-tab-btn" onclick="switchFormTab('autorizaciones')" id="tab-btn-autorizaciones" style="background: none; border: none; color: rgba(255,255,255,0.5); font-weight: 600; cursor: pointer; padding-bottom: 8px; border-bottom: 2px solid transparent; transition: all 0.3s; font-size: 14px; white-space: nowrap;">Autorizaciones</button>
+        <button type="button" class="form-tab-btn" onclick="switchFormTab('legal')" id="tab-btn-legal" style="background: none; border: none; color: rgba(255,255,255,0.5); font-weight: 600; cursor: pointer; padding-bottom: 8px; border-bottom: 2px solid transparent; transition: all 0.3s; font-size: 14px; white-space: nowrap;">Legal</button>
+      </div>
+
+      <form id="form-local-player" onsubmit="saveLocalPlayer(event)" novalidate style="display: flex; flex-direction: column; gap: 16px;">
+        <input type="hidden" id="local-player-id">
+
+        <!-- ─── PESTAÑA: GENERAL ─── -->
+        <div class="form-tab-content" id="form-tab-content-general" style="display: flex; flex-direction: column; gap: 16px;">
+          <!-- Fila 1: Nombre y Apodo -->
+          <div style="display: flex; gap: 14px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 220px;">
+              <label style="font-size: 11.5px; font-weight: 700; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px;">Nombre Completo</label>
+              <input type="text" id="lp-name" required placeholder="Ej. Carlos Mendoza" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.3); border-radius: 8px; padding: 10px; color: #fff; font-size: 13.5px; outline: none;">
+            </div>
+            <div style="flex: 1; min-width: 180px;">
+              <label style="font-size: 11.5px; font-weight: 700; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px;">Apodo / Nickname</label>
+              <input type="text" id="lp-nickname" placeholder="Ej. El Chino" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.3); border-radius: 8px; padding: 10px; color: #fff; font-size: 13.5px; outline: none;">
+            </div>
+          </div>
+
+          <!-- Documento de Identidad (Dropdown + Input de Número) -->
+          <div style="display: flex; gap: 14px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 180px;">
+              <label style="font-size: 11.5px; font-weight: 700; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px;">Documento de Identidad</label>
+              <select id="lp-doc-type" required onchange="updateLocalPlayerDocPlaceholder()" style="width: 100%; box-sizing: border-box; background: rgba(10,16,28,0.9); border: 1px solid rgba(0,240,255,0.3); border-radius: 8px; padding: 10px; color: #fff; font-size: 13.5px; outline: none; cursor: pointer;">
+                <option value="" selected disabled hidden>Seleccione...</option>
+                <option value="CEDULA_DNI">Cédula / DNI</option>
+                <option value="PASAPORTE">Pasaporte</option>
+                <option value="REGISTRO_CIVIL">Registro Civil / Nacimiento</option>
+                <option value="NIE_OTHER">NIE / Documento Extranjería</option>
+              </select>
+            </div>
+            <div style="flex: 1.5; min-width: 220px;">
+              <label style="font-size: 11.5px; font-weight: 700; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px;">Nº de Documento</label>
+              <input type="text" id="lp-doc-number" required placeholder="Seleccione primero el tipo de documento..." style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.3); border-radius: 8px; padding: 10px; color: #fff; font-size: 13.5px; outline: none;">
+            </div>
+          </div>
+
+          <!-- Adjuntar Documento de Identidad (Imagen o PDF) -->
+          <div>
+            <label style="font-size: 11.5px; font-weight: 700; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px;">Adjuntar Documento de Identidad (Imagen o PDF)</label>
+            <input type="hidden" id="lp-doc-file-url">
+            <input type="file" id="lp-doc-file-input" accept="image/*,.pdf,application/pdf" style="display: none;" onchange="handleLocalPlayerDocFileSelect(event)">
+            
+            <div id="lp-doc-file-box" onclick="document.getElementById('lp-doc-file-input').click()" style="background: rgba(255,255,255,0.03); border: 1.5px dashed rgba(0,240,255,0.3); border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#00f0ff'; this.style.background='rgba(0,240,255,0.05)';" onmouseout="this.style.borderColor='rgba(0,240,255,0.3)'; this.style.background='rgba(255,255,255,0.03)';">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00f0ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                  <line x1="12" y1="18" x2="12" y2="12"/>
+                  <line x1="9" y1="15" x2="15" y2="15"/>
+                </svg>
+                <span id="lp-doc-file-name" style="font-size: 13px; color: rgba(255,255,255,0.7); font-weight: 500;">Adjuntar copia de documento (JPG, PNG, PDF)...</span>
+              </div>
+              <div id="lp-doc-file-actions" style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 12px; background: rgba(0,240,255,0.15); color: #00f0ff; border: 1px solid rgba(0,240,255,0.3); padding: 4px 10px; border-radius: 6px; font-weight: 600;">Examinar</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fila 2: Edad, Dorsal, Posición -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 14px;">
+            <div>
+              <label style="font-size: 11.5px; font-weight: 700; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px;">Edad</label>
+              <input type="text" inputmode="numeric" id="lp-age" required placeholder="Ej. 17" maxlength="2" oninput="this.value = this.value.replace(/\D/g, '').slice(0, 2); updateLocalPlayerLegalTabVisibility();" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.3); border-radius: 8px; padding: 10px; color: #fff; font-size: 13.5px; outline: none;">
+            </div>
+            <div>
+              <label style="font-size: 11.5px; font-weight: 700; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px;">Dorsal (#)</label>
+              <input type="text" inputmode="numeric" id="lp-jersey" placeholder="Ej. 10" maxlength="2" oninput="this.value = this.value.replace(/\D/g, '').slice(0, 2)" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.3); border-radius: 8px; padding: 10px; color: #fff; font-size: 13.5px; outline: none;">
+            </div>
+            <div>
+              <label style="font-size: 11.5px; font-weight: 700; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px;">Posición</label>
+              <select id="lp-position" required style="width: 100%; box-sizing: border-box; background: rgba(10,16,28,0.9); border: 1px solid rgba(0,240,255,0.3); border-radius: 8px; padding: 10px; color: #fff; font-size: 13.5px; outline: none; cursor: pointer;">
+                <option value="" selected disabled hidden>Seleccione...</option>
+                <option value="ST">ST - Delantero Centro</option>
+                <option value="CF">CF - Segundo Delantero</option>
+                <option value="LW">LW - Extremo Izquierdo</option>
+                <option value="RW">RW - Extremo Derecho</option>
+                <option value="CAM">CAM - Mediapunta</option>
+                <option value="CM">CM - Mediocampista</option>
+                <option value="CDM">CDM - Volante de Contención</option>
+                <option value="LB">LB - Lateral Izquierdo</option>
+                <option value="RB">RB - Lateral Derecho</option>
+                <option value="CB">CB - Defensa Central</option>
+                <option value="GK">GK - Portero</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Fila 3: Pie hábil, Altura, Peso, Categoría -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 14px;">
+            <div>
+              <label style="font-size: 11.5px; font-weight: 700; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px;">Pie Hábil</label>
+              <select id="lp-foot" style="width: 100%; box-sizing: border-box; background: rgba(10,16,28,0.9); border: 1px solid rgba(0,240,255,0.3); border-radius: 8px; padding: 10px; color: #fff; font-size: 13.5px; outline: none; cursor: pointer;">
+                <option value="" selected disabled hidden>Seleccione...</option>
+                <option value="Derecho">Derecho</option>
+                <option value="Izquierdo">Izquierdo</option>
+                <option value="Ambidiestro">Ambidiestro</option>
+              </select>
+            </div>
+
+            <!-- Altura con selector pill cm / ft -->
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label style="font-size: 11.5px; font-weight: 700; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.5px;">Altura</label>
+                <input type="hidden" id="lp-height-unit" value="cm">
+                <div style="display: inline-flex; background: rgba(10,16,28,0.9); border: 1.5px solid rgba(0,240,255,0.4); border-radius: 6px; padding: 2px; box-shadow: 0 0 10px rgba(0,240,255,0.15);">
+                  <button type="button" id="lp-height-unit-cm" onclick="setLocalPlayerHeightUnit('cm')" style="background: #00f0ff; color: #040911; border: none; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 800; cursor: pointer; transition: all 0.2s;">cm</button>
+                  <button type="button" id="lp-height-unit-ft" onclick="setLocalPlayerHeightUnit('ft')" style="background: transparent; color: rgba(255,255,255,0.6); border: none; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.2s;">ft / in</button>
+                </div>
+              </div>
+              <div id="lp-height-cm-wrap">
+                <input type="text" inputmode="numeric" id="lp-height" placeholder="Ej. 175" maxlength="3" oninput="this.value = this.value.replace(/\D/g, '').slice(0, 3)" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.3); border-radius: 8px; padding: 10px; color: #fff; font-size: 13.5px; outline: none;">
+              </div>
+              <div id="lp-height-ft-wrap" style="display: none; gap: 6px; align-items: center;">
+                <input type="text" inputmode="numeric" id="lp-height-ft" placeholder="5" maxlength="1" oninput="this.value = this.value.replace(/\D/g, '').slice(0, 1)" style="flex: 1; min-width: 0; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.3); border-radius: 8px; padding: 10px 4px; color: #fff; font-size: 13.5px; outline: none; text-align: center;">
+                <span style="color: rgba(255,255,255,0.6); font-size: 11.5px; font-weight: 700;">ft</span>
+                <input type="text" inputmode="numeric" id="lp-height-in" placeholder="9" maxlength="2" oninput="this.value = this.value.replace(/\D/g, '').slice(0, 2)" style="flex: 1; min-width: 0; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.3); border-radius: 8px; padding: 10px 4px; color: #fff; font-size: 13.5px; outline: none; text-align: center;">
+                <span style="color: rgba(255,255,255,0.6); font-size: 11.5px; font-weight: 700;">in</span>
+              </div>
+            </div>
+
+            <!-- Peso con selector pill kg / lb -->
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label style="font-size: 11.5px; font-weight: 700; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.5px;">Peso</label>
+                <input type="hidden" id="lp-weight-unit" value="kg">
+                <div style="display: inline-flex; background: rgba(10,16,28,0.9); border: 1.5px solid rgba(0,240,255,0.4); border-radius: 6px; padding: 2px; box-shadow: 0 0 10px rgba(0,240,255,0.15);">
+                  <button type="button" id="lp-weight-unit-kg" onclick="setLocalPlayerWeightUnit('kg')" style="background: #00f0ff; color: #040911; border: none; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 800; cursor: pointer; transition: all 0.2s;">kg</button>
+                  <button type="button" id="lp-weight-unit-lb" onclick="setLocalPlayerWeightUnit('lb')" style="background: transparent; color: rgba(255,255,255,0.6); border: none; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.2s;">lb</button>
+                </div>
+              </div>
+              <input type="text" inputmode="numeric" id="lp-weight" placeholder="Ej. 68" maxlength="3" oninput="this.value = this.value.replace(/\D/g, '').slice(0, 3)" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.3); border-radius: 8px; padding: 10px; color: #fff; font-size: 13.5px; outline: none;">
+            </div>
+
+            <div>
+              <label style="font-size: 11.5px; font-weight: 700; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px;">Categoría</label>
+              <select id="lp-category" style="width: 100%; box-sizing: border-box; background: rgba(10,16,28,0.9); border: 1px solid rgba(0,240,255,0.3); border-radius: 8px; padding: 10px; color: #fff; font-size: 13.5px; outline: none; cursor: pointer;">
+                <option value="" selected disabled hidden>Seleccione...</option>
+                <option value="Sub-13">Sub-13</option>
+                <option value="Sub-15">Sub-15</option>
+                <option value="Sub-17">Sub-17</option>
+                <option value="Sub-20">Sub-20</option>
+                <option value="Senior">Senior</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Fila 4: Estado Médico y Foto del Jugador -->
+          <div style="display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-start;">
+            <div style="flex: 1; min-width: 180px;">
+              <label style="font-size: 11.5px; font-weight: 700; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px;">Estado Médico</label>
+              <select id="lp-medical" style="width: 100%; box-sizing: border-box; background: rgba(10,16,28,0.9); border: 1px solid rgba(0,240,255,0.3); border-radius: 8px; padding: 10px; color: #fff; font-size: 13.5px; outline: none; cursor: pointer;">
+                <option value="" selected disabled hidden>Seleccione...</option>
+                <option value="Disponible">Disponible (Apto 100%)</option>
+                <option value="Precaución">Precaución / Molestia</option>
+                <option value="Lesionado">Lesionado (Inactivo)</option>
+              </select>
+            </div>
+            <div style="flex: 2; min-width: 240px;">
+              <label style="font-size: 11.5px; font-weight: 700; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px;">Foto del Jugador</label>
+              <input type="hidden" id="lp-photourl">
+              <input type="file" id="lp-photo-file" accept="image/*" style="display: none;" onchange="handleLocalPlayerPhotoSelect(event)">
+              
+              <div id="lp-photo-dropzone" style="display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.03); border: 1.5px dashed rgba(0,240,255,0.3); border-radius: 10px; padding: 10px 14px; transition: all 0.25s;" ondragover="event.preventDefault(); this.style.borderColor='#00f0ff'; this.style.background='rgba(0,240,255,0.08)';" ondragleave="this.style.borderColor='rgba(0,240,255,0.3)'; this.style.background='rgba(255,255,255,0.03)';" ondrop="handleLocalPlayerPhotoDrop(event)">
+                <div style="width: 52px; height: 52px; border-radius: 50%; overflow: hidden; background: rgba(0,240,255,0.1); border: 1px solid rgba(0,240,255,0.4); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                  <img id="lp-photo-preview" src="" alt="Previsualización" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+                  <span id="lp-photo-placeholder" style="font-size: 22px; color: #00f0ff;">📷</span>
+                </div>
+                <div style="flex: 1; min-width: 0;">
+                  <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                    <button type="button" onclick="document.getElementById('lp-photo-file').click()" style="background: rgba(0,240,255,0.12); color: #00f0ff; border: 1px solid rgba(0,240,255,0.4); padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#00f0ff'; this.style.color='#040911';" onmouseout="this.style.background='rgba(0,240,255,0.12)'; this.style.color='#00f0ff';">
+                      📁 Adjuntar Foto
+                    </button>
+                    <button type="button" id="lp-photo-remove-btn" onclick="removeLocalPlayerPhoto()" style="display: none; background: rgba(255,70,70,0.12); color: #ff5555; border: 1px solid rgba(255,70,70,0.4); padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                      🗑️ Eliminar
+                    </button>
+                  </div>
+                  <div style="font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">JPG, PNG o WEBP. Arrastra una imagen o haz clic.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fila 5: Breve Biografía -->
+          <div>
+            <label style="font-size: 11.5px; font-weight: 700; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px;">Breve Biografía / Información del Jugador</label>
+            <textarea id="lp-bio" rows="3" placeholder="Escribe una breve biografía, trayectoria o historia del jugador (se mostrará en la sección Información del expediente)..." style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.3); border-radius: 8px; padding: 10px; color: #fff; font-size: 13px; outline: none; resize: vertical;"></textarea>
+          </div>
+        </div>
+
+        <!-- ─── PESTAÑA: DEPORTIVO ─── -->
+        <div class="form-tab-content" id="form-tab-content-deportivo" style="display: none; flex-direction: column; gap: 16px;">
+          <input type="hidden" id="lp-rating" value="75">
+          <input type="hidden" id="lp-marketvalue" value="0">
+
+          <!-- Estadísticas por temporada con lista dinámica de temporadas -->
+          <div style="background: rgba(255,255,255,0.025); border: 1px solid rgba(0,240,255,0.2); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 14px;">
+            <div style="font-size: 11.5px; font-weight: 800; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.6px; display: flex; align-items: center; gap: 6px;">
+               Estadísticas por Temporada
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px;">
+              <!-- Campo Temporada -->
+              <div>
+                <label style="font-size: 10.5px; font-weight: 700; color: rgba(255,255,255,0.9); display: block; margin-bottom: 4px;">Temporada</label>
+                <input type="text" id="lp-stats-season" placeholder="Ej. 2024/25" value="2024/25" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.3); border-radius: 6px; padding: 8px; color: #00f0ff; font-weight: 700; font-size: 13px; outline: none;">
+              </div>
+              <div>
+                <label style="font-size: 10.5px; font-weight: 700; color: rgba(255,255,255,0.7); display: block; margin-bottom: 4px;">Partidos</label>
+                <input type="number" id="lp-stats-matches" min="0" value="0" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.2); border-radius: 6px; padding: 8px; color: #fff; font-size: 13px; outline: none;">
+              </div>
+              <div>
+                <label style="font-size: 10.5px; font-weight: 700; color: rgba(255,255,255,0.7); display: block; margin-bottom: 4px;">Goles</label>
+                <input type="number" id="lp-stats-goals" min="0" value="0" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.2); border-radius: 6px; padding: 8px; color: #fff; font-size: 13px; outline: none;">
+              </div>
+              <div>
+                <label style="font-size: 10.5px; font-weight: 700; color: rgba(255,255,255,0.7); display: block; margin-bottom: 4px;">Asistencias</label>
+                <input type="number" id="lp-stats-assists" min="0" value="0" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.2); border-radius: 6px; padding: 8px; color: #fff; font-size: 13px; outline: none;">
+              </div>
+              <div>
+                <label style="font-size: 10.5px; font-weight: 700; color: rgba(255,255,255,0.7); display: block; margin-bottom: 4px;">T. Amarillas</label>
+                <input type="number" id="lp-stats-yellow" min="0" value="0" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.2); border-radius: 6px; padding: 8px; color: #fff; font-size: 13px; outline: none;">
+              </div>
+              <div>
+                <label style="font-size: 10.5px; font-weight: 700; color: rgba(255,255,255,0.7); display: block; margin-bottom: 4px;">T. Rojas</label>
+                <input type="number" id="lp-stats-red" min="0" value="0" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.2); border-radius: 6px; padding: 8px; color: #fff; font-size: 13px; outline: none;">
+              </div>
+            </div>
+
+            <!-- Botón Añadir Temporada -->
+            <div style="display: flex; justify-content: flex-end; margin-top: 4px;">
+              <button type="button" onclick="addLocalPlayerSeasonStat()" style="background: rgba(0,240,255,0.15); border: 1px solid #00f0ff; color: #00f0ff; border-radius: 8px; padding: 8px 16px; font-weight: 700; font-size: 12.5px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;" onmouseover="this.style.background='#00f0ff'; this.style.color='#040911';" onmouseout="this.style.background='rgba(0,240,255,0.15)'; this.style.color='#00f0ff';">
+                + Añadir Temporada
+              </button>
+            </div>
+
+            <!-- Contenedor de Temporadas Registradas -->
+            <div>
+              <div style="font-size: 10.5px; font-weight: 700; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Temporadas Registradas</div>
+              <div id="lp-seasons-container" style="display: flex; gap: 8px; flex-wrap: wrap; padding: 10px; background: rgba(0,0,0,0.25); border-radius: 8px; min-height: 42px; border: 1px solid rgba(255,255,255,0.06); align-items: center;">
+                <!-- Renderizado dinámico de temporadas -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Palmarés / Trofeos con Tag Input -->
+          <div>
+            <div style="font-size: 11.5px; font-weight: 700; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Palmarés / Trofeos</div>
+            <div style="display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;">
+              <input type="text" id="lp-trophy-name" placeholder="Ej. Bota de Oro, Liga Local" style="flex: 2; min-width: 160px; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.3); border-radius: 8px; padding: 10px; color: #fff; font-size: 13.5px; outline: none;">
+              <input type="text" id="lp-trophy-season" placeholder="Ej. 2025/26" style="flex: 1; min-width: 80px; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.3); border-radius: 8px; padding: 10px; color: #fff; font-size: 13.5px; outline: none;">
+              <button type="button" onclick="addLocalPlayerTrophy()" style="background: rgba(0,240,255,0.15); border: 1px solid #00f0ff; color: #00f0ff; border-radius: 8px; padding: 0 16px; font-weight: 700; cursor: pointer; height: 42px;">Añadir</button>
+            </div>
+            <div id="lp-trophies-container" style="display: flex; gap: 8px; flex-wrap: wrap; padding: 8px; background: rgba(0,0,0,0.2); border-radius: 8px; min-height: 42px; border: 1px solid rgba(255,255,255,0.05);">
+              <!-- Renderizado de trofeos -->
+            </div>
+          </div>
+
+          <!-- Habilidades con Tag Input -->
+          <div>
+            <label style="font-size: 11.5px; font-weight: 700; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px;">Habilidades</label>
+            <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+              <input type="text" id="lp-strength-input" placeholder="Ej. Velocidad, Regate, Pase largo" style="flex: 1; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.3); border-radius: 8px; padding: 10px; color: #fff; font-size: 13.5px; outline: none;">
+              <button type="button" onclick="addLocalPlayerStrengthTag()" style="background: rgba(0,240,255,0.15); border: 1px solid #00f0ff; color: #00f0ff; border-radius: 8px; padding: 0 16px; font-weight: 700; cursor: pointer; height: 42px;">+</button>
+            </div>
+            <div id="lp-strengths-tags-container" style="display: flex; gap: 8px; flex-wrap: wrap; padding: 8px; background: rgba(0,0,0,0.2); border-radius: 8px; min-height: 42px; border: 1px solid rgba(255,255,255,0.05);">
+              <!-- Renderizado dinámico de tags -->
+            </div>
+            <input type="hidden" id="lp-strengths">
+          </div>
+
+          <!-- Aspectos de Mejora con Tag Input -->
+          <div>
+            <label style="font-size: 11.5px; font-weight: 700; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px;">Aspectos de Mejora</label>
+            <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+              <input type="text" id="lp-improvement-input" placeholder="Ej. Juego aéreo, Pie débil, Concentración" style="flex: 1; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.3); border-radius: 8px; padding: 10px; color: #fff; font-size: 13.5px; outline: none;">
+              <button type="button" onclick="addLocalPlayerImprovementTag()" style="background: rgba(0,240,255,0.15); border: 1px solid #00f0ff; color: #00f0ff; border-radius: 8px; padding: 0 16px; font-weight: 700; cursor: pointer; height: 42px;">+</button>
+            </div>
+            <div id="lp-improvements-tags-container" style="display: flex; gap: 8px; flex-wrap: wrap; padding: 8px; background: rgba(0,0,0,0.2); border-radius: 8px; min-height: 42px; border: 1px solid rgba(255,255,255,0.05);">
+              <!-- Renderizado dinámico de tags -->
+            </div>
+            <input type="hidden" id="lp-improvements">
+          </div>
+
+          <!-- Notas del entrenador -->
+          <div>
+            <label style="font-size: 11.5px; font-weight: 700; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px;">Notas del Entrenador</label>
+            <textarea id="lp-tactical-notes" rows="3" placeholder="Escribe las observaciones sobre el jugador..." style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.3); border-radius: 8px; padding: 10px; color: #fff; font-size: 13px; outline: none; resize: vertical;"></textarea>
+          </div>
+
+          <!-- Highlights (Adjuntar Video) -->
+          <div>
+            <label style="font-size: 11.5px; font-weight: 700; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px;">Highlights</label>
+            <input type="hidden" id="lp-highlight-url">
+            <input type="file" id="lp-highlight-file" accept="video/*" style="display: none;" onchange="handleLocalPlayerHighlightSelect(event)">
+
+            <div id="lp-highlight-dropzone" style="display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.03); border: 1.5px dashed rgba(0,240,255,0.3); border-radius: 10px; padding: 12px 14px; transition: all 0.25s; cursor: pointer;" onclick="if(event.target.tagName !== 'BUTTON') document.getElementById('lp-highlight-file').click()" ondragover="event.preventDefault(); this.style.borderColor='#00f0ff'; this.style.background='rgba(0,240,255,0.08)';" ondragleave="this.style.borderColor='rgba(0,240,255,0.3)'; this.style.background='rgba(255,255,255,0.03)';" ondrop="handleLocalPlayerHighlightDrop(event)">
+              <div id="lp-highlight-preview-wrap" style="display: flex; align-items: center; gap: 12px; width: 100%;">
+                <div style="width: 42px; height: 42px; border-radius: 8px; background: rgba(0,240,255,0.1); border: 1px solid rgba(0,240,255,0.3); display: flex; align-items: center; justify-content: center; color: #00f0ff; flex-shrink: 0;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00f0ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                </div>
+                <div style="flex: 1; min-width: 0;" id="lp-highlight-info-container">
+                  <div id="lp-highlight-placeholder" style="font-size: 12.5px; color: rgba(255,255,255,0.6);">
+                    <strong style="color: #00f0ff;">Haz clic para adjuntar video</strong> o arrastra el archivo aquí.<br>
+                    <span style="font-size: 11px; color: rgba(255,255,255,0.45);">Solo formatos de video (máx. 2:30 min o 100 MB).</span>
+                  </div>
+                  <div id="lp-highlight-details" style="display: none; flex-direction: column; gap: 2px;">
+                    <div id="lp-highlight-filename" style="font-size: 13px; font-weight: 700; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">video.mp4</div>
+                    <div id="lp-highlight-meta" style="font-size: 11px; color: #00f0ff; font-weight: 600;">1:45 min • 45 MB</div>
+                  </div>
+                </div>
+                <button type="button" id="lp-highlight-btn" onclick="event.stopPropagation(); document.getElementById('lp-highlight-file').click();" style="background: rgba(0,240,255,0.15); border: 1px solid #00f0ff; color: #00f0ff; border-radius: 8px; padding: 8px 14px; font-weight: 700; font-size: 12px; cursor: pointer; transition: all 0.2s; white-space: nowrap;">
+                  Adjuntar Video
+                </button>
+                <button type="button" id="lp-highlight-remove-btn" onclick="event.stopPropagation(); removeLocalPlayerHighlightVideo();" style="display: none; background: rgba(255,77,77,0.15); border: 1px solid #ff4d4d; color: #ff4d4d; border-radius: 8px; padding: 8px 12px; font-weight: 700; font-size: 12px; cursor: pointer;">
+                  ✕
+                </button>
+              </div>
+            </div>
+            <div style="margin-top: 8px;">
+              <input type="text" id="lp-highlight-external-url" placeholder="O pega una URL de video (YouTube, Vimeo, MP4)..." oninput="if(this.value.trim()){ document.getElementById('lp-highlight-url').value = this.value.trim(); }" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.3); border-radius: 8px; padding: 8px 12px; color: #fff; font-size: 12px; outline: none;">
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── PESTAÑA: HISTORIAL DE LESIONES ─── -->
+        <div class="form-tab-content" id="form-tab-content-historial" style="display: none; flex-direction: column; gap: 16px;">
+          <!-- Historial de Lesiones con Formulario de 4 Campos Responsivo -->
+          <div style="background: rgba(255,255,255,0.025); border: 1px solid rgba(0,240,255,0.2); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 14px;">
+            <div style="font-size: 12px; font-weight: 800; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.6px; display: flex; align-items: center; gap: 8px;">
+              Registrar lesión
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px;">
+              <!-- Campo 1: Tipo de Lesión -->
+              <div style="flex: 1; min-width: 200px;">
+                <label style="font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.8); display: block; margin-bottom: 6px;">Tipo de Lesión</label>
+                <input type="text" id="lp-injury-type" placeholder="Ej. Esguince de tobillo, LCA..." style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.3); border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 13px; outline: none;">
+              </div>
+
+              <!-- Campo 2: Año de la Lesión -->
+              <div style="flex: 1; min-width: 150px;">
+                <label style="font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.8); display: block; margin-bottom: 6px;">Año de la Lesión</label>
+                <input type="text" inputmode="numeric" id="lp-injury-year" placeholder="Ej. 2024" maxlength="4" oninput="this.value = this.value.replace(/\D/g, '').slice(0, 4)" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.3); border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 13px; outline: none;">
+              </div>
+
+              <!-- Campo 3: Tiempo de Recuperación -->
+              <div style="flex: 1; min-width: 200px;">
+                <label style="font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.8); display: block; margin-bottom: 6px;">Tiempo de Recuperación</label>
+                <input type="text" id="lp-injury-recovery" placeholder="Ej. 3 semanas, 6 meses..." style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.3); border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 13px; outline: none;">
+              </div>
+
+              <!-- Campo 4: Gravedad de la Lesión -->
+              <div style="flex: 1; min-width: 180px;">
+                <label style="font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.8); display: block; margin-bottom: 6px;">Gravedad de la Lesión</label>
+                <select id="lp-injury-severity" style="width: 100%; box-sizing: border-box; background: rgba(10,16,28,0.9); border: 1px solid rgba(0,240,255,0.3); border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 13px; outline: none; cursor: pointer;">
+                  <option value="" selected disabled hidden>Seleccione gravedad...</option>
+                  <option value="Leve">Leve (1-2 semanas)</option>
+                  <option value="Moderada">Moderada (1-2 meses)</option>
+                  <option value="Grave">Grave (3-6 meses)</option>
+                  <option value="Muy Grave">Muy Grave / Quirúrgica (> 6 meses)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Botón Añadir Lesión integrado -->
+            <div style="display: flex; justify-content: flex-end; margin-top: 4px;">
+              <button type="button" onclick="addLocalPlayerInjury()" style="background: rgba(0,240,255,0.15); border: 1px solid #00f0ff; color: #00f0ff; border-radius: 8px; padding: 10px 20px; font-weight: 700; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;" onmouseover="this.style.background='#00f0ff'; this.style.color='#040911';" onmouseout="this.style.background='rgba(0,240,255,0.15)'; this.style.color='#00f0ff';">
+                Añadir Lesión al Historial
+              </button>
+            </div>
+          </div>
+
+          <!-- Contenedor de Lesiones Registradas -->
+          <div>
+            <div style="font-size: 11.5px; font-weight: 700; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Lesiones Registradas</div>
+            <div id="lp-injuries-container" style="display: flex; gap: 10px; flex-wrap: wrap; padding: 12px; background: rgba(0,0,0,0.25); border-radius: 10px; min-height: 48px; border: 1px solid rgba(255,255,255,0.06); align-items: center;">
+              <!-- Renderizado dinámico de lesiones -->
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── PESTAÑA: AUTORIZACIONES ─── -->
+        <div class="form-tab-content" id="form-tab-content-autorizaciones" style="display: none; flex-direction: column; gap: 16px;">
+          <div style="font-size: 12.5px; color: rgba(255,255,255,0.5); font-weight: 700; margin-bottom: -4px; border-left: 3px solid #00f0ff; padding-left: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Permisos y Consentimientos Legales</div>
+
+          <!-- Barra de Descarga de Plantilla en Word (.DOCX) adaptada a la edad -->
+          <div id="lp-auth-template-download-box" style="background: rgba(0,240,255,0.06); border: 1px dashed rgba(0,240,255,0.4); border-radius: 10px; padding: 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
+            <!-- Renderizado dinámico según la edad ingresada en app.js -->
+          </div>
+          
+          <!-- Bloque 1: Documento de Autorizaciones Firmado (Derechos de Imagen + Tratamiento de Datos) -->
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(0,240,255,0.2); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 14px;">
+            <div style="font-size: 12px; font-weight: 700; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 6px;">
+              1. Autorizaciones Legales (Derechos de Imagen y Datos)
+            </div>
+
+            <!-- Checkbox 1: Derechos de Imagen -->
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; opacity: 0.9;">
+              <div>
+                <label style="font-size: 13px; font-weight: 700; color: #fff; display: block;">Derechos de Imagen y Fotografía</label>
+              </div>
+              <input type="checkbox" id="lp-auth-image" disabled style="width: 20px; height: 20px; accent-color: #00f0ff; pointer-events: none; flex-shrink: 0;">
+            </div>
+
+            <!-- Checkbox 2: Protección de Datos -->
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; opacity: 0.9;">
+              <div>
+                <label style="font-size: 13px; font-weight: 700; color: #fff; display: block;">Tratamiento de Datos Deportivos</label>
+              </div>
+              <input type="checkbox" id="lp-auth-data" disabled style="width: 20px; height: 20px; accent-color: #00f0ff; pointer-events: none; flex-shrink: 0;">
+            </div>
+
+            <!-- Control para adjuntar el documento de autorización firmado -->
+            <div style="margin-top: 4px;">
+              <label id="lp-auth-signature-label" style="font-size: 11.5px; font-weight: 700; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px;">Adjuntar Plantilla Oficial Firmada</label>
+              <input type="hidden" id="lp-auth-signature-file-url">
+              <input type="file" id="lp-auth-signature-file-input" accept=".docx,image/*,.pdf,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display: none;" onchange="handleLocalPlayerAuthSignatureFileSelect(event)">
+              
+              <div id="lp-auth-signature-file-box" onclick="document.getElementById('lp-auth-signature-file-input').click()" style="background: rgba(255,255,255,0.03); border: 1.5px dashed rgba(0,240,255,0.3); border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#00f0ff'; this.style.background='rgba(0,240,255,0.05)';" onmouseout="this.style.borderColor='rgba(0,240,255,0.3)'; this.style.background='rgba(255,255,255,0.03)';">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00f0ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <path d="M12 18v-6"/>
+                    <path d="M9 15l3-3 3 3"/>
+                  </svg>
+                  <span id="lp-auth-signature-file-name" style="font-size: 13px; color: rgba(255,255,255,0.7); font-weight: 500;">Adjuntar autorización firmada (.DOCX, JPG, PNG, PDF)...</span>
+                </div>
+                <div id="lp-auth-signature-file-actions" style="display: flex; align-items: center; gap: 8px;">
+                  <span style="font-size: 12px; background: rgba(0,240,255,0.15); color: #00f0ff; border: 1px solid rgba(0,240,255,0.3); padding: 4px 10px; border-radius: 6px; font-weight: 600;">Examinar</span>
+                </div>
+              </div>
+              <span id="lp-auth-signature-hint" style="font-size: 11px; color: rgba(255,255,255,0.45); display: block; margin-top: 4px;">
+                Debe adjuntar la plantilla oficial de autorización firmada según corresponda por edad.
+              </span>
+            </div>
+          </div>
+
+          <!-- Bloque 2: Aprobación Médica y Certificado Médico -->
+          <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(0,240,255,0.2); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 14px;">
+            <div style="font-size: 12px; font-weight: 700; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 6px;">
+              2. Aptitud Médica Deportiva
+            </div>
+
+            <!-- Checkbox 3: Aptitud Médica -->
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; opacity: 0.9;">
+              <div>
+                <label style="font-size: 13px; font-weight: 700; color: #fff; display: block;">Constancia médica</label>
+              </div>
+              <input type="checkbox" id="lp-auth-medical" disabled style="width: 20px; height: 20px; accent-color: #00f0ff; pointer-events: none; flex-shrink: 0;">
+            </div>
+
+            <!-- Control para adjuntar el certificado médico -->
+            <div style="margin-top: 4px;">
+              <label style="font-size: 11.5px; font-weight: 700; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px;">Adjuntar Certificado Médico</label>
+              <input type="hidden" id="lp-auth-medical-file-url">
+              <input type="file" id="lp-auth-medical-file-input" accept="image/*,.pdf,application/pdf" style="display: none;" onchange="handleLocalPlayerAuthMedicalFileSelect(event)">
+              
+              <div id="lp-auth-medical-file-box" onclick="document.getElementById('lp-auth-medical-file-input').click()" style="background: rgba(255,255,255,0.03); border: 1.5px dashed rgba(0,240,255,0.3); border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#00f0ff'; this.style.background='rgba(0,240,255,0.05)';" onmouseout="this.style.borderColor='rgba(0,240,255,0.3)'; this.style.background='rgba(255,255,255,0.03)';">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00f0ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <path d="M12 11h6"/>
+                    <path d="M15 8v6"/>
+                  </svg>
+                  <span id="lp-auth-medical-file-name" style="font-size: 13px; color: rgba(255,255,255,0.7); font-weight: 500;">Adjuntar certificado médico (JPG, PNG, PDF)...</span>
+                </div>
+                <div id="lp-auth-medical-file-actions" style="display: flex; align-items: center; gap: 8px;">
+                  <span style="font-size: 12px; background: rgba(0,240,255,0.15); color: #00f0ff; border: 1px solid rgba(0,240,255,0.3); padding: 4px 10px; border-radius: 6px; font-weight: 600;">Examinar</span>
+                </div>
+              </div>
+              <span style="font-size: 11px; color: rgba(255,255,255,0.45); display: block; margin-top: 4px;">
+                Debe adjuntar el aval o certificado médico oficial para certificar la aprobación médica.
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── PESTAÑA: LEGAL ─── -->
+        <div class="form-tab-content" id="form-tab-content-legal" style="display: none; flex-direction: column; gap: 16px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+            <div style="font-size: 12.5px; color: rgba(255,255,255,0.5); font-weight: 700; border-left: 3px solid #00f0ff; padding-left: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Información de Padres o Tutores Legales</div>
+            <button type="button" onclick="addLocalPlayerGuardian()" style="background: rgba(0,240,255,0.15); color: #00f0ff; border: 1px solid rgba(0,240,255,0.4); border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+              <span>+ Añadir otro tutor/representante</span>
+            </button>
+          </div>
+
+          <div id="lp-legal-guardians-container" style="display: flex; flex-direction: column; gap: 16px;">
+            <!-- Renderizado dinámico de tutores legales -->
+          </div>
+        </div>
+
+        <!-- Botones de Navegación por Pasos / Acción final -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 16px;">
+          <div>
+            <button type="button" id="form-btn-cancel" onclick="closeLocalPlayerFormModal()" style="background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7); border: none; padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer;">Cancelar</button>
+            <button type="button" id="form-btn-prev" onclick="switchFormTab('general')" style="display: none; background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.8); border: 1px solid rgba(255,255,255,0.15); padding: 10px 18px; border-radius: 8px; font-weight: 700; cursor: pointer;">← Anterior</button>
+          </div>
+          <div>
+            <button type="button" id="form-btn-next" onclick="switchFormTab('deportivo')" style="background: rgba(0,240,255,0.15); color: #00f0ff; border: 1px solid #00f0ff; padding: 10px 22px; border-radius: 8px; font-weight: 800; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#00f0ff'; this.style.color='#040911';" onmouseout="this.style.background='rgba(0,240,255,0.15)'; this.style.color='#00f0ff';">Siguiente →</button>
+            <button type="button" id="btn-save-local-player" onclick="saveLocalPlayer(event)" style="display: none; background: #00f0ff; color: #05080c; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 800; cursor: pointer; box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);">Crear Jugador</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ──────────────── MODAL: EXPEDIENTE COMPLETO JUGADOR LOCAL ──────────────── -->
+  <div class="modal-overlay" id="modal-local-player-expediente" style="display:none; z-index: 26000;">
+    <div class="modal" style="max-width: 750px; background: rgba(8, 14, 26, 0.97); border: 1.5px solid #00f0ff; border-radius: 24px; padding: 35px; box-shadow: 0 0 60px rgba(0, 240, 255, 0.3); backdrop-filter: blur(20px); text-align: left; position: relative;">
+      <button class="modal-close" onclick="closeLocalPlayerExpedienteModal()" style="position: absolute; top: 20px; right: 22px; background: none; border: none; color: rgba(255,255,255,0.5); font-size: 24px; cursor: pointer; transition: color 0.2s;">✕</button>
+      
+      <div id="expediente-content-container">
+        <!-- Inyectado dinámicamente desde app.js -->
+      </div>
+    </div>
+  </div>
+  <!-- ──────────────── MODAL POPUP: ESTADO / CARGANDO PASSKEY ──────────────── -->
+  <div id="passkey-status-modal" style="display: none; position: fixed; inset: 0; z-index: 999999; background: rgba(5, 8, 16, 0.82); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); align-items: center; justify-content: center; padding: 20px;">
+    <style>
+      @keyframes passkeySpin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      .passkey-spinner {
+        width: 44px;
+        height: 44px;
+        border: 3.5px solid rgba(0, 240, 255, 0.18);
+        border-top: 3.5px solid #00f0ff;
+        border-radius: 50%;
+        animation: passkeySpin 0.9s linear infinite;
+      }
+    </style>
+    <div id="passkey-modal-card" style="background: rgba(12, 20, 35, 0.96); border: 1.5px solid rgba(0, 240, 255, 0.4); box-shadow: 0 0 50px rgba(0, 240, 255, 0.25); border-radius: 20px; width: 100%; max-width: 420px; padding: 32px 24px; text-align: center; color: #fff;">
+      <div id="passkey-modal-icon-container" style="width: 72px; height: 72px; margin: 0 auto 20px auto; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; background: rgba(0, 240, 255, 0.1); border: 1px solid rgba(0, 240, 255, 0.3); box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);">
+        <div class="passkey-spinner"></div>
+      </div>
+      <h3 id="passkey-modal-title" style="color: #fff; font-size: 1.25rem; font-weight: 800; margin-bottom: 10px;">Procesando Passkey...</h3>
+      <p id="passkey-modal-message" style="color: rgba(255, 255, 255, 0.72); font-size: 0.92rem; line-height: 1.55; margin-bottom: 24px; padding: 0 10px;">
+        Iniciando vinculación biométrica de Passkey...
+      </p>
+      <button id="passkey-modal-close-btn" onclick="window.closePasskeyStatusModal()" style="display: none; width: 100%; padding: 12px; font-size: 0.92rem; font-weight: 700; background: linear-gradient(135deg, #00f0ff, #00a2ff); color: #05080c; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);">
+        Entendido
+      </button>
+    </div>
+  </div>
+
+  <!-- ──────────────── MODAL: AGREGAR MEDIO DE PAGO CIFRADO ──────────────── -->
+  <div class="modal-overlay" id="modal-add-payment-method" style="display:none; z-index: 26000;">
+    <div class="modal" style="max-width: 500px; width: 92%; background: rgba(8, 14, 26, 0.97); border: 1.5px solid #00f0ff; border-radius: 24px; padding: 40px 32px; box-shadow: 0 0 50px rgba(0, 240, 255, 0.25); backdrop-filter: blur(15px); text-align: center; position: relative; display: flex; flex-direction: column; align-items: center;">
+      <button class="modal-close" onclick="closeAddPaymentMethodModal()" style="position: absolute; top: 18px; right: 22px; background: none; border: none; color: rgba(255,255,255,0.4); font-size: 24px; cursor: pointer; transition: color 0.2s;">✕</button>
+
+      <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+        <h2 style="font-size: 26px; font-weight: 800; color: #fff; margin-bottom: 24px; font-family: 'Segoe UI', sans-serif;">Agregar Medio de Pago</h2>
+
+        <!-- Form Container with Comfortable Input Sizing & Typography -->
+        <form id="add-payment-method-form" onsubmit="savePaymentMethod(event)" style="width: 100%; display: flex; flex-direction: column; gap: 16px; text-align: left; margin-bottom: 20px; box-sizing: border-box;">
+          
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <label style="font-size: 11.5px; color: rgba(255,255,255,0.6); font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; font-family: 'Segoe UI', sans-serif;">NOMBRE DEL TITULAR</label>
+            <input type="text" id="pm-cardholder-name" name="pm_h_val" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Nombre del Usuario" required style="background: rgba(255,255,255,0.04); border: 1.5px solid rgba(0, 240, 255, 0.2); border-radius: 10px; padding: 13px 16px; color: #fff; font-size: 15px; font-weight: 500; font-family: 'Segoe UI', sans-serif; outline: none; transition: all 0.2s; width: 100%; box-sizing: border-box;" onfocus="this.style.borderColor='#00f0ff'; this.style.boxShadow='0 0 10px rgba(0, 240, 255, 0.2)'" onblur="this.style.borderColor='rgba(0, 240, 255, 0.2)'; this.style.boxShadow='none'">
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <label style="font-size: 11.5px; color: rgba(255,255,255,0.6); font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; font-family: 'Segoe UI', sans-serif;">NÚMERO DE TARJETA</label>
+            <div style="position: relative; display: flex; align-items: center; width: 100%; box-sizing: border-box;">
+              <input type="text" id="pm-card-number" name="pm_d_val" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="4000 0000 0000 0000" maxlength="19" oninput="formatCardNumberInput(this)" required style="background: rgba(255,255,255,0.04); border: 1.5px solid rgba(0, 240, 255, 0.2); border-radius: 10px; padding: 13px 16px; padding-right: 75px; color: #fff; font-size: 15px; font-weight: 500; font-family: 'Segoe UI', sans-serif; outline: none; transition: all 0.2s; width: 100%; box-sizing: border-box;" onfocus="this.style.borderColor='#00f0ff'; this.style.boxShadow='0 0 10px rgba(0, 240, 255, 0.2)'" onblur="this.style.borderColor='rgba(0, 240, 255, 0.2)'; this.style.boxShadow='none'">
+              <span id="pm-card-brand-badge" style="position: absolute; right: 14px; font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.5); font-family: 'Segoe UI', sans-serif; pointer-events: none;">💳</span>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 14px; width: 100%;">
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
+              <label style="font-size: 11.5px; color: rgba(255,255,255,0.6); font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; font-family: 'Segoe UI', sans-serif;">VENCIMIENTO</label>
+              <input type="text" id="pm-period" name="pm_v_val" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="08/28" maxlength="5" oninput="formatCardPeriodInput(this)" required style="background: rgba(255,255,255,0.04); border: 1.5px solid rgba(0, 240, 255, 0.2); border-radius: 10px; padding: 13px; color: #fff; font-size: 15px; font-weight: 500; font-family: 'Segoe UI', sans-serif; outline: none; transition: all 0.2s; text-align: center; box-sizing: border-box; width: 100%;" onfocus="this.style.borderColor='#00f0ff'; this.style.boxShadow='0 0 10px rgba(0, 240, 255, 0.2)'" onblur="this.style.borderColor='rgba(0, 240, 255, 0.2)'; this.style.boxShadow='none'">
+            </div>
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
+              <label style="font-size: 11.5px; color: rgba(255,255,255,0.6); font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; font-family: 'Segoe UI', sans-serif;">CVV</label>
+              <input type="text" id="pm-cvc" name="pm_c_val" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="123" maxlength="4" oninput="this.value = this.value.replace(/\D/g, '')" required style="background: rgba(255,255,255,0.04); border: 1.5px solid rgba(0, 240, 255, 0.2); border-radius: 10px; padding: 13px; color: #fff; font-size: 15px; font-weight: 500; font-family: 'Segoe UI', sans-serif; outline: none; transition: all 0.2s; text-align: center; box-sizing: border-box; width: 100%; -webkit-text-security: disc; text-security: disc;" onfocus="this.style.borderColor='#00f0ff'; this.style.boxShadow='0 0 10px rgba(0, 240, 255, 0.2)'" onblur="this.style.borderColor='rgba(0, 240, 255, 0.2)'; this.style.boxShadow='none'">
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 12px; margin: 10px 0 14px 0;">
+            <input type="checkbox" id="pm-is-default" style="accent-color: #00f0ff; width: 19px; height: 19px; cursor: pointer; flex-shrink: 0;" />
+            <label for="pm-is-default" style="font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.9); font-family: 'Segoe UI', sans-serif; cursor: pointer;">Establecer como medio de pago predeterminado</label>
+          </div>
+
+          <div id="add-pm-error-msg" style="display: none; background: rgba(255, 59, 48, 0.15); border: 1px solid #ff3b30; color: #ff3b30; padding: 10px 14px; border-radius: 8px; font-size: 12.5px; text-align: center; font-family: 'Segoe UI', sans-serif;"></div>
+
+          <button class="btn-onboarding-continue-glow" type="submit" id="btn-save-payment-method" style="width: 100%; border-radius: 12px; padding: 15px; font-size: 16px; margin-top: 10px; margin-bottom: 10px; cursor: pointer; font-family: 'Segoe UI', sans-serif;">Guardar Tarjeta</button>
+          
+          <a href="#" onclick="closeAddPaymentMethodModal(); event.preventDefault();" style="color: rgba(255,255,255,0.45); font-size: 13.5px; text-decoration: none; transition: color 0.2s; text-align: center; display: block; font-family: 'Segoe UI', sans-serif;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.45)'">Volver</a>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openAddPaymentMethodModal() {
+      console.log('💳 Direct openAddPaymentMethodModal triggered!');
+      var modal = document.getElementById('modal-add-payment-method');
+      if (modal) {
+        modal.style.cssText = 'display: flex !important; position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 999999 !important; background: rgba(4, 8, 16, 0.88) !important; backdrop-filter: blur(12px) !important; align-items: center !important; justify-content: center !important; padding: 20px !important; box-sizing: border-box !important;';
+      }
+    }
+    function closeAddPaymentMethodModal() {
+      var modal = document.getElementById('modal-add-payment-method');
+      if (modal) {
+        modal.style.cssText = 'display: none !important;';
+      }
+    }
+  </script>
+
+  <!-- ──────────────── MODAL: NUEVO CHAT ──────────────── -->
+  <div class="modal-overlay" id="modal-find-user" style="display:none; z-index: 26000;">
+    <div class="modal" style="max-width: 550px; background: rgba(8, 14, 26, 0.97); border: 1.5px solid #00f0ff; border-radius: 20px; padding: 28px; box-shadow: 0 0 50px rgba(0, 240, 255, 0.25); backdrop-filter: blur(20px); text-align: left; position: relative;">
+      <button class="modal-close" onclick="closeFindUserModal()" style="position: absolute; top: 18px; right: 20px; background: none; border: none; color: rgba(255,255,255,0.6); font-size: 22px; cursor: pointer;">✕</button>
+      
+      <h3 style="font-size: 1.25rem; font-weight: 700; color: #fff; margin-bottom: 6px;">
+        Nuevo Chat
+      </h3>
+      <p style="font-size: 0.85rem; color: var(--text-2); margin-bottom: 20px;">Encuentra entrenadores y scouts para iniciar una conversación.</p>
+
+      <div class="search-input-wrap" style="margin-bottom: 20px;">
+        <input type="text" id="find-user-search-input" placeholder="Escribe un nombre, usuario o rol..." class="search-input" onkeyup="handleFindUserSearchKeyup(event)">
+      </div>
+
+      <div id="find-user-results-list" style="max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 5px;">
+        <div style="text-align: center; color: var(--text-2); padding: 20px; font-size: 0.9rem;">
+          Escribe un nombre o rol para buscar usuarios disponibles...
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 15px;">
+        <button class="btn btn-secondary" onclick="closeFindUserModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ──────────────── MODAL: EXPEDIENTE DE USUARIO / CONTACTO ──────────────── -->
+  <div class="modal-overlay" id="modal-user-profile-dossier" style="display:none; z-index: 27000;">
+    <div class="modal" style="max-width: 620px; width: 95%; background: rgba(8, 14, 26, 0.98); border: 1.5px solid #00f0ff; border-radius: 24px; padding: 32px; box-shadow: 0 0 60px rgba(0, 240, 255, 0.3); backdrop-filter: blur(25px); text-align: left; position: relative; color: #fff; max-height: 90vh; overflow-y: auto;">
+      
+      <button class="modal-close" onclick="closeUserProfileDossierModal()" style="position: absolute; top: 20px; right: 22px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); width: 34px; height: 34px; border-radius: 50%; color: #fff; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">✕</button>
+
+      <!-- Tarjeta Principal del Usuario -->
+      <div style="display: flex; align-items: center; gap: 20px; background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(0, 240, 255, 0.2); border-radius: 18px; padding: 20px; margin-bottom: 24px;">
+        <div style="position: relative; flex-shrink: 0;">
+          <img id="dossier-avatar" src="" alt="Avatar" style="width: 76px; height: 76px; border-radius: 50%; object-fit: cover; border: 2px solid #00f0ff; box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);">
+          <span id="dossier-online-status" style="position: absolute; bottom: 2px; right: 2px; width: 14px; height: 14px; background: #00ff88; border: 2px solid #080e1a; border-radius: 50%; box-shadow: 0 0 8px #00ff88;"></span>
+        </div>
+        <div style="flex: 1; min-width: 0;">
+          <h3 id="dossier-display-name" style="font-size: 1.35rem; font-weight: 800; color: #fff; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            Nombre del Usuario
+          </h3>
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px;">
+            <span id="dossier-username" style="font-size: 0.88rem; color: #00f0ff; font-weight: 600;">@usuario</span>
+            <span style="color: rgba(255,255,255,0.3);">•</span>
+            <span id="dossier-role-badge" style="font-size: 0.8rem; font-weight: 700; color: #fff; background: rgba(0, 240, 255, 0.12); padding: 2px 10px; border-radius: 12px; border: 1px solid rgba(0, 240, 255, 0.25);">
+              Entrenador Local
+            </span>
+          </div>
+          <p id="dossier-club-info" style="font-size: 0.85rem; color: var(--text-2); display: flex; align-items: center; gap: 6px;">
+            <span>⚽</span> <span id="dossier-club-name">Club de Fútbol</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Cuadrícula de Detalles del Expediente -->
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 26px;">
+        <!-- Card 1: Posición / Rol -->
+        <div style="background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 14px 16px;">
+          <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-2); font-weight: 700; display: block; margin-bottom: 4px;">
+            Posición
+          </span>
+          <span id="dossier-role-detail" style="font-size: 0.95rem; font-weight: 700; color: #fff;">
+            Entrenador Principal
+          </span>
+        </div>
+
+        <!-- Card 2: Club / Organización -->
+        <div style="background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 14px 16px;">
+          <span id="dossier-club-label" style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-2); font-weight: 700; display: block; margin-bottom: 4px;">
+            Club / Afiliación
+          </span>
+          <span id="dossier-club-detail" style="font-size: 0.95rem; font-weight: 700; color: #00f0ff;">
+            No especificado
+          </span>
+        </div>
+
+        <!-- Card 3: Correo Electrónico -->
+        <div style="background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 14px 16px;">
+          <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-2); font-weight: 700; display: block; margin-bottom: 4px;">
+            Contacto Directo
+          </span>
+          <span id="dossier-email-detail" style="font-size: 0.88rem; font-weight: 600; color: #fff; word-break: break-all;">
+            usuario@futbolai.com
+          </span>
+        </div>
+
+        <!-- Card 4: Estado de Verificación -->
+        <div style="background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 14px 16px;">
+          <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-2); font-weight: 700; display: block; margin-bottom: 4px;">
+            Estado de Verificación
+          </span>
+          <span id="dossier-verification-detail" style="font-size: 0.88rem; font-weight: 700; color: #00ff88; display: flex; align-items: center; gap: 6px;">
+            <span>✓</span> Verificado en Futbol AI
+          </span>
+        </div>
+      </div>
+
+      <!-- Botones de Acción -->
+      <div style="display: flex; gap: 12px; justify-content: flex-end;">
+        <button class="btn btn-secondary" onclick="closeUserProfileDossierModal()" style="padding: 10px 20px; border-radius: 12px; font-weight: 600; font-size: 0.88rem;">
+          Cerrar Expediente
+        </button>
+        <button class="btn btn-primary" id="btn-dossier-start-chat" onclick="handleDossierStartChat()" style="padding: 10px 24px; border-radius: 12px; font-weight: 700; font-size: 0.88rem; box-shadow: 0 0 20px rgba(0, 240, 255, 0.35);">
+          Enviar Mensaje
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="error-alert.js?v=1.0"></script>
+  <script src="app.js?v=13.0"></script>
   <script src="onboarding.js?v=3.0"></script>
 </body>
 

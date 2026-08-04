@@ -12,8 +12,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="landing.css" />
+  <link rel="stylesheet" href="landing.css?v=6" />
   <script>
+    // Auto-redirect if opened directly from file system (file://) to localhost server for WebAuthn/Passkey support
+    if (window.location.protocol === 'file:') {
+      window.location.href = 'http://localhost:3001/landing.html';
+    }
     // Pre-flight check: if already logged in, skip landing
     if (localStorage.getItem('scout_ai_token')) {
       window.location.href = 'index.html';
@@ -346,6 +350,65 @@
     </div>
   </div>
 
-  <script src="landing.js?v=6"></script>
+  <!-- Modal Pop-up Alerta: Configuración de passkey cancelada -->
+  <div class="auth-overlay" id="passkey-cancelled-modal" style="display:none; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.88); z-index: 1200; backdrop-filter: blur(8px);">
+    <div class="auth-modal" style="text-align: center; padding: 35px 25px; background: #0d1117; border: 1.5px solid rgba(0, 240, 255, 0.4); border-radius: 16px; max-width: 400px; width: 90%; box-shadow: 0 0 35px rgba(0, 240, 255, 0.25); position: relative;">
+      <button class="auth-close" onclick="document.getElementById('passkey-cancelled-modal').style.display='none'" style="position: absolute; right: 15px; top: 15px; background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; opacity: 0.7;">&times;</button>
+      
+      <div class="auth-modal-header" style="margin-bottom: 20px;">
+        <h2 style="color: #fff; font-size: 1.3rem; font-weight: 800; margin-bottom: 12px; letter-spacing: 0.5px; text-transform: uppercase;">Operación Cancelada</h2>
+        <p style="color: #00f0ff; font-size: 1.05rem; line-height: 1.5; font-weight: 700; margin-bottom: 0;">
+          Configuración de passkey cancelada
+        </p>
+      </div>
+
+      <div style="margin-top: 25px; width: 100%;">
+        <button class="auth-submit" onclick="document.getElementById('passkey-cancelled-modal').style.display='none';" style="background: transparent; border: 2px solid #00f0ff; color: #00f0ff; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer; width: 100%; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 0 15px rgba(0, 240, 255, 0.2); transition: all 0.2s;" onmouseover="this.style.background='rgba(0,240,255,0.1)'" onmouseout="this.style.background='transparent'">
+          Entendido
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Crear Passkey Obligatoria -->
+  <div class="auth-overlay" id="passkey-create-modal" style="display:none; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.88); z-index: 1050; backdrop-filter: blur(8px);">
+    <div class="auth-modal" style="text-align: center; padding: 22px 20px; background: #0d1117; border: 1.5px solid rgba(0, 240, 255, 0.35); border-radius: 16px; max-width: 420px; width: 90%; box-shadow: 0 0 40px rgba(0, 240, 255, 0.2); position: relative;">
+      
+      <div class="auth-modal-header" style="margin-bottom: 18px;">
+        <h2 style="color: #fff; font-size: 1.4rem; font-weight: 800; margin: 0; letter-spacing: 0.5px;">Crear una passkey</h2>
+      </div>
+
+      <div id="passkey-create-options" style="display: flex; flex-direction: column; width: 100%;">
+        <button class="auth-submit" id="btn-passkey-create-webauthn" style="background: transparent; border: 2px solid #00f0ff; color: #00f0ff; padding: 13px; border-radius: 8px; font-weight: 800; cursor: pointer; width: 100%; font-size: 0.92rem; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 0 15px rgba(0, 240, 255, 0.2); transition: all 0.2s; display: flex; align-items: center; justify-content: center;" onmouseover="this.style.background='rgba(0,240,255,0.1)'" onmouseout="this.style.background='transparent'">
+          <span>CONFIGURAR PASSKEY</span>
+        </button>
+      </div>
+
+      <div class="auth-error" id="passkey-create-error" style="display: none; margin-top: 10px; min-height: 0;"></div>
+      <div class="auth-success" id="passkey-create-success" style="color: #00F0FF; font-size: 0.88rem; margin-top: 10px; display: none; text-align: center;"></div>
+    </div>
+  </div>
+
+  <!-- Modal Verificar Passkey -->
+  <div class="auth-overlay" id="passkey-verify-modal" style="display:none; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.88); z-index: 1050; backdrop-filter: blur(8px);">
+    <div class="auth-modal" style="text-align: center; padding: 22px 20px; background: #0d1117; border: 1.5px solid rgba(0, 240, 255, 0.35); border-radius: 16px; max-width: 420px; width: 90%; box-shadow: 0 0 40px rgba(0, 240, 255, 0.2); position: relative;">
+      
+      <div class="auth-modal-header" style="margin-bottom: 18px;">
+        <h2 style="color: #fff; font-size: 1.4rem; font-weight: 800; margin: 0; letter-spacing: 0.5px;">Autenticación Passkey</h2>
+      </div>
+
+      <div id="passkey-verify-options" style="display: flex; flex-direction: column; width: 100%;">
+        <button class="auth-submit" id="btn-passkey-verify-webauthn" style="background: transparent; border: 2px solid #00f0ff; color: #00f0ff; padding: 13px; border-radius: 8px; font-weight: 800; cursor: pointer; width: 100%; font-size: 0.92rem; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 0 15px rgba(0, 240, 255, 0.2); transition: all 0.2s; display: flex; align-items: center; justify-content: center;" onmouseover="this.style.background='rgba(0,240,255,0.1)'" onmouseout="this.style.background='transparent'">
+          <span>AUTENTICAR CON PASSKEY</span>
+        </button>
+      </div>
+
+      <div class="auth-error" id="passkey-verify-error" style="display: none; margin-top: 10px; min-height: 0;"></div>
+      <div class="auth-success" id="passkey-verify-success" style="color: #00F0FF; font-size: 0.88rem; margin-top: 10px; display: none; text-align: center;"></div>
+    </div>
+  </div>
+
+  <script src="error-alert.js?v=1.0"></script>
+  <script src="landing.js?v=8"></script>
 </body>
 </html>

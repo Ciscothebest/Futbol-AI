@@ -4,14 +4,15 @@ require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 // ─── DYNAMIC DATABASE CONNECTION (PostgreSQL, SQL Server or SQLite fallback) ───────────────────
 const isProduction = process.env.NODE_ENV === 'production';
+
+// Usar PostgreSQL de producción solo si DATABASE_URL está definida
+const useProductionPostgres = process.env.DATABASE_URL && (isProduction || process.env.ALLOW_REMOTE_DB_IN_DEV === 'true');
+
+// Usar SQLite como fallback ÚNICAMENTE si no hay DB_HOST ni DB_DIALECT=mssql ni DATABASE_URL
 const useSQLite = process.env.DB_DIALECT === 'sqlite' || 
-                  (isProduction && !process.env.DB_HOST && !process.env.DATABASE_URL);
+                  (!process.env.DB_HOST && !process.env.DATABASE_URL && process.env.DB_DIALECT !== 'mssql');
 
 let sequelize;
-
-// En desarrollo local, prohibimos usar la base de datos de producción (Supabase) por seguridad,
-// a menos que se fuerce explícitamente mediante ALLOW_REMOTE_DB_IN_DEV=true.
-const useProductionPostgres = process.env.DATABASE_URL && (isProduction || process.env.ALLOW_REMOTE_DB_IN_DEV === 'true');
 
 if (useProductionPostgres) {
   console.log('🐘 Connecting to persistent PostgreSQL database...');
@@ -139,6 +140,10 @@ const Player = sequelize.define('Player', {
       if (typeof val === 'object') return val;
       try { return val ? JSON.parse(val) : []; } catch(e) { return []; }
     }
+  },
+  userId: {
+    type: DataTypes.STRING,
+    allowNull: true
   }
 });
 
@@ -156,11 +161,20 @@ const Team = sequelize.define('Team', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   name: { type: DataTypes.STRING, allowNull: false },
   leagueName: { type: DataTypes.STRING, allowNull: false },
-  country: { type: DataTypes.STRING, allowNull: false }
+  country: { type: DataTypes.STRING, allowNull: false },
+  position: { type: DataTypes.INTEGER, allowNull: true },
+  pj: { type: DataTypes.INTEGER, allowNull: true },
+  g: { type: DataTypes.INTEGER, allowNull: true },
+  e: { type: DataTypes.INTEGER, allowNull: true },
+  p: { type: DataTypes.INTEGER, allowNull: true },
+  gf: { type: DataTypes.INTEGER, allowNull: true },
+  gc: { type: DataTypes.INTEGER, allowNull: true },
+  pts: { type: DataTypes.INTEGER, allowNull: true }
 }, {
   tableName: 'teams',
   timestamps: false
 });
+
 
 // ─── USER MODEL ──────────────────────────────────────────────────────────────
 const UserModel = require('./models/User');
@@ -194,6 +208,134 @@ ComparisonLog.belongsTo(User, { foreignKey: 'userId' });
 User.hasMany(FavoriteLog, { foreignKey: 'userId' });
 FavoriteLog.belongsTo(User, { foreignKey: 'userId' });
 
+// ─── PROSPECT MODEL (JUGADORES PROSPECTOS LOCALES) ───────────────────────────
+const Prospect = sequelize.define('Prospect', {
+  id: { type: DataTypes.STRING, primaryKey: true },
+  userId: { type: DataTypes.UUID, allowNull: false },
+  name: DataTypes.STRING,
+  nickname: DataTypes.STRING,
+  docType: DataTypes.STRING,
+  docNumber: DataTypes.STRING,
+  docFileUrl: DataTypes.TEXT,
+  docFileName: DataTypes.STRING,
+  age: DataTypes.INTEGER,
+  jerseyNumber: DataTypes.INTEGER,
+  position: DataTypes.STRING,
+  positionEs: DataTypes.STRING,
+  overallRating: DataTypes.FLOAT,
+  category: DataTypes.STRING,
+  preferredFoot: DataTypes.STRING,
+  height: DataTypes.INTEGER,
+  heightUnit: DataTypes.STRING,
+  weight: DataTypes.INTEGER,
+  weightUnit: DataTypes.STRING,
+  medicalStatus: DataTypes.STRING,
+  photoUrl: DataTypes.TEXT,
+  photoId: DataTypes.STRING,
+  currentTeam: DataTypes.STRING,
+  league: DataTypes.STRING,
+  country: DataTypes.STRING,
+  nationality: DataTypes.STRING,
+  nationalityEs: DataTypes.STRING,
+  flag: DataTypes.STRING,
+  marketValue: DataTypes.BIGINT,
+  bio: DataTypes.TEXT,
+  bioEs: DataTypes.TEXT,
+  stats: {
+    type: DataTypes.TEXT,
+    get() {
+      const val = this.getDataValue('stats');
+      if (typeof val === 'object') return val;
+      try { return val ? JSON.parse(val) : null; } catch(e) { return null; }
+    }
+  },
+  strengths: {
+    type: DataTypes.TEXT,
+    get() {
+      const val = this.getDataValue('strengths');
+      if (typeof val === 'object') return val;
+      try { return val ? JSON.parse(val) : []; } catch(e) { return []; }
+    }
+  },
+  improvements: {
+    type: DataTypes.TEXT,
+    get() {
+      const val = this.getDataValue('improvements');
+      if (typeof val === 'object') return val;
+      try { return val ? JSON.parse(val) : []; } catch(e) { return []; }
+    }
+  },
+  weaknesses: {
+    type: DataTypes.TEXT,
+    get() {
+      const val = this.getDataValue('weaknesses');
+      if (typeof val === 'object') return val;
+      try { return val ? JSON.parse(val) : []; } catch(e) { return []; }
+    }
+  },
+  tacticalNotes: {
+    type: DataTypes.TEXT
+  },
+  highlightUrl: {
+    type: DataTypes.TEXT
+  },
+  trophies: {
+    type: DataTypes.TEXT,
+    get() {
+      const val = this.getDataValue('trophies');
+      if (typeof val === 'object') return val;
+      try { return val ? JSON.parse(val) : []; } catch(e) { return []; }
+    }
+  },
+  injuries: {
+    type: DataTypes.TEXT,
+    get() {
+      const val = this.getDataValue('injuries');
+      if (typeof val === 'object') return val;
+      try { return val ? JSON.parse(val) : []; } catch(e) { return []; }
+    }
+  },
+  authorizations: {
+    type: DataTypes.TEXT,
+    get() {
+      const val = this.getDataValue('authorizations');
+      if (typeof val === 'object') return val;
+      try { return val ? JSON.parse(val) : {}; } catch(e) { return {}; }
+    }
+  },
+  legalDetails: {
+    type: DataTypes.TEXT,
+    get() {
+      const val = this.getDataValue('legalDetails');
+      if (typeof val === 'object') return val;
+      try { return val ? JSON.parse(val) : {}; } catch(e) { return {}; }
+    }
+  },
+  tags: {
+    type: DataTypes.TEXT,
+    get() {
+      const val = this.getDataValue('tags');
+      if (typeof val === 'object') return val;
+      try { return val ? JSON.parse(val) : []; } catch(e) { return []; }
+    }
+  },
+  history: {
+    type: DataTypes.TEXT,
+    get() {
+      const val = this.getDataValue('history');
+      if (typeof val === 'object') return val;
+      try { return val ? JSON.parse(val) : []; } catch(e) { return []; }
+    }
+  }
+}, {
+  tableName: 'Prospects'
+});
+
+User.hasMany(Prospect, { foreignKey: 'userId', as: 'prospects' });
+User.hasMany(Prospect, { foreignKey: 'userId', as: 'myPlayers' });
+Prospect.belongsTo(User, { foreignKey: 'userId', as: 'coach' });
+
+
 // ─── PAYMENT MODEL ───────────────────────────────────────────────────────────
 const PaymentModel = require('./models/Payment');
 const Payment = PaymentModel(sequelize);
@@ -201,10 +343,33 @@ const Payment = PaymentModel(sequelize);
 User.hasMany(Payment, { foreignKey: 'userId' });
 Payment.belongsTo(User, { foreignKey: 'userId' });
 
+// ─── PAYMENT METHOD MODEL ───────────────────────────────────────────────────
+const PaymentMethodModel = require('./models/PaymentMethod');
+const PaymentMethod = PaymentMethodModel(sequelize);
+
+User.hasMany(PaymentMethod, { foreignKey: 'userId' });
+PaymentMethod.belongsTo(User, { foreignKey: 'userId' });
+
+// ─── CHAT MODELS ─────────────────────────────────────────────────────────────
+const DirectMessageModel = require('./models/DirectMessage');
+const DirectMessage = DirectMessageModel(sequelize);
+
+const UserContactModel = require('./models/UserContact');
+const UserContact = UserContactModel(sequelize);
+
+User.hasMany(DirectMessage, { foreignKey: 'senderId', as: 'sentMessages' });
+User.hasMany(DirectMessage, { foreignKey: 'receiverId', as: 'receivedMessages' });
+DirectMessage.belongsTo(User, { foreignKey: 'senderId', as: 'sender' });
+DirectMessage.belongsTo(User, { foreignKey: 'receiverId', as: 'receiver' });
+
+User.hasMany(UserContact, { foreignKey: 'userId', as: 'contacts' });
+UserContact.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+UserContact.belongsTo(User, { foreignKey: 'contactUserId', as: 'contactUser' });
+
 async function enableRLSIfPostgres() {
   if (sequelize.options.dialect === 'postgres') {
     console.log('🔒 Enabling Row Level Security (RLS) on public tables...');
-    const tables = ['users', 'Players', 'payments', 'query_logs', 'comparison_logs', 'favorite_logs', 'leagues', 'teams'];
+    const tables = ['users', 'Players', 'payments', 'payment_methods', 'query_logs', 'comparison_logs', 'favorite_logs', 'leagues', 'teams', 'direct_messages', 'user_contacts'];
     for (const table of tables) {
       try {
         await sequelize.query(`ALTER TABLE "${table}" ENABLE ROW LEVEL SECURITY;`);
@@ -228,6 +393,8 @@ async function enableRLSIfPostgres() {
       'CREATE POLICY "Allow users to update their own profile" ON "users" FOR UPDATE TO authenticated USING (auth.uid() = id) WITH CHECK (auth.uid() = id);',
       'DROP POLICY IF EXISTS "Allow users to view their own payments" ON "payments";',
       'CREATE POLICY "Allow users to view their own payments" ON "payments" FOR SELECT TO authenticated USING (auth.uid() = "userId");',
+      'DROP POLICY IF EXISTS "Allow users to manage their own payment methods" ON "payment_methods";',
+      'CREATE POLICY "Allow users to manage their own payment methods" ON "payment_methods" FOR ALL TO authenticated USING (auth.uid() = "userId") WITH CHECK (auth.uid() = "userId");',
       'DROP POLICY IF EXISTS "Allow users to view their own query logs" ON "query_logs";',
       'CREATE POLICY "Allow users to view their own query logs" ON "query_logs" FOR SELECT TO authenticated USING (auth.uid() = "userId");',
       'DROP POLICY IF EXISTS "Allow users to insert their own query logs" ON "query_logs";',
@@ -267,5 +434,5 @@ async function enableRLSIfPostgres() {
   }
 }
 
-module.exports = { sequelize, Player, User, League, Team, QueryLog, ComparisonLog, FavoriteLog, Payment, enableRLSIfPostgres };
+module.exports = { sequelize, Player, Prospect, User, League, Team, QueryLog, ComparisonLog, FavoriteLog, Payment, PaymentMethod, DirectMessage, UserContact, enableRLSIfPostgres };
 

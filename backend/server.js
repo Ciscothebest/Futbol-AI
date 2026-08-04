@@ -9,8 +9,10 @@ const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
 const jwt = require('jsonwebtoken');
 const FootballAgent = require('./agent');
-const { Player, User, League, Team, sequelize, QueryLog, ComparisonLog, FavoriteLog, Payment, enableRLSIfPostgres } = require('./database');
+const { Player, Prospect, User, League, Team, sequelize, QueryLog, ComparisonLog, FavoriteLog, Payment, PaymentMethod, DirectMessage, UserContact, enableRLSIfPostgres } = require('./database');
+
 const seedLeaguesAndTeams = require('./seed-db-onboarding');
+const seedDemoUsers = require('./seed-demo-users');
 
 const app = express();
 const agent = new FootballAgent();
@@ -20,7 +22,8 @@ const JWT_SECRET = process.env.JWT_SECRET || 'scoutai-super-secret-key-2025';
 
 // ─── Middleware ───────────────────────────────────────────────────
 app.use(cors({ origin: '*' }));
-app.use(express.json({ limit: '50mb' }));
+app.use(express.json({ limit: '100mb' }));
+app.use(express.urlencoded({ limit: '100mb', extended: true }));
 
 app.use(express.static(FRONTEND_PATH));
 
@@ -29,7 +32,7 @@ const authRouter = require('./routes/auth');
 app.use('/api/auth', authRouter({ User, JWT_SECRET }));
 
 // ─── Auth Middleware ──────────────────────────────────────────────
-const authenticate = (req, res, next) => {
+const authenticate = async (req, res, next) => {
   const header = req.headers.authorization;
   if (!header || !header.startsWith('Bearer ')) {
     console.warn(`🔒 Auth failed: No header or wrong format for ${req.path}`);
@@ -38,6 +41,17 @@ const authenticate = (req, res, next) => {
   try {
     const token = header.split(' ')[1];
     req.user = jwt.verify(token, JWT_SECRET);
+
+    if (req.user && (req.user.id || req.user.username)) {
+      let dbUser = req.user.id ? await User.findByPk(req.user.id) : null;
+      if (!dbUser && req.user.username) {
+        dbUser = await User.findOne({ where: { username: req.user.username } });
+      }
+      if (dbUser) {
+        const userData = dbUser.toJSON ? dbUser.toJSON() : dbUser;
+        req.user = { ...req.user, ...userData };
+      }
+    }
     next();
   } catch (err) {
     console.warn(`🔒 Auth failed: Invalid token for ${req.path} - ${err.message}`);
@@ -49,6 +63,13 @@ const authenticate = (req, res, next) => {
 const paymentsRouter = require('./routes/payments');
 app.use('/api/payments', authenticate, paymentsRouter({ Payment, User }));
 
+const paymentMethodsRouter = require('./routes/paymentMethods');
+app.use('/api/payment-methods', authenticate, paymentMethodsRouter({ PaymentMethod, User }));
+
+// ─── Chats Routes ────────────────────────────────────────────────
+const chatsRouter = require('./routes/chats');
+app.use('/api/chats', authenticate, chatsRouter({ User, DirectMessage, UserContact }));
+
 
 // ─── Health ───────────────────────────────────────────────────────
 app.get('/api/health', async (req, res) => {
@@ -57,7 +78,7 @@ app.get('/api/health', async (req, res) => {
     res.json({
       status: 'ok',
       demoMode: agent.demoMode,
-      model: process.env.GEMINI_MODEL || 'gemini-2.0-flash',
+      model: process.env.GEMINI_MODEL || 'deepseek-chat',
       players: playerCount,
       db: 'connected'
     });
@@ -98,6 +119,10 @@ app.get('/api/players', authenticate, async (req, res) => {
     if (team) {
       where.currentTeam = team;
     }
+
+    // Excluir jugadores locales (creados por usuarios en "Mis Jugadores") del módulo Jugadores.
+    // Los jugadores locales tienen userId asignado; los profesionales globales tienen userId = null.
+    where.userId = null;
     
     let results = await Player.findAll({
       where,
@@ -136,9 +161,96 @@ app.get('/api/players', authenticate, async (req, res) => {
   }
 });
 
-app.get('/api/players/:id', async (req, res) => {
+// ─── Mis Jugadores (CRUD Prospectos Locales) ──────────────────────
+app.get('/api/my-players', authenticate, async (req, res) => {
   try {
-    const player = await Player.findByPk(req.params.id);
+    const players = await Prospect.findAll({
+      where: { userId: req.user.id },
+      order: [['createdAt', 'DESC']]
+    });
+    res.json({ success: true, players });
+  } catch (err) {
+    console.error('Error in GET /api/my-players:', err);
+    res.status(500).json({ error: 'Error al obtener tus jugadores locales', details: err.message });
+  }
+});
+
+app.post('/api/my-players', authenticate, async (req, res) => {
+  try {
+    const data = req.body;
+    const newId = `loc-player-${uuidv4()}`;
+    const newPlayer = await Prospect.create({
+      ...data,
+      id: newId,
+      userId: req.user.id
+    });
+    res.json({ success: true, player: newPlayer });
+  } catch (err) {
+    console.error('Error in POST /api/my-players:', err);
+    res.status(500).json({ error: 'Error al registrar jugador prospecto', details: err.message });
+  }
+});
+
+app.put('/api/my-players/:id', authenticate, async (req, res) => {
+  try {
+    const player = await Prospect.findOne({
+      where: { id: req.params.id, userId: req.user.id }
+    });
+    if (!player) {
+      return res.status(404).json({ error: 'Jugador prospecto no encontrado o no autorizado' });
+    }
+    await player.update(req.body);
+    res.json({ success: true, player });
+  } catch (err) {
+    console.error('Error in PUT /api/my-players:', err);
+    res.status(500).json({ error: 'Error al actualizar jugador prospecto', details: err.message });
+  }
+});
+
+app.delete('/api/my-players/:id', authenticate, async (req, res) => {
+  try {
+    const player = await Prospect.findOne({
+      where: { id: req.params.id, userId: req.user.id }
+    });
+    if (!player) {
+      return res.status(404).json({ error: 'Jugador prospecto no encontrado o no autorizado' });
+    }
+    await player.destroy();
+    res.json({ success: true, message: 'Jugador prospecto eliminado con éxito' });
+  } catch (err) {
+    console.error('Error in DELETE /api/my-players:', err);
+    res.status(500).json({ error: 'Error al eliminar jugador prospecto', details: err.message });
+  }
+});
+
+
+// ─── All Prospects (Enterprise: ver TODOS los prospectos locales) ──────────────────────
+app.get('/api/all-prospects', authenticate, async (req, res) => {
+  try {
+    const userTier = (req.user.selectedTier || req.user.tier || req.user.maxPaidTierInCycle || '').toLowerCase();
+    const userRole = (req.user.role || '').toLowerCase();
+    const isEnterprise = userTier === 'enterprise' || userRole.includes('enterprise') || userRole.includes('gerente') || userRole.includes('director') || userRole.includes('scout');
+
+    if (!isEnterprise) {
+      return res.status(403).json({ error: 'Solo los usuarios del plan Enterprise pueden ver todos los prospectos.' });
+    }
+    const players = await Prospect.findAll({
+      order: [['createdAt', 'DESC']]
+    });
+    res.json({ success: true, players });
+  } catch (err) {
+    console.error('Error in GET /api/all-prospects:', err);
+    res.status(500).json({ error: 'Error al obtener prospectos', details: err.message });
+  }
+});
+
+app.get('/api/players/:id', async (req, res) => {
+
+  try {
+    let player = await Player.findByPk(req.params.id);
+    if (!player && req.params.id && req.params.id.startsWith('loc-player-')) {
+      player = await Prospect.findByPk(req.params.id);
+    }
     if (!player) return res.status(404).json({ error: 'Player not found' });
     
     const data = player.toJSON();
@@ -240,15 +352,60 @@ app.post('/api/chat', authenticate, async (req, res) => {
   const sid = sessionId || uuidv4();
 
   try {
+    let dbUser = await User.findByPk(req.user.id);
+    if (dbUser) {
+      if (dbUser.checkAndResetDailyLimits) await dbUser.checkAndResetDailyLimits();
+      const tier = (dbUser.selectedTier || 'Gratis').toLowerCase();
+      
+      let limitReached = false;
+      let limitMsg = '';
+
+      if (tier === 'gratis' && (dbUser.dailyAiMessagesCount || 0) >= 5) {
+        limitReached = true;
+        limitMsg = 'Has alcanzado el límite diario de 5 mensajes en el Chat IA para el plan Gratis. Se restablecerá transcurridas 24 horas desde tu primer uso (límite diario no acumulativo).';
+      } else if (tier === 'pro' && (dbUser.dailyAiMessagesCount || 0) >= 10) {
+        limitReached = true;
+        limitMsg = 'Has alcanzado el límite diario de 10 mensajes en el Chat IA para el plan Pro. Se restablecerá transcurridas 24 horas desde tu primer uso (límite diario no acumulativo).';
+      } else if (tier === 'plus' && (dbUser.weeklyAiMessagesCount || 0) >= 30) {
+        limitReached = true;
+        limitMsg = 'Has alcanzado el límite semanal de 30 mensajes en el Chat IA para el plan Plus. Se restablecerá transcurridos 7 días desde tu primer uso (límite semanal no acumulativo).';
+      } else if (tier === 'enterprise' && (dbUser.weeklyAiMessagesCount || 0) >= 50) {
+        limitReached = true;
+        limitMsg = 'Has alcanzado el límite semanal de 50 mensajes en el Chat IA para el plan Enterprise. Se restablecerá transcurridos 7 días desde tu primer uso (límite semanal no acumulativo).';
+      }
+
+      if (limitReached) {
+        return res.status(429).json({
+          error: 'limit_reached',
+          reply: limitMsg,
+          sessionId: sid
+        });
+      }
+
+      if (tier === 'gratis' || tier === 'pro') {
+        if (!dbUser.dailyAiMessagesCount || !dbUser.firstDailyAiMessageAt) {
+          dbUser.firstDailyAiMessageAt = new Date();
+        }
+        dbUser.dailyAiMessagesCount = (dbUser.dailyAiMessagesCount || 0) + 1;
+        await dbUser.save();
+      } else if (tier === 'plus' || tier === 'enterprise') {
+        if (!dbUser.weeklyAiMessagesCount || !dbUser.firstWeeklyAiMessageAt) {
+          dbUser.firstWeeklyAiMessageAt = new Date();
+        }
+        dbUser.weeklyAiMessagesCount = (dbUser.weeklyAiMessagesCount || 0) + 1;
+        await dbUser.save();
+      }
+    }
+
     const reply = await agent.chat(sid, message || '', lang || 'es', audioBase64, mimeType);
-    res.json({ reply, sessionId: sid });
+    res.json({ reply, sessionId: sid, user: dbUser ? dbUser.toPublicJSON() : null });
   } catch (err) {
     console.error('Chat error:', err.message);
     const isRateLimit = err.message?.includes('429') || err.message?.includes('quota') || err.message?.includes('RESOURCE_EXHAUSTED');
     if (isRateLimit) {
       return res.status(429).json({
         error: 'rate_limit',
-        reply: '⏳ La API de Gemini está temporalmente saturada (demasiadas peticiones por minuto). Por favor espera 1-2 minutos e intenta nuevamente.\n\n*Gemini API is temporarily rate-limited. Please wait 1-2 minutes and try again.*',
+        reply: 'La API de Gemini está temporalmente saturada (demasiadas peticiones por minuto). Por favor espera 1-2 minutos e intenta nuevamente.\n\n*Gemini API is temporarily rate-limited. Please wait 1-2 minutes and try again.*',
         sessionId: sid
       });
     }
@@ -260,17 +417,93 @@ app.post('/api/chat/stream', authenticate, async (req, res) => {
   const { message, sessionId, lang, audioBase64, mimeType, clubContext, clubRoster } = req.body;
   const sid = sessionId || uuidv4();
 
+  let dbUser = null;
+  if (req.user && req.user.id) {
+    try {
+      dbUser = await User.findByPk(req.user.id);
+      if (dbUser) {
+        if (dbUser.checkAndResetDailyLimits) await dbUser.checkAndResetDailyLimits();
+        const tier = (dbUser.selectedTier || 'Gratis').toLowerCase();
+        
+        let limitReached = false;
+        let limitMsg = '';
+
+        if (tier === 'gratis' && (dbUser.dailyAiMessagesCount || 0) >= 5) {
+          limitReached = true;
+          limitMsg = 'Has alcanzado el límite diario de 5 mensajes en el Chat IA para el plan Gratis. Se restablecerá transcurridas 24 horas desde tu primer uso (límite diario no acumulativo).';
+        } else if (tier === 'pro' && (dbUser.dailyAiMessagesCount || 0) >= 10) {
+          limitReached = true;
+          limitMsg = 'Has alcanzado el límite diario de 10 mensajes en el Chat IA para el plan Pro. Se restablecerá transcurridas 24 horas desde tu primer uso (límite diario no acumulativo).';
+        } else if (tier === 'plus' && (dbUser.weeklyAiMessagesCount || 0) >= 30) {
+          limitReached = true;
+          limitMsg = 'Has alcanzado el límite semanal de 30 mensajes en el Chat IA para el plan Plus. Se restablecerá transcurridos 7 días desde tu primer uso (límite semanal no acumulativo).';
+        } else if (tier === 'enterprise' && (dbUser.weeklyAiMessagesCount || 0) >= 50) {
+          limitReached = true;
+          limitMsg = 'Has alcanzado el límite semanal de 50 mensajes en el Chat IA para el plan Enterprise. Se restablecerá transcurridos 7 días desde tu primer uso (límite semanal no acumulativo).';
+        }
+
+        if (limitReached) {
+          res.setHeader('Content-Type', 'text/event-stream');
+          res.setHeader('Cache-Control', 'no-cache');
+          res.setHeader('Connection', 'keep-alive');
+          res.write(`data: ${JSON.stringify({ error: limitMsg })}\n\n`);
+          res.end();
+          return;
+        }
+
+        if (tier === 'gratis' || tier === 'pro') {
+          if (!dbUser.dailyAiMessagesCount || !dbUser.firstDailyAiMessageAt) {
+            dbUser.firstDailyAiMessageAt = new Date();
+          }
+          dbUser.dailyAiMessagesCount = (dbUser.dailyAiMessagesCount || 0) + 1;
+          await dbUser.save();
+        } else if (tier === 'plus' || tier === 'enterprise') {
+          if (!dbUser.weeklyAiMessagesCount || !dbUser.firstWeeklyAiMessageAt) {
+            dbUser.firstWeeklyAiMessageAt = new Date();
+          }
+          dbUser.weeklyAiMessagesCount = (dbUser.weeklyAiMessagesCount || 0) + 1;
+          await dbUser.save();
+        }
+      }
+    } catch (e) {
+      console.warn('Error checking AI messages limit:', e.message);
+    }
+  }
+
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
 
+  let userContext = null;
+  if (req.user) {
+    const u = req.user.toJSON ? req.user.toJSON() : req.user;
+    const hasLocalData = Boolean(u.localCoachData);
+    let localClub = null;
+    if (u.localCoachData) {
+      try {
+        const parsed = typeof u.localCoachData === 'string' ? JSON.parse(u.localCoachData) : u.localCoachData;
+        localClub = parsed.club || parsed.clubName || null;
+      } catch (e) {}
+    }
+    const isCoach = hasLocalData || (u.role || '').toLowerCase().includes('entrenador') || (u.selectedTier || '').toLowerCase() === 'local';
+    const effectiveRole = isCoach ? 'Entrenador' : (u.role || 'Usuario');
+    userContext = {
+      name: (u.nombres || u.apellidos) ? `${u.nombres || ''} ${u.apellidos || ''}`.trim() : (u.username || 'Usuario'),
+      role: effectiveRole,
+      hasBothOnboardings: hasLocalData && Boolean(u.selectedClub || u.selectedCountry || u.onboardingComplete),
+      activeTier: u.selectedTier || 'Local',
+      localClub: localClub,
+      selectedClub: u.selectedClub
+    };
+  }
+
   try {
-    agent.chatStream(sid, message, lang, audioBase64, mimeType, clubContext, clubRoster,
+    agent.chatStream(sid, message, lang, audioBase64, mimeType, clubContext, clubRoster, userContext,
       (chunk) => {
         res.write(`data: ${JSON.stringify({ chunk })}\n\n`);
       },
       (full) => {
-        res.write(`data: ${JSON.stringify({ done: true, sessionId: sid })}\n\n`);
+        res.write(`data: ${JSON.stringify({ done: true, sessionId: sid, user: dbUser ? dbUser.toPublicJSON() : null })}\n\n`);
         res.end();
       },
       (err) => {
@@ -313,12 +546,108 @@ app.post('/api/compare', authenticate, async (req, res) => {
   }
 
   try {
+    let dbUser = await User.findByPk(req.user.id);
+    if (dbUser) {
+      if (dbUser.checkAndResetDailyLimits) await dbUser.checkAndResetDailyLimits();
+      const tier = (dbUser.selectedTier || 'Gratis').toLowerCase();
+
+      let limitReached = false;
+      let limitMsg = '';
+
+      if (tier === 'gratis' && (dbUser.dailyComparisonsCount || 0) >= 2) {
+        limitReached = true;
+        limitMsg = 'Has alcanzado el límite diario de 2 comparaciones en el plan Gratis. Se restablecerá transcurridas 24 horas desde tu primer uso (límite diario no acumulativo).';
+      } else if (tier === 'pro' && (dbUser.dailyComparisonsCount || 0) >= 5) {
+        limitReached = true;
+        limitMsg = 'Has alcanzado el límite diario de 5 comparaciones en el plan Pro. Se restablecerá transcurridas 24 horas desde tu primer uso (límite diario no acumulativo).';
+      } else if (tier === 'plus' && (dbUser.weeklyComparisonsCount || 0) >= 15) {
+        limitReached = true;
+        limitMsg = 'Has alcanzado el límite semanal de 15 comparaciones en el plan Plus. Se restablecerá transcurridos 7 días desde tu primer uso (límite semanal no acumulativo).';
+      } else if (tier === 'enterprise' && (dbUser.monthlyComparisonsCount || 0) >= 50) {
+        limitReached = true;
+        limitMsg = 'Has alcanzado el límite mensual de 50 comparaciones en el plan Enterprise. Se restablecerá transcurridos 30 días desde tu primer uso (límite mensual no acumulativo).';
+      }
+
+      if (limitReached) {
+        return res.status(429).json({
+          error: 'limit_reached',
+          message: limitMsg
+        });
+      }
+
+      if (tier === 'gratis' || tier === 'pro') {
+        if (!dbUser.dailyComparisonsCount || !dbUser.firstDailyComparisonAt) {
+          dbUser.firstDailyComparisonAt = new Date();
+        }
+        dbUser.dailyComparisonsCount = (dbUser.dailyComparisonsCount || 0) + 1;
+        await dbUser.save();
+      } else if (tier === 'plus') {
+        if (!dbUser.weeklyComparisonsCount || !dbUser.firstWeeklyComparisonAt) {
+          dbUser.firstWeeklyComparisonAt = new Date();
+        }
+        dbUser.weeklyComparisonsCount = (dbUser.weeklyComparisonsCount || 0) + 1;
+        await dbUser.save();
+      } else if (tier === 'enterprise') {
+        if (!dbUser.monthlyComparisonsCount || !dbUser.firstMonthlyComparisonAt) {
+          dbUser.firstMonthlyComparisonAt = new Date();
+        }
+        dbUser.monthlyComparisonsCount = (dbUser.monthlyComparisonsCount || 0) + 1;
+        await dbUser.save();
+      }
+    }
+
     const analysis = await agent.comparePlayers(player1Id, player2Id, lang || 'es');
     const p1 = await Player.findByPk(player1Id);
     const p2 = await Player.findByPk(player2Id);
-    res.json({ analysis, player1: p1, player2: p2 });
+    res.json({ analysis, player1: p1, player2: p2, user: dbUser ? dbUser.toPublicJSON() : null });
   } catch (err) {
     console.error('Compare error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─── Simulations Consumable Limit ─────────────────────────────────
+app.post('/api/simulations/consume', authenticate, async (req, res) => {
+  try {
+    let dbUser = await User.findByPk(req.user.id);
+    if (!dbUser) return res.status(404).json({ error: 'Usuario no encontrado' });
+
+    if (dbUser.checkAndResetDailyLimits) await dbUser.checkAndResetDailyLimits();
+    const tier = (dbUser.selectedTier || 'Gratis').toLowerCase();
+
+    if (tier === 'gratis' || tier === 'pro') {
+      return res.status(403).json({ error: 'El módulo de Simulaciones no está disponible para tu plan. Actualiza al Plan Plus, Local o Enterprise.' });
+    }
+
+    if (tier === 'plus') {
+      if ((dbUser.monthlySimulationsCount || 0) >= 5) {
+        return res.status(429).json({
+          error: 'limit_reached',
+          message: 'Has alcanzado el límite mensual de 5 simulaciones para el Plan Plus. Se restablecerá transcurridos 30 días desde tu primer uso (límite mensual no acumulativo).'
+        });
+      }
+      if (!dbUser.monthlySimulationsCount || !dbUser.firstMonthlySimulationAt) {
+        dbUser.firstMonthlySimulationAt = new Date();
+      }
+      dbUser.monthlySimulationsCount = (dbUser.monthlySimulationsCount || 0) + 1;
+      await dbUser.save();
+    } else if (tier === 'enterprise') {
+      if ((dbUser.monthlySimulationsCount || 0) >= 25) {
+        return res.status(429).json({
+          error: 'limit_reached',
+          message: 'Has alcanzado el límite mensual de 25 simulaciones para el Plan Enterprise. Se restablecerá transcurridos 30 días desde tu primer uso (límite mensual no acumulativo).'
+        });
+      }
+      if (!dbUser.monthlySimulationsCount || !dbUser.firstMonthlySimulationAt) {
+        dbUser.firstMonthlySimulationAt = new Date();
+      }
+      dbUser.monthlySimulationsCount = (dbUser.monthlySimulationsCount || 0) + 1;
+      await dbUser.save();
+    }
+
+    res.json({ success: true, user: dbUser.toPublicJSON() });
+  } catch (err) {
+    console.error('Error in /api/simulations/consume:', err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -420,8 +749,9 @@ app.get('/api/onboarding/teams', authenticate, async (req, res) => {
     }
     const teams = await Team.findAll({
       where,
-      order: [['name', 'ASC']]
+      order: [['position', 'ASC'], ['name', 'ASC']]
     });
+
     res.json({ teams });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -482,8 +812,17 @@ async function getWikiRestLogo(teamName) {
         
         if (!pageTitle) continue;
         
-        const formattedTitle = pageTitle.replace(/\s+/g, '_');
-        const restUrl = `https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(formattedTitle)}`;
+        // Validate that key distinguishing words of cleanName match the resolved Wikipedia pageTitle
+        const genericWords = new Set(['club', 'deportivo', 'fútbol', 'futbol', 'football', 'association', 'fc', 'cf', 'f.c.', 'c.f.']);
+        const keyWords = cleanName.toLowerCase().split(/\s+/).filter(w => w.length > 2 && !genericWords.has(w));
+        if (keyWords.length > 0) {
+          const titleLower = pageTitle.toLowerCase();
+          const matchKeyWord = keyWords.some(kw => titleLower.includes(kw));
+          if (!matchKeyWord) {
+            continue; // Skip false-positive matches (e.g. "Club Deportivo TesF" matching "Club Deportivo ESPOLI")
+          }
+        }
+        const restUrl = `https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(pageTitle)}`;
         
         const result = await new Promise((resolve) => {
           https.get(restUrl, { headers: { 'User-Agent': 'FutbolAIScoutingPlatform/1.0 (contact@futbolai.com)' } }, (res) => {
@@ -681,71 +1020,201 @@ const majorSofifaTeamIds = {
   "Al-Ahli SFC": "112140"
 };
 
-app.get('/api/team-logo', async (req, res) => {
+const FOOTBALL_API_BASE_URL = process.env.FOOTBALL_API_BASE_URL || 'https://futbolai.abacusai.app';
+const FOOTBALL_API_KEY = process.env.FOOTBALL_API_KEY || 'fbl_0fbf2e77c710a6df117328080ec953c43849ef1c84106d46';
+
+function fetchAbacusLogo(type, id) {
+  return new Promise((resolve) => {
+    if (!id) return resolve(null);
+    const https = require('https');
+    const url = `${FOOTBALL_API_BASE_URL}/${type}/${id}/logo?api_key=${FOOTBALL_API_KEY}`;
+    const req = https.get(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'x-api-key': FOOTBALL_API_KEY
+      }
+    }, (res) => {
+      if (res.statusCode === 302 || res.statusCode === 301) {
+        resolve(res.headers.location);
+      } else if (res.statusCode === 200) {
+        resolve(res.responseUrl || url);
+      } else {
+        resolve(null);
+      }
+    });
+    req.on('error', () => resolve(null));
+  });
+}
+
+function cleanTeamName(name) {
+  if (!name) return '';
+  return name.replace(/\s*\((?:descendido|campeón|campeon|debutante|invitado|relegado|descendido via playoff)[^\)]*\)/gi, '').trim();
+}
+
+// ─── DYNAMIC VECTOR BADGE GENERATOR (SVG) ───────────────────────────
+app.get('/api/badge/team/:id.svg', async (req, res) => {
   try {
-    const { name } = req.query;
-    if (!name) return res.status(400).json({ error: 'Missing name' });
+    const { id } = req.params;
+    const team = await Team.findByPk(id);
+    const rawName = team ? team.name : `Equipo ${id}`;
+    const name = cleanTeamName(rawName);
     
+    // Generate 3-letter initials (e.g. Real Madrid -> RMA, Flamengo -> FLA)
+    const words = name.split(/\s+/).filter(w => w.length > 0);
+    let initials = '';
+    if (words.length >= 3) {
+      initials = (words[0][0] + words[1][0] + words[2][0]).toUpperCase();
+    } else if (words.length === 2) {
+      initials = (words[0][0] + words[1].substring(0, 2)).toUpperCase();
+    } else {
+      initials = name.substring(0, 3).toUpperCase();
+    }
+
+    // Generate deterministic colors based on team ID / name
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const color1 = `hsl(${Math.abs(hash % 360)}, 70%, 45%)`;
+    const color2 = `hsl(${Math.abs((hash * 13) % 360)}, 65%, 25%)`;
+
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" width="100" height="120">
+      <defs>
+        <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="${color1}" />
+          <stop offset="100%" stop-color="${color2}" />
+        </linearGradient>
+        <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+          <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.5"/>
+        </filter>
+      </defs>
+      <!-- Shield Shape -->
+      <path d="M 50,5 L 90,20 L 90,70 C 90,95 50,115 50,115 C 50,115 10,95 10,70 L 10,20 Z" fill="url(#bgGrad)" stroke="#FFFFFF" stroke-width="3" filter="url(#shadow)"/>
+      <path d="M 50,10 L 85,23 L 85,68 C 85,90 50,108 50,108 C 50,108 15,90 15,68 L 15,23 Z" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+      <!-- Star on Top -->
+      <polygon points="50,18 52,24 58,24 53,28 55,34 50,30 45,34 47,28 42,24 48,24" fill="#FFD700"/>
+      <!-- Team Initials Text -->
+      <text x="50" y="68" font-family="Helvetica, Arial, sans-serif" font-weight="900" font-size="20" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle" letter-spacing="1">${initials}</text>
+      <!-- Football Icon at Bottom -->
+      <circle cx="50" cy="92" r="6" fill="#FFFFFF" stroke="#000" stroke-width="0.5"/>
+    </svg>`;
+
+    res.setHeader('Content-Type', 'image/svg+xml');
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.send(svg);
+  } catch (err) {
+    res.status(500).send('Error generating team badge');
+  }
+});
+
+// ─── TEAM LOGO RESOLVER BY ID / NAME ─────────────────────────────────
+app.get(['/api/team-logo', '/api/teams/:id/logo'], async (req, res) => {
+  try {
+    let { id, name } = req.query;
+    if (req.params.id) id = req.params.id;
+
+    let teamRecord = null;
+    if (id) {
+      teamRecord = await Team.findByPk(id);
+    } else if (name) {
+      const clean = cleanTeamName(name);
+      teamRecord = await Team.findOne({ where: { name: clean } });
+      if (!teamRecord) {
+        const all = await Team.findAll();
+        teamRecord = all.find(t => t.name.toLowerCase().includes(clean.toLowerCase()));
+      }
+    }
+
+    const teamId = teamRecord ? teamRecord.id : id;
+    const teamName = teamRecord ? teamRecord.name : (name || '');
+
+    // 1. Query FutbolAI Abacus API (https://futbolai.abacusai.app)
+    if (teamId) {
+      const abacusLogo = await fetchAbacusLogo('teams', teamId);
+      if (abacusLogo) {
+        return res.json({ id: parseInt(teamId), name: teamName, logoUrl: abacusLogo, apiKey: FOOTBALL_API_KEY });
+      }
+    }
+
+    const cleanName = cleanTeamName(teamName);
     const apiHost = req.protocol + '://' + req.get('host');
-    // 1. Check major mapping
-    if (majorSofifaTeamIds[name]) {
-      const proxiedUrl = `${apiHost}/api/team-logo-image/${majorSofifaTeamIds[name]}`;
-      return res.json({ logoUrl: proxiedUrl });
+
+    // 2. Check major Sofifa mapping
+    if (majorSofifaTeamIds[cleanName] || majorSofifaTeamIds[teamName]) {
+      const sofifaId = majorSofifaTeamIds[cleanName] || majorSofifaTeamIds[teamName];
+      const proxiedUrl = `${apiHost}/api/team-logo-image/${sofifaId}`;
+      return res.json({ id: teamId ? parseInt(teamId) : null, name: cleanName, logoUrl: proxiedUrl, apiKey: FOOTBALL_API_KEY });
     }
-    
-    // 2. Check cache
-    if (resolvedLogosCache.has(name)) {
-      return res.json({ logoUrl: resolvedLogosCache.get(name) });
+
+    // 3. Check cache / Wikipedia fallback
+    if (resolvedLogosCache.has(cleanName)) {
+      return res.json({ id: teamId ? parseInt(teamId) : null, name: cleanName, logoUrl: resolvedLogosCache.get(cleanName), apiKey: FOOTBALL_API_KEY });
     }
-    
-    // 3. Resolve using REST summary
-    const logoUrl = await getWikiRestLogo(name);
+
+    const logoUrl = await getWikiRestLogo(cleanName);
     if (logoUrl) {
-      resolvedLogosCache.set(name, logoUrl);
-      return res.json({ logoUrl });
+      resolvedLogosCache.set(cleanName, logoUrl);
+      return res.json({ id: teamId ? parseInt(teamId) : null, name: cleanName, logoUrl, apiKey: FOOTBALL_API_KEY });
     }
-    
-    res.json({ logoUrl: null });
+
+    // 4. GUARANTEED VECTOR BADGE FALLBACK (Never returns null/404)
+    const fallbackBadgeUrl = teamId ? `${apiHost}/api/badge/team/${teamId}.svg` : null;
+    res.json({ id: teamId ? parseInt(teamId) : null, name: cleanName, logoUrl: fallbackBadgeUrl, apiKey: FOOTBALL_API_KEY });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-app.get('/api/league-logo', async (req, res) => {
+// ─── LEAGUE LOGO RESOLVER BY ID / NAME ───────────────────────────────
+app.get(['/api/league-logo', '/api/leagues/:id/logo'], async (req, res) => {
   try {
-    const { name } = req.query;
-    if (!name) return res.status(400).json({ error: 'Missing name' });
-    
-    // Find the league in the database (case-insensitive and substring fallback)
-    const nameLower = name.toLowerCase();
-    let league = await League.findOne({
-      where: sequelize.where(
-        sequelize.fn('lower', sequelize.col('name')),
-        nameLower
-      )
-    });
+    let { id, name } = req.query;
+    if (req.params.id) id = req.params.id;
 
-    if (!league) {
-      // Substring fallback
-      const allLeagues = await League.findAll();
-      league = allLeagues.find(l => {
-        const lNameLower = l.name.toLowerCase();
-        return lNameLower.includes(nameLower) || nameLower.includes(lNameLower);
+    let leagueRecord = null;
+    if (id) {
+      leagueRecord = await League.findByPk(id);
+    } else if (name) {
+      const nameLower = name.toLowerCase();
+      leagueRecord = await League.findOne({
+        where: sequelize.where(
+          sequelize.fn('lower', sequelize.col('name')),
+          nameLower
+        )
       });
+      if (!leagueRecord) {
+        const allLeagues = await League.findAll();
+        leagueRecord = allLeagues.find(l => l.name.toLowerCase().includes(nameLower));
+      }
     }
 
-    if (league) {
-      const dbId = league.id;
+    const leagueId = leagueRecord ? leagueRecord.id : id;
+    const leagueName = leagueRecord ? leagueRecord.name : (name || '');
+
+    // 1. Query FutbolAI Abacus API (https://futbolai.abacusai.app)
+    if (leagueId) {
+      const abacusLogo = await fetchAbacusLogo('leagues', leagueId);
+      if (abacusLogo) {
+        return res.json({ id: parseInt(leagueId), name: leagueName, logoUrl: abacusLogo, apiKey: FOOTBALL_API_KEY });
+      }
+    }
+
+    // 2. Local asset fallback
+    if (leagueRecord) {
+      const dbId = leagueRecord.id;
       const dbToFileMap = {"1":31,"2":55,"3":7,"4":44,"5":67,"6":58,"7":17,"8":6,"9":42,"10":39,"11":36,"12":59,"13":60,"14":47,"15":25,"16":27,"17":66,"18":73,"19":56,"20":19,"21":69,"22":1,"23":5,"24":14,"25":65,"26":70,"27":24,"28":43,"29":35,"30":37,"31":13,"32":12,"33":61,"34":40,"35":2,"36":74,"37":16,"38":71,"39":8,"40":54,"41":38,"42":75,"43":76,"44":23,"45":20,"46":21,"47":15,"48":78,"49":57,"50":63,"51":28,"52":64,"53":80,"54":29,"55":79,"56":34,"57":68,"58":18,"59":11,"60":72,"61":22,"62":46,"63":48,"64":10,"65":62,"66":41,"67":32,"68":45,"69":77,"70":26,"71":33,"72":30,"73":3,"74":51,"75":81,"76":52,"77":4,"78":50,"79":53,"80":9,"81":49};
       const fileId = dbToFileMap[dbId.toString()] || dbId;
-      return res.json({ logoUrl: `/assets/leagues/liga_${fileId}.png` });
+      return res.json({ id: dbId, name: leagueRecord.name, logoUrl: `/assets/leagues/liga_${fileId}.png`, apiKey: FOOTBALL_API_KEY });
     }
-    
-    res.json({ logoUrl: null });
+
+    res.json({ id: null, name: leagueName, logoUrl: null, apiKey: FOOTBALL_API_KEY });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
+
+
+
 
 // ─── ACTIVITY LOGS ───────────────────────────────────────────
 
@@ -809,9 +1278,16 @@ app.get(/^(?!\/api).+/, (req, res) => {
   res.sendFile(path.join(FRONTEND_PATH, 'index.html'));
 });
 
-// ─── Auth Routes ────────────────────────────────────────────────
-// Auth routes moved to top
-
+// ─── Global Express Error Handling Middleware ────────────────────
+app.use((err, req, res, next) => {
+  console.error('🚨 [Express Error Middleware]', err);
+  const status = err.status || err.statusCode || 500;
+  res.status(status).json({
+    error: err.message || 'Error interno del servidor en Futbol AI Backend',
+    details: err.stack || err.details || null,
+    path: req.originalUrl
+  });
+});
 
 // ─── Start ────────────────────────────────────────────────────────
 const { execSync } = require('child_process');
@@ -841,13 +1317,11 @@ function startServer(retries = 2) {
 
     try {
       await sequelize.authenticate();
+      await sequelize.sync().catch(err => console.warn('Database sync note:', err.message));
       
-      // Safer synchronization for MSSQL
-      // Instead of risky 'alter: true', we manually ensure new columns exist
+      // Safer synchronization for database tables
+      // Manually ensure new columns exist across DB dialects (MSSQL, SQLite, Postgres)
       const checkColumns = async () => {
-        if (sequelize.options.dialect !== 'mssql') {
-          return;
-        }
         const queryInterface = sequelize.getQueryInterface();
         
         // Safe case-insensitive column checker to prevent duplicate add column errors on different collations/drivers
@@ -942,6 +1416,44 @@ function startServer(retries = 2) {
             await sequelize.query('ALTER TABLE users ADD localCoachData TEXT NULL').catch(() => {});
           });
         }
+        if (!hasUserColumn('billingCycleStart')) {
+          console.log('➕ Adding billingCycleStart column...');
+          await queryInterface.addColumn('users', 'billingCycleStart', {
+            type: require('sequelize').DataTypes.DATE,
+            allowNull: true
+          }).catch(async () => {
+            await sequelize.query('ALTER TABLE users ADD billingCycleStart DATETIME NULL').catch(() => {});
+          });
+        }
+        if (!hasUserColumn('billingCycleEnd')) {
+          console.log('➕ Adding billingCycleEnd column...');
+          await queryInterface.addColumn('users', 'billingCycleEnd', {
+            type: require('sequelize').DataTypes.DATE,
+            allowNull: true
+          }).catch(async () => {
+            await sequelize.query('ALTER TABLE users ADD billingCycleEnd DATETIME NULL').catch(() => {});
+          });
+        }
+
+        if (!hasUserColumn('autoRenew')) {
+          console.log('➕ Adding autoRenew column...');
+          await queryInterface.addColumn('users', 'autoRenew', {
+            type: require('sequelize').DataTypes.BOOLEAN,
+            defaultValue: true
+          }).catch(async () => {
+            await sequelize.query('ALTER TABLE users ADD autoRenew BOOLEAN DEFAULT 1').catch(() => {});
+          });
+        }
+
+        if (!hasUserColumn('maxPaidTierInCycle')) {
+          console.log('➕ Adding maxPaidTierInCycle column...');
+          await queryInterface.addColumn('users', 'maxPaidTierInCycle', {
+            type: require('sequelize').DataTypes.STRING(50),
+            defaultValue: 'Gratis'
+          }).catch(async () => {
+            await sequelize.query("ALTER TABLE users ADD maxPaidTierInCycle NVARCHAR(50) NULL DEFAULT 'Gratis'").catch(() => {});
+          });
+        }
 
         // Check columns for payments table case-insensitively
         const paymentTableInfo = await queryInterface.describeTable('payments').catch(() => ({}));
@@ -955,6 +1467,50 @@ function startServer(retries = 2) {
           }).catch(async () => {
             await sequelize.query('ALTER TABLE payments ADD userAccount NVARCHAR(100) NULL').catch(() => {});
           });
+        }
+
+        // Check columns for Players table case-insensitively
+        const playersTableInfo = await queryInterface.describeTable('Players').catch(() => ({}));
+        const hasPlayerColumn = (col) => Object.keys(playersTableInfo).some(k => k.toLowerCase() === col.toLowerCase());
+        
+        if (!hasPlayerColumn('userId')) {
+          console.log('➕ Adding userId column to Players table...');
+          await queryInterface.addColumn('Players', 'userId', {
+            type: require('sequelize').DataTypes.STRING(255),
+            allowNull: true
+          }).catch(async () => {
+            if (sequelize.options.dialect === 'mssql') {
+              await sequelize.query('ALTER TABLE Players ADD userId NVARCHAR(255) NULL').catch(() => {});
+            } else {
+              await sequelize.query('ALTER TABLE Players ADD COLUMN userId VARCHAR(255) NULL').catch(() => {});
+            }
+          });
+        }
+
+        // Check columns for Prospects table case-insensitively
+        const prospectsTableInfo = await queryInterface.describeTable('Prospects').catch(() => ({}));
+        const hasProspectColumn = (col) => Object.keys(prospectsTableInfo).some(k => k.toLowerCase() === col.toLowerCase());
+
+        const prospectColsToAdd = [
+          'docType', 'docNumber', 'docFileUrl', 'docFileName',
+          'heightUnit', 'weightUnit',
+          'improvements', 'weaknesses', 'tacticalNotes', 'highlightUrl',
+          'authorizations', 'legalDetails', 'injuries'
+        ];
+        for (const col of prospectColsToAdd) {
+          if (!hasProspectColumn(col)) {
+            console.log(`➕ Adding ${col} column to Prospects table...`);
+            await queryInterface.addColumn('Prospects', col, {
+              type: require('sequelize').DataTypes.TEXT,
+              allowNull: true
+            }).catch(async () => {
+              if (sequelize.options.dialect === 'mssql') {
+                await sequelize.query(`ALTER TABLE Prospects ADD ${col} NVARCHAR(MAX) NULL`).catch(() => {});
+              } else {
+                await sequelize.query(`ALTER TABLE Prospects ADD COLUMN ${col} TEXT NULL`).catch(() => {});
+              }
+            });
+          }
         }
       };
 
@@ -971,27 +1527,70 @@ function startServer(retries = 2) {
         console.warn('⚠️ Column alteration failed or already applied:', err.message);
       }
 
-      const doAlter = sequelize.options.dialect !== 'mssql';
+      const doAlter = sequelize.options.dialect !== 'mssql' && sequelize.options.dialect !== 'sqlite';
 
-      await User.sync();
-      if (doAlter) await User.sync({ alter: true });
+      await User.sync().catch(err => console.warn('User sync note:', err.message));
+      if (doAlter) await User.sync({ alter: true }).catch(err => console.warn('User sync alter note:', err.message));
 
       await checkColumns().catch(err => console.warn('⚠️ Column sync warning (might already exist):', err.message));
 
-      await Player.sync();
-      if (doAlter) await Player.sync({ alter: true });
+      await Player.sync().catch(err => console.warn('Player sync note:', err.message));
+      if (doAlter) await Player.sync({ alter: true }).catch(err => console.warn('Player sync alter note:', err.message));
 
-      await Payment.sync();
-      if (doAlter) await Payment.sync({ alter: true });
+      await Prospect.sync().catch(err => console.warn('Prospect sync note:', err.message));
+      if (doAlter) await Prospect.sync({ alter: true }).catch(err => console.warn('Prospect sync alter note:', err.message));
 
-      await QueryLog.sync();
-      if (doAlter) await QueryLog.sync({ alter: true });
+      // Automigración de prospectos locales desde Players a Prospects
+      try {
+        const { Op } = require('sequelize');
+        const oldLocalPlayers = await Player.findAll({
+          where: {
+            [Op.or]: [
+              { id: { [Op.like]: 'loc-player-%' } },
+              { userId: { [Op.ne]: null } }
+            ]
+          }
+        });
+        if (oldLocalPlayers.length > 0) {
+          console.log(`📦 Automigrando ${oldLocalPlayers.length} prospecto(s) local(es) desde la tabla Players hacia Prospects...`);
+          for (const oldP of oldLocalPlayers) {
+            const raw = oldP.toJSON();
+            if (raw.userId) {
+              await Prospect.upsert({
+                ...raw,
+                stats: typeof raw.stats === 'object' ? JSON.stringify(raw.stats) : raw.stats,
+                strengths: typeof raw.strengths === 'object' ? JSON.stringify(raw.strengths) : raw.strengths,
+                trophies: typeof raw.trophies === 'object' ? JSON.stringify(raw.trophies) : raw.trophies,
+                tags: typeof raw.tags === 'object' ? JSON.stringify(raw.tags) : raw.tags,
+                history: typeof raw.history === 'object' ? JSON.stringify(raw.history) : raw.history
+              }).catch(e => console.warn(`Error migrando prospecto ${raw.id}:`, e.message));
+              await oldP.destroy().catch(() => {});
+            }
+          }
+          console.log('✅ Automigración de prospectos locales completada.');
+        }
+      } catch (migErr) {
+        console.warn('⚠️ Nota de automigración de prospectos:', migErr.message);
+      }
 
-      await ComparisonLog.sync();
-      if (doAlter) await ComparisonLog.sync({ alter: true });
+      await Payment.sync().catch(err => console.warn('Payment sync note:', err.message));
+      if (doAlter) await Payment.sync({ alter: true }).catch(err => console.warn('Payment sync alter note:', err.message));
 
-      await FavoriteLog.sync();
-      if (doAlter) await FavoriteLog.sync({ alter: true });
+      await PaymentMethod.sync().catch(err => console.warn('PaymentMethod sync note:', err.message));
+      if (doAlter) await PaymentMethod.sync({ alter: true }).catch(err => console.warn('PaymentMethod sync alter note:', err.message));
+
+      await QueryLog.sync().catch(err => console.warn('QueryLog sync note:', err.message));
+      if (doAlter) await QueryLog.sync({ alter: true }).catch(err => console.warn('QueryLog sync alter note:', err.message));
+
+      await ComparisonLog.sync().catch(err => console.warn('ComparisonLog sync note:', err.message));
+      if (doAlter) await ComparisonLog.sync({ alter: true }).catch(err => console.warn('ComparisonLog sync alter note:', err.message));
+
+      await FavoriteLog.sync().catch(err => console.warn('FavoriteLog sync note:', err.message));
+      if (doAlter) await FavoriteLog.sync({ alter: true }).catch(err => console.warn('FavoriteLog sync alter note:', err.message));
+
+      await DirectMessage.sync().catch(err => console.warn('DirectMessage sync note:', err.message));
+      await UserContact.sync().catch(err => console.warn('UserContact sync note:', err.message));
+
       await seedLeaguesAndTeams();
 
       // Enable RLS for Postgres tables if applicable
@@ -1042,10 +1641,12 @@ function startServer(retries = 2) {
         console.error('❌ Failed to seed players:', seedErr.message);
       }
 
+      await seedDemoUsers();
+
       const userCount = await User.count();
       console.log(`📊 Database connected: ${count} players | ${userCount} users`);
     } catch (err) {
-      console.error('❌ Database connection failed:', err.message);
+      console.error('❌ Database connection failed:', err);
     }
 
     console.log(`🤖 Mode: ${agent.demoMode ? 'DEMO (no API key)' : 'GEMINI AI'}\n`);

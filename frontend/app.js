@@ -57,6 +57,14 @@ const TRANSLATIONS = {
     ask_agent_btn: 'Preguntarle al agente sobre',
     market_value: 'Valor de Mercado', age: 'Edad',
     career_goals: 'Goles Carrera', new_chat_msg: 'Nueva conversación iniciada. ¡Pregúntame lo que quieras!',
+    btn_new_chat: 'Nuevo Chat',
+    search_chats_placeholder: 'Buscar conversación...',
+    clear_all_chats: 'Limpiar historial',
+    rename_chat: 'Renombrar chat',
+    prompt_rename_chat: 'Ingresa el nuevo título para esta conversación:',
+    no_chats_found: 'Sin conversaciones',
+    confirm_clear_all_chats: '¿Estás seguro de eliminar todo el historial de chats?',
+    confirm_delete_chat: '¿Eliminar esta conversación?',
     count_tag: 'jugadores',
     prompt1_label: '⚽ Máximo goleador Europa', prompt1: '¿Quién mete más goles actualmente en Europa?',
     prompt2_label: '🇳🇴 Perfil Haaland', prompt2: 'Cuéntame todo sobre Erling Haaland',
@@ -156,6 +164,14 @@ const TRANSLATIONS = {
     ask_agent_btn: 'Ask the agent about',
     market_value: 'Market Value', age: 'Age',
     career_goals: 'Career Goals', new_chat_msg: 'New conversation started. Ask me anything!',
+    btn_new_chat: 'New Chat',
+    search_chats_placeholder: 'Search conversation...',
+    clear_all_chats: 'Clear history',
+    rename_chat: 'Rename chat',
+    prompt_rename_chat: 'Enter a new title for this conversation:',
+    no_chats_found: 'No conversations',
+    confirm_clear_all_chats: 'Are you sure you want to delete all chat history?',
+    confirm_delete_chat: 'Delete this conversation?',
     count_tag: 'players',
     prompt1_label: '⚽ Top scorer Europe', prompt1: 'Who is scoring the most goals in Europe right now?',
     prompt2_label: '🇳🇴 Haaland profile', prompt2: 'Tell me everything about Erling Haaland',
@@ -499,7 +515,19 @@ async function fetchWithAuth(url, options = {}) {
   return res;
 }
 
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 let sessionId = null;
+let chatSessions = [];
+let activeSessionId = null;
 let allPlayers = (() => {
   try {
     const cached = localStorage.getItem('scout_ai_cached_players');
@@ -535,47 +563,65 @@ let lastAudioBlob = null;
 let comparisonChart = null;
 
 // ──────────────────────────────────────────
-// SPLASH SCREEN
+// GLOBAL LOADING UTILITIES
 // ──────────────────────────────────────────
-function runSplashScreen() {
-  const splash = document.getElementById('splash-screen');
-  if (!splash) return Promise.resolve();
 
-  const fill    = document.getElementById('splash-progress-fill');
-  const text    = document.getElementById('splash-loading-text');
-
+/**
+ * AppLoader: full-screen blocking loader shown during app boot.
+ * Drives the AppLoader injected by index.html's inline script.
+ */
+function runAppLoader() {
   const steps = [
-    { pct: 15, msg: 'Iniciando sistema...' },
-    { pct: 35, msg: 'Conectando con el backend...' },
-    { pct: 55, msg: 'Cargando base de datos...' },
-    { pct: 75, msg: 'Preparando jugadores...' },
-    { pct: 92, msg: 'Aplicando análisis IA...' },
-    { pct: 100, msg: '¡Listo!' },
+    { pct: 10, msg: 'Iniciando sistema...' },
+    { pct: 28, msg: 'Verificando sesión...' },
+    { pct: 48, msg: 'Conectando con el backend...' },
+    { pct: 65, msg: 'Cargando base de datos...' },
+    { pct: 82, msg: 'Preparando jugadores...' },
+    { pct: 95, msg: 'Aplicando análisis IA...' },
+    { pct: 100, msg: '¡Todo listo!' },
   ];
-
   return new Promise(resolve => {
+    if (!window.AppLoader) { resolve(); return; }
     let i = 0;
     const tick = () => {
       if (i >= steps.length) {
-        // All steps done — wait a beat then hide
-        setTimeout(() => {
-          splash.classList.add('splash-hide');
-          splash.addEventListener('transitionend', () => {
-            splash.style.display = 'none';
-            resolve();
-          }, { once: true });
-        }, 350);
+        setTimeout(() => { window.AppLoader.hide(); resolve(); }, 350);
         return;
       }
       const { pct, msg } = steps[i++];
-      if (fill) fill.style.width = pct + '%';
-      if (text) text.textContent = msg;
-      setTimeout(tick, i === steps.length ? 400 : 280 + Math.random() * 120);
+      window.AppLoader.setProgress(pct, msg);
+      setTimeout(tick, i === steps.length ? 400 : 260 + Math.random() * 100);
     };
-    // Small initial delay so the splash renders before ticking
-    setTimeout(tick, 200);
+    setTimeout(tick, 150);
   });
 }
+
+/**
+ * SectionLoader: lightweight semi-transparent blur overlay for
+ * module / section / plan-change transitions.
+ */
+window.SectionLoader = {
+  show: function(label) {
+    const el = document.getElementById('section-loader');
+    const lbl = document.getElementById('section-loader-label');
+    if (!el) return;
+    if (lbl) lbl.textContent = label || 'Cargando...';
+    el.style.opacity = '0';
+    el.classList.add('sl-show');
+    el.classList.remove('sl-fade-out');
+    requestAnimationFrame(() => { el.style.opacity = '1'; });
+  },
+  hide: function() {
+    const el = document.getElementById('section-loader');
+    if (!el) return;
+    el.classList.add('sl-fade-out');
+    el.style.opacity = '0';
+    setTimeout(() => {
+      el.classList.remove('sl-show', 'sl-fade-out');
+      el.style.opacity = '';
+    }, 280);
+  }
+};
 
 window.applyTheme = () => {
   const darkPref = localStorage.getItem('scout_ai_pref_dark_mode') !== 'false';
@@ -588,18 +634,32 @@ window.applyTheme = () => {
 
 document.addEventListener('DOMContentLoaded', async () => {
   window.applyTheme();
-  // ─── Auth Check ──────────────────────────────────────────────────
+  // ─── Auth Check ──────────────────────────────────────────────
   const token = localStorage.getItem('scout_ai_token');
-  const user = JSON.parse(localStorage.getItem('scout_ai_user') || 'null');
+  let user = JSON.parse(localStorage.getItem('scout_ai_user') || 'null');
 
   if (!token || !user) {
+    if (window.AppLoader) window.AppLoader.hide();
     window.location.href = 'landing.html';
     return;
   }
 
-  if (!token || !user) {
-    window.location.href = 'landing.html';
-    return;
+  // Start loader animation (runs in parallel with real init work)
+  const loaderDone = runAppLoader();
+
+  // Sync profile from DB
+  if (window.AppLoader) window.AppLoader.setProgress(28, 'Verificando sesión...');
+  try {
+    const meRes = await fetchWithAuth(`${API}/auth/me`);
+    if (meRes.ok) {
+      const meData = await meRes.json();
+      if (meData && meData.user) {
+        user = meData.user;
+        localStorage.setItem('scout_ai_user', JSON.stringify(user));
+      }
+    }
+  } catch (err) {
+    console.warn('Sincronización con BD fallida (usando perfil local):', err);
   }
 
   updateProfileUI(user);
@@ -614,9 +674,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('btn-logout-mobile')?.addEventListener('click', performLogout);
   document.getElementById('btn-profile-logout')?.addEventListener('click', performLogout);
 
-  // Run splash in parallel with actual init work
-  const splashDone = runSplashScreen();
-
+  if (window.AppLoader) window.AppLoader.setProgress(48, 'Conectando con el backend...');
   setupLanguageToggle();
   setupPaymentGateway();
   applyTranslations();
@@ -626,6 +684,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupCompareSearch();
   setupAvatarUpload();
   setupFilters();
+
+  if (window.AppLoader) window.AppLoader.setProgress(65, 'Cargando base de datos...');
   const hasCache = allPlayers && allPlayers.length > 0;
   if (hasCache) {
     populateLeagueFilter();
@@ -634,6 +694,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     buildHomePrompts();
   }
 
+  if (window.AppLoader) window.AppLoader.setProgress(80, 'Preparando jugadores...');
   const initFetches = (async () => {
     try {
       await Promise.allSettled([
@@ -654,11 +715,26 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   setTimeout(checkBackendStatus, 2000);
 
-  // Ensure splash finishes its animation before the app is fully interactive
-  await splashDone;
+  if (window.AppLoader) window.AppLoader.setProgress(95, 'Aplicando análisis IA...');
+
+  // Wait for loader animation before showing app content
+  await loaderDone;
 
   // ─── Onboarding Check ─────────────────────────────────────────────
-  if (!user.onboardingComplete) {
+  const isLocalPlan = (user.selectedTier || '').toLowerCase() === 'local';
+  const hasValidProTeam = !!user.selectedClub && user.selectedClub !== 'Club Local' && user.selectedClub !== '' && !!user.selectedCountry && user.selectedCountry !== 'Local';
+  const hasLocalData = !!user.localCoachData;
+
+  const needsOnboarding = isLocalPlan 
+    ? (!user.onboardingComplete && !hasLocalData)
+    : (!hasValidProTeam);
+
+  if (needsOnboarding) {
+    if (!isLocalPlan) {
+      user.selectedClub = '';
+      user.onboardingComplete = false;
+      localStorage.setItem('scout_ai_user', JSON.stringify(user));
+    }
     setupOnboarding();
   } else {
     initDashboard();
@@ -2468,6 +2544,7 @@ function renderDashboardPerformanceChart(teamColor) {
 
   const dataPoints = form.results.map(r => resultValue[r] || 55);
 
+  teamColor = teamColor || '#00f0ff';
   const ctx2d = ctx.getContext('2d');
   const gradient = ctx2d.createLinearGradient(0, 0, 0, 120);
   gradient.addColorStop(0, `${teamColor}`);
@@ -2864,35 +2941,70 @@ async function openAlertModal(alertTitle, alertType, contextData) {
 
 async function renderMyClubDashboard() {
   const user = JSON.parse(localStorage.getItem('scout_ai_user') || 'null');
-  if (!user || !user.selectedClub) return;
+  if (!user) return;
   
-  const clubName = user.selectedClub;
-  const countryName = user.selectedCountry?.split(',')[0]?.trim() || "España";
+  const isLocalPlan = (user.selectedTier || '').toLowerCase() === 'local' || 
+                      (user.role || '').toLowerCase() === 'local' || 
+                      (user.role || '').toLowerCase() === 'entrenador local' ||
+                      user.selectedClub === 'Club Local';
+
+  // Ensure selectedClub is clean ('Club Local') for local plan users
+  if (isLocalPlan && user.selectedClub && user.selectedClub !== 'Club Local') {
+    user.selectedClub = 'Club Local';
+    localStorage.setItem('scout_ai_user', JSON.stringify(user));
+  }
+
+  let localCoachDataObj = {};
+  if (user.localCoachData) {
+    try {
+      localCoachDataObj = typeof user.localCoachData === 'string' ? JSON.parse(user.localCoachData) : user.localCoachData;
+    } catch (e) {}
+  }
+
+  const clubName = isLocalPlan 
+    ? (localCoachDataObj.club || 'Club Local') 
+    : (user.selectedClub || 'Real Madrid');
+
+  const countryName = user.selectedCountry?.split(',')[0]?.trim() || localCoachDataObj.nationality || "España";
   
   const theme = getClubTheme(clubName);
   const shieldShortEl = document.getElementById('db-club-shield-short');
   const shieldGlowEl = document.getElementById('db-club-shield');
-  if (shieldShortEl) shieldShortEl.textContent = theme.short;
-  if (shieldGlowEl) {
-    shieldGlowEl.style.background = `linear-gradient(135deg, ${theme.colors[0]}, ${theme.colors[1]})`;
-    shieldGlowEl.style.boxShadow = `0 0 25px ${theme.colors[0]}88, inset 0 0 15px rgba(255,255,255,0.2)`;
-    shieldGlowEl.style.borderColor = theme.colors[0];
 
-    // Load local club logo asynchronously
-    (async () => {
-      try {
-        const res = await fetchWithAuth(`${API}/team-logo?name=${encodeURIComponent(clubName)}`);
-        const data = await res.json();
-        if (data.logoUrl) {
-          const url = getAbsoluteUrl(data.logoUrl);
-          shieldGlowEl.innerHTML = `<img src="${url}" style="width: 70%; height: 70%; object-fit: contain; z-index: 2; position: relative;">`;
-          shieldGlowEl.style.background = 'rgba(7, 14, 27, 0.6)';
-          shieldGlowEl.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+  if (isLocalPlan) {
+    const initials = localCoachDataObj.club 
+      ? localCoachDataObj.club.split(' ').map(w => w[0]).join('').substring(0, 3).toUpperCase() 
+      : 'LCL';
+    if (shieldShortEl) shieldShortEl.textContent = initials;
+    if (shieldGlowEl) {
+      shieldGlowEl.style.background = 'rgba(0, 240, 255, 0.1)';
+      shieldGlowEl.style.boxShadow = '0 0 20px rgba(0, 240, 255, 0.2)';
+      shieldGlowEl.style.borderColor = '#00f0ff';
+      shieldGlowEl.innerHTML = `<span id="db-club-shield-short" style="font-size: 1.4rem; font-weight: 800; color: #00f0ff; letter-spacing: 1px;">${initials}</span>`;
+    }
+  } else {
+    if (shieldShortEl) shieldShortEl.textContent = theme.short;
+    if (shieldGlowEl) {
+      shieldGlowEl.style.background = `linear-gradient(135deg, ${theme.colors[0]}, ${theme.colors[1]})`;
+      shieldGlowEl.style.boxShadow = `0 0 25px ${getOpacityColor(theme.colors[0], 0.53)}, inset 0 0 15px rgba(255,255,255,0.2)`;
+      shieldGlowEl.style.borderColor = theme.colors[0];
+
+      // Load local club logo asynchronously for standard professional teams
+      (async () => {
+        try {
+          const res = await fetchWithAuth(`${API}/team-logo?name=${encodeURIComponent(clubName)}`);
+          const data = await res.json();
+          if (data.logoUrl) {
+            const url = getAbsoluteUrl(data.logoUrl);
+            shieldGlowEl.innerHTML = `<img src="${url}" style="width: 70%; height: 70%; object-fit: contain; z-index: 2; position: relative;">`;
+            shieldGlowEl.style.background = 'rgba(7, 14, 27, 0.6)';
+            shieldGlowEl.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+          }
+        } catch (err) {
+          console.warn('Could not load club dashboard logo:', err);
         }
-      } catch (err) {
-        console.warn('Could not load club dashboard logo:', err);
-      }
-    })();
+      })();
+    }
   }
   
   const nameEl = document.getElementById('db-club-name');
@@ -3822,27 +3934,225 @@ function updateProfileUI(user) {
   applyPlanPermissions();
 }
 
+function updateDailyLimitsBadges(user) {
+  if (!user) user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  const tier = (user.selectedTier || user.tier || 'Gratis').toLowerCase();
+  const isGratis = tier === 'gratis';
+  const isPro = tier === 'pro';
+  const isPlus = tier === 'plus';
+  const isEnterprise = tier === 'enterprise';
+
+  // 1. Compare Daily/Weekly/Monthly Badge
+  const compareBadge = document.getElementById('compare-daily-limit-badge');
+  if (compareBadge) {
+    if (isGratis || isPro) {
+      const maxLimit = isGratis ? 2 : 5;
+      const remaining = user.dailyComparisonsRemaining !== undefined && user.dailyComparisonsRemaining !== null 
+        ? user.dailyComparisonsRemaining 
+        : Math.max(0, maxLimit - (user.dailyComparisonsCount || 0));
+      compareBadge.style.display = 'inline-flex';
+      compareBadge.innerHTML = `Plan ${isPro ? 'Pro' : 'Gratis'}: ${remaining}/${maxLimit} comparaciones hoy`;
+      compareBadge.style.background = remaining === 0 ? 'rgba(255, 59, 48, 0.15)' : 'rgba(0, 240, 255, 0.1)';
+      compareBadge.style.borderColor = remaining === 0 ? '#ff3b30' : 'rgba(0, 240, 255, 0.3)';
+      compareBadge.style.color = remaining === 0 ? '#ff3b30' : '#00f0ff';
+    } else if (isPlus) {
+      const maxLimit = 15;
+      const remaining = user.weeklyComparisonsRemaining !== undefined && user.weeklyComparisonsRemaining !== null
+        ? user.weeklyComparisonsRemaining
+        : Math.max(0, maxLimit - (user.weeklyComparisonsCount || 0));
+      compareBadge.style.display = 'inline-flex';
+      compareBadge.innerHTML = `Plan Plus: ${remaining}/${maxLimit} comparaciones esta semana`;
+      compareBadge.style.background = remaining === 0 ? 'rgba(255, 59, 48, 0.15)' : 'rgba(0, 240, 255, 0.1)';
+      compareBadge.style.borderColor = remaining === 0 ? '#ff3b30' : 'rgba(0, 240, 255, 0.3)';
+      compareBadge.style.color = remaining === 0 ? '#ff3b30' : '#00f0ff';
+    } else if (isEnterprise) {
+      const maxLimit = 50;
+      const remaining = user.monthlyComparisonsRemaining !== undefined && user.monthlyComparisonsRemaining !== null
+        ? user.monthlyComparisonsRemaining
+        : Math.max(0, maxLimit - (user.monthlyComparisonsCount || 0));
+      compareBadge.style.display = 'inline-flex';
+      compareBadge.innerHTML = `Plan Enterprise: ${remaining}/${maxLimit} comparaciones este mes`;
+      compareBadge.style.background = remaining === 0 ? 'rgba(255, 59, 48, 0.15)' : 'rgba(0, 240, 255, 0.1)';
+      compareBadge.style.borderColor = remaining === 0 ? '#ff3b30' : 'rgba(0, 240, 255, 0.3)';
+      compareBadge.style.color = remaining === 0 ? '#ff3b30' : '#00f0ff';
+    } else {
+      compareBadge.style.display = 'none';
+    }
+  }
+
+  // 2. Chat IA Daily/Weekly Badge
+  const chatBadge = document.getElementById('chat-daily-limit-badge');
+  if (chatBadge) {
+    if (isGratis || isPro) {
+      const maxLimit = isGratis ? 5 : 10;
+      const remaining = user.dailyAiMessagesRemaining !== undefined && user.dailyAiMessagesRemaining !== null
+        ? user.dailyAiMessagesRemaining
+        : Math.max(0, maxLimit - (user.dailyAiMessagesCount || 0));
+      chatBadge.style.display = 'inline-flex';
+      chatBadge.innerHTML = `Plan ${isPro ? 'Pro' : 'Gratis'}: ${remaining}/${maxLimit} mensajes hoy`;
+      chatBadge.style.background = remaining === 0 ? 'rgba(255, 59, 48, 0.15)' : 'rgba(0, 240, 255, 0.1)';
+      chatBadge.style.borderColor = remaining === 0 ? '#ff3b30' : 'rgba(0, 240, 255, 0.3)';
+      chatBadge.style.color = remaining === 0 ? '#ff3b30' : '#00f0ff';
+    } else if (isPlus) {
+      const maxLimit = 30;
+      const remaining = user.weeklyAiMessagesRemaining !== undefined && user.weeklyAiMessagesRemaining !== null
+        ? user.weeklyAiMessagesRemaining
+        : Math.max(0, maxLimit - (user.weeklyAiMessagesCount || 0));
+      chatBadge.style.display = 'inline-flex';
+      chatBadge.innerHTML = `Plan Plus: ${remaining}/${maxLimit} mensajes esta semana`;
+      chatBadge.style.background = remaining === 0 ? 'rgba(255, 59, 48, 0.15)' : 'rgba(0, 240, 255, 0.1)';
+      chatBadge.style.borderColor = remaining === 0 ? '#ff3b30' : 'rgba(0, 240, 255, 0.3)';
+      chatBadge.style.color = remaining === 0 ? '#ff3b30' : '#00f0ff';
+    } else if (isEnterprise) {
+      const maxLimit = 50;
+      const remaining = user.weeklyAiMessagesRemaining !== undefined && user.weeklyAiMessagesRemaining !== null
+        ? user.weeklyAiMessagesRemaining
+        : Math.max(0, maxLimit - (user.weeklyAiMessagesCount || 0));
+      chatBadge.style.display = 'inline-flex';
+      chatBadge.innerHTML = `Plan Enterprise: ${remaining}/${maxLimit} mensajes esta semana`;
+      chatBadge.style.background = remaining === 0 ? 'rgba(255, 59, 48, 0.15)' : 'rgba(0, 240, 255, 0.1)';
+      chatBadge.style.borderColor = remaining === 0 ? '#ff3b30' : 'rgba(0, 240, 255, 0.3)';
+      chatBadge.style.color = remaining === 0 ? '#ff3b30' : '#00f0ff';
+    } else {
+      chatBadge.style.display = 'none';
+    }
+  }
+
+  // 3. Mi Club Pitch Edit Guard
+  const pitchEditBtn = document.getElementById('db-btn-edit-formation');
+  if (pitchEditBtn) {
+    if (isGratis) {
+      pitchEditBtn.title = 'Edición restringida en Plan Gratis (Solo Resumen de Temporada disponible)';
+      pitchEditBtn.onclick = (e) => {
+        e.preventDefault();
+        alert('En el Plan Gratis tienes acceso únicamente al Resumen de Temporada de tu equipo.\n\nPara visualizar la alineación general o personalizar tácticas, actualiza a un plan superior (Pro, Plus, Local o Enterprise).');
+      };
+    } else if (isPro) {
+      pitchEditBtn.title = 'Edición de alineación restringida en Plan Pro (Modo Lectura de Alineación General)';
+      pitchEditBtn.onclick = (e) => {
+        e.preventDefault();
+        alert('En el Plan Pro puedes consultar la Alineación General del equipo, pero la edición personalizada de alineaciones y tácticas está reservada para los planes Plus, Local y Enterprise.');
+      };
+    } else {
+      pitchEditBtn.onclick = null;
+    }
+  }
+
+  // 4. Mi Club AI Alerts Guard
+  const alertsCard = document.querySelector('.db-alerts-card');
+  if (alertsCard) {
+    if (isGratis || isPro || isPlus) {
+      const alertsList = document.getElementById('db-alerts-list');
+      if (alertsList) {
+        alertsList.innerHTML = `<div style="padding: 15px; text-align: center; color: rgba(255,255,255,0.6); font-size: 0.85rem;">Las Alertas IA están reservadas para los planes Local y Enterprise.</div>`;
+      }
+    }
+  }
+}
+
 function applyPlanPermissions() {
   const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
-  const isLocal = (user.selectedTier || '').toLowerCase() === 'local' || (user.role || '').toLowerCase() === 'local' || (user.role || '').toLowerCase() === 'entrenador local';
-  const restricted = ['players', 'my-club', 'compare', 'predictions', 'simulations'];
+  const tier = (user.selectedTier || user.tier || user.maxPaidTierInCycle || 'Gratis').toLowerCase();
+  const role = (user.role || '').toLowerCase();
+  const isGratis = tier === 'gratis';
+  const isPro = tier === 'pro';
+  const isPlus = tier === 'plus';
+  const isLocal = tier === 'local' || role === 'local' || role === 'entrenador local';
+  const isEnterprise = tier === 'enterprise' || role.includes('enterprise') || role.includes('gerente') || role.includes('director') || role.includes('scout');
+  const restrictedInLocal = ['players', 'my-club', 'compare', 'predictions', 'simulations', 'prospects'];
 
   document.querySelectorAll('.nav-item').forEach(btn => {
     const section = btn.dataset.section;
-    if (isLocal && restricted.includes(section)) {
-      btn.style.display = 'none';
-    } else if (section === 'my-club') {
-      btn.style.display = user.selectedClub ? 'block' : 'none';
+    if (isGratis || isPro) {
+      if (['my-club', 'players', 'compare', 'chat'].includes(section)) {
+        btn.style.display = 'flex';
+      } else {
+        btn.style.display = 'none';
+      }
+    } else if (isPlus) {
+      if (['my-club', 'players', 'compare', 'chat', 'simulations'].includes(section)) {
+        btn.style.display = 'flex';
+      } else {
+        btn.style.display = 'none';
+      }
+    } else if (isLocal) {
+      if (section === 'my-players') {
+        btn.style.display = 'flex';
+      } else if (restrictedInLocal.includes(section)) {
+        btn.style.display = 'none';
+      } else {
+        btn.style.display = 'flex';
+      }
+    } else if (isEnterprise) {
+      // Enterprise: Acceso a todos sus módulos excluyendo únicamente "my-players" (Mis Jugadores)
+      if (section === 'my-players' || section === 'predictions') {
+        btn.style.display = 'none';
+      } else {
+        btn.style.display = 'flex';
+      }
     } else {
-      btn.style.display = 'block';
+      if (section === 'my-players' || section === 'prospects' || section === 'predictions') {
+        btn.style.display = 'none';
+      } else {
+        btn.style.display = 'flex';
+      }
     }
   });
 
   const activeBtn = document.querySelector('.nav-item.active');
   const currentSection = activeBtn ? activeBtn.dataset.section : 'players';
-  if (isLocal && (restricted.includes(currentSection) || currentSection === 'home')) {
-    goToSection('chat');
+  if ((isGratis || isPro) && !['my-club', 'players', 'compare', 'chat', 'profile', 'requirements'].includes(currentSection)) {
+    goToSection('players');
+  } else if (isPlus && !['my-club', 'players', 'compare', 'chat', 'simulations', 'profile', 'requirements'].includes(currentSection)) {
+    goToSection('players');
+  } else if (isEnterprise && !['my-club', 'players', 'compare', 'chat', 'simulations', 'prospects', 'profile', 'requirements'].includes(currentSection)) {
+    goToSection('players');
+  } else if (isLocal && (restrictedInLocal.includes(currentSection) || currentSection === 'home')) {
+    goToSection('my-players');
+  } else if (!isLocal && currentSection === 'my-players') {
+    goToSection('players');
+  } else if (!isEnterprise && !isLocal && currentSection === 'prospects') {
+    goToSection('players');
   }
+
+  updateDailyLimitsBadges(user);
+}
+
+// ─── Section Navigation ──────────────────────────────────────────────────
+function setupNavigation() {
+  document.querySelectorAll('.nav-item').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const section = btn.dataset.section;
+      goToSection(section);
+      closeMobileMenu();
+    });
+  });
+}
+
+function goToSection(name) {
+  const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  const isLocal = (user.selectedTier || '').toLowerCase() === 'local' || (user.role || '').toLowerCase() === 'local' || (user.role || '').toLowerCase() === 'entrenador local';
+  const restricted = ['players', 'my-club', 'compare', 'predictions', 'simulations'];
+
+  if (isLocal && (restricted.includes(name) || name === 'home')) {
+    name = 'my-players';
+  } else if (!isLocal && name === 'my-players') {
+    name = 'players';
+  }
+
+  document.querySelectorAll('.nav-item').forEach(b => {
+    b.classList.toggle('active', b.dataset.section === name);
+  });
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(`section-${name}`)?.classList.add('active');
+
+  if (name === 'my-players') window.renderMyPlayersModule();
+  if (name === 'my-club') renderMyClubDashboard();
+  if (name === 'players') renderPlayers();
+  if (name === 'predictions' && !predictionsLoaded) loadPredictions();
+  if (name === 'profile') renderProfile();
+  if (name === 'simulations') initSimulationsSection();
+  if (name === 'my-chats') renderMyChatsSection();
 }
 
 // ─── Simulations Section Logic ──────────────────────────────────────────────
@@ -4038,12 +4348,36 @@ async function initSimulationsSection() {
       simBtn.disabled = false;
     });
     
-    simBtn.addEventListener('click', () => {
+    simBtn.addEventListener('click', async () => {
+      const currentUser = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+      const tier = (currentUser.selectedTier || currentUser.tier || 'Gratis').toLowerCase();
+
+      if (tier === 'gratis' || tier === 'pro') {
+        alert('El módulo de Simulaciones no está disponible para tu plan. Por favor actualiza al Plan Plus, Local o Enterprise.');
+        return;
+      }
+
+      if (tier === 'plus' || tier === 'enterprise') {
+        try {
+          const res = await fetchWithAuth(`${API}/simulations/consume`, { method: 'POST' });
+          const data = await res.json();
+          if (!res.ok) {
+            alert(data.message || data.error || `Has alcanzado el límite mensual de simulaciones para el Plan ${tier === 'enterprise' ? 'Enterprise' : 'Plus'}.`);
+            return;
+          }
+          if (data.user) {
+            localStorage.setItem('scout_ai_user', JSON.stringify(data.user));
+            updateDailyLimitsBadges(data.user);
+          }
+        } catch (err) {
+          console.error('Error al consumir simulación:', err);
+        }
+      }
+
       const opponent = select.value;
       const awayOvrText = document.getElementById('arena-away-rating').textContent;
       const awayOvr = parseInt(awayOvrText.replace('OVR ', '')) || 75;
       
-      const currentUser = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
       const currentClub = currentUser.selectedClub || 'FC Barcelona';
       
       // Calculate homeOvr dynamically based on current club starting XI
@@ -4076,11 +4410,13 @@ function calculateTeamAverageRating(players) {
   return Math.round(sum / players.length);
 }
 
-async function loadTeamLogo(teamName, elementOrId) {
+async function loadTeamLogo(teamIdentifier, elementOrId) {
   const el = typeof elementOrId === 'string' ? document.getElementById(elementOrId) : elementOrId;
   if (!el) return;
   try {
-    const res = await fetchWithAuth(`${API}/team-logo?name=${encodeURIComponent(teamName)}`);
+    const isId = typeof teamIdentifier === 'number' || (!isNaN(teamIdentifier) && !isNaN(parseFloat(teamIdentifier)));
+    const queryParam = isId ? `id=${encodeURIComponent(teamIdentifier)}` : `name=${encodeURIComponent(teamIdentifier)}`;
+    const res = await fetchWithAuth(`${API}/team-logo?${queryParam}`);
     const data = await res.json();
     if (data.logoUrl) {
       const url = getAbsoluteUrl(data.logoUrl);
@@ -4093,16 +4429,22 @@ async function loadTeamLogo(teamName, elementOrId) {
   }
 }
 
-async function loadLeagueLogo(leagueName, elementOrId) {
+async function loadLeagueLogo(leagueIdentifier, elementOrId) {
   const el = typeof elementOrId === 'string' ? document.getElementById(elementOrId) : elementOrId;
   if (!el) return;
-  const localUrl = getLeagueLogoUrl(leagueName);
-  if (localUrl) {
-    el.innerHTML = `<img src="${localUrl}" style="width: 100%; height: 100%; object-fit: contain;">`;
-    return;
+  
+  if (typeof leagueIdentifier === 'string') {
+    const localUrl = getLeagueLogoUrl(leagueIdentifier);
+    if (localUrl) {
+      el.innerHTML = `<img src="${localUrl}" style="width: 100%; height: 100%; object-fit: contain;">`;
+      return;
+    }
   }
+
   try {
-    const res = await fetchWithAuth(`${API}/league-logo?name=${encodeURIComponent(leagueName)}`);
+    const isId = typeof leagueIdentifier === 'number' || (!isNaN(leagueIdentifier) && !isNaN(parseFloat(leagueIdentifier)));
+    const queryParam = isId ? `id=${encodeURIComponent(leagueIdentifier)}` : `name=${encodeURIComponent(leagueIdentifier)}`;
+    const res = await fetchWithAuth(`${API}/league-logo?${queryParam}`);
     const data = await res.json();
     if (data.logoUrl) {
       const url = getAbsoluteUrl(data.logoUrl);
@@ -4116,23 +4458,28 @@ async function loadLeagueLogo(leagueName, elementOrId) {
 }
 
 async function loadAllLogos() {
-  // 1. Team logos
-  const teamElements = document.querySelectorAll('[data-team-name]');
+  // 1. Team logos (by ID or Name)
+  const teamElements = document.querySelectorAll('[data-team-id], [data-team-name]');
   for (const el of teamElements) {
+    const teamId = el.getAttribute('data-team-id');
     const teamName = el.getAttribute('data-team-name');
-    if (!teamName || el.getAttribute('data-loaded') === 'true') continue;
+    const target = teamId || teamName;
+    if (!target || el.getAttribute('data-loaded') === 'true') continue;
     el.setAttribute('data-loaded', 'true');
-    await loadTeamLogo(teamName, el);
+    await loadTeamLogo(target, el);
   }
-  // 2. League logos
-  const leagueElements = document.querySelectorAll('[data-league-name]');
+  // 2. League logos (by ID or Name)
+  const leagueElements = document.querySelectorAll('[data-league-id], [data-league-name]');
   for (const el of leagueElements) {
+    const leagueId = el.getAttribute('data-league-id');
     const leagueName = el.getAttribute('data-league-name');
-    if (!leagueName || el.getAttribute('data-loaded') === 'true') continue;
+    const target = leagueId || leagueName;
+    if (!target || el.getAttribute('data-loaded') === 'true') continue;
     el.setAttribute('data-loaded', 'true');
-    await loadLeagueLogo(leagueName, el);
+    await loadLeagueLogo(target, el);
   }
 }
+
 
 function buildUpcomingFixtures(myClubName) {
   const fixturesContainer = document.getElementById('sim-fixtures-list');
@@ -4801,8 +5148,24 @@ function getOpacityColor(colorStr, opacity = 0.2) {
 async function renderProfile() {
   const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
   
+  const isLocalPlan = (user.selectedTier || '').toLowerCase() === 'local' || 
+                      (user.role || '').toLowerCase() === 'local' || 
+                      (user.role || '').toLowerCase() === 'entrenador local' ||
+                      user.selectedClub === 'Club Local';
+
+  if (user.localCoachData) {
+    try {
+      let lcd = typeof user.localCoachData === 'string' ? JSON.parse(user.localCoachData) : user.localCoachData;
+      if (lcd && lcd.club === 'Club Deportivo TesF') {
+        lcd.club = '';
+        user.localCoachData = lcd;
+        localStorage.setItem('scout_ai_user', JSON.stringify(user));
+      }
+    } catch(e) {}
+  }
+
   // Inject club theme colors into the profile banner and avatar border
-  if (user.selectedClub) {
+  if (user.selectedClub && !isLocalPlan) {
     const theme = getClubTheme(user.selectedClub);
     const bannerEl = document.querySelector('.profile-header-banner');
     const avatarWrapperEl = document.querySelector('.profile-avatar-wrapper');
@@ -4819,7 +5182,7 @@ async function renderProfile() {
       avatarWrapperEl.style.boxShadow = `0 0 30px ${glowColor}`;
     }
   } else {
-    // Reset to default style if no club is selected
+    // Reset to default style if no club is selected or in Plan Local
     const bannerEl = document.querySelector('.profile-header-banner');
     const avatarWrapperEl = document.querySelector('.profile-avatar-wrapper');
     if (bannerEl) {
@@ -4846,21 +5209,20 @@ async function renderProfile() {
   const roleEl = document.getElementById('profile-page-role');
 
   if (pageNameEl) pageNameEl.textContent = user.username || 'Usuario';
+  const hasLocalCoach = !!user.localCoachData || (user.role || '').toLowerCase().includes('entrenador');
+  const effectiveUserRole = hasLocalCoach ? 'Entrenador' : (user.role || 'Usuario');
+
   const profileRoleEl = document.querySelector('.profile-role');
   if (profileRoleEl) {
-    if (user.role) {
-      profileRoleEl.textContent = user.role;
-      profileRoleEl.style.display = 'block';
-    } else {
-      profileRoleEl.style.display = 'none';
-    }
+    profileRoleEl.textContent = effectiveUserRole;
+    profileRoleEl.style.display = 'block';
   }
   if (pageAvatarEl && user.avatarUrl) pageAvatarEl.src = getAbsoluteUrl(user.avatarUrl);
   
   if (fullnameEl) fullnameEl.textContent = (user.nombres && user.apellidos) ? `${user.nombres} ${user.apellidos}` : 'No ingresado';
   if (emailEl) emailEl.textContent = user.email || 'No ingresado';
   if (phoneEl) phoneEl.textContent = user.telefono || 'No ingresado';
-  if (roleEl) roleEl.textContent = user.role || 'No definido';
+  if (roleEl) roleEl.textContent = effectiveUserRole;
 
   // Preferences toggles initialization
   const notifPref = localStorage.getItem('scout_ai_pref_notif') !== 'false';
@@ -4872,21 +5234,71 @@ async function renderProfile() {
   if (toggleNotifEl) toggleNotifEl.classList.toggle('on', notifPref);
   if (toggleDarkEl) toggleDarkEl.classList.toggle('on', darkPref);
   
-  if (clubEl) clubEl.textContent = user.selectedClub || 'No seleccionado';
-  if (countryEl) countryEl.textContent = user.selectedCountry?.split(',')[0]?.trim() || 'No seleccionado';
-  if (tacticEl) {
-    const formation = user.preferredFormation || user.tacticalFormation;
-    const styleKey = user.preferredStyle || user.tacticalStyle;
+  // Show/Hide Club, Country, Tactic profile fields based on Plan Local
+  const clubItem = document.getElementById('profile-info-club');
+  const countryItem = document.getElementById('profile-info-country');
+  const tacticItem = document.getElementById('profile-info-tactic');
+
+  if (isLocalPlan) {
+    if (clubItem) clubItem.style.display = 'none';
+    if (countryItem) countryItem.style.display = 'none';
+    if (tacticItem) tacticItem.style.display = 'none';
+  } else {
+    if (clubItem) clubItem.style.display = '';
+    if (countryItem) countryItem.style.display = '';
+    if (tacticItem) tacticItem.style.display = '';
     
-    if (formation && styleKey) {
-      const styleName = t(`style_${styleKey}`) || styleKey;
-      tacticEl.textContent = `${formation} · ${styleName}`;
-    } else {
-      tacticEl.textContent = currentLang === 'es' ? 'No definido' : 'Not defined';
+    if (clubEl) clubEl.textContent = user.selectedClub || 'No seleccionado';
+    if (countryEl) countryEl.textContent = user.selectedCountry?.split(',')[0]?.trim() || 'No seleccionado';
+    if (tacticEl) {
+      const formation = user.preferredFormation || user.tacticalFormation;
+      const styleKey = user.preferredStyle || user.tacticalStyle;
+      
+      if (formation && styleKey) {
+        const styleName = t(`style_${styleKey}`) || styleKey;
+        tacticEl.textContent = `${formation} · ${styleName}`;
+      } else {
+        tacticEl.textContent = currentLang === 'es' ? 'No definido' : 'Not defined';
+      }
     }
   }
   if (planEl) planEl.textContent = (user.selectedTier || 'Gratis').toUpperCase();
   if (planNameEl) planNameEl.textContent = user.selectedTier || 'Gratis';
+  
+  const cycleEl = document.getElementById('profile-page-billing-cycle');
+  if (cycleEl) {
+    if (window.isBillingCycleActive(user)) {
+      const daysLeft = window.getBillingCycleDaysRemaining(user);
+      const endDateStr = window.formatBillingCycleDate(user.billingCycleEnd);
+      const isAuto = user.autoRenew !== false;
+      
+      cycleEl.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 10px; flex-wrap: wrap;">
+          <div>
+            <span style="color: #00e676; font-weight: 700;">Vigente hasta el ${endDateStr}</span>
+            <div style="font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 2px;">
+              ${isAuto ? '🔄 Renovación automática activa' : '⚠️ Renovación cancelada'}
+            </div>
+          </div>
+          ${isAuto ? `<button onclick="cancelSubscription()" style="padding: 4px 10px; font-size: 11px; font-weight: 600; border-radius: 6px; background: rgba(255, 82, 82, 0.15); border: 1px solid rgba(255, 82, 82, 0.4); color: #ff5252; cursor: pointer; transition: all 0.2s;">Cancelar Renovación</button>` : `<span style="font-size: 11px; color: rgba(255,152,0,0.9); font-weight: 700; background: rgba(255,152,0,0.15); padding: 3px 8px; border-radius: 6px;">Renovación Cancelada</span>`}
+        </div>
+      `;
+    } else if (user.selectedTier && user.selectedTier !== 'Gratis') {
+      cycleEl.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 10px;">
+          <span style="color: #ff5252; font-weight: 700;">Suscripción expirada</span>
+          <button onclick="openUpgradeModal()" style="padding: 4px 10px; font-size: 11px; font-weight: 700; border-radius: 6px; background: rgba(0, 240, 255, 0.15); border: 1.5px solid #00f0ff; color: #00f0ff; cursor: pointer;">Renovar Plan 🚀</button>
+        </div>
+      `;
+    } else {
+      cycleEl.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 10px;">
+          <span style="color: rgba(255,255,255,0.5);">Sin suscripción activa</span>
+          <button onclick="openUpgradeModal()" style="padding: 4px 10px; font-size: 11px; font-weight: 700; border-radius: 6px; background: rgba(0, 240, 255, 0.15); border: 1.5px solid #00f0ff; color: #00f0ff; cursor: pointer;">Activar Plan 🚀</button>
+        </div>
+      `;
+    }
+  }
   
   // Llenar tarjeta de Entrenador Local
   const isLocalCoach = (user.selectedTier || '').toLowerCase() === 'local' || (user.role || '').toLowerCase() === 'local' || (user.role || '').toLowerCase() === 'entrenador local';
@@ -4923,6 +5335,36 @@ async function renderProfile() {
     } else {
       localCardEl.style.display = 'none';
     }
+  }
+
+  const btnMyPlayersTab = document.getElementById('btn-profile-tab-my-players');
+  if (btnMyPlayersTab) {
+    if (isLocalCoach) {
+      btnMyPlayersTab.style.display = 'none';
+      const contentMyPlayers = document.getElementById('profile-tab-content-my-players');
+      if (contentMyPlayers && contentMyPlayers.style.display !== 'none') {
+        window.switchProfileTab('activity');
+      }
+    } else {
+      btnMyPlayersTab.style.display = 'none';
+    }
+  }
+
+  const btnFavoritesTab = document.getElementById('btn-profile-tab-favorites');
+  if (btnFavoritesTab) {
+    if (isLocalPlan) {
+      btnFavoritesTab.style.display = 'none';
+      const contentFavorites = document.getElementById('profile-tab-content-favorites');
+      if (contentFavorites && contentFavorites.style.display !== 'none') {
+        window.switchProfileTab('activity');
+      }
+    } else {
+      btnFavoritesTab.style.display = '';
+    }
+  }
+
+  if (typeof window.renderMyPlayersModule === 'function') {
+    window.renderMyPlayersModule();
   }
     
   let createdAtMs = NaN;
@@ -4977,14 +5419,21 @@ async function renderProfile() {
 // ──────────────────────────────────────────
 window.switchProfileTab = (tabName) => {
   const btnActivity = document.getElementById('btn-profile-tab-activity');
+  const btnMyPlayers = document.getElementById('btn-profile-tab-my-players');
+  const btnPaymentMethods = document.getElementById('btn-profile-tab-payment-methods');
   const btnPayments = document.getElementById('btn-profile-tab-payments');
   const btnFavorites = document.getElementById('btn-profile-tab-favorites');
+  const btnSecurity = document.getElementById('btn-profile-tab-security');
+
   const contentActivity = document.getElementById('profile-tab-content-activity');
+  const contentMyPlayers = document.getElementById('profile-tab-content-my-players');
+  const contentPaymentMethods = document.getElementById('profile-tab-content-payment-methods');
   const contentPayments = document.getElementById('profile-tab-content-payments');
   const contentFavorites = document.getElementById('profile-tab-content-favorites');
+  const contentSecurity = document.getElementById('profile-tab-content-security');
   
-  const buttons = [btnActivity, btnPayments, btnFavorites];
-  const contents = [contentActivity, contentPayments, contentFavorites];
+  const buttons = [btnActivity, btnMyPlayers, btnPaymentMethods, btnPayments, btnFavorites, btnSecurity];
+  const contents = [contentActivity, contentMyPlayers, contentPaymentMethods, contentPayments, contentFavorites, contentSecurity];
   
   buttons.forEach(btn => {
     if (btn) {
@@ -5005,14 +5454,35 @@ window.switchProfileTab = (tabName) => {
   if (tabName === 'activity') {
     activeBtn = btnActivity;
     activeContent = contentActivity;
+  } else if (tabName === 'my-players') {
+    activeBtn = btnMyPlayers;
+    activeContent = contentMyPlayers;
+    window.renderMyPlayersModule();
+  } else if (tabName === 'payment-methods') {
+    activeBtn = btnPaymentMethods;
+    activeContent = contentPaymentMethods;
+    window.loadPaymentMethods();
   } else if (tabName === 'payments') {
     activeBtn = btnPayments;
     activeContent = contentPayments;
     window.loadProfilePaymentHistory();
   } else if (tabName === 'favorites') {
+    const userObj = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+    const isLocalPlan = (userObj.selectedTier || '').toLowerCase() === 'local' || 
+                        (userObj.role || '').toLowerCase() === 'local' || 
+                        (userObj.role || '').toLowerCase() === 'entrenador local' ||
+                        userObj.selectedClub === 'Club Local';
+    if (isLocalPlan) {
+      window.switchProfileTab('activity');
+      return;
+    }
     activeBtn = btnFavorites;
     activeContent = contentFavorites;
     window.renderProfileFavorites();
+  } else if (tabName === 'security') {
+    activeBtn = btnSecurity;
+    activeContent = contentSecurity;
+    window.loadSecurityPasskeyInfo();
   }
   
   if (activeBtn) {
@@ -5024,6 +5494,3475 @@ window.switchProfileTab = (tabName) => {
   if (activeContent) {
     activeContent.style.display = 'block';
   }
+};
+
+// ──────────────────────────────────────────
+// GESTIÓN DE MEDIOS DE PAGO (PERFIL)
+// ──────────────────────────────────────────
+window.loadPaymentMethods = async () => {
+  const container = document.getElementById('payment-methods-list-container');
+  if (!container) return;
+
+  container.innerHTML = `
+    <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: rgba(255,255,255,0.6);">
+      <div style="font-size: 28px; margin-bottom: 10px;">⏳</div>
+      <div>Cargando medios de pago de la base de datos cifrada...</div>
+    </div>
+  `;
+
+  try {
+    const token = localStorage.getItem('scout_ai_token') || localStorage.getItem('scoutai_token');
+    if (!token) {
+      container.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 30px; background: rgba(255, 170, 0, 0.1); border: 1px solid rgba(255, 170, 0, 0.3); border-radius: 12px; color: #ffaa00;">
+          ⚠️ Sesión no iniciada. Por favor, inicia sesión para ver tus medios de pago.
+        </div>
+      `;
+      return;
+    }
+
+    const res = await fetch('/api/payment-methods', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (res.status === 401) {
+      container.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 30px; background: rgba(255, 59, 48, 0.1); border: 1px solid rgba(255, 59, 48, 0.3); border-radius: 12px; color: #ff3b30;">
+          🔒 Tu sesión ha caducado. Por favor, vuelve a iniciar sesión en tu cuenta.
+        </div>
+      `;
+      return;
+    }
+
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.error || `Error del servidor (${res.status})`);
+    }
+
+    const data = await res.json();
+    if (data.success && Array.isArray(data.paymentMethods)) {
+      window.renderPaymentMethods(data.paymentMethods);
+    } else {
+      throw new Error(data.error || 'Error al obtener los datos.');
+    }
+  } catch (err) {
+    console.error('Error loading payment methods:', err);
+    container.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; padding: 30px; background: rgba(255, 59, 48, 0.1); border: 1px solid rgba(255, 59, 48, 0.3); border-radius: 12px; color: #ff3b30;">
+        ⚠️ ${err.message}
+      </div>
+    `;
+  }
+};
+
+window.renderPaymentMethods = (methods) => {
+  const container = document.getElementById('payment-methods-list-container');
+  if (!container) return;
+
+  if (!methods || methods.length === 0) {
+    container.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; padding: 45px 20px; background: rgba(10, 16, 28, 0.4); border: 1.5px dashed rgba(0, 240, 255, 0.2); border-radius: 16px;">
+        <h4 style="font-size: 17px; font-weight: 700; color: #fff; margin-bottom: 8px;">No tienes medios de pago registrados</h4>
+        <p style="font-size: 13px; color: rgba(255,255,255,0.5); max-width: 420px; margin: 0 auto 20px auto;">Agrega tu primera tarjeta de crédito o débito para gestionar renovaciones de suscripción de forma segura.</p>
+        <button class="btn-profile-primary" onclick="openAddPaymentMethodModal()" style="padding: 10px 20px; font-size: 13px; font-weight: 700;">Agregar Primera Tarjeta</button>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = methods.map(pm => {
+    const brandLower = (pm.cardBrand || '').toLowerCase().replace(/\s+/g, '');
+    let brandClass = 'brand-default';
+    if (brandLower.includes('visa')) brandClass = 'brand-visa';
+    else if (brandLower.includes('mastercard')) brandClass = 'brand-mastercard';
+    else if (brandLower.includes('amex') || brandLower.includes('american')) brandClass = 'brand-amex';
+
+    return `
+      <div class="payment-card-box ${pm.isDefault ? 'default-card' : ''}">
+        ${pm.isDefault ? '<div class="payment-default-badge">⭐ Principal</div>' : ''}
+        
+        <div class="payment-card-top">
+          <div class="payment-card-chip"></div>
+          <span class="payment-card-brand-tag ${brandClass}">${pm.cardBrand || 'Tarjeta'}</span>
+        </div>
+
+        <div class="payment-card-number">
+          <span>••••</span>
+          <span>••••</span>
+          <span>••••</span>
+          <span>${pm.last4}</span>
+        </div>
+
+        <div class="payment-card-bottom">
+          <div class="payment-card-holder">
+            <span class="payment-card-label">Titular / Vencimiento</span>
+            <span class="payment-card-val" title="${pm.cardholderName}">${pm.cardholderName}</span>
+            <span style="font-size: 11px; color: rgba(0, 240, 255, 0.8); font-weight: 700; margin-top: 2px;">Vence: ${pm.expMonth}/${pm.expYear}</span>
+          </div>
+
+          <div class="payment-card-actions">
+            ${!pm.isDefault ? `
+              <button class="payment-card-btn-action" onclick="setDefaultPaymentMethod(${pm.id})" title="Establecer como medio de pago principal">
+                Usar Principal
+              </button>
+            ` : ''}
+            <button class="payment-card-btn-action payment-card-btn-delete" onclick="deletePaymentMethod(${pm.id})" title="Eliminar tarjeta">
+              🗑️
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+};
+
+window.openAddPaymentMethodModal = () => {
+  console.log('💳 Opening Add Payment Method Modal...');
+  const modal = document.getElementById('modal-add-payment-method');
+  const form = document.getElementById('add-payment-method-form');
+  const errorMsg = document.getElementById('add-pm-error-msg');
+  const badge = document.getElementById('pm-card-brand-badge');
+
+  const count = (window.userPaymentMethods || []).length;
+
+  if (form) {
+    form.reset();
+    form.onsubmit = window.savePaymentMethod;
+  }
+  if (errorMsg) {
+    if (count >= 10) {
+      errorMsg.textContent = 'Has alcanzado el límite máximo de 10 tarjetas guardadas por usuario (10/10). Elimina una para agregar otra.';
+      errorMsg.style.display = 'block';
+    } else {
+      errorMsg.style.display = 'none';
+      errorMsg.textContent = '';
+    }
+  }
+  if (badge) {
+    badge.textContent = '💳';
+    badge.style.color = 'rgba(255,255,255,0.4)';
+    badge.style.background = 'transparent';
+  }
+  if (modal) {
+    modal.style.cssText = 'display: flex !important; position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 999999 !important; background: rgba(4, 8, 16, 0.88) !important; backdrop-filter: blur(12px) !important; align-items: center !important; justify-content: center !important; padding: 20px !important; box-sizing: border-box !important;';
+  } else {
+    window.showAppErrorAlert({
+      title: 'Error de Interfaz',
+      message: 'No se encontró el elemento modal-add-payment-method en la página.'
+    });
+  }
+};
+
+window.closeAddPaymentMethodModal = () => {
+  const modal = document.getElementById('modal-add-payment-method');
+  if (modal) {
+    modal.style.cssText = 'display: none !important;';
+  }
+};
+
+window.formatCardNumberInput = (input) => {
+  if (!input) return;
+  let val = input.value.replace(/\D/g, '');
+  if (val.length > 19) val = val.substring(0, 19);
+
+  const parts = [];
+  for (let i = 0; i < val.length; i += 4) {
+    parts.push(val.substring(i, i + 4));
+  }
+  input.value = parts.join(' ');
+
+  const badge = document.getElementById('pm-card-brand-badge');
+  if (badge) {
+    if (/^4/.test(val)) {
+      badge.textContent = 'Visa 🔵';
+      badge.style.color = '#00f0ff';
+    } else if (/^(5[1-5]|2[2-7])/.test(val)) {
+      badge.textContent = 'MC 🟠';
+      badge.style.color = '#ff9800';
+    } else if (/^3[47]/.test(val)) {
+      badge.textContent = 'Amex 🟢';
+      badge.style.color = '#4caf50';
+    } else if (/^(6011|65|64[4-9])/.test(val)) {
+      badge.textContent = 'Disc 🟣';
+      badge.style.color = '#9c27b0';
+    } else {
+      badge.textContent = '💳';
+      badge.style.color = 'rgba(255,255,255,0.4)';
+    }
+  }
+};
+
+window.formatCardPeriodInput = (input) => {
+  if (!input) return;
+  let clean = input.value.replace(/\D/g, '');
+  if (clean.length > 4) clean = clean.slice(0, 4);
+  if (clean.length > 2) {
+    input.value = clean.slice(0, 2) + '/' + clean.slice(2, 4);
+  } else {
+    input.value = clean;
+  }
+};
+
+window.savePaymentMethod = async (event) => {
+  if (event && typeof event.preventDefault === 'function') {
+    event.preventDefault();
+  }
+
+  const count = (window.userPaymentMethods || []).length;
+  const errorMsg = document.getElementById('add-pm-error-msg');
+
+  if (count >= 10) {
+    if (errorMsg) {
+      errorMsg.textContent = 'Has alcanzado el límite máximo de 10 tarjetas guardadas por usuario (10/10). Elimina una para agregar otra.';
+      errorMsg.style.display = 'block';
+    }
+    return false;
+  }
+
+  const cardholderName = (document.getElementById('pm-cardholder-name')?.value || '').trim();
+  const cardNumber = (document.getElementById('pm-card-number')?.value || '').replace(/\s/g, '');
+
+  let expMonth = document.getElementById('pm-exp-month')?.value || '';
+  let expYear = document.getElementById('pm-exp-year')?.value || '';
+  const periodVal = (document.getElementById('pm-period')?.value || '').trim();
+  if (periodVal.includes('/')) {
+    const parts = periodVal.split('/');
+    expMonth = parts[0].padStart(2, '0');
+    expYear = parts[1].length === 2 ? '20' + parts[1] : parts[1];
+  }
+
+  const cvc = (document.getElementById('pm-cvc')?.value || '').trim();
+  const billingZip = (document.getElementById('pm-billing-zip')?.value || '').trim();
+  const isDefault = document.getElementById('pm-is-default')?.checked || false;
+
+  const submitBtn = document.getElementById('btn-save-payment-method');
+
+  if (errorMsg) {
+    errorMsg.style.display = 'none';
+    errorMsg.textContent = '';
+  }
+
+  if (!cardholderName || !cardNumber || !expMonth || !expYear || !cvc) {
+    if (errorMsg) {
+      errorMsg.textContent = 'Por favor completa todos los campos requeridos (Titular, Tarjeta, Vencimiento y CVV).';
+      errorMsg.style.display = 'block';
+    }
+    return false;
+  }
+
+  if (cardNumber.length < 13 || cardNumber.length > 19) {
+    if (errorMsg) {
+      errorMsg.textContent = 'El número de tarjeta debe contener entre 13 y 19 dígitos.';
+      errorMsg.style.display = 'block';
+    }
+    return false;
+  }
+
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = '⏳ Guardando y Cifrando...';
+  }
+
+  try {
+    const token = localStorage.getItem('scout_ai_token') || localStorage.getItem('scoutai_token');
+    if (!token) {
+      throw new Error('Tu sesión ha finalizado. Por favor, vuelve a iniciar sesión.');
+    }
+
+    const res = await fetch('/api/payment-methods', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        cardholderName,
+        cardNumber,
+        expMonth,
+        expYear,
+        cvc,
+        billingZip,
+        isDefault
+      })
+    });
+
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok || !data.success) {
+      throw new Error(data.error || 'Error al guardar el medio de pago.');
+    }
+
+    window.closeAddPaymentMethodModal();
+    if (typeof window.showToast === 'function') {
+      window.showToast('✅ Tarjeta registrada con éxito y cifrada en BD', 'success');
+    } else {
+      alert('✅ Medio de pago registrado con éxito en la base de datos cifrada.');
+    }
+    window.loadPaymentMethods();
+    return false;
+
+  } catch (err) {
+    console.error('Error saving payment method:', err);
+    if (errorMsg) {
+      errorMsg.textContent = err.message || 'Error al guardar medio de pago.';
+      errorMsg.style.display = 'block';
+    }
+    return false;
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = '🔒 Guardar Tarjeta Seguro';
+    }
+  }
+};
+
+window.setDefaultPaymentMethod = async (id) => {
+  try {
+    const token = localStorage.getItem('scout_ai_token') || localStorage.getItem('scoutai_token');
+    const res = await fetch(`/api/payment-methods/${id}/default`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.success) {
+      throw new Error(data.error || 'Error al actualizar');
+    }
+
+    if (typeof window.showToast === 'function') {
+      window.showToast('⭐ Medio de pago marcado como principal', 'success');
+    }
+    window.loadPaymentMethods();
+  } catch (err) {
+    console.error('Error setting default payment method:', err);
+    window.showAppErrorAlert({
+      title: 'Medios de Pago',
+      message: err.message || 'Error al establecer medio de pago principal.'
+    });
+  }
+};
+
+window.deletePaymentMethod = async (id) => {
+  if (!confirm('¿Estás seguro de que deseas eliminar este medio de pago de tu cuenta?')) {
+    return;
+  }
+
+  try {
+    const token = localStorage.getItem('scout_ai_token') || localStorage.getItem('scoutai_token');
+    const res = await fetch(`/api/payment-methods/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.success) {
+      throw new Error(data.error || 'Error al eliminar');
+    }
+
+    if (typeof window.showToast === 'function') {
+      window.showToast('🗑️ Medio de pago eliminado', 'info');
+    }
+    window.loadPaymentMethods();
+  } catch (err) {
+    console.error('Error deleting payment method:', err);
+    window.showAppErrorAlert({
+      title: 'Medios de Pago',
+      message: err.message || 'Error al eliminar medio de pago.'
+    });
+  }
+};
+
+// Global function alias wrappers for inline HTML onclick/onsubmit handlers
+function openAddPaymentMethodModal() { if (typeof window.openAddPaymentMethodModal === 'function') window.openAddPaymentMethodModal(); }
+function closeAddPaymentMethodModal() { if (typeof window.closeAddPaymentMethodModal === 'function') window.closeAddPaymentMethodModal(); }
+function formatCardNumberInput(input) { if (typeof window.formatCardNumberInput === 'function') window.formatCardNumberInput(input); }
+function savePaymentMethod(event) { if (typeof window.savePaymentMethod === 'function') return window.savePaymentMethod(event); }
+function setDefaultPaymentMethod(id) { if (typeof window.setDefaultPaymentMethod === 'function') window.setDefaultPaymentMethod(id); }
+function deletePaymentMethod(id) { if (typeof window.deletePaymentMethod === 'function') window.deletePaymentMethod(id); }
+
+// Universal Event Listener binding for opening the Add Payment Method Modal
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('#btn-open-add-payment-method-modal, [onclick*="openAddPaymentMethodModal"], .btn-open-pm-modal');
+  if (btn) {
+    console.log('💳 Click detected on Add Payment Method button:', btn);
+    e.preventDefault();
+    e.stopPropagation();
+    if (typeof window.openAddPaymentMethodModal === 'function') {
+      window.openAddPaymentMethodModal();
+    }
+  }
+});
+
+
+
+
+// ──────────────────────────────────────────
+// SEGURIDAD Y DISPOSITIVOS PASSKEY (PERFIL)
+// ──────────────────────────────────────────
+const bufferToBase64Url = (buffer) => {
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  for (let i = 0; i < bytes.byteLength; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+};
+
+const base64UrlToBuffer = (base64url) => {
+  let padding = '='.repeat((4 - base64url.length % 4) % 4);
+  let base64 = (base64url + padding).replace(/-/g, '+').replace(/_/g, '/');
+  let rawData = window.atob(base64);
+  let outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray.buffer;
+};
+
+window.getDevicePasskeyInfo = () => {
+  const ua = navigator.userAgent || '';
+  const screenWidth = window.screen ? window.screen.width : 0;
+  const screenHeight = window.screen ? window.screen.height : 0;
+
+  // 🍎 iOS Identification (iPhones 2023+)
+  if (/iphone|ipad|ipod/i.test(ua)) {
+    if (/ipad/i.test(ua)) {
+      if (/M4/i.test(ua) || (screenWidth >= 1024 && screenHeight >= 1366)) return 'Apple iPad Pro M4 / Air (2024+)';
+      return 'Apple iPad (iOS)';
+    }
+    const ratio = window.devicePixelRatio || 1;
+    const maxDim = Math.max(screenWidth, screenHeight);
+    
+    if (maxDim >= 932 && ratio >= 3) return 'Apple iPhone 16 Pro Max / 15 Pro Max';
+    if (maxDim >= 852 && ratio >= 3) return 'Apple iPhone 16 Pro / 15 Pro / 16';
+    if (maxDim >= 926 || maxDim >= 844) return 'Apple iPhone 16 Plus / 15 Plus';
+    return 'Apple iPhone (iOS)';
+  }
+
+  // 📱 Samsung Galaxy Model Mapping Complete (Lanzamientos 2023 - 2026)
+  if (/samsung|galaxy|SM-/i.test(ua)) {
+    // S-Series Flagships (2023 - 2026)
+    if (/SM-S938/i.test(ua)) return 'Samsung Galaxy S25 Ultra';
+    if (/SM-S936/i.test(ua)) return 'Samsung Galaxy S25+';
+    if (/SM-S931/i.test(ua)) return 'Samsung Galaxy S25';
+
+    if (/SM-S928/i.test(ua)) return 'Samsung Galaxy S24 Ultra';
+    if (/SM-S926/i.test(ua)) return 'Samsung Galaxy S24+';
+    if (/SM-S921/i.test(ua)) return 'Samsung Galaxy S24';
+    if (/SM-S721/i.test(ua)) return 'Samsung Galaxy S24 FE';
+
+    if (/SM-S918/i.test(ua)) return 'Samsung Galaxy S23 Ultra';
+    if (/SM-S916/i.test(ua)) return 'Samsung Galaxy S23+';
+    if (/SM-S911/i.test(ua)) return 'Samsung Galaxy S23';
+    if (/SM-S711/i.test(ua)) return 'Samsung Galaxy S23 FE';
+
+    // Z-Series Plegables (2023 - 2025)
+    if (/SM-F958/i.test(ua)) return 'Samsung Galaxy Z Fold Special Edition';
+    if (/SM-F956/i.test(ua)) return 'Samsung Galaxy Z Fold6';
+    if (/SM-F741/i.test(ua)) return 'Samsung Galaxy Z Flip6';
+    if (/SM-F946/i.test(ua)) return 'Samsung Galaxy Z Fold5';
+    if (/SM-F731/i.test(ua)) return 'Samsung Galaxy Z Flip5';
+
+    // A-Series (2023 - 2025)
+    if (/SM-A566/i.test(ua)) return 'Samsung Galaxy A56 5G';
+    if (/SM-A556/i.test(ua)) return 'Samsung Galaxy A55 5G';
+    if (/SM-A546/i.test(ua)) return 'Samsung Galaxy A54 5G';
+
+    if (/SM-A366/i.test(ua)) return 'Samsung Galaxy A36 5G';
+    if (/SM-A356/i.test(ua)) return 'Samsung Galaxy A35 5G';
+    if (/SM-A346/i.test(ua)) return 'Samsung Galaxy A34 5G';
+
+    if (/SM-A266/i.test(ua)) return 'Samsung Galaxy A26 5G';
+    if (/SM-A256/i.test(ua)) return 'Samsung Galaxy A25 5G';
+    if (/SM-A245/i.test(ua)) return 'Samsung Galaxy A24';
+
+    if (/SM-A166/i.test(ua) || /SM-A165/i.test(ua)) return 'Samsung Galaxy A16';
+    if (/SM-A156/i.test(ua) || /SM-A155/i.test(ua)) return 'Samsung Galaxy A15';
+    if (/SM-A146/i.test(ua) || /SM-A145/i.test(ua)) return 'Samsung Galaxy A14';
+
+    if (/SM-A065/i.test(ua)) return 'Samsung Galaxy A06';
+    if (/SM-A057/i.test(ua)) return 'Samsung Galaxy A05s';
+    if (/SM-A055/i.test(ua)) return 'Samsung Galaxy A05';
+    if (/SM-A042/i.test(ua)) return 'Samsung Galaxy A04e';
+
+    // M-Series & F-Series (2023 - 2025)
+    if (/SM-M556/i.test(ua) || /SM-F556/i.test(ua)) return 'Samsung Galaxy M55 / F55 5G';
+    if (/SM-M546/i.test(ua) || /SM-F546/i.test(ua)) return 'Samsung Galaxy M54 / F54 5G';
+    if (/SM-M356/i.test(ua) || /SM-F346/i.test(ua)) return 'Samsung Galaxy M35 / F34 5G';
+    if (/SM-M346/i.test(ua)) return 'Samsung Galaxy M34 5G';
+    if (/SM-M156/i.test(ua) || /SM-F156/i.test(ua)) return 'Samsung Galaxy M15 / F15 5G';
+    if (/SM-M146/i.test(ua) || /SM-F146/i.test(ua)) return 'Samsung Galaxy M14 / F14 5G';
+    if (/SM-M055/i.test(ua) || /SM-F055/i.test(ua)) return 'Samsung Galaxy M05 / F05';
+
+    // XCover Rugged (2023 - 2024)
+    if (/SM-G556/i.test(ua)) return 'Samsung Galaxy XCover 7';
+    if (/SM-G736/i.test(ua)) return 'Samsung Galaxy XCover 6 Pro';
+
+    // Tab-Series Tablets (2023 - 2025)
+    if (/SM-X926|SM-X920/i.test(ua)) return 'Samsung Galaxy Tab S10 Ultra';
+    if (/SM-X826|SM-X820/i.test(ua)) return 'Samsung Galaxy Tab S10+';
+    if (/SM-X916|SM-X910/i.test(ua)) return 'Samsung Galaxy Tab S9 Ultra';
+    if (/SM-X816|SM-X810/i.test(ua)) return 'Samsung Galaxy Tab S9+';
+    if (/SM-X716|SM-X710/i.test(ua)) return 'Samsung Galaxy Tab S9';
+    if (/SM-X616|SM-X516/i.test(ua)) return 'Samsung Galaxy Tab S9 FE';
+    if (/SM-X216|SM-X115/i.test(ua)) return 'Samsung Galaxy Tab A9+ / A9';
+
+    // Fallback Samsung con número de modelo
+    const modelMatch = ua.match(/SM-[A-Z0-9]+/i);
+    if (modelMatch) return `Samsung Galaxy (${modelMatch[0]})`;
+    return 'Samsung Galaxy (Android)';
+  }
+
+  // 🤖 Google Pixel Series (2023-2025)
+  if (/pixel/i.test(ua)) {
+    if (/Pixel 9 Pro XL/i.test(ua)) return 'Google Pixel 9 Pro XL';
+    if (/Pixel 9 Pro Fold/i.test(ua)) return 'Google Pixel 9 Pro Fold';
+    if (/Pixel 9 Pro/i.test(ua)) return 'Google Pixel 9 Pro';
+    if (/Pixel 9/i.test(ua)) return 'Google Pixel 9';
+    if (/Pixel 8a/i.test(ua)) return 'Google Pixel 8a';
+    if (/Pixel 8 Pro/i.test(ua)) return 'Google Pixel 8 Pro';
+    if (/Pixel 8/i.test(ua)) return 'Google Pixel 8';
+    if (/Pixel Fold/i.test(ua)) return 'Google Pixel Fold';
+    if (/Pixel 7a/i.test(ua)) return 'Google Pixel 7a';
+    return 'Google Pixel (Android)';
+  }
+
+  // 📱 Xiaomi / Redmi / POCO (2023-2025)
+  if (/xiaomi|redmi|poco/i.test(ua)) {
+    if (/14 Ultra/i.test(ua)) return 'Xiaomi 14 Ultra';
+    if (/14 Pro/i.test(ua)) return 'Xiaomi 14 Pro';
+    if (/Xiaomi 14/i.test(ua)) return 'Xiaomi 14';
+    if (/13 Ultra/i.test(ua)) return 'Xiaomi 13 Ultra';
+    if (/13 Pro/i.test(ua)) return 'Xiaomi 13 Pro';
+    if (/Xiaomi 13/i.test(ua)) return 'Xiaomi 13';
+    if (/POCO F6/i.test(ua)) return 'POCO F6 Pro';
+    if (/POCO F5/i.test(ua)) return 'POCO F5';
+    if (/Redmi Note 13/i.test(ua)) return 'Redmi Note 13 Pro 5G';
+    if (/Redmi Note 12/i.test(ua)) return 'Redmi Note 12 Pro';
+    return 'Dispositivo Xiaomi / Redmi';
+  }
+
+  // Extracción genérica de modelo Android
+  if (/android/i.test(ua)) {
+    const match = ua.match(/Android\s+([0-9\.]+);\s*([^;\)]+)/i);
+    if (match && match[2]) {
+      const rawModel = match[2].trim();
+      if (rawModel && !/build|wv/i.test(rawModel)) {
+        return `Dispositivo Android (${rawModel})`;
+      }
+    }
+    return 'Dispositivo Móvil Android';
+  }
+
+  // Identificación de Escritorio / Laptops
+  if (/macintosh|mac os x/i.test(ua)) return 'Equipo Mac (macOS)';
+  if (/windows nt 10\.0/i.test(ua)) return 'Equipo PC (Windows 10/11)';
+  if (/windows/i.test(ua)) return 'Equipo PC (Windows)';
+  if (/linux/i.test(ua)) return 'Dispositivo Linux';
+
+  return 'Dispositivo de Acceso Registrado';
+};
+
+window.renderSecurityPasskeyUser = (user) => {
+  const statusEl = document.getElementById('security-passkey-status-text');
+  const detailsEl = document.getElementById('security-passkey-methods-details');
+  const webauthnBadge = document.getElementById('passkey-webauthn-badge');
+  const pinBadge = document.getElementById('passkey-pin-badge');
+  const webauthnActionBtn = document.getElementById('btn-webauthn-action');
+  const pinActionBtn = document.getElementById('btn-pin-action');
+  const webauthnRemoveBtn = document.getElementById('btn-webauthn-remove');
+  const pinRemoveBtn = document.getElementById('btn-pin-remove');
+  const deviceTitleEl = document.getElementById('security-passkey-device-title');
+  const deviceIconEl = document.getElementById('security-passkey-device-icon');
+
+  if (!statusEl || !user) return;
+
+  const hasWebAuthn = !!user.hasWebAuthn;
+  const hasPin = !!user.hasPasskeyPin;
+  const hasAnyPasskey = hasWebAuthn || hasPin;
+
+  // Exact device tracking per method
+  const webauthnDevice = user.passkeyWebAuthnDevice || (hasWebAuthn && user.passkeyDeviceInfo ? user.passkeyDeviceInfo : null);
+  const pinDevice = user.passkeyPinDevice || (hasPin && user.passkeyDeviceInfo ? user.passkeyDeviceInfo : null);
+
+  // Determine main header device title: prioritize explicit WebAuthn device, then PIN device, then global deviceInfo, then current browser device
+  let mainDeviceName = 'Dispositivo no vinculado';
+  if (hasAnyPasskey) {
+    if (hasWebAuthn && user.passkeyWebAuthnDevice) {
+      mainDeviceName = user.passkeyWebAuthnDevice;
+    } else if (hasPin && user.passkeyPinDevice) {
+      mainDeviceName = user.passkeyPinDevice;
+    } else if (user.passkeyDeviceInfo) {
+      mainDeviceName = user.passkeyDeviceInfo;
+    } else {
+      mainDeviceName = window.getDevicePasskeyInfo();
+    }
+  }
+
+  // Render device name & icon
+  if (deviceTitleEl) {
+    deviceTitleEl.textContent = mainDeviceName;
+  }
+  if (deviceIconEl) {
+    if (!hasAnyPasskey) {
+      deviceIconEl.textContent = '🔒';
+    } else {
+      const isMobile = /android|iphone|ipad|mobile|samsung|galaxy|pixel|xiaomi|redmi|poco/i.test(mainDeviceName) || /android|iphone|ipad|mobile/i.test(navigator.userAgent);
+      deviceIconEl.textContent = isMobile ? '📱' : '💻';
+    }
+  }
+
+  // Update status text
+  if (hasWebAuthn && hasPin) {
+    statusEl.innerHTML = '<span style="display: inline-block; width: 8px; height: 8px; background: #00f0ff; border-radius: 50%; box-shadow: 0 0 8px #00f0ff;"></span> Passkey Configurada y Activa (Biometría + PIN de Respaldo)';
+    statusEl.style.color = '#00f0ff';
+  } else if (hasWebAuthn) {
+    statusEl.innerHTML = '<span style="display: inline-block; width: 8px; height: 8px; background: #00f0ff; border-radius: 50%; box-shadow: 0 0 8px #00f0ff;"></span> Passkey Configurada y Activa (Biometría / Windows Hello)';
+    statusEl.style.color = '#00f0ff';
+  } else if (hasPin) {
+    statusEl.innerHTML = '<span style="display: inline-block; width: 8px; height: 8px; background: #00f0ff; border-radius: 50%; box-shadow: 0 0 8px #00f0ff;"></span> Passkey Configurada y Activa (PIN de Respaldo)';
+    statusEl.style.color = '#00f0ff';
+  } else {
+    statusEl.innerHTML = '<span style="display: inline-block; width: 8px; height: 8px; background: #ffaa00; border-radius: 50%; box-shadow: 0 0 8px #ffaa00;"></span> Passkey Pendiente (Sin medios de acceso configurados)';
+    statusEl.style.color = '#ffaa00';
+  }
+
+  // Render detailed passkey method items
+  if (detailsEl) {
+    detailsEl.innerHTML = `
+      <div style="font-size: 0.85rem; font-weight: 700; color: rgba(255,255,255,0.9); margin-bottom: 4px;">Medios de Autenticación Passkey Registrados:</div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px;">
+        <div style="background: ${hasWebAuthn ? 'rgba(0, 240, 255, 0.08)' : 'rgba(255, 255, 255, 0.02)'}; border: 1px solid ${hasWebAuthn ? 'rgba(0, 240, 255, 0.3)' : 'rgba(255, 255, 255, 0.08)'}; border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="font-weight: 700; font-size: 0.88rem; color: #fff;">Biometría / Windows Hello</div>
+          <span style="font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 10px; ${hasWebAuthn ? 'background: rgba(0, 240, 255, 0.2); color: #00f0ff; border: 1px solid #00f0ff;' : 'background: rgba(255, 170, 0, 0.15); color: #ffaa00; border: 1px solid #ffaa00;'}">
+            ${hasWebAuthn ? 'ACTIVO' : 'PENDIENTE'}
+          </span>
+        </div>
+
+        <div style="background: ${hasPin ? 'rgba(0, 240, 255, 0.08)' : 'rgba(255, 255, 255, 0.02)'}; border: 1px solid ${hasPin ? 'rgba(0, 240, 255, 0.3)' : 'rgba(255, 255, 255, 0.08)'}; border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="font-weight: 700; font-size: 0.88rem; color: #fff;">PIN Passkey de Respaldo</div>
+          <span style="font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 10px; ${hasPin ? 'background: rgba(0, 240, 255, 0.2); color: #00f0ff; border: 1px solid #00f0ff;' : 'background: rgba(255, 170, 0, 0.15); color: #ffaa00; border: 1px solid #ffaa00;'}">
+            ${hasPin ? 'ACTIVO' : 'PENDIENTE'}
+          </span>
+        </div>
+      </div>
+    `;
+  }
+
+  // Update card 1 (Biometría) badges and buttons
+  if (webauthnBadge) {
+    webauthnBadge.textContent = hasWebAuthn ? '✅ Configurado' : '⚠️ Sin vincular';
+    webauthnBadge.style.background = hasWebAuthn ? 'rgba(0, 240, 255, 0.15)' : 'rgba(255, 170, 0, 0.15)';
+    webauthnBadge.style.color = hasWebAuthn ? '#00f0ff' : '#ffaa00';
+    webauthnBadge.style.border = hasWebAuthn ? '1px solid rgba(0, 240, 255, 0.4)' : '1px solid rgba(255, 170, 0, 0.4)';
+  }
+  if (webauthnActionBtn) {
+    webauthnActionBtn.textContent = hasWebAuthn ? 'Cambiar Passkey Biométrica' : 'Vincular Passkey Biométrica';
+  }
+  if (webauthnRemoveBtn) {
+    webauthnRemoveBtn.style.display = hasWebAuthn ? 'block' : 'none';
+  }
+
+  // Update card 2 (PIN) badges and buttons
+  if (pinBadge) {
+    pinBadge.textContent = hasPin ? '✅ Configurado' : '⚠️ Sin configurar';
+    pinBadge.style.background = hasPin ? 'rgba(0, 240, 255, 0.15)' : 'rgba(255, 170, 0, 0.15)';
+    pinBadge.style.color = hasPin ? '#00f0ff' : '#ffaa00';
+    pinBadge.style.border = hasPin ? '1px solid rgba(0, 240, 255, 0.4)' : '1px solid rgba(255, 170, 0, 0.4)';
+  }
+  if (pinActionBtn) {
+    pinActionBtn.textContent = hasPin ? 'Cambiar PIN' : 'Guardar PIN';
+  }
+  if (pinRemoveBtn) {
+    pinRemoveBtn.style.display = hasPin ? 'block' : 'none';
+  }
+};
+
+window.loadSecurityPasskeyInfo = async () => {
+  const token = localStorage.getItem('scout_ai_token');
+  if (!token) return;
+
+  try {
+    const res = await fetch('/api/auth/me', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (data.user) {
+      window.renderSecurityPasskeyUser(data.user);
+    }
+  } catch (err) {
+    console.error('Error fetching security info:', err);
+  }
+
+  window.loadSecurityQuestions();
+};
+
+window.loadSecurityQuestions = async () => {
+  const token = localStorage.getItem('scout_ai_token');
+  const badgeEl = document.getElementById('security-questions-status-badge');
+  if (!token) return;
+
+  try {
+    const res = await fetch('/api/auth/security-questions', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (data.success && Array.isArray(data.questions) && data.questions.length === 3) {
+      if (document.getElementById('sec-q1-text')) document.getElementById('sec-q1-text').value = data.questions[0].question || '';
+      if (document.getElementById('sec-q2-text')) document.getElementById('sec-q2-text').value = data.questions[1].question || '';
+      if (document.getElementById('sec-q3-text')) document.getElementById('sec-q3-text').value = data.questions[2].question || '';
+
+      if (badgeEl) {
+        badgeEl.textContent = '3 Preguntas Configuradas';
+        badgeEl.style.background = 'rgba(0, 240, 255, 0.15)';
+        badgeEl.style.border = '1px solid rgba(0, 240, 255, 0.4)';
+        badgeEl.style.color = '#00f0ff';
+      }
+    } else {
+      if (badgeEl) {
+        badgeEl.textContent = 'Pendientes de Configuración';
+        badgeEl.style.background = 'rgba(255, 170, 0, 0.15)';
+        badgeEl.style.border = '1px solid rgba(255, 170, 0, 0.4)';
+        badgeEl.style.color = '#ffaa00';
+      }
+    }
+  } catch (err) {
+    console.error('Error loading security questions:', err);
+  }
+};
+
+window.saveSecurityQuestions = async (e) => {
+  if (e && e.preventDefault) e.preventDefault();
+  const token = localStorage.getItem('scout_ai_token');
+  const feedbackEl = document.getElementById('security-questions-feedback');
+
+  if (!token) return;
+
+  const q1 = document.getElementById('sec-q1-text')?.value.trim();
+  const a1 = document.getElementById('sec-a1-text')?.value.trim();
+  const q2 = document.getElementById('sec-q2-text')?.value.trim();
+  const a2 = document.getElementById('sec-a2-text')?.value.trim();
+  const q3 = document.getElementById('sec-q3-text')?.value.trim();
+  const a3 = document.getElementById('sec-a3-text')?.value.trim();
+
+  if (!q1 || !a1 || !q2 || !a2 || !q3 || !a3) {
+    if (feedbackEl) {
+      feedbackEl.style.color = '#ff4a4a';
+      feedbackEl.textContent = 'Debes completar las 3 preguntas y las 3 respuestas de seguridad.';
+    }
+    return;
+  }
+
+  if (feedbackEl) {
+    feedbackEl.style.color = '#00f0ff';
+    feedbackEl.textContent = 'Guardando 3 preguntas de seguridad...';
+  }
+
+  try {
+    const res = await fetch('/api/auth/security-questions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        items: [
+          { question: q1, answer: a1 },
+          { question: q2, answer: a2 },
+          { question: q3, answer: a3 }
+        ]
+      })
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Error al guardar preguntas');
+
+    if (feedbackEl) {
+      feedbackEl.style.color = '#00f0ff';
+      feedbackEl.textContent = '✅ 3 preguntas de seguridad guardadas exitosamente.';
+    }
+    window.loadSecurityQuestions();
+  } catch (err) {
+    console.error('Error saving security questions:', err);
+    if (feedbackEl) {
+      feedbackEl.style.color = '#ff4a4a';
+      feedbackEl.textContent = err.message;
+    }
+  }
+};
+
+window.showPasskeyModal = (type, title, message, autoCloseMs = 0) => {
+  const modal = document.getElementById('passkey-status-modal');
+  const iconContainer = document.getElementById('passkey-modal-icon-container');
+  const titleEl = document.getElementById('passkey-modal-title');
+  const msgEl = document.getElementById('passkey-modal-message');
+  const closeBtn = document.getElementById('passkey-modal-close-btn');
+  const cardEl = document.getElementById('passkey-modal-card');
+
+  if (!modal) return;
+
+  if (window._passkeyModalTimer) {
+    clearTimeout(window._passkeyModalTimer);
+    window._passkeyModalTimer = null;
+  }
+
+  titleEl.textContent = title || 'Procesando Passkey...';
+  msgEl.textContent = message || '';
+
+  if (type === 'loading') {
+    iconContainer.innerHTML = '<div class="passkey-spinner"></div>';
+    iconContainer.style.background = 'rgba(0, 240, 255, 0.1)';
+    iconContainer.style.borderColor = 'rgba(0, 240, 255, 0.4)';
+    iconContainer.style.boxShadow = '0 0 20px rgba(0, 240, 255, 0.25)';
+    cardEl.style.borderColor = 'rgba(0, 240, 255, 0.4)';
+    cardEl.style.boxShadow = '0 0 50px rgba(0, 240, 255, 0.25)';
+    closeBtn.style.display = 'none';
+  } else if (type === 'success') {
+    iconContainer.innerHTML = '<span style="font-size: 34px;">✅</span>';
+    iconContainer.style.background = 'rgba(0, 240, 255, 0.15)';
+    iconContainer.style.borderColor = '#00f0ff';
+    iconContainer.style.boxShadow = '0 0 25px rgba(0, 240, 255, 0.4)';
+    cardEl.style.borderColor = '#00f0ff';
+    cardEl.style.boxShadow = '0 0 50px rgba(0, 240, 255, 0.35)';
+    closeBtn.style.display = 'block';
+    closeBtn.textContent = 'Aceptar';
+    closeBtn.style.background = 'linear-gradient(135deg, #00f0ff, #00a2ff)';
+    closeBtn.style.color = '#05080c';
+
+    if (autoCloseMs > 0) {
+      window._passkeyModalTimer = setTimeout(() => {
+        window.closePasskeyStatusModal();
+      }, autoCloseMs);
+    }
+  } else if (type === 'error') {
+    iconContainer.innerHTML = '<span style="font-size: 34px;">⚠️</span>';
+    iconContainer.style.background = 'rgba(255, 74, 74, 0.15)';
+    iconContainer.style.borderColor = 'rgba(255, 74, 74, 0.5)';
+    iconContainer.style.boxShadow = '0 0 25px rgba(255, 74, 74, 0.3)';
+    cardEl.style.borderColor = 'rgba(255, 74, 74, 0.5)';
+    cardEl.style.boxShadow = '0 0 50px rgba(255, 74, 74, 0.3)';
+    closeBtn.style.display = 'block';
+    closeBtn.textContent = 'Cerrar';
+    closeBtn.style.background = 'rgba(255, 74, 74, 0.2)';
+    closeBtn.style.color = '#ff4a4a';
+    closeBtn.style.border = '1px solid rgba(255, 74, 74, 0.5)';
+  }
+
+  modal.style.display = 'flex';
+};
+
+window.closePasskeyStatusModal = () => {
+  const modal = document.getElementById('passkey-status-modal');
+  if (modal) modal.style.display = 'none';
+  if (window._passkeyModalTimer) {
+    clearTimeout(window._passkeyModalTimer);
+    window._passkeyModalTimer = null;
+  }
+};
+
+window.updatePasskeyWebAuthn = async () => {
+  const token = localStorage.getItem('scout_ai_token');
+  if (!token) return;
+
+  window.showPasskeyModal('loading', 'Vinculación Biométrica Passkey', 'Por favor realiza la autenticación en tu dispositivo (Windows Hello, huella dactilar o rostro)...');
+
+  try {
+    const optRes = await fetch('/api/auth/passkey/register-options', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    const options = await optRes.json();
+    if (!optRes.ok) throw new Error(options.error || 'Error al solicitar desafío');
+
+    if (!window.PublicKeyCredential) {
+      throw new Error('Navegador no soporta WebAuthn directamente. Usa la opción de PIN de respaldo.');
+    }
+
+    options.challenge = base64UrlToBuffer(options.challenge);
+    options.user.id = base64UrlToBuffer(options.user.id);
+
+    const credential = await navigator.credentials.create({ publicKey: options });
+
+    const credentialPayload = {
+      id: credential.id,
+      rawId: bufferToBase64Url(credential.rawId),
+      type: credential.type,
+      response: {
+        clientDataJSON: bufferToBase64Url(credential.response.clientDataJSON),
+        attestationObject: bufferToBase64Url(credential.response.attestationObject)
+      }
+    };
+
+    const verifyRes = await fetch('/api/auth/passkey/register-verify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ credential: credentialPayload, deviceInfo: window.getDevicePasskeyInfo() })
+    });
+    const verifyResult = await verifyRes.json();
+    if (!verifyRes.ok) throw new Error(verifyResult.error || 'Error al guardar Passkey');
+
+    if (verifyResult.token) {
+      localStorage.setItem('scout_ai_token', verifyResult.token);
+    }
+
+    window.showPasskeyModal('success', '¡Passkey Biométrica Vinculada!', '✅ Tu Passkey biométrica se ha registrado y activado exitosamente.', 3000);
+    if (verifyResult.user) {
+      window.renderSecurityPasskeyUser(verifyResult.user);
+    } else {
+      window.loadSecurityPasskeyInfo();
+    }
+  } catch (err) {
+    console.error('Passkey update error:', err);
+    const errMsg = err.name === 'NotAllowedError' ? 'Operación cancelada por el usuario.' : err.message;
+    window.showPasskeyModal('error', 'No se pudo vincular Passkey', errMsg);
+  }
+};
+
+window.updatePasskeyPin = async () => {
+  const token = localStorage.getItem('scout_ai_token');
+  const pinInput = document.getElementById('profile-passkey-pin-input');
+  const pin = pinInput?.value.trim();
+
+  if (!token || !pinInput) return;
+
+  if (!pin || !/^\d{6}$/.test(pin)) {
+    window.showPasskeyModal('error', 'PIN Inválido', 'El PIN debe ser un número exacto de 6 dígitos.');
+    return;
+  }
+
+  window.showPasskeyModal('loading', 'Guardando PIN Passkey', 'Estableciendo tu PIN numérico de respaldo...');
+
+  try {
+    const verifyRes = await fetch('/api/auth/passkey/register-verify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ pin, deviceInfo: window.getDevicePasskeyInfo() })
+    });
+    const verifyResult = await verifyRes.json();
+    if (!verifyRes.ok) throw new Error(verifyResult.error || 'Error al guardar PIN');
+
+    if (verifyResult.token) {
+      localStorage.setItem('scout_ai_token', verifyResult.token);
+    }
+
+    pinInput.value = '';
+    window.showPasskeyModal('success', '¡PIN de Respaldo Configurado!', '✅ Tu PIN Passkey de 6 dígitos se ha guardado exitosamente.', 3000);
+    if (verifyResult.user) {
+      window.renderSecurityPasskeyUser(verifyResult.user);
+    } else {
+      window.loadSecurityPasskeyInfo();
+    }
+  } catch (err) {
+    console.error('PIN Passkey update error:', err);
+    window.showPasskeyModal('error', 'Error al Guardar PIN', err.message);
+  }
+};
+
+window.removePasskeyMethod = async (method) => {
+  const token = localStorage.getItem('scout_ai_token');
+  if (!token) return;
+
+  const methodName = method === 'webauthn' ? 'Biometría / Windows Hello' : 'PIN de Respaldo';
+  if (!confirm(`¿Estás seguro de que deseas desvincular el método de Passkey (${methodName})?`)) {
+    return;
+  }
+
+  window.showPasskeyModal('loading', 'Desvinculando Método Passkey', `Eliminando ${methodName}...`);
+
+  try {
+    const res = await fetch('/api/auth/passkey/remove-method', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ method })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Error al remover método Passkey');
+
+    window.showPasskeyModal('success', '¡Método Desvinculado!', `✅ Método (${methodName}) desvinculado correctamente.`, 3000);
+    if (data.user) {
+      window.renderSecurityPasskeyUser(data.user);
+    } else {
+      window.loadSecurityPasskeyInfo();
+    }
+  } catch (err) {
+    console.error('Error removing passkey method:', err);
+    window.showPasskeyModal('error', 'Error al Desvincular', err.message);
+  }
+};
+
+window.openDeviceSelectorModal = () => {
+  const modal = document.getElementById('passkey-device-modal');
+  const titleEl = document.getElementById('security-passkey-device-title');
+  const customInput = document.getElementById('passkey-device-custom-input');
+  const presetSelect = document.getElementById('passkey-device-preset-select');
+
+  if (!modal) return;
+
+  if (customInput) customInput.value = titleEl ? titleEl.textContent : '';
+  if (presetSelect) presetSelect.value = '';
+
+  modal.style.display = 'flex';
+};
+
+window.closeDeviceSelectorModal = () => {
+  const modal = document.getElementById('passkey-device-modal');
+  if (modal) modal.style.display = 'none';
+};
+
+window.onPasskeyDeviceSelectChange = (val) => {
+  const customInput = document.getElementById('passkey-device-custom-input');
+  if (val && customInput) {
+    customInput.value = val;
+  }
+};
+
+window.autoDetectDeviceInModal = () => {
+  const detected = window.getDevicePasskeyInfo();
+  const customInput = document.getElementById('passkey-device-custom-input');
+  if (customInput) customInput.value = detected;
+};
+
+window.saveSelectedPasskeyDevice = async () => {
+  const token = localStorage.getItem('scout_ai_token');
+  const customInput = document.getElementById('passkey-device-custom-input');
+  const selectedName = customInput?.value.trim();
+
+  if (!token) return;
+  if (!selectedName) {
+    alert('Por favor selecciona o escribe un nombre de dispositivo.');
+    return;
+  }
+
+  window.closeDeviceSelectorModal();
+  window.showPasskeyModal('loading', 'Actualizando Dispositivo', 'Guardando el nuevo nombre de dispositivo Passkey...');
+
+  try {
+    const res = await fetch('/api/auth/passkey/update-device', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ deviceInfo: selectedName })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Error al actualizar dispositivo');
+
+    window.showPasskeyModal('success', '¡Dispositivo Actualizado!', `✅ Se registró "${selectedName}" como dispositivo oficial de Passkey.`, 2500);
+
+    if (data.user) {
+      window.renderSecurityPasskeyUser(data.user);
+    } else {
+      window.loadSecurityPasskeyInfo();
+    }
+  } catch (err) {
+    console.error('Error saving passkey device:', err);
+    window.showPasskeyModal('error', 'Error al Guardar Dispositivo', err.message);
+  }
+};
+
+// ──────────────────────────────────────────
+// MIS JUGADORES (PLAN LOCAL MODULE)
+// ──────────────────────────────────────────
+window.localPlayersCached = [];
+
+window.loadLocalPlayers = async () => {
+  const token = localStorage.getItem('scout_ai_token');
+  if (token) {
+    try {
+      const res = await fetch('/api/my-players', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success && Array.isArray(data.players)) {
+        const parsedPlayers = data.players.map(p => {
+          let stats = p.stats;
+          if (typeof stats === 'string') {
+            try { stats = JSON.parse(stats); } catch (e) { stats = { matches: 0, goals: 0, assists: 0 }; }
+          }
+          let strengths = p.strengths;
+          if (typeof strengths === 'string') {
+            try { strengths = JSON.parse(strengths); } catch (e) { strengths = []; }
+          }
+          let trophies = p.trophies;
+          if (typeof trophies === 'string') {
+            try { trophies = JSON.parse(trophies); } catch (e) { trophies = []; }
+          }
+          let history = p.history;
+          if (typeof history === 'string') {
+            try { history = JSON.parse(history); } catch (e) { history = []; }
+          }
+          return {
+            ...p,
+            stats,
+            strengths,
+            trophies,
+            history
+          };
+        });
+        window.localPlayersCached = parsedPlayers;
+        localStorage.setItem('scout_ai_local_players', JSON.stringify(parsedPlayers));
+        return parsedPlayers;
+      }
+    } catch (err) {
+      console.warn('⚠️ Failed to fetch players from API, falling back to cache:', err);
+    }
+  }
+  try {
+    const cached = localStorage.getItem('scout_ai_local_players');
+    window.localPlayersCached = cached ? JSON.parse(cached) : [];
+  } catch (e) {
+    window.localPlayersCached = [];
+  }
+  return window.localPlayersCached;
+};
+
+window.getLocalPlayersList = () => {
+  return window.localPlayersCached || [];
+};
+
+window.saveLocalPlayersList = async (players) => {
+  window.localPlayersCached = players;
+  localStorage.setItem('scout_ai_local_players', JSON.stringify(players));
+};
+
+window.updateLocalPlayerLegalTabVisibility = () => {
+  const ageInput = document.getElementById('lp-age');
+  const legalTabBtn = document.getElementById('tab-btn-legal');
+  const legalContent = document.getElementById('form-tab-content-legal');
+  
+  const rawAge = (ageInput?.value || '').trim();
+  const ageVal = parseInt(rawAge, 10);
+  const hasAge = rawAge !== '' && !isNaN(ageVal);
+  const isMinor = hasAge && ageVal <= 17;
+
+  if (legalTabBtn) {
+    if (isMinor) {
+      legalTabBtn.style.display = 'inline-flex';
+    } else {
+      legalTabBtn.style.display = 'none';
+      if (legalContent && legalContent.style.display !== 'none') {
+        window.switchFormTab('autorizaciones');
+      }
+    }
+  }
+
+  // Actualización dinámica de la plantilla de Word (.DOCX) a mostrar según la edad
+  const templateBox = document.getElementById('lp-auth-template-download-box');
+  if (templateBox) {
+    if (!hasAge) {
+      templateBox.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffb703" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          <span style="font-size: 12px; color: #ffb703; font-weight: 600;">
+            Por favor, indique la Edad del jugador en la pestaña "General" para obtener la plantilla de Word correspondiente.
+          </span>
+        </div>
+      `;
+    } else if (isMinor) {
+      templateBox.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 220px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00f0ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="12" y1="18" x2="12" y2="12"></line>
+            <polyline points="9 15 12 18 15 15"></polyline>
+          </svg>
+          <div>
+            <span style="font-size: 13px; font-weight: 700; color: #fff; display: block;">Plantilla para firma de autorizaciones</span>
+          </div>
+        </div>
+        <a href="assets/templates/Plantilla_Autorizacion_Menor_de_Edad.docx" download style="background: rgba(0,240,255,0.15); color: #00f0ff; border: 1px solid rgba(0,240,255,0.4); border-radius: 6px; padding: 8px 14px; font-size: 12px; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 6px; white-space: nowrap;">
+          📄 Descargar Plantilla Word (.DOCX)
+        </a>
+      `;
+    } else {
+      templateBox.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 220px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00f0ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="12" y1="18" x2="12" y2="12"></line>
+            <polyline points="9 15 12 18 15 15"></polyline>
+          </svg>
+          <div>
+            <span style="font-size: 13px; font-weight: 700; color: #fff; display: block;">Plantilla para firma de autorizaciones</span>
+          </div>
+        </div>
+        <a href="assets/templates/Plantilla_Autorizacion_Mayor_de_Edad.docx" download style="background: rgba(0,240,255,0.15); color: #00f0ff; border: 1px solid rgba(0,240,255,0.4); border-radius: 6px; padding: 8px 14px; font-size: 12px; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 6px; white-space: nowrap;">
+          📄 Descargar Plantilla Word (.DOCX)
+        </a>
+      `;
+    }
+  }
+
+  const signatureHint = document.getElementById('lp-auth-signature-hint');
+  const signatureLabel = document.getElementById('lp-auth-signature-label');
+  if (signatureHint && signatureLabel) {
+    signatureLabel.textContent = 'Adjuntar Plantilla Oficial Firmada *';
+    if (hasAge) {
+      if (isMinor) {
+        signatureHint.textContent = 'Jugador menor de edad: debe subir únicamente la plantilla oficial modificada y firmada por su representante/tutor.';
+      } else {
+        signatureHint.textContent = 'Jugador mayor de edad: debe subir únicamente la plantilla oficial modificada y firmada por el jugador.';
+      }
+    } else {
+      signatureHint.textContent = 'Debe subir la plantilla oficial de autorización firmada según corresponda por edad.';
+    }
+  }
+
+  const activeTabContent = document.querySelector('.form-tab-content[style*="display: flex"]');
+  if (activeTabContent && activeTabContent.id === 'form-tab-content-autorizaciones') {
+    window.switchFormTab('autorizaciones');
+  }
+};
+
+window.switchFormTab = (tabName) => {
+  const buttons = document.querySelectorAll('.form-tab-btn');
+  buttons.forEach(btn => {
+    btn.classList.remove('active');
+    btn.style.color = 'rgba(255,255,255,0.5)';
+    btn.style.fontWeight = '600';
+    btn.style.borderBottom = '2px solid transparent';
+  });
+
+  const activeBtn = document.getElementById(`tab-btn-${tabName}`);
+  if (activeBtn) {
+    activeBtn.classList.add('active');
+    activeBtn.style.color = '#00f0ff';
+    activeBtn.style.fontWeight = '700';
+    activeBtn.style.borderBottom = '2px solid #00f0ff';
+  }
+
+  const contents = document.querySelectorAll('.form-tab-content');
+  contents.forEach(content => {
+    content.style.display = 'none';
+  });
+
+  const activeContent = document.getElementById(`form-tab-content-${tabName}`);
+  if (activeContent) {
+    activeContent.style.display = 'flex';
+  }
+
+  // Actualizar visibilidad de botones según la pestaña
+  const cancelBtn = document.getElementById('form-btn-cancel');
+  const prevBtn = document.getElementById('form-btn-prev');
+  const nextBtn = document.getElementById('form-btn-next');
+  const submitBtn = document.getElementById('btn-save-local-player');
+
+  if (tabName === 'general') {
+    if (cancelBtn) cancelBtn.style.display = 'inline-block';
+    if (prevBtn) prevBtn.style.display = 'none';
+    if (nextBtn) {
+      nextBtn.style.display = 'inline-block';
+      nextBtn.onclick = () => window.switchFormTab('deportivo');
+    }
+    if (submitBtn) submitBtn.style.display = 'none';
+  } else if (tabName === 'deportivo') {
+    if (cancelBtn) cancelBtn.style.display = 'none';
+    if (prevBtn) {
+      prevBtn.style.display = 'inline-block';
+      prevBtn.onclick = () => window.switchFormTab('general');
+    }
+    if (nextBtn) {
+      nextBtn.style.display = 'inline-block';
+      nextBtn.onclick = () => window.switchFormTab('historial');
+    }
+    if (submitBtn) submitBtn.style.display = 'none';
+  } else if (tabName === 'historial') {
+    if (cancelBtn) cancelBtn.style.display = 'none';
+    if (prevBtn) {
+      prevBtn.style.display = 'inline-block';
+      prevBtn.onclick = () => window.switchFormTab('deportivo');
+    }
+    if (nextBtn) {
+      nextBtn.style.display = 'inline-block';
+      nextBtn.onclick = () => window.switchFormTab('autorizaciones');
+    }
+    if (submitBtn) submitBtn.style.display = 'none';
+  } else if (tabName === 'autorizaciones') {
+    const rawAge = (document.getElementById('lp-age')?.value || '').trim();
+    const ageVal = parseInt(rawAge, 10);
+    const isMinor = rawAge !== '' && !isNaN(ageVal) && ageVal <= 17;
+    const isAdult = !isMinor;
+
+    if (cancelBtn) cancelBtn.style.display = 'none';
+    if (prevBtn) {
+      prevBtn.style.display = 'inline-block';
+      prevBtn.onclick = () => window.switchFormTab('historial');
+    }
+
+    if (isAdult) {
+      if (nextBtn) nextBtn.style.display = 'none';
+      if (submitBtn) submitBtn.style.display = 'inline-block';
+    } else {
+      if (nextBtn) {
+        nextBtn.style.display = 'inline-block';
+        nextBtn.onclick = () => window.switchFormTab('legal');
+      }
+      if (submitBtn) submitBtn.style.display = 'none';
+    }
+  } else if (tabName === 'legal') {
+    if (cancelBtn) cancelBtn.style.display = 'none';
+    if (prevBtn) {
+      prevBtn.style.display = 'inline-block';
+      prevBtn.onclick = () => window.switchFormTab('autorizaciones');
+    }
+    if (nextBtn) nextBtn.style.display = 'none';
+    if (submitBtn) submitBtn.style.display = 'inline-block';
+  }
+};
+
+window.tempStrengthsTags = [];
+window.tempImprovementsTags = [];
+window.tempTrophiesList = [];
+
+window.addLocalPlayerStrengthTag = () => {
+  const input = document.getElementById('lp-strength-input');
+  if (!input) return;
+  const value = input.value.trim();
+  if (value && !window.tempStrengthsTags.includes(value)) {
+    window.tempStrengthsTags.push(value);
+    input.value = '';
+    window.renderFormStrengthsTags();
+  }
+};
+
+window.removeLocalPlayerStrengthTag = (tag) => {
+  window.tempStrengthsTags = window.tempStrengthsTags.filter(t => t !== tag);
+  window.renderFormStrengthsTags();
+};
+
+window.renderFormStrengthsTags = () => {
+  const container = document.getElementById('lp-strengths-tags-container');
+  if (!container) return;
+  container.innerHTML = window.tempStrengthsTags.map(tag => `
+    <span class="tag-item" style="background: rgba(0,240,255,0.15); border: 1px solid rgba(0,240,255,0.4); color: #00f0ff; padding: 4px 10px; border-radius: 6px; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; font-weight: 700;">
+      ${tag}
+      <span onclick="window.removeLocalPlayerStrengthTag('${tag}')" style="cursor: pointer; font-size: 10px; color: rgba(255,255,255,0.6); margin-left: 2px;">✕</span>
+    </span>
+  `).join('');
+  const hiddenInput = document.getElementById('lp-strengths');
+  if (hiddenInput) hiddenInput.value = window.tempStrengthsTags.join(', ');
+};
+
+window.addLocalPlayerImprovementTag = () => {
+  const input = document.getElementById('lp-improvement-input');
+  if (!input) return;
+  const value = input.value.trim();
+  if (value && !window.tempImprovementsTags.includes(value)) {
+    window.tempImprovementsTags.push(value);
+    input.value = '';
+    window.renderFormImprovementsTags();
+  }
+};
+
+window.removeLocalPlayerImprovementTag = (tag) => {
+  window.tempImprovementsTags = window.tempImprovementsTags.filter(t => t !== tag);
+  window.renderFormImprovementsTags();
+};
+
+window.renderFormImprovementsTags = () => {
+  const container = document.getElementById('lp-improvements-tags-container');
+  if (!container) return;
+  container.innerHTML = window.tempImprovementsTags.map(tag => `
+    <span class="tag-item" style="background: rgba(255,165,0,0.15); border: 1px solid rgba(255,165,0,0.4); color: #ffaa00; padding: 4px 10px; border-radius: 6px; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; font-weight: 700;">
+      ${tag}
+      <span onclick="window.removeLocalPlayerImprovementTag('${tag}')" style="cursor: pointer; font-size: 10px; color: rgba(255,255,255,0.6); margin-left: 2px;">✕</span>
+    </span>
+  `).join('');
+  const hiddenInput = document.getElementById('lp-improvements');
+  if (hiddenInput) hiddenInput.value = window.tempImprovementsTags.join(', ');
+};
+
+window.tempInjuriesList = [];
+
+window.addLocalPlayerInjury = () => {
+  const typeInput = document.getElementById('lp-injury-type');
+  const yearInput = document.getElementById('lp-injury-year');
+  const recoveryInput = document.getElementById('lp-injury-recovery');
+  const severityInput = document.getElementById('lp-injury-severity');
+
+  if (!typeInput) return;
+
+  const name = typeInput.value.trim();
+  if (!name) {
+    if (typeof showToast === 'function') showToast('Ingresa el tipo de lesión primero.', 'warning');
+    typeInput.focus();
+    return;
+  }
+
+  const year = (yearInput ? yearInput.value.trim() : '') || new Date().getFullYear().toString();
+  const recovery = recoveryInput ? recoveryInput.value.trim() : '';
+  const severity = severityInput ? severityInput.value : '';
+
+  if (!Array.isArray(window.tempInjuriesList)) window.tempInjuriesList = [];
+  window.tempInjuriesList.push({ name, season: year, recovery, severity });
+
+  typeInput.value = '';
+  if (yearInput) yearInput.value = '';
+  if (recoveryInput) recoveryInput.value = '';
+  if (severityInput) severityInput.value = '';
+
+  window.renderFormInjuries();
+};
+
+window.removeLocalPlayerInjury = (index) => {
+  if (Array.isArray(window.tempInjuriesList)) {
+    window.tempInjuriesList.splice(index, 1);
+    window.renderFormInjuries();
+  }
+};
+
+window.renderFormInjuries = () => {
+  const container = document.getElementById('lp-injuries-container');
+  if (!container) return;
+  if (!Array.isArray(window.tempInjuriesList)) window.tempInjuriesList = [];
+  if (window.tempInjuriesList.length === 0) {
+    container.innerHTML = `<span style="font-size: 11.5px; color: rgba(255,255,255,0.4); font-style: italic;">Sin lesiones registradas.</span>`;
+    return;
+  }
+  container.innerHTML = window.tempInjuriesList.map((inj, index) => {
+    const parts = [inj.season, inj.severity, inj.recovery].filter(Boolean).join(' · ');
+    return `
+      <span class="tag-item" style="background: rgba(255,77,77,0.15); border: 1px solid rgba(255,77,77,0.4); color: #ff6b6b; padding: 6px 12px; border-radius: 8px; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; font-weight: 700;">
+        ${inj.name}${parts ? ` <span style="font-weight:400; font-size:11px; color:rgba(255,107,107,0.7);">(${parts})</span>` : ''}
+        <span onclick="window.removeLocalPlayerInjury(${index})" style="cursor: pointer; font-size: 11px; color: rgba(255,255,255,0.5); margin-left: 2px;" title="Eliminar">✕</span>
+      </span>
+    `;
+  }).join('');
+};
+
+window.addLocalPlayerTrophy = () => {
+  const nameInput = document.getElementById('lp-trophy-name');
+  const seasonInput = document.getElementById('lp-trophy-season');
+  if (!nameInput || !seasonInput) return;
+  const name = nameInput.value.trim();
+  const season = seasonInput.value.trim() || new Date().getFullYear().toString();
+  if (name) {
+    window.tempTrophiesList.push({ name, season });
+    nameInput.value = '';
+    seasonInput.value = '';
+    window.renderFormTrophies();
+  }
+};
+
+window.removeLocalPlayerTrophy = (index) => {
+  window.tempTrophiesList.splice(index, 1);
+  window.renderFormTrophies();
+};
+
+window.renderFormTrophies = () => {
+  const container = document.getElementById('lp-trophies-container');
+  if (!container) return;
+  if (!Array.isArray(window.tempTrophiesList)) window.tempTrophiesList = [];
+  container.innerHTML = window.tempTrophiesList.map((tr, index) => `
+    <span class="tag-item" style="background: rgba(112,0,255,0.15); border: 1px solid rgba(112,0,255,0.4); color: #b070ff; padding: 4px 10px; border-radius: 6px; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; font-weight: 700;">
+      ${tr.name} (${tr.season})
+      <span onclick="window.removeLocalPlayerTrophy(${index})" style="cursor: pointer; font-size: 10px; color: rgba(255,255,255,0.6); margin-left: 2px;">✕</span>
+    </span>
+  `).join('');
+};
+
+window.tempSeasonsList = [];
+
+window.addLocalPlayerSeasonStat = () => {
+  const seasonInput = document.getElementById('lp-stats-season');
+  const matchesInput = document.getElementById('lp-stats-matches');
+  const goalsInput = document.getElementById('lp-stats-goals');
+  const assistsInput = document.getElementById('lp-stats-assists');
+  const yellowInput = document.getElementById('lp-stats-yellow');
+  const redInput = document.getElementById('lp-stats-red');
+  const teamInput = document.getElementById('lp-team');
+
+  const season = (seasonInput ? seasonInput.value.trim() : '') || '2024/25';
+  const matches = parseInt(matchesInput?.value) || 0;
+  const goals = parseInt(goalsInput?.value) || 0;
+  const assists = parseInt(assistsInput?.value) || 0;
+  const yellowCards = parseInt(yellowInput?.value) || 0;
+  const redCards = parseInt(redInput?.value) || 0;
+  const team = (teamInput ? teamInput.value.trim() : '') || 'Mi Club';
+
+  if (!Array.isArray(window.tempSeasonsList)) window.tempSeasonsList = [];
+
+  const seasonObj = {
+    season: season,
+    team: team,
+    matches: matches,
+    goals: goals,
+    assists: assists,
+    yellowCards: yellowCards,
+    redCards: redCards,
+    rating: Number((7.0 + (goals * 0.3) + (assists * 0.2) - (yellowCards * 0.1) - (redCards * 0.5)).toFixed(1))
+  };
+
+  const existingIdx = window.tempSeasonsList.findIndex(s => s.season === season);
+  if (existingIdx >= 0) {
+    window.tempSeasonsList[existingIdx] = seasonObj;
+  } else {
+    window.tempSeasonsList.push(seasonObj);
+  }
+
+  window.renderFormSeasons();
+};
+
+window.removeLocalPlayerSeasonStat = (index) => {
+  if (Array.isArray(window.tempSeasonsList)) {
+    window.tempSeasonsList.splice(index, 1);
+    window.renderFormSeasons();
+  }
+};
+
+window.renderFormSeasons = () => {
+  const container = document.getElementById('lp-seasons-container');
+  if (!container) return;
+  if (!Array.isArray(window.tempSeasonsList)) window.tempSeasonsList = [];
+  if (window.tempSeasonsList.length === 0) {
+    container.innerHTML = `<span style="font-size: 11.5px; color: rgba(255,255,255,0.4); font-style: italic;">Sin temporadas registradas. Ingresa los datos arriba y presiona "+ Añadir Temporada".</span>`;
+    return;
+  }
+  container.innerHTML = window.tempSeasonsList.map((s, index) => `
+    <span class="tag-item" style="background: rgba(0,240,255,0.12); border: 1px solid rgba(0,240,255,0.35); color: #00f0ff; padding: 6px 12px; border-radius: 8px; font-size: 12px; display: inline-flex; align-items: center; gap: 8px; font-weight: 700;">
+      <strong>${s.season}</strong> (${s.matches} PJ · ${s.goals} G · ${s.assists} A)
+      <span onclick="window.removeLocalPlayerSeasonStat(${index})" style="cursor: pointer; font-size: 12px; color: rgba(255,255,255,0.6); margin-left: 2px;" title="Eliminar temporada">✕</span>
+    </span>
+  `).join('');
+};
+
+window.renderMyPlayersModule = async (skipFetch = false) => {
+  const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  const isLocalCoach = (user.selectedTier || '').toLowerCase() === 'local' || 
+                       (user.role || '').toLowerCase() === 'local' || 
+                       (user.role || '').toLowerCase() === 'entrenador local';
+
+  // Profile Tab elements (if present)
+  const emptyEl = document.getElementById('local-players-empty');
+  const upgradeNoticeEl = document.getElementById('local-players-upgrade-notice');
+  const gridEl = document.getElementById('local-players-grid');
+  const badgeEl = document.getElementById('my-players-count-badge');
+  const totalEl = document.getElementById('local-roster-total');
+  const availEl = document.getElementById('local-roster-available');
+  const avgRatingEl = document.getElementById('local-roster-avg-rating');
+  const topCatEl = document.getElementById('local-roster-top-cat');
+
+  // Main Module Section elements
+  const emptyMainEl = document.getElementById('local-players-empty-main');
+  const upgradeNoticeMainEl = document.getElementById('local-players-upgrade-notice-main');
+  const gridMainEl = document.getElementById('local-players-grid-main');
+  const headerCountEl = document.getElementById('my-players-header-count');
+  const totalMainEl = document.getElementById('local-roster-total-main');
+  const availMainEl = document.getElementById('local-roster-available-main');
+  const avgRatingMainEl = document.getElementById('local-roster-avg-rating-main');
+  const topCatMainEl = document.getElementById('local-roster-top-cat-main');
+
+  if (!isLocalCoach) {
+    if (upgradeNoticeEl) upgradeNoticeEl.style.display = 'block';
+    if (upgradeNoticeMainEl) upgradeNoticeMainEl.style.display = 'block';
+    if (emptyEl) emptyEl.style.display = 'none';
+    if (emptyMainEl) emptyMainEl.style.display = 'none';
+    if (gridEl) gridEl.style.display = 'none';
+    if (gridMainEl) gridMainEl.style.display = 'none';
+    if (badgeEl) badgeEl.textContent = 'Plan Local';
+    if (headerCountEl) headerCountEl.textContent = '0 Jugadores';
+    return;
+  }
+
+  if (upgradeNoticeEl) upgradeNoticeEl.style.display = 'none';
+  if (upgradeNoticeMainEl) upgradeNoticeMainEl.style.display = 'none';
+  
+  if (!skipFetch) {
+    window.loadLocalPlayers().then(() => {
+      window.renderMyPlayersModule(true);
+    });
+  }
+
+  const players = window.getLocalPlayersList();
+  if (badgeEl) badgeEl.textContent = players.length;
+  if (headerCountEl) headerCountEl.textContent = `${players.length} Jugadores`;
+  if (totalEl) totalEl.textContent = players.length;
+  if (totalMainEl) totalMainEl.textContent = players.length;
+
+  if (players.length === 0) {
+    if (emptyEl) emptyEl.style.display = 'block';
+    if (emptyMainEl) emptyMainEl.style.display = 'block';
+    if (gridEl) gridEl.style.display = 'none';
+    if (gridMainEl) gridMainEl.style.display = 'none';
+    if (availEl) availEl.textContent = '0';
+    if (availMainEl) availMainEl.textContent = '0';
+    if (avgRatingEl) avgRatingEl.textContent = '0.0';
+    if (avgRatingMainEl) avgRatingMainEl.textContent = '0.0';
+    if (topCatEl) topCatEl.textContent = '—';
+    if (topCatMainEl) topCatMainEl.textContent = '—';
+    return;
+  }
+
+  if (emptyEl) emptyEl.style.display = 'none';
+  if (emptyMainEl) emptyMainEl.style.display = 'none';
+  if (gridEl) gridEl.style.display = 'grid';
+  if (gridMainEl) gridMainEl.style.display = 'grid';
+
+  // Calculate Metrics
+  const availableCount = players.filter(p => p.medicalStatus !== 'Lesionado').length;
+  const avgRating = (players.reduce((sum, p) => sum + Number(p.overallRating || 70), 0) / players.length).toFixed(1);
+
+  // Dominant category
+  const cats = {};
+  players.forEach(p => { const c = p.category || 'Sub-17'; cats[c] = (cats[c] || 0) + 1; });
+  let domCat = '—';
+  let maxCount = 0;
+  Object.keys(cats).forEach(c => { if (cats[c] > maxCount) { maxCount = cats[c]; domCat = c; } });
+
+  if (availEl) availEl.textContent = availableCount;
+  if (availMainEl) availMainEl.textContent = availableCount;
+  if (avgRatingEl) avgRatingEl.textContent = avgRating;
+  if (avgRatingMainEl) avgRatingMainEl.textContent = avgRating;
+  if (topCatEl) topCatEl.textContent = domCat;
+  if (topCatMainEl) topCatMainEl.textContent = domCat;
+
+  window.filterLocalPlayers();
+  window.filterLocalPlayersMain();
+};
+
+window.filterLocalPlayersMain = () => {
+  const players = window.getLocalPlayersList();
+  const search = (document.getElementById('local-player-search-main')?.value || '').toLowerCase().trim();
+  const posFilter = document.getElementById('local-player-pos-filter-main')?.value || 'ALL';
+  const gridEl = document.getElementById('local-players-grid-main');
+
+  if (!gridEl) return;
+
+  const filtered = players.filter(p => {
+    let matchText = true;
+    if (search) {
+      const nameMatch = (p.name || '').toLowerCase().includes(search);
+      const nickMatch = (p.nickname || '').toLowerCase().includes(search);
+      const posMatch = (p.position || '').toLowerCase().includes(search);
+      const jerseyMatch = String(p.jerseyNumber || '').includes(search);
+      matchText = nameMatch || nickMatch || posMatch || jerseyMatch;
+    }
+    
+    let matchPos = true;
+    const pos = (p.position || '').toUpperCase();
+    if (posFilter === 'ST') matchPos = ['ST', 'CF', 'LW', 'RW'].includes(pos);
+    else if (posFilter === 'MID') matchPos = ['CAM', 'CM', 'CDM', 'RM', 'LM'].includes(pos);
+    else if (posFilter === 'DEF') matchPos = ['CB', 'LB', 'RB', 'LWB', 'RWB'].includes(pos);
+    else if (posFilter === 'GK') matchPos = pos === 'GK';
+
+    return matchText && matchPos;
+  });
+
+  if (filtered.length === 0) {
+    gridEl.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: rgba(255,255,255,0.4); font-size: 14.5px; background: rgba(0,0,0,0.2); border-radius: 12px;">
+        🔍 No se encontraron jugadores que coincidan con los criterios.
+      </div>
+    `;
+    return;
+  }
+
+  gridEl.innerHTML = filtered.map(p => {
+    const medClass = p.medicalStatus === 'Lesionado' ? 'lesionado' : (p.medicalStatus === 'Precaución' ? 'precaucion' : 'disponible');
+    const medLabel = p.medicalStatus || 'Disponible';
+    const photoSrc = p.photoUrl || (p.photoId ? `https://cdn.sofifa.net/players/p1/p2/${p.photoId}.png` : '');
+    const avatarHtml = photoSrc 
+      ? `<img src="${photoSrc}" class="local-player-avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><div class="local-player-avatar" style="display:none;">#${p.jerseyNumber || '10'}</div>`
+      : `<div class="local-player-avatar">#${p.jerseyNumber || '10'}</div>`;
+
+    const strengthsList = Array.isArray(p.strengths) ? p.strengths : (typeof p.strengths === 'string' ? p.strengths.split(',') : []);
+    const ratingVal = Number(p.overallRating || 70);
+    const ratingClass = ratingVal >= 80 ? 'gold' : (ratingVal >= 70 ? 'silver' : 'bronze');
+
+    return `
+      <div class="local-player-card">
+        <div class="local-player-card-header">
+          ${avatarHtml}
+          <div class="local-player-info">
+            <div class="local-player-name">${escapeHtml(p.name)}</div>
+            <div class="local-player-nickname">${p.nickname ? `"${escapeHtml(p.nickname)}"` : `${p.age} años · Dorsal #${p.jerseyNumber || '-'}`}</div>
+          </div>
+          <div class="local-player-rating-pill ${ratingClass}" title="Overall Rating">${ratingVal}</div>
+        </div>
+
+        <div class="local-player-badges">
+          <span class="lp-badge-pos">${p.position || 'CM'}</span>
+          <span class="lp-badge-cat">${p.category || 'Sub-17'}</span>
+          <span class="lp-badge-med ${medClass}">${medLabel}</span>
+        </div>
+
+        <div class="local-player-stats-row">
+          <div class="local-player-stat-item">
+            <div class="val">${p.stats?.matches || 0}</div>
+            <div class="lbl">PJ</div>
+          </div>
+          <div class="local-player-stat-item">
+            <div class="val">${p.stats?.goals || 0}</div>
+            <div class="lbl">Goles</div>
+          </div>
+          <div class="local-player-stat-item">
+            <div class="val">${p.stats?.assists || 0}</div>
+            <div class="lbl">Asist.</div>
+          </div>
+        </div>
+
+        ${strengthsList.length > 0 ? `
+          <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 12px;">
+            ${strengthsList.slice(0, 3).map(s => `<span style="background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.7); font-size: 10px; padding: 2px 6px; border-radius: 4px;">${escapeHtml(String(s).trim())}</span>`).join('')}
+          </div>
+        ` : ''}
+
+        <div class="local-player-actions">
+          <button class="btn-lp-action btn-lp-view" onclick="viewLocalPlayerExpediente('${p.id}')">
+            <span>👁️</span> Expediente
+          </button>
+          <button class="btn-lp-action btn-lp-msg" onclick="openCoachChatAndSendMessage('${p.userId || ''}', '${escapeHtml(p.name)}')" title="Enviar Mensaje a Entrenador">
+            MENSAJE
+          </button>
+          <button class="btn-lp-action btn-lp-edit" onclick="openLocalPlayerFormModal('${p.id}')" title="Editar Jugador">
+            <span>✏️</span>
+          </button>
+          <button class="btn-lp-action btn-lp-del" onclick="deleteLocalPlayer('${p.id}')" title="Eliminar Jugador">
+            <span>🗑️</span>
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+};
+
+window.filterLocalPlayers = () => {
+  const players = window.getLocalPlayersList();
+  const search = (document.getElementById('local-player-search')?.value || '').toLowerCase().trim();
+  const posFilter = document.getElementById('local-player-pos-filter')?.value || 'ALL';
+  const catFilter = document.getElementById('local-player-cat-filter')?.value || 'ALL';
+  const gridEl = document.getElementById('local-players-grid');
+
+  if (!gridEl) return;
+
+  const filtered = players.filter(p => {
+    const matchName = (p.name || '').toLowerCase().includes(search) || (p.nickname || '').toLowerCase().includes(search);
+    
+    let matchPos = true;
+    const pos = (p.position || '').toUpperCase();
+    if (posFilter === 'ST') matchPos = ['ST', 'CF', 'LW', 'RW'].includes(pos);
+    else if (posFilter === 'MID') matchPos = ['CAM', 'CM', 'CDM', 'RM', 'LM'].includes(pos);
+    else if (posFilter === 'DEF') matchPos = ['CB', 'LB', 'RB', 'LWB', 'RWB'].includes(pos);
+    else if (posFilter === 'GK') matchPos = pos === 'GK';
+
+    let matchCat = true;
+    if (catFilter !== 'ALL') matchCat = (p.category || 'Sub-17') === catFilter;
+
+    return matchName && matchPos && matchCat;
+  });
+
+  if (filtered.length === 0) {
+    gridEl.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; padding: 30px; color: rgba(255,255,255,0.4); font-size: 14px;">
+        🔍 No se encontraron jugadores que coincidan con la búsqueda o filtro.
+      </div>
+    `;
+    return;
+  }
+
+  gridEl.innerHTML = filtered.map(p => {
+    const medClass = p.medicalStatus === 'Lesionado' ? 'lesionado' : (p.medicalStatus === 'Precaución' ? 'precaucion' : 'disponible');
+    const medLabel = p.medicalStatus || 'Disponible';
+    const photoSrc = p.photoUrl || (p.photoId ? `https://cdn.sofifa.net/players/p1/p2/${p.photoId}.png` : '');
+    const avatarHtml = photoSrc 
+      ? `<img src="${photoSrc}" class="local-player-avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><div class="local-player-avatar" style="display:none;">#${p.jerseyNumber || '10'}</div>`
+      : `<div class="local-player-avatar">#${p.jerseyNumber || '10'}</div>`;
+
+    const strengthsList = Array.isArray(p.strengths) ? p.strengths : (typeof p.strengths === 'string' ? p.strengths.split(',') : []);
+    const ratingVal = Number(p.overallRating || 70);
+    const ratingClass = ratingVal >= 80 ? 'gold' : (ratingVal >= 70 ? 'silver' : 'bronze');
+
+    return `
+      <div class="local-player-card">
+        <div class="local-player-card-header">
+          ${avatarHtml}
+          <div class="local-player-info">
+            <div class="local-player-name">${escapeHtml(p.name)}</div>
+            <div class="local-player-nickname">${p.nickname ? `"${escapeHtml(p.nickname)}"` : `${p.age} años · Dorsal #${p.jerseyNumber || '-'}`}</div>
+          </div>
+          <div class="local-player-rating-pill ${ratingClass}" title="Overall Rating">${ratingVal}</div>
+        </div>
+
+        <div class="local-player-badges">
+          <span class="lp-badge-pos">${p.position || 'CM'}</span>
+          <span class="lp-badge-cat">${p.category || 'Sub-17'}</span>
+          <span class="lp-badge-med ${medClass}">${medLabel}</span>
+        </div>
+
+        <div class="local-player-stats-row">
+          <div class="local-player-stat-item">
+            <div class="val">${p.stats?.matches || 0}</div>
+            <div class="lbl">PJ</div>
+          </div>
+          <div class="local-player-stat-item">
+            <div class="val">${p.stats?.goals || 0}</div>
+            <div class="lbl">Goles</div>
+          </div>
+          <div class="local-player-stat-item">
+            <div class="val">${p.stats?.assists || 0}</div>
+            <div class="lbl">Asist.</div>
+          </div>
+        </div>
+
+        ${strengthsList.length > 0 ? `
+          <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 12px;">
+            ${strengthsList.slice(0, 3).map(s => `<span style="background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.7); font-size: 10px; padding: 2px 6px; border-radius: 4px;">${escapeHtml(String(s).trim())}</span>`).join('')}
+          </div>
+        ` : ''}
+
+        <div class="local-player-actions">
+          <button class="btn-lp-action btn-lp-view" onclick="viewLocalPlayerExpediente('${p.id}')">
+            <span>👁️</span> Expediente
+          </button>
+          <button class="btn-lp-action btn-lp-msg" onclick="openCoachChatAndSendMessage('${p.userId || ''}', '${escapeHtml(p.name)}')" title="Enviar Mensaje a Entrenador">
+            MENSAJE
+          </button>
+          <button class="btn-lp-action btn-lp-edit" onclick="openLocalPlayerFormModal('${p.id}')" title="Editar Jugador">
+            <span>✏️</span>
+          </button>
+          <button class="btn-lp-action btn-lp-del" onclick="deleteLocalPlayer('${p.id}')" title="Eliminar Jugador">
+            <span>🗑️</span>
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+};
+
+window.renderProspectsModule = async () => {
+  const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  const tier = (user.selectedTier || user.tier || user.maxPaidTierInCycle || '').toLowerCase();
+  const role = (user.role || '').toLowerCase();
+  const isLocal = tier === 'local' || role === 'local' || role === 'entrenador local';
+  const isEnterprise = tier === 'enterprise' || role.includes('enterprise') || role.includes('gerente') || role.includes('director') || role.includes('scout');
+
+  // Sólo accesible para Enterprise
+  if (isLocal || !isEnterprise) return;
+
+
+  const container = document.getElementById('prospects-grid');
+  const countTag = document.getElementById('prospects-count-tag');
+  const noResults = document.getElementById('prospects-no-results');
+  if (!container) return;
+
+  // Enterprise: ver TODOS los prospectos de todos los coaches locales
+  // Otros planes (Plus, Pro): ver solo sus propios prospectos (si los tienen)
+  let rawProspects = [];
+  if (isEnterprise) {
+    try {
+      const token = localStorage.getItem('scout_ai_token');
+      const res = await fetch('/api/all-prospects', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success && Array.isArray(data.players)) {
+        rawProspects = data.players;
+      }
+    } catch (e) {
+      console.error('Error loading all prospects:', e);
+    }
+  } else {
+    rawProspects = await window.loadLocalPlayers();
+  }
+
+
+  // Map local prospect object to standard player object structure expected by createPlayerCard
+  const prospects = rawProspects.map(p => {
+    const rawName = (p.name || p.nickname || 'Jugador Local').trim();
+    const currentTeam = p.club || p.team || 'Club Local';
+    const rating = Number(p.rating || 75);
+    const positionStr = (p.position || 'MED').toUpperCase();
+    
+    // Map flag/nationality
+    const nat = (p.nationality || 'Dominicana').toLowerCase();
+    let flag = '🇩🇴';
+    let flagCode = 'DO';
+    if (nat.includes('españ') || nat.includes('spain') || nat.includes('es')) { flag = '🇪🇸'; flagCode = 'ES'; }
+    else if (nat.includes('argentin') || nat.includes('ar')) { flag = '🇦🇷'; flagCode = 'AR'; }
+    else if (nat.includes('brasil') || nat.includes('br')) { flag = '🇧🇷'; flagCode = 'BR'; }
+    else if (nat.includes('franc') || nat.includes('fr')) { flag = '🇫🇷'; flagCode = 'FR'; }
+    else if (nat.includes('colomb') || nat.includes('co')) { flag = '🇨🇴'; flagCode = 'CO'; }
+    else if (nat.includes('mexic') || nat.includes('mx')) { flag = '🇲🇽'; flagCode = 'MX'; }
+
+    return {
+      ...p,
+      id: p.id || 'lp-' + Math.random().toString(36).substr(2, 9),
+      name: rawName,
+      currentTeam: currentTeam,
+      team: currentTeam,
+      avatarUrl: p.photoUrl || p.avatarUrl || '',
+      flag: flag,
+      flagCode: flagCode,
+      position: positionStr,
+      positionEs: positionStr,
+      overallRating: rating,
+      rating: rating,
+      category: p.category || 'Cantera',
+      isLocalProspect: true
+    };
+  });
+
+  window.prospectsCached = prospects;
+
+  const searchVal = (document.getElementById('prospects-search-input')?.value || '').toLowerCase().trim();
+  const posVal = (document.getElementById('prospects-filter-pos')?.value || '').toUpperCase();
+  const catVal = (document.getElementById('prospects-filter-category')?.value || '').toLowerCase();
+  const sortVal = (document.getElementById('prospects-sort')?.value || 'name_asc');
+
+  let filtered = prospects.filter(p => {
+    const name = (p.name || '').toLowerCase();
+    const club = (p.currentTeam || '').toLowerCase();
+    const pos = (p.position || '').toUpperCase();
+    const cat = (p.category || '').toLowerCase();
+
+    const matchesSearch = !searchVal || name.includes(searchVal) || club.includes(searchVal) || pos.includes(searchVal);
+    const matchesPos = !posVal || pos.includes(posVal) || (posVal === 'POR' && (pos === 'PO' || pos === 'GK' || pos.includes('PORT')));
+    const matchesCat = !catVal || cat.includes(catVal);
+
+    return matchesSearch && matchesPos && matchesCat;
+  });
+
+  // Sorting
+  if (sortVal === 'name_asc') {
+    filtered.sort((a, b) => a.name.localeCompare(b.name));
+  } else if (sortVal === 'name_desc') {
+    filtered.sort((a, b) => b.name.localeCompare(a.name));
+  } else if (sortVal === 'rating_desc') {
+    filtered.sort((a, b) => b.overallRating - a.overallRating);
+  } else if (sortVal === 'rating_asc') {
+    filtered.sort((a, b) => a.overallRating - b.overallRating);
+  }
+
+  if (countTag) countTag.textContent = `${filtered.length} prospecto${filtered.length !== 1 ? 's' : ''}`;
+
+  const subtitle = document.getElementById('prospects-subtitle');
+  if (subtitle) {
+    subtitle.textContent = isEnterprise
+      ? '🌐 Viendo todos los prospectos de entrenadores locales de la plataforma'
+      : 'Jugadores registrados en tu plan Local';
+  }
+
+  container.innerHTML = '';
+  if (filtered.length === 0) {
+    if (noResults) noResults.style.display = 'flex';
+    container.style.display = 'none';
+  } else {
+    if (noResults) noResults.style.display = 'none';
+    container.style.display = 'grid';
+
+    filtered.forEach(p => {
+      const card = createPlayerCard(p);
+      container.appendChild(card);
+    });
+  }
+};
+
+window.updateLocalPlayerDocPlaceholder = () => {
+  const docTypeSelect = document.getElementById('lp-doc-type');
+  const docNumInput = document.getElementById('lp-doc-number');
+  if (!docTypeSelect || !docNumInput) return;
+
+  const val = docTypeSelect.value;
+  if (val === 'CEDULA_DNI') {
+    docNumInput.placeholder = 'Ej. 12.345.678 o 12345678-X';
+  } else if (val === 'PASAPORTE') {
+    docNumInput.placeholder = 'Ej. PAS-987654321';
+  } else if (val === 'REGISTRO_CIVIL') {
+    docNumInput.placeholder = 'Ej. RC-1098765432';
+  } else if (val === 'NIE_OTHER') {
+    docNumInput.placeholder = 'Ej. Y-1234567-Z o ID Extranjero';
+  } else {
+    docNumInput.placeholder = 'Seleccione primero el tipo de documento...';
+  }
+};
+
+window.handleLocalPlayerDocFileSelect = (event) => {
+  const file = event.target.files?.[0];
+  if (!file) return;
+
+  const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'application/pdf'];
+  const isImageOrPdf = validTypes.includes(file.type) || file.name.toLowerCase().endsWith('.pdf');
+
+  if (!isImageOrPdf) {
+    if (typeof showToast === 'function') {
+      showToast('❌ Formato no permitido. Solo se aceptan imágenes (JPG, PNG) o documentos PDF.', 'error');
+    } else {
+      alert('Formato no permitido. Solo se aceptan imágenes (JPG, PNG) o documentos PDF.');
+    }
+    event.target.value = '';
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const fileUrl = e.target.result;
+    window.updateLocalPlayerDocFilePreview(file.name, fileUrl);
+  };
+  reader.readAsDataURL(file);
+};
+
+window.updateLocalPlayerDocFilePreview = (fileName, fileUrl) => {
+  const urlInput = document.getElementById('lp-doc-file-url');
+  const nameLabel = document.getElementById('lp-doc-file-name');
+  const actionsDiv = document.getElementById('lp-doc-file-actions');
+
+  if (urlInput) urlInput.value = fileUrl || '';
+  if (nameLabel) {
+    if (fileName) {
+      nameLabel.textContent = `📎 ${fileName}`;
+      nameLabel.style.color = '#00f0ff';
+      nameLabel.style.fontWeight = '700';
+    } else {
+      nameLabel.textContent = 'Adjuntar copia de documento (JPG, PNG, PDF)...';
+      nameLabel.style.color = 'rgba(255,255,255,0.7)';
+      nameLabel.style.fontWeight = '500';
+    }
+  }
+
+  if (actionsDiv) {
+    if (fileUrl) {
+      actionsDiv.innerHTML = `
+        <button type="button" onclick="event.stopPropagation(); window.removeLocalPlayerDocFile()" style="background: rgba(255,50,50,0.2); color: #ff5555; border: 1px solid rgba(255,50,50,0.4); padding: 4px 8px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 12px;">✕ Eliminar</button>
+      `;
+    } else {
+      actionsDiv.innerHTML = `
+        <span style="font-size: 12px; background: rgba(0,240,255,0.15); color: #00f0ff; border: 1px solid rgba(0,240,255,0.3); padding: 4px 10px; border-radius: 6px; font-weight: 600;">Examinar</span>
+      `;
+    }
+  }
+};
+
+window.removeLocalPlayerDocFile = () => {
+  const fileInput = document.getElementById('lp-doc-file-input');
+  if (fileInput) fileInput.value = '';
+  window.updateLocalPlayerDocFilePreview('', '');
+};
+
+// ─── Modal Pop-Up de Alerta para Denegación de Documentos de Autorización ───
+window.showAuthDeniedModal = (customMessage) => {
+  const message = customMessage || 'Documento denegado: El archivo subido NO corresponde a la plantilla oficial de autorización de Futbol AI.';
+  
+  let modal = document.getElementById('modal-auth-denied-alert');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'modal-auth-denied-alert';
+    modal.style.cssText = `
+      position: fixed; inset: 0; z-index: 999999;
+      background: rgba(4, 9, 17, 0.85); backdrop-filter: blur(12px);
+      display: flex; align-items: center; justify-content: center; padding: 20px;
+    `;
+    document.body.appendChild(modal);
+  }
+
+  modal.innerHTML = `
+    <div style="background: linear-gradient(145deg, #0e1726, #070c14); border: 1.5px solid rgba(255, 77, 77, 0.6); border-radius: 16px; padding: 26px; max-width: 440px; width: 100%; box-shadow: 0 0 40px rgba(255, 77, 77, 0.35); color: #fff; animation: modalPop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+      <div style="display: flex; align-items: flex-start; gap: 14px; margin-bottom: 18px;">
+        <div style="width: 44px; height: 44px; border-radius: 50%; background: rgba(255, 77, 77, 0.15); border: 1.5px solid #ff4d4d; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff4d4d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="15" y1="9" x2="9" y2="15"></line>
+            <line x1="9" y1="9" x2="15" y2="15"></line>
+          </svg>
+        </div>
+        <div>
+          <h3 style="margin: 0; font-size: 17px; font-weight: 800; color: #ff4d4d; letter-spacing: 0.3px;">Documento Denegado</h3>
+          <p style="margin: 6px 0 0 0; font-size: 13.5px; color: rgba(255,255,255,0.85); line-height: 1.5;">
+            ${message}
+          </p>
+        </div>
+      </div>
+
+      <button type="button" onclick="document.getElementById('modal-auth-denied-alert').style.display='none'" style="width: 100%; background: linear-gradient(90deg, #ff4d4d, #ff6b6b); color: #ffffff; border: none; padding: 12px; border-radius: 10px; font-weight: 800; font-size: 14px; cursor: pointer; box-shadow: 0 0 15px rgba(255, 77, 77, 0.4); transition: all 0.2s;">
+        Entendido
+      </button>
+    </div>
+  `;
+
+  modal.style.display = 'flex';
+};
+
+// ─── Manejo de Adjunto de Autorizaciones Firmadas ───
+window.handleLocalPlayerAuthSignatureFileSelect = async (event) => {
+  const file = event.target.files?.[0];
+  if (!file) return;
+
+  const defaultDeniedText = 'Documento denegado: El archivo subido NO corresponde a la plantilla oficial de autorización de Futbol AI.';
+
+  const showErr = (msg) => {
+    window.showAuthDeniedModal(msg || defaultDeniedText);
+    event.target.value = '';
+  };
+
+  const ext = file.name.split('.').pop()?.toLowerCase();
+  const isDocx = ext === 'docx';
+  const isPdf = ext === 'pdf';
+  const isImg = ['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(ext);
+
+  if (!isDocx && !isPdf && !isImg) {
+    showErr(defaultDeniedText);
+    return;
+  }
+
+  // 1. Inspección estricta para archivos de Microsoft Word (.DOCX) usando JSZip
+  if (isDocx) {
+    let isValidDocx = false;
+    if (typeof JSZip !== 'undefined') {
+      try {
+        const zip = await JSZip.loadAsync(file);
+        // Buscar el archivo XML del documento sin importar si usa '/' o '\' en las rutas del ZIP
+        const docFile = zip.file(/word[\\\/]document\.xml/i)?.[0];
+        const docXml = docFile ? await docFile.async('text') : null;
+
+        if (docXml) {
+          // Extraer texto plano despojando todas las etiquetas XML para evitar interferencias de formato de Word
+          const plainText = docXml.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').toUpperCase();
+          const hasFutbolAi = plainText.includes('FUTBOL AI') || plainText.includes('FUTBOL');
+          const hasAuthText = plainText.includes('AUTORIZ') || plainText.includes('DERECHOS DE IMAGEN') || plainText.includes('DATOS DEPORTIVOS');
+          
+          if (hasFutbolAi && hasAuthText) {
+            isValidDocx = true;
+          }
+        }
+      } catch (err) {
+        isValidDocx = false;
+      }
+    } else {
+      // Fallback si JSZip no ha cargado
+      try {
+        const rawText = (await file.text()).toUpperCase();
+        if (rawText.includes('FUTBOL') && rawText.includes('AUTORIZ')) {
+          isValidDocx = true;
+        }
+      } catch (e) {}
+    }
+
+    if (!isValidDocx) {
+      showErr(defaultDeniedText);
+      return;
+    }
+  }
+
+  // 2. Validación de coincidencia estricta para archivos PDF o imágenes escaneadas/firmadas
+  if (!isDocx) {
+    const fileNameUpper = file.name.toUpperCase();
+    let fileTextHeader = '';
+    try {
+      fileTextHeader = (await file.slice(0, 16384).text()).toUpperCase();
+    } catch (e) {}
+
+    const containsKeyTerms = fileNameUpper.includes('AUTORIZA') ||
+                             fileNameUpper.includes('PLANTILLA') ||
+                             fileNameUpper.includes('FUTBOL') ||
+                             fileNameUpper.includes('PERMISO') ||
+                             fileNameUpper.includes('FIRMA') ||
+                             fileTextHeader.includes('FUTBOL') ||
+                             fileTextHeader.includes('AUTORIZ') ||
+                             fileTextHeader.includes('DERECHOS DE IMAGEN');
+
+    if (!containsKeyTerms) {
+      showErr(defaultDeniedText);
+      return;
+    }
+  }
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const fileUrl = e.target.result;
+    window.updateLocalPlayerAuthSignatureFilePreview(file.name, fileUrl);
+  };
+  reader.readAsDataURL(file);
+};
+
+window.updateLocalPlayerAuthSignatureFilePreview = (fileName, fileUrl) => {
+  const urlInput = document.getElementById('lp-auth-signature-file-url');
+  const nameLabel = document.getElementById('lp-auth-signature-file-name');
+  const actionsDiv = document.getElementById('lp-auth-signature-file-actions');
+  const imgCheckbox = document.getElementById('lp-auth-image');
+  const dataCheckbox = document.getElementById('lp-auth-data');
+
+  if (urlInput) urlInput.value = fileUrl || '';
+  const hasFile = !!fileUrl;
+
+  if (imgCheckbox) imgCheckbox.checked = hasFile;
+  if (dataCheckbox) dataCheckbox.checked = hasFile;
+
+  if (nameLabel) {
+    if (fileName) {
+      nameLabel.textContent = `📎 ${fileName}`;
+      nameLabel.style.color = '#00f0ff';
+      nameLabel.style.fontWeight = '700';
+    } else {
+      nameLabel.textContent = 'Adjuntar autorización firmada (JPG, PNG, PDF)...';
+      nameLabel.style.color = 'rgba(255,255,255,0.7)';
+      nameLabel.style.fontWeight = '500';
+    }
+  }
+
+  if (actionsDiv) {
+    if (fileUrl) {
+      actionsDiv.innerHTML = `
+        <button type="button" onclick="event.stopPropagation(); window.removeLocalPlayerAuthSignatureFile()" style="background: rgba(255,50,50,0.2); color: #ff5555; border: 1px solid rgba(255,50,50,0.4); padding: 4px 8px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 12px;">✕ Eliminar</button>
+      `;
+    } else {
+      actionsDiv.innerHTML = `
+        <span style="font-size: 12px; background: rgba(0,240,255,0.15); color: #00f0ff; border: 1px solid rgba(0,240,255,0.3); padding: 4px 10px; border-radius: 6px; font-weight: 600;">Examinar</span>
+      `;
+    }
+  }
+};
+
+window.removeLocalPlayerAuthSignatureFile = () => {
+  const fileInput = document.getElementById('lp-auth-signature-file-input');
+  if (fileInput) fileInput.value = '';
+  window.updateLocalPlayerAuthSignatureFilePreview('', '');
+};
+
+// ─── Manejo de Adjunto de Certificado Médico ───
+window.handleLocalPlayerAuthMedicalFileSelect = (event) => {
+  const file = event.target.files?.[0];
+  if (!file) return;
+
+  const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'application/pdf'];
+  const isImageOrPdf = validTypes.includes(file.type) || file.name.toLowerCase().endsWith('.pdf');
+
+  if (!isImageOrPdf) {
+    if (typeof showToast === 'function') {
+      showToast('❌ Formato no permitido. Solo se aceptan imágenes (JPG, PNG) o documentos PDF.', 'error');
+    } else {
+      alert('Formato no permitido. Solo se aceptan imágenes (JPG, PNG) o documentos PDF.');
+    }
+    event.target.value = '';
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const fileUrl = e.target.result;
+    window.updateLocalPlayerAuthMedicalFilePreview(file.name, fileUrl);
+  };
+  reader.readAsDataURL(file);
+};
+
+window.updateLocalPlayerAuthMedicalFilePreview = (fileName, fileUrl) => {
+  const urlInput = document.getElementById('lp-auth-medical-file-url');
+  const nameLabel = document.getElementById('lp-auth-medical-file-name');
+  const actionsDiv = document.getElementById('lp-auth-medical-file-actions');
+  const medCheckbox = document.getElementById('lp-auth-medical');
+
+  if (urlInput) urlInput.value = fileUrl || '';
+  const hasFile = !!fileUrl;
+
+  if (medCheckbox) medCheckbox.checked = hasFile;
+
+  if (nameLabel) {
+    if (fileName) {
+      nameLabel.textContent = `📎 ${fileName}`;
+      nameLabel.style.color = '#00f0ff';
+      nameLabel.style.fontWeight = '700';
+    } else {
+      nameLabel.textContent = 'Adjuntar certificado médico (JPG, PNG, PDF)...';
+      nameLabel.style.color = 'rgba(255,255,255,0.7)';
+      nameLabel.style.fontWeight = '500';
+    }
+  }
+
+  if (actionsDiv) {
+    if (fileUrl) {
+      actionsDiv.innerHTML = `
+        <button type="button" onclick="event.stopPropagation(); window.removeLocalPlayerAuthMedicalFile()" style="background: rgba(255,50,50,0.2); color: #ff5555; border: 1px solid rgba(255,50,50,0.4); padding: 4px 8px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 12px;">✕ Eliminar</button>
+      `;
+    } else {
+      actionsDiv.innerHTML = `
+        <span style="font-size: 12px; background: rgba(0,240,255,0.15); color: #00f0ff; border: 1px solid rgba(0,240,255,0.3); padding: 4px 10px; border-radius: 6px; font-weight: 600;">Examinar</span>
+      `;
+    }
+  }
+};
+
+window.removeLocalPlayerAuthMedicalFile = () => {
+  const fileInput = document.getElementById('lp-auth-medical-file-input');
+  if (fileInput) fileInput.value = '';
+  window.updateLocalPlayerAuthMedicalFilePreview('', '');
+};
+
+window.tempGuardiansList = [];
+
+window.addLocalPlayerGuardian = () => {
+  if (!Array.isArray(window.tempGuardiansList)) {
+    window.tempGuardiansList = [];
+  }
+  window.tempGuardiansList.push({
+    name: '',
+    relationship: '',
+    docType: '',
+    docNumber: '',
+    phone: '',
+    email: ''
+  });
+  window.renderFormGuardians();
+};
+
+window.removeLocalPlayerGuardian = (index) => {
+  if (!Array.isArray(window.tempGuardiansList)) return;
+  if (index >= 0 && index < window.tempGuardiansList.length) {
+    window.tempGuardiansList.splice(index, 1);
+    window.renderFormGuardians();
+  }
+};
+
+window.updateLocalPlayerGuardianField = (index, field, value) => {
+  if (window.tempGuardiansList && window.tempGuardiansList[index]) {
+    window.tempGuardiansList[index][field] = value;
+  }
+};
+
+window.renderFormGuardians = () => {
+  const container = document.getElementById('lp-legal-guardians-container');
+  if (!container) return;
+
+  if (!Array.isArray(window.tempGuardiansList) || window.tempGuardiansList.length === 0) {
+    window.tempGuardiansList = [{
+      name: '',
+      relationship: '',
+      docType: '',
+      docNumber: '',
+      phone: '',
+      email: ''
+    }];
+  }
+
+  container.innerHTML = window.tempGuardiansList.map((g, i) => `
+    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(0,240,255,0.2); border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 12px; position: relative;">
+      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px;">
+        <span style="font-size: 12px; font-weight: 700; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.5px;">
+          Tutor / Representante #${i + 1} ${i === 0 ? '(Principal)' : ''}
+        </span>
+        ${i > 0 ? `
+          <button type="button" onclick="removeLocalPlayerGuardian(${i})" style="background: rgba(255,50,50,0.15); color: #ff5555; border: 1px solid rgba(255,50,50,0.3); border-radius: 6px; padding: 4px 8px; font-size: 11px; font-weight: 700; cursor: pointer;">
+            ✕ Eliminar
+          </button>
+        ` : ''}
+      </div>
+
+      <!-- Fila 1: Nombre y Parentesco -->
+      <div style="display: flex; gap: 14px; flex-wrap: wrap;">
+        <div style="flex: 1.5; min-width: 220px;">
+          <label style="font-size: 11px; font-weight: 700; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">Nombre Completo</label>
+          <input type="text" value="${(g.name || '').replace(/"/g, '&quot;')}" oninput="updateLocalPlayerGuardianField(${i}, 'name', this.value)" placeholder="Ej. Roberto Mendoza Silva" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.3); border-radius: 8px; padding: 9px; color: #fff; font-size: 13px; outline: none;">
+        </div>
+        <div style="flex: 1; min-width: 160px;">
+          <label style="font-size: 11px; font-weight: 700; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">Parentesco / Relación</label>
+          <select onchange="updateLocalPlayerGuardianField(${i}, 'relationship', this.value)" style="width: 100%; box-sizing: border-box; background: rgba(10,16,28,0.9); border: 1px solid rgba(0,240,255,0.3); border-radius: 8px; padding: 9px; color: #fff; font-size: 13px; outline: none; cursor: pointer;">
+            <option value="" ${!g.relationship ? 'selected' : ''} disabled hidden>Seleccione...</option>
+            <option value="PADRE" ${g.relationship === 'PADRE' ? 'selected' : ''}>Padre</option>
+            <option value="MADRE" ${g.relationship === 'MADRE' ? 'selected' : ''}>Madre</option>
+            <option value="TUTOR_LEGAL" ${g.relationship === 'TUTOR_LEGAL' ? 'selected' : ''}>Tutor Legal / Apoderado</option>
+            <option value="REPRESENTANTE" ${g.relationship === 'REPRESENTANTE' ? 'selected' : ''}>Representante Deportivo</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Fila 2: Documento (Tipo + Número) -->
+      <div style="display: flex; gap: 14px; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 160px;">
+          <label style="font-size: 11px; font-weight: 700; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">Documento</label>
+          <select onchange="updateLocalPlayerGuardianField(${i}, 'docType', this.value)" style="width: 100%; box-sizing: border-box; background: rgba(10,16,28,0.9); border: 1px solid rgba(0,240,255,0.3); border-radius: 8px; padding: 9px; color: #fff; font-size: 13px; outline: none; cursor: pointer;">
+            <option value="" ${!g.docType ? 'selected' : ''} disabled hidden>Seleccione...</option>
+            <option value="CEDULA_DNI" ${g.docType === 'CEDULA_DNI' ? 'selected' : ''}>Cédula / DNI</option>
+            <option value="PASAPORTE" ${g.docType === 'PASAPORTE' ? 'selected' : ''}>Pasaporte</option>
+            <option value="NIE_OTHER" ${g.docType === 'NIE_OTHER' ? 'selected' : ''}>NIE / Extranjería</option>
+          </select>
+        </div>
+        <div style="flex: 1.5; min-width: 200px;">
+          <label style="font-size: 11px; font-weight: 700; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">Nº de Documento</label>
+          <input type="text" value="${(g.docNumber || '').replace(/"/g, '&quot;')}" oninput="updateLocalPlayerGuardianField(${i}, 'docNumber', this.value)" placeholder="Ej. 98.765.432-K" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.3); border-radius: 8px; padding: 9px; color: #fff; font-size: 13px; outline: none;">
+        </div>
+      </div>
+
+      <!-- Fila 3: Teléfono y Correo -->
+      <div style="display: flex; gap: 14px; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 180px;">
+          <label style="font-size: 11px; font-weight: 700; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">Teléfono de Contacto</label>
+          <input type="tel" value="${(g.phone || '').replace(/"/g, '&quot;')}" oninput="updateLocalPlayerGuardianField(${i}, 'phone', this.value)" placeholder="Ej. +34 612 345 678" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.3); border-radius: 8px; padding: 9px; color: #fff; font-size: 13px; outline: none;">
+        </div>
+        <div style="flex: 1.5; min-width: 220px;">
+          <label style="font-size: 11px; font-weight: 700; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">Correo Electrónico</label>
+          <input type="email" value="${(g.email || '').replace(/"/g, '&quot;')}" oninput="updateLocalPlayerGuardianField(${i}, 'email', this.value)" placeholder="Ej. tutor@ejemplo.com" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.3); border-radius: 8px; padding: 9px; color: #fff; font-size: 13px; outline: none;">
+        </div>
+      </div>
+    </div>
+  `).join('');
+};
+
+window.openLocalPlayerFormModal = (playerId = null) => {
+  const modal = document.getElementById('modal-local-player-form');
+  const title = document.getElementById('modal-local-player-title');
+  if (!modal) return;
+
+  // Reset tab to General
+  window.switchFormTab('general');
+
+  const idInput = document.getElementById('local-player-id');
+  const nameInput = document.getElementById('lp-name');
+  const nickInput = document.getElementById('lp-nickname');
+  const docTypeInput = document.getElementById('lp-doc-type');
+  const docNumInput = document.getElementById('lp-doc-number');
+  const ageInput = document.getElementById('lp-age');
+  const jerseyInput = document.getElementById('lp-jersey');
+  const posInput = document.getElementById('lp-position');
+  const ratingInput = document.getElementById('lp-rating');
+  const catInput = document.getElementById('lp-category');
+  const footInput = document.getElementById('lp-foot');
+  const heightInput = document.getElementById('lp-height');
+  const weightInput = document.getElementById('lp-weight');
+  const medInput = document.getElementById('lp-medical');
+  const photoInput = document.getElementById('lp-photourl');
+  const bioInput = document.getElementById('lp-bio');
+  const marketValueInput = document.getElementById('lp-marketvalue');
+  
+  const statsMatches = document.getElementById('lp-stats-matches');
+  const statsGoals = document.getElementById('lp-stats-goals');
+  const statsAssists = document.getElementById('lp-stats-assists');
+  const statsYellow = document.getElementById('lp-stats-yellow');
+  const statsRed = document.getElementById('lp-stats-red');
+
+  window.tempStrengthsTags = [];
+  window.tempImprovementsTags = [];
+  window.tempTrophiesList = [];
+  window.tempSeasonsList = [];
+
+  const submitBtn = document.getElementById('btn-save-local-player');
+
+  if (playerId) {
+    const players = window.getLocalPlayersList();
+    const player = players.find(p => p.id === playerId);
+    if (player) {
+      if (title) title.textContent = 'Editar Jugador Local';
+      if (submitBtn) submitBtn.textContent = 'Guardar Cambios';
+      if (idInput) idInput.value = player.id;
+      if (nameInput) nameInput.value = player.name || '';
+      if (nickInput) nickInput.value = player.nickname || '';
+      if (docTypeInput) docTypeInput.value = player.docType || '';
+      if (docNumInput) docNumInput.value = player.docNumber || '';
+      window.updateLocalPlayerDocPlaceholder();
+
+      if (ageInput) ageInput.value = player.age || '';
+      if (jerseyInput) jerseyInput.value = player.jerseyNumber || '';
+      if (posInput) posInput.value = player.position || 'ST';
+      if (ratingInput) ratingInput.value = player.overallRating || 75;
+      if (catInput) catInput.value = player.category || 'Sub-17';
+      if (footInput) footInput.value = player.preferredFoot || 'Derecho';
+      if (heightInput) heightInput.value = player.height || '';
+      if (weightInput) weightInput.value = player.weight || '';
+      if (medInput) medInput.value = player.medicalStatus || 'Disponible';
+      if (photoInput) photoInput.value = player.photoUrl || '';
+      if (bioInput) bioInput.value = player.bioEs || player.bio || '';
+      const tacInput = document.getElementById('lp-tactical-notes');
+      if (tacInput) tacInput.value = player.tacticalNotes || '';
+      if (marketValueInput) marketValueInput.value = player.marketValue || 0;
+
+      window.updateLocalPlayerPhotoPreview(player.photoUrl || '');
+      window.updateLocalPlayerHighlightPreview(player.highlightUrl || '', 'Video de Highlights', '', 0);
+      window.updateLocalPlayerDocFilePreview(player.docFileName || (player.docFileUrl ? 'Documento_Adjunto' : ''), player.docFileUrl || '');
+
+      const statsObj = typeof player.stats === 'string' ? JSON.parse(player.stats || '{}') : (player.stats || {});
+      if (statsMatches) statsMatches.value = statsObj.matches || 0;
+      if (statsGoals) statsGoals.value = statsObj.goals || 0;
+      if (statsAssists) statsAssists.value = statsObj.assists || 0;
+      if (statsYellow) statsYellow.value = statsObj.yellowCards || 0;
+      if (statsRed) statsRed.value = statsObj.redCards || 0;
+
+      const strengths = Array.isArray(player.strengths) ? player.strengths : (player.strengths ? JSON.parse(player.strengths) : []);
+      window.tempStrengthsTags = [...strengths];
+
+      const improvements = Array.isArray(player.improvements) ? player.improvements : (player.improvements ? JSON.parse(player.improvements) : (Array.isArray(player.weaknesses) ? player.weaknesses : (player.weaknesses ? JSON.parse(player.weaknesses) : [])));
+      window.tempImprovementsTags = [...improvements];
+
+      const trophies = Array.isArray(player.trophies) ? player.trophies : (player.trophies ? JSON.parse(player.trophies) : []);
+      window.tempTrophiesList = [...trophies];
+
+      const injuries = Array.isArray(player.injuries) ? player.injuries : (player.injuries ? JSON.parse(player.injuries) : []);
+      window.tempInjuriesList = [...injuries];
+
+      const seasons = Array.isArray(player.history) ? player.history : (player.history ? JSON.parse(player.history) : []);
+      window.tempSeasonsList = [...seasons];
+
+      const authObj = typeof player.authorizations === 'string' ? JSON.parse(player.authorizations || '{}') : (player.authorizations || {});
+      window.updateLocalPlayerAuthSignatureFilePreview(authObj.authSignatureFileName || (authObj.authSignatureUrl ? 'Autorización_Firmada' : ''), authObj.authSignatureUrl || player.authSignatureUrl || '');
+      window.updateLocalPlayerAuthMedicalFilePreview(authObj.authMedicalFileName || (authObj.authMedicalUrl ? 'Certificado_Medico' : ''), authObj.authMedicalUrl || player.authMedicalUrl || '');
+
+      const legalObj = typeof player.legalDetails === 'string' ? JSON.parse(player.legalDetails || '{}') : (player.legalDetails || {});
+      let guardians = Array.isArray(legalObj.guardians) ? legalObj.guardians : [];
+      if (guardians.length === 0 && (legalObj.guardianName || player.guardianName)) {
+        guardians = [{
+          name: legalObj.guardianName || player.guardianName || '',
+          relationship: legalObj.guardianRelationship || '',
+          docType: legalObj.guardianDocType || '',
+          docNumber: legalObj.guardianDocNumber || '',
+          phone: legalObj.guardianPhone || '',
+          email: legalObj.guardianEmail || ''
+        }];
+      }
+      window.tempGuardiansList = guardians.length > 0 ? guardians : [{ name: '', relationship: '', docType: '', docNumber: '', phone: '', email: '' }];
+    }
+  } else {
+    if (title) title.textContent = 'Registrar Jugador Local';
+    if (submitBtn) submitBtn.textContent = 'Crear Jugador';
+    document.getElementById('form-local-player')?.reset();
+    if (idInput) idInput.value = '';
+    if (docTypeInput) docTypeInput.value = '';
+    if (docNumInput) docNumInput.value = '';
+    window.updateLocalPlayerDocPlaceholder();
+
+    if (ageInput) ageInput.value = '';
+    if (jerseyInput) jerseyInput.value = '';
+    if (posInput) posInput.value = '';
+    if (footInput) footInput.value = '';
+    if (catInput) catInput.value = '';
+    if (medInput) medInput.value = '';
+    if (heightInput) heightInput.value = '';
+    if (weightInput) weightInput.value = '';
+    const ftIn = document.getElementById('lp-height-ft');
+    if (ftIn) ftIn.value = '';
+    const inIn = document.getElementById('lp-height-in');
+    if (inIn) inIn.value = '';
+    if (ratingInput) ratingInput.value = 75;
+    if (statsMatches) statsMatches.value = '';
+    if (statsGoals) statsGoals.value = '';
+    if (statsAssists) statsAssists.value = '';
+    if (statsYellow) statsYellow.value = '';
+    if (statsRed) statsRed.value = '';
+    const statsSeasonInput = document.getElementById('lp-stats-season');
+    if (statsSeasonInput) statsSeasonInput.value = '';
+
+    window.removeLocalPlayerAuthSignatureFile();
+    window.removeLocalPlayerAuthMedicalFile();
+
+    window.tempGuardiansList = [{ name: '', relationship: '', docType: '', docNumber: '', phone: '', email: '' }];
+    window.tempInjuriesList = [];
+
+    window.updateLocalPlayerPhotoPreview('');
+    window.updateLocalPlayerHighlightPreview('');
+    window.removeLocalPlayerDocFile();
+  }
+
+  // Activar la pestaña General y actualizar la navegación por pasos
+  window.switchFormTab('general');
+  window.updateLocalPlayerLegalTabVisibility();
+
+  window.setLocalPlayerHeightUnit('cm');
+  window.setLocalPlayerWeightUnit('kg');
+
+  window.renderFormStrengthsTags();
+  window.renderFormImprovementsTags();
+  window.renderFormTrophies();
+  window.renderFormInjuries();
+  window.renderFormSeasons();
+  window.renderFormGuardians();
+
+  modal.style.display = 'flex';
+};
+
+// ─── Manejo de Adjuntar Foto en Jugador Local ─────────────────────────────
+window.updateLocalPlayerPhotoPreview = (url) => {
+  const photoInput = document.getElementById('lp-photourl');
+  const imgPreview = document.getElementById('lp-photo-preview');
+  const placeholder = document.getElementById('lp-photo-placeholder');
+  const removeBtn = document.getElementById('lp-photo-remove-btn');
+  const fileInput = document.getElementById('lp-photo-file');
+
+  if (fileInput) fileInput.value = '';
+
+  if (url) {
+    if (photoInput) photoInput.value = url;
+    if (imgPreview) {
+      imgPreview.src = url;
+      imgPreview.style.display = 'block';
+    }
+    if (placeholder) placeholder.style.display = 'none';
+    if (removeBtn) removeBtn.style.display = 'inline-flex';
+  } else {
+    if (photoInput) photoInput.value = '';
+    if (imgPreview) {
+      imgPreview.src = '';
+      imgPreview.style.display = 'none';
+    }
+    if (placeholder) placeholder.style.display = 'block';
+    if (removeBtn) removeBtn.style.display = 'none';
+  }
+};
+
+window.handleLocalPlayerPhotoSelect = (event) => {
+  const file = event.target.files && event.target.files[0];
+  if (file) {
+    processAndSetLocalPlayerPhoto(file);
+  }
+};
+
+window.handleLocalPlayerPhotoDrop = (event) => {
+  event.preventDefault();
+  const dropzone = document.getElementById('lp-photo-dropzone');
+  if (dropzone) {
+    dropzone.style.borderColor = 'rgba(0,240,255,0.3)';
+    dropzone.style.background = 'rgba(255,255,255,0.03)';
+  }
+  const file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) {
+    processAndSetLocalPlayerPhoto(file);
+  } else if (file) {
+    if (typeof showToast === 'function') showToast('⚠️ Por favor selecciona un archivo de imagen válido.', 'warning');
+  }
+};
+
+function processAndSetLocalPlayerPhoto(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const MAX_SIZE = 400;
+      let width = img.width;
+      let height = img.height;
+
+      if (width > height) {
+        if (width > MAX_SIZE) {
+          height = Math.round((height * MAX_SIZE) / width);
+          width = MAX_SIZE;
+        }
+      } else {
+        if (height > MAX_SIZE) {
+          width = Math.round((width * MAX_SIZE) / height);
+          height = MAX_SIZE;
+        }
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+
+      const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.82);
+      window.updateLocalPlayerPhotoPreview(compressedDataUrl);
+      if (typeof showToast === 'function') showToast('📷 Imagen adjuntada con éxito', 'success');
+    };
+    img.onerror = () => {
+      window.updateLocalPlayerPhotoPreview(e.target.result);
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+window.removeLocalPlayerPhoto = () => {
+  window.updateLocalPlayerPhotoPreview('');
+  if (typeof showToast === 'function') showToast('🗑️ Foto eliminada', 'info');
+};
+
+// ─── Manejo de Video Highlights en Jugador Local ──────────────────────────
+window.showHighlightErrorAlert = (title, message) => {
+  let modal = document.getElementById('modal-highlight-error-alert');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'modal-highlight-error-alert';
+    modal.style.cssText = `
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(4, 9, 17, 0.88); backdrop-filter: blur(10px);
+      z-index: 100001; display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box;
+    `;
+    document.body.appendChild(modal);
+  }
+
+  modal.innerHTML = `
+    <div style="background: linear-gradient(145deg, #0e1726, #070c14); border: 1.5px solid rgba(255, 77, 77, 0.5); border-radius: 16px; padding: 26px; max-width: 440px; width: 100%; box-shadow: 0 0 35px rgba(255, 77, 77, 0.3); color: #fff; animation: modalPop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+      <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 14px;">
+        <div style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255, 77, 77, 0.15); border: 1.5px solid #ff4d4d; display: flex; align-items: center; justify-content: center; color: #ff4d4d; font-size: 18px; font-weight: 900; flex-shrink: 0;">
+          !
+        </div>
+        <div>
+          <h3 style="margin: 0; font-size: 17px; font-weight: 800; color: #ff4d4d; letter-spacing: 0.3px;">${title}</h3>
+          <p style="margin: 4px 0 0 0; font-size: 12.5px; color: rgba(255,255,255,0.8); line-height: 1.4;">${message}</p>
+        </div>
+      </div>
+
+      <button type="button" onclick="document.getElementById('modal-highlight-error-alert').style.display='none'" style="width: 100%; margin-top: 14px; background: linear-gradient(90deg, #ff4d4d, #ff6b6b); color: #ffffff; border: none; padding: 12px; border-radius: 10px; font-weight: 800; font-size: 14px; cursor: pointer; box-shadow: 0 0 15px rgba(255, 77, 77, 0.4); transition: all 0.2s;">
+        Entendido
+      </button>
+    </div>
+  `;
+
+  modal.style.display = 'flex';
+};
+
+window.updateLocalPlayerHighlightPreview = (url = '', fileName = '', fileSize = '', durationSec = 0) => {
+  const highlightInput = document.getElementById('lp-highlight-url');
+  const placeholder = document.getElementById('lp-highlight-placeholder');
+  const details = document.getElementById('lp-highlight-details');
+  const fileNameEl = document.getElementById('lp-highlight-filename');
+  const metaEl = document.getElementById('lp-highlight-meta');
+  const removeBtn = document.getElementById('lp-highlight-remove-btn');
+  const fileInput = document.getElementById('lp-highlight-file');
+
+  if (url) {
+    if (highlightInput) highlightInput.value = url;
+    if (placeholder) placeholder.style.display = 'none';
+    if (details) details.style.display = 'flex';
+    if (fileNameEl) fileNameEl.textContent = fileName || 'Video de Highlights';
+
+    if (metaEl) {
+      let metaStr = '';
+      if (durationSec > 0) {
+        const mins = Math.floor(durationSec / 60);
+        const secs = Math.floor(durationSec % 60).toString().padStart(2, '0');
+        metaStr += `${mins}:${secs} min`;
+      }
+      if (fileSize) {
+        metaStr += metaStr ? ` • ${fileSize}` : fileSize;
+      }
+      metaEl.textContent = metaStr || 'Video Adjuntado';
+    }
+
+    if (removeBtn) removeBtn.style.display = 'inline-block';
+  } else {
+    if (highlightInput) highlightInput.value = '';
+    if (placeholder) placeholder.style.display = 'block';
+    if (details) details.style.display = 'none';
+    if (removeBtn) removeBtn.style.display = 'none';
+    if (fileInput) fileInput.value = '';
+  }
+};
+
+window.removeLocalPlayerHighlightVideo = () => {
+  window.updateLocalPlayerHighlightPreview('');
+  if (typeof showToast === 'function') showToast('🗑️ Video de Highlights eliminado', 'info');
+};
+
+window.handleLocalPlayerHighlightSelect = (event) => {
+  const file = event.target.files && event.target.files[0];
+  if (file) {
+    processHighlightVideoFile(file);
+  }
+};
+
+window.handleLocalPlayerHighlightDrop = (event) => {
+  event.preventDefault();
+  const dropzone = document.getElementById('lp-highlight-dropzone');
+  if (dropzone) {
+    dropzone.style.borderColor = 'rgba(0,240,255,0.3)';
+    dropzone.style.background = 'rgba(255,255,255,0.03)';
+  }
+  const file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
+  if (file) {
+    processHighlightVideoFile(file);
+  }
+};
+
+function processHighlightVideoFile(file) {
+  // 1. Validar que sea un archivo de video exclusivo (no imágenes ni documentos)
+  if (!file.type.startsWith('video/')) {
+    window.showHighlightErrorAlert(
+      'Archivo no permitido',
+      'Solo se permiten archivos de video (.mp4, .webm, .mov) para los Highlights. No se aceptan imágenes ni documentos.'
+    );
+    return;
+  }
+
+  // 2. Validar tamaño máximo de 100 MB
+  const maxSizeBytes = 100 * 1024 * 1024;
+  if (file.size > maxSizeBytes) {
+    const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
+    window.showHighlightErrorAlert(
+      'El video es demasiado pesado',
+      `El archivo seleccionado pesa ${sizeMb} MB. El límite máximo permitido para los Highlights es de 100 MB.`
+    );
+    return;
+  }
+
+  // 3. Validar duración máxima de 2:30 minutos (150 segundos)
+  const tempBlobUrl = URL.createObjectURL(file);
+  const videoEl = document.createElement('video');
+  videoEl.preload = 'metadata';
+
+  videoEl.onloadedmetadata = () => {
+    URL.revokeObjectURL(tempBlobUrl);
+    const durationSec = videoEl.duration;
+
+    if (durationSec > 150) {
+      const minutes = Math.floor(durationSec / 60);
+      const seconds = Math.floor(durationSec % 60).toString().padStart(2, '0');
+      window.showHighlightErrorAlert(
+        'El video es demasiado largo',
+        `El video dura ${minutes}:${seconds} min. El límite máximo permitido para los Highlights es de 2:30 minutos (150 segundos).`
+      );
+      return;
+    }
+
+    // Convertir el archivo de video a Data URL (base64) permanente para persistir en BD y expediente
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target.result;
+      const sizeMbStr = (file.size / (1024 * 1024)).toFixed(1) + ' MB';
+      window.updateLocalPlayerHighlightPreview(dataUrl, file.name, sizeMbStr, durationSec);
+      if (typeof showToast === 'function') {
+        showToast('🎥 Video de Highlights adjuntado con éxito', 'success');
+      }
+    };
+    reader.onerror = () => {
+      window.showHighlightErrorAlert('Error de lectura', 'No se pudo procesar el archivo de video.');
+    };
+    reader.readAsDataURL(file);
+  };
+
+  videoEl.onerror = () => {
+    URL.revokeObjectURL(tempBlobUrl);
+    window.showHighlightErrorAlert(
+      'Error de video',
+      'No se pudo leer el archivo de video. Asegúrate de seleccionar un formato de video válido (.mp4, .webm, .mov).'
+    );
+  };
+
+  videoEl.src = tempBlobUrl;
+}
+
+// ─── Manejo de Unidades de Altura y Peso en Jugador Local ─────────────────
+window.setLocalPlayerHeightUnit = (targetUnit) => {
+  const unitInput = document.getElementById('lp-height-unit');
+  const btnCm = document.getElementById('lp-height-unit-cm');
+  const btnFt = document.getElementById('lp-height-unit-ft');
+  const cmWrap = document.getElementById('lp-height-cm-wrap');
+  const ftWrap = document.getElementById('lp-height-ft-wrap');
+  const cmInput = document.getElementById('lp-height');
+  const ftInput = document.getElementById('lp-height-ft');
+  const inInput = document.getElementById('lp-height-in');
+
+  if (!unitInput || !btnCm || !btnFt) return;
+  
+  unitInput.value = targetUnit;
+
+  if (targetUnit === 'ft') {
+    btnFt.style.background = '#00f0ff';
+    btnFt.style.color = '#040911';
+    btnFt.style.fontWeight = '800';
+    btnCm.style.background = 'transparent';
+    btnCm.style.color = 'rgba(255,255,255,0.6)';
+    btnCm.style.fontWeight = '700';
+
+    const cmVal = parseInt(cmInput?.value, 10);
+    if (!isNaN(cmVal) && cmVal > 0) {
+      const totalInches = cmVal / 2.54;
+      const feet = Math.floor(totalInches / 12);
+      const inches = Math.round(totalInches % 12);
+      if (ftInput) ftInput.value = feet;
+      if (inInput) inInput.value = inches >= 12 ? 11 : inches;
+    } else {
+      if (ftInput) ftInput.value = '';
+      if (inInput) inInput.value = '';
+    }
+
+    if (cmWrap) cmWrap.style.display = 'none';
+    if (ftWrap) ftWrap.style.display = 'flex';
+  } else {
+    btnCm.style.background = '#00f0ff';
+    btnCm.style.color = '#040911';
+    btnCm.style.fontWeight = '800';
+    btnFt.style.background = 'transparent';
+    btnFt.style.color = 'rgba(255,255,255,0.6)';
+    btnFt.style.fontWeight = '700';
+
+    const feetStr = ftInput?.value?.trim();
+    const inStr = inInput?.value?.trim();
+    if (feetStr || inStr) {
+      const feet = parseInt(feetStr, 10) || 0;
+      const inches = parseInt(inStr, 10) || 0;
+      const totalInches = (feet * 12) + inches;
+      const cmVal = Math.round(totalInches * 2.54);
+      if (cmInput) cmInput.value = cmVal || '';
+    }
+
+    if (ftWrap) ftWrap.style.display = 'none';
+    if (cmWrap) cmWrap.style.display = 'block';
+  }
+};
+
+window.setLocalPlayerWeightUnit = (targetUnit) => {
+  const unitInput = document.getElementById('lp-weight-unit');
+  const btnKg = document.getElementById('lp-weight-unit-kg');
+  const btnLb = document.getElementById('lp-weight-unit-lb');
+  const weightInput = document.getElementById('lp-weight');
+
+  if (!unitInput || !btnKg || !btnLb || !weightInput) return;
+
+  unitInput.value = targetUnit;
+  const rawVal = weightInput.value ? weightInput.value.trim() : '';
+  const currentVal = parseInt(rawVal, 10);
+
+  if (targetUnit === 'lb') {
+    btnLb.style.background = '#00f0ff';
+    btnLb.style.color = '#040911';
+    btnLb.style.fontWeight = '800';
+    btnKg.style.background = 'transparent';
+    btnKg.style.color = 'rgba(255,255,255,0.6)';
+    btnKg.style.fontWeight = '700';
+
+    if (!isNaN(currentVal) && currentVal > 0) {
+      weightInput.value = Math.round(currentVal * 2.20462);
+    } else {
+      weightInput.value = '';
+    }
+    weightInput.placeholder = "Ej. 150";
+  } else {
+    btnKg.style.background = '#00f0ff';
+    btnKg.style.color = '#040911';
+    btnKg.style.fontWeight = '800';
+    btnLb.style.background = 'transparent';
+    btnLb.style.color = 'rgba(255,255,255,0.6)';
+    btnLb.style.fontWeight = '700';
+
+    if (!isNaN(currentVal) && currentVal > 0) {
+      weightInput.value = Math.round(currentVal / 2.20462);
+    } else {
+      weightInput.value = '';
+    }
+    weightInput.placeholder = "Ej. 68";
+  }
+};
+
+window.toggleLocalPlayerHeightUnit = () => {
+  const unitInput = document.getElementById('lp-height-unit');
+  if (unitInput) window.setLocalPlayerHeightUnit(unitInput.value === 'ft' ? 'cm' : 'ft');
+};
+
+window.toggleLocalPlayerWeightUnit = () => {
+  const unitInput = document.getElementById('lp-weight-unit');
+  if (unitInput) window.setLocalPlayerWeightUnit(unitInput.value === 'lb' ? 'kg' : 'lb');
+};
+
+window.getLocalPlayerHeightCm = () => {
+  const unitSelect = document.getElementById('lp-height-unit');
+  if (unitSelect && unitSelect.value === 'ft') {
+    const feet = parseInt(document.getElementById('lp-height-ft')?.value, 10);
+    const inches = parseInt(document.getElementById('lp-height-in')?.value, 10);
+    if (isNaN(feet) && isNaN(inches)) return null;
+    const f = isNaN(feet) ? 0 : feet;
+    const i = isNaN(inches) ? 0 : inches;
+    const cm = Math.round(((f * 12) + i) * 2.54);
+    return cm > 0 ? cm : null;
+  }
+  const val = parseInt(document.getElementById('lp-height')?.value, 10);
+  return (isNaN(val) || val <= 0) ? null : val;
+};
+
+window.getLocalPlayerWeightKg = () => {
+  const unitSelect = document.getElementById('lp-weight-unit');
+  const val = parseInt(document.getElementById('lp-weight')?.value, 10);
+  if (isNaN(val) || val <= 0) return null;
+  if (unitSelect && unitSelect.value === 'lb') {
+    return Math.round(val / 2.20462);
+  }
+  return val;
+};
+
+window.showMissingFieldsAlert = (missingFields) => {
+  let modal = document.getElementById('modal-missing-fields-alert');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'modal-missing-fields-alert';
+    modal.style.cssText = `
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(4, 9, 17, 0.88); backdrop-filter: blur(10px);
+      z-index: 100000; display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box;
+    `;
+    document.body.appendChild(modal);
+  }
+
+  // Máximo 10 elementos. Si hay más de 10 pendientes, tomar los primeros 9 y agregar "Etc..."
+  let displayList = [];
+  if (missingFields.length > 10) {
+    displayList = missingFields.slice(0, 9);
+    displayList.push({ label: 'Etc...', isEtc: true });
+  } else {
+    displayList = [...missingFields];
+  }
+
+  const listItems = displayList.map(f => {
+    if (f.isEtc) {
+      return `
+        <li style="display: flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.05); border: 1px dashed rgba(255, 255, 255, 0.3); padding: 9px 14px; border-radius: 8px; color: rgba(255, 255, 255, 0.7); font-size: 13.5px; font-weight: 700; font-style: italic;">
+          <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: rgba(255, 255, 255, 0.5); flex-shrink: 0;"></span>
+          <span>Etc...</span>
+        </li>
+      `;
+    }
+    return `
+      <li style="display: flex; align-items: center; gap: 10px; background: rgba(255, 77, 77, 0.1); border: 1px solid rgba(255, 77, 77, 0.3); padding: 9px 14px; border-radius: 8px; color: #ff6b6b; font-size: 13.5px; font-weight: 700;">
+        <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #ff4d4d; flex-shrink: 0;"></span>
+        <span>${f.label}</span>
+      </li>
+    `;
+  }).join('');
+
+  modal.innerHTML = `
+    <div style="background: linear-gradient(145deg, #0e1726, #070c14); border: 1.5px solid rgba(255, 77, 77, 0.5); border-radius: 16px; padding: 24px 26px; max-width: 440px; width: 100%; box-shadow: 0 0 35px rgba(255, 77, 77, 0.3); color: #fff; animation: modalPop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275); max-height: 90vh; overflow-y: auto;">
+      <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 14px;">
+        <div style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255, 77, 77, 0.15); border: 1.5px solid #ff4d4d; display: flex; align-items: center; justify-content: center; color: #ff4d4d; font-size: 18px; font-weight: 900; flex-shrink: 0;">
+          !
+        </div>
+        <div>
+          <h3 style="margin: 0; font-size: 17px; font-weight: 800; color: #ff4d4d; letter-spacing: 0.3px;">Campos Pendientes por Llenar</h3>
+          <p style="margin: 3px 0 0 0; font-size: 12.5px; color: rgba(255,255,255,0.7);">Se encontraron ${missingFields.length} campos por completar:</p>
+        </div>
+      </div>
+
+      <ul style="list-style: none; padding: 0; margin: 14px 0 20px 0; display: flex; flex-direction: column; gap: 7px;">
+        ${listItems}
+      </ul>
+
+      <button type="button" onclick="closeMissingFieldsAlert('${missingFields[0]?.tab || 'general'}', '${missingFields[0]?.id || ''}')" style="width: 100%; background: linear-gradient(90deg, #ff4d4d, #ff6b6b); color: #ffffff; border: none; padding: 12px; border-radius: 10px; font-weight: 800; font-size: 14px; cursor: pointer; box-shadow: 0 0 15px rgba(255, 77, 77, 0.4); transition: all 0.2s;">
+        Completar Campos
+      </button>
+    </div>
+  `;
+
+  modal.style.display = 'flex';
+};
+
+window.closeMissingFieldsAlert = (tabToSwitch = 'general', fieldIdToFocus = '') => {
+  const modal = document.getElementById('modal-missing-fields-alert');
+  if (modal) modal.style.display = 'none';
+  if (tabToSwitch) window.switchFormTab(tabToSwitch);
+  if (fieldIdToFocus) {
+    setTimeout(() => {
+      const el = document.getElementById(fieldIdToFocus);
+      if (el) {
+        el.focus();
+        el.style.border = '2px solid #ff4d4d';
+        setTimeout(() => { el.style.border = '1px solid rgba(0,240,255,0.3)'; }, 3000);
+      }
+    }, 150);
+  }
+};
+
+window.closeLocalPlayerFormModal = () => {
+  const modal = document.getElementById('modal-local-player-form');
+  if (modal) modal.style.display = 'none';
+};
+
+window.saveLocalPlayer = async (event) => {
+  if (event && typeof event.preventDefault === 'function') {
+    event.preventDefault();
+  }
+
+  const missingFields = [];
+
+  // ─── TAB GENERAL ───
+  const nameVal = document.getElementById('lp-name')?.value.trim();
+  if (!nameVal) missingFields.push({ label: 'Nombre Completo', tab: 'general', id: 'lp-name' });
+
+  const nickVal = document.getElementById('lp-nickname')?.value?.trim();
+  if (!nickVal) missingFields.push({ label: 'Apodo / Nickname', tab: 'general', id: 'lp-nickname' });
+
+  const docTypeVal = document.getElementById('lp-doc-type')?.value;
+  if (!docTypeVal) missingFields.push({ label: 'Documento de Identidad', tab: 'general', id: 'lp-doc-type' });
+
+  const docNumVal = document.getElementById('lp-doc-number')?.value?.trim();
+  if (!docNumVal) missingFields.push({ label: 'Nº de Documento de Identidad', tab: 'general', id: 'lp-doc-number' });
+
+  const docFileUrlVal = document.getElementById('lp-doc-file-url')?.value || '';
+  if (!docFileUrlVal) missingFields.push({ label: 'Documento Adjunto (PDF/Imagen)', tab: 'general', id: 'lp-doc-dropzone' });
+
+  const ageVal = document.getElementById('lp-age')?.value.trim();
+  if (!ageVal) missingFields.push({ label: 'Edad', tab: 'general', id: 'lp-age' });
+
+  const jerseyVal = document.getElementById('lp-jersey')?.value?.trim();
+  if (!jerseyVal) missingFields.push({ label: 'Dorsal (#)', tab: 'general', id: 'lp-jersey' });
+
+  const posVal = document.getElementById('lp-position')?.value;
+  if (!posVal) missingFields.push({ label: 'Posición', tab: 'general', id: 'lp-position' });
+
+  const footVal = document.getElementById('lp-foot')?.value;
+  if (!footVal) missingFields.push({ label: 'Pie Hábil', tab: 'general', id: 'lp-foot' });
+
+  const heightCm = window.getLocalPlayerHeightCm();
+  if (!heightCm) missingFields.push({ label: 'Altura', tab: 'general', id: 'lp-height' });
+
+  const weightKg = window.getLocalPlayerWeightKg();
+  if (!weightKg) missingFields.push({ label: 'Peso', tab: 'general', id: 'lp-weight' });
+
+  const catVal = document.getElementById('lp-category')?.value;
+  if (!catVal) missingFields.push({ label: 'Categoría', tab: 'general', id: 'lp-category' });
+
+  const medVal = document.getElementById('lp-medical')?.value;
+  if (!medVal) missingFields.push({ label: 'Estado Médico', tab: 'general', id: 'lp-medical' });
+
+  const photoUrlVal = document.getElementById('lp-photourl')?.value?.trim();
+  if (!photoUrlVal) missingFields.push({ label: 'Foto de Perfil', tab: 'general', id: 'lp-photo-dropzone' });
+
+  const bioVal = document.getElementById('lp-bio')?.value?.trim();
+  if (!bioVal) missingFields.push({ label: 'Breve Biografía', tab: 'general', id: 'lp-bio' });
+
+  // ─── TAB DEPORTIVO ───
+  if (!window.tempStrengthsTags || window.tempStrengthsTags.length === 0) {
+    missingFields.push({ label: 'Habilidades', tab: 'deportivo', id: 'lp-strength-input' });
+  }
+
+  if (!window.tempImprovementsTags || window.tempImprovementsTags.length === 0) {
+    missingFields.push({ label: 'Aspectos de Mejora', tab: 'deportivo', id: 'lp-improvement-input' });
+  }
+
+  const tacVal = document.getElementById('lp-tactical-notes')?.value?.trim();
+  if (!tacVal) missingFields.push({ label: 'Notas del Entrenador', tab: 'deportivo', id: 'lp-tactical-notes' });
+
+  const highlightVal = document.getElementById('lp-highlight-url')?.value?.trim() || document.getElementById('lp-highlight-external-url')?.value?.trim();
+  if (!highlightVal) missingFields.push({ label: 'Highlights (Video)', tab: 'deportivo', id: 'lp-highlight-dropzone' });
+
+  // ─── TAB HISTORIAL ───
+  if (!window.tempSeasonsList || window.tempSeasonsList.length === 0) {
+    missingFields.push({ label: 'Temporadas Registradas', tab: 'historial', id: 'lp-stats-season' });
+  }
+
+  if (!window.tempTrophiesList || window.tempTrophiesList.length === 0) {
+    missingFields.push({ label: 'Palmarés / Trofeos', tab: 'historial', id: 'lp-trophy-name' });
+  }
+
+  // ─── TAB AUTORIZACIONES ───
+  const authSignatureUrl = document.getElementById('lp-auth-signature-file-url')?.value || '';
+  const authSignatureLabel = document.getElementById('lp-auth-signature-file-name')?.textContent || '';
+  const authSignatureFileName = authSignatureLabel.startsWith('📎 ') ? authSignatureLabel.replace('📎 ', '') : '';
+
+  if (!authSignatureUrl) {
+    missingFields.push({ label: 'Documento de Autorización Firmado', tab: 'autorizaciones', id: 'lp-auth-signature-file-box' });
+  }
+
+  const authMedicalUrl = document.getElementById('lp-auth-medical-file-url')?.value || '';
+  const authMedicalLabel = document.getElementById('lp-auth-medical-file-name')?.textContent || '';
+  const authMedicalFileName = authMedicalLabel.startsWith('📎 ') ? authMedicalLabel.replace('📎 ', '') : '';
+
+  if (!authMedicalUrl) {
+    missingFields.push({ label: 'Certificado Médico de Aptitud', tab: 'autorizaciones', id: 'lp-auth-medical-file-box' });
+  }
+
+  // ─── TAB LEGAL (SOLO MENORES DE 18 AÑOS) ───
+  const parsedAge = parseInt(ageVal, 10);
+  const isMinorPlayer = ageVal !== '' && !isNaN(parsedAge) && parsedAge <= 17;
+  const guardiansList = Array.isArray(window.tempGuardiansList) ? window.tempGuardiansList : [];
+
+  if (isMinorPlayer) {
+    if (guardiansList.length === 0) {
+      missingFields.push({ label: 'Tutor / Representante Legal (Mínimo 1)', tab: 'legal', id: 'lp-legal-guardians-container' });
+    } else {
+      guardiansList.forEach((g, idx) => {
+        const num = idx + 1;
+        const labelPrefix = guardiansList.length > 1 ? `Tutor #${num} - ` : '';
+        if (!g.name?.trim()) missingFields.push({ label: `${labelPrefix}Nombre Completo`, tab: 'legal', id: 'lp-legal-guardians-container' });
+        if (!g.relationship) missingFields.push({ label: `${labelPrefix}Parentesco / Relación`, tab: 'legal', id: 'lp-legal-guardians-container' });
+        if (!g.docType) missingFields.push({ label: `${labelPrefix}Documento`, tab: 'legal', id: 'lp-legal-guardians-container' });
+        if (!g.docNumber?.trim()) missingFields.push({ label: `${labelPrefix}Nº de Documento`, tab: 'legal', id: 'lp-legal-guardians-container' });
+        if (!g.phone?.trim()) missingFields.push({ label: `${labelPrefix}Teléfono de Contacto`, tab: 'legal', id: 'lp-legal-guardians-container' });
+      });
+    }
+  }
+
+  if (missingFields.length > 0) {
+    window.showMissingFieldsAlert(missingFields);
+    return;
+  }
+
+  const idInput = document.getElementById('local-player-id');
+  const name = nameVal;
+  const nickname = document.getElementById('lp-nickname')?.value.trim() || '';
+  const age = parseInt(ageVal, 10);
+  const jerseyNumber = parseInt(document.getElementById('lp-jersey')?.value?.trim() || '0', 10) || 0;
+  const position = posVal;
+  const overallRating = 75;
+  const category = document.getElementById('lp-category')?.value || 'Cantera';
+  const preferredFoot = document.getElementById('lp-foot')?.value || 'Derecho';
+  const height = window.getLocalPlayerHeightCm() || 175;
+  const weight = window.getLocalPlayerWeightKg() || 70;
+  const medicalStatus = document.getElementById('lp-medical')?.value || 'Apto';
+  const photoUrl = document.getElementById('lp-photourl')?.value?.trim() || '';
+  const bioEs = document.getElementById('lp-bio')?.value?.trim() || '';
+  const tacticalNotes = document.getElementById('lp-tactical-notes')?.value?.trim() || '';
+  const highlightUrl = document.getElementById('lp-highlight-url')?.value?.trim() || document.getElementById('lp-highlight-external-url')?.value?.trim() || '';
+  const marketValue = 0;
+
+  const matches = parseInt(document.getElementById('lp-stats-matches')?.value || '0', 10) || 0;
+  const goals = parseInt(document.getElementById('lp-stats-goals')?.value || '0', 10) || 0;
+  const assists = parseInt(document.getElementById('lp-stats-assists')?.value || '0', 10) || 0;
+  const yellowCards = parseInt(document.getElementById('lp-stats-yellow')?.value || '0', 10) || 0;
+  const redCards = parseInt(document.getElementById('lp-stats-red')?.value || '0', 10) || 0;
+
+  const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  const userClub = user.selectedClub || 'Club Local';
+
+  const authorizations = JSON.stringify({
+    image: !!authSignatureUrl,
+    data: !!authSignatureUrl,
+    medical: !!authMedicalUrl,
+    authSignatureUrl,
+    authSignatureFileName,
+    authMedicalUrl,
+    authMedicalFileName
+  });
+
+  const primaryGuardian = guardiansList[0] || {};
+  const legalDetails = JSON.stringify({
+    guardians: guardiansList,
+    guardianName: primaryGuardian.name || '',
+    guardianRelationship: primaryGuardian.relationship || '',
+    guardianDocType: primaryGuardian.docType || '',
+    guardianDocNumber: primaryGuardian.docNumber || '',
+    guardianPhone: primaryGuardian.phone || '',
+    guardianEmail: primaryGuardian.email || ''
+  });
+
+  const docFileUrl = document.getElementById('lp-doc-file-url')?.value || '';
+  const docFileLabel = document.getElementById('lp-doc-file-name')?.textContent || '';
+  const docFileName = docFileLabel.startsWith('📎 ') ? docFileLabel.replace('📎 ', '') : '';
+
+  const currentSeasonInputVal = document.getElementById('lp-stats-season')?.value?.trim() || '2024/25';
+  let historySeasons = (Array.isArray(window.tempSeasonsList) && window.tempSeasonsList.length > 0)
+    ? window.tempSeasonsList
+    : [{
+        season: currentSeasonInputVal,
+        team: userClub,
+        matches,
+        goals,
+        assists,
+        yellowCards,
+        redCards,
+        rating: overallRating
+      }];
+
+  const payload = {
+    name,
+    nickname,
+    docType: docTypeVal || '',
+    docNumber: docNumVal || '',
+    docFileUrl,
+    docFileName,
+    age,
+    jerseyNumber,
+    position,
+    positionEs: getPositionEs(position),
+    overallRating,
+    category,
+    preferredFoot,
+    height,
+    weight,
+    medicalStatus,
+    photoUrl,
+    bioEs,
+    bio: bioEs,
+    tacticalNotes,
+    highlightUrl,
+    authorizations,
+    legalDetails,
+    marketValue,
+    currentTeam: userClub,
+    nationality: user.selectedCountry || 'Local',
+    nationalityEs: user.selectedCountry || 'Local',
+    stats: JSON.stringify({ matches, goals, assists, yellowCards, redCards }),
+    strengths: JSON.stringify(window.tempStrengthsTags),
+    improvements: JSON.stringify(window.tempImprovementsTags),
+    weaknesses: JSON.stringify(window.tempImprovementsTags),
+    trophies: JSON.stringify(window.tempTrophiesList),
+    injuries: JSON.stringify(window.tempInjuriesList || []),
+    tags: JSON.stringify([category, medicalStatus, 'Cantera']),
+    history: JSON.stringify(historySeasons)
+  };
+
+  const playerId = idInput.value;
+  const token = localStorage.getItem('scout_ai_token');
+  
+  if (!token) {
+    if (typeof showToast === 'function') showToast('❌ Debes iniciar sesión para guardar.', 'error');
+    return;
+  }
+
+  try {
+    let url = '/api/my-players';
+    let method = 'POST';
+    if (playerId) {
+      url = `/api/my-players/${playerId}`;
+      method = 'PUT';
+    }
+
+    const res = await fetch(url, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      if (typeof showToast === 'function') {
+        showToast(playerId ? `✅ Jugador "${name}" actualizado con éxito.` : `🎉 ¡Jugador "${name}" añadido a la plantilla local!`, 'success');
+      }
+      window.closeLocalPlayerFormModal();
+      await window.loadLocalPlayers();
+      window.renderMyPlayersModule(true);
+    } else {
+      if (typeof showToast === 'function') showToast(`❌ Error: ${data.error}`, 'error');
+    }
+  } catch (err) {
+    console.error('Error saving local player:', err);
+    if (typeof showToast === 'function') showToast('❌ Error de red al guardar el jugador.', 'error');
+  }
+};
+
+function getPositionEs(code) {
+  if (!code) return '—';
+  const cleanCode = String(code).trim().toUpperCase();
+  const map = {
+    'ST': 'ST - Delantero Centro',
+    'CF': 'CF - Segundo Delantero',
+    'LW': 'LW - Extremo Izquierdo',
+    'RW': 'RW - Extremo Derecho',
+    'CAM': 'CAM - Mediapunta',
+    'CM': 'CM - Mediocampista',
+    'CDM': 'CDM - Volante de Contención',
+    'LB': 'LB - Lateral Izquierdo',
+    'RB': 'RB - Lateral Derecho',
+    'CB': 'CB - Defensa Central',
+    'GK': 'GK - Portero'
+  };
+  return map[cleanCode] || map[code] || code;
+}
+
+window.deleteLocalPlayer = async (playerId) => {
+  const players = window.getLocalPlayersList();
+  const player = players.find(p => p.id === playerId);
+  if (!player) return;
+
+  if (!confirm(`¿Estás seguro de que deseas eliminar a "${player.name}" de tu plantilla local?`)) {
+    return;
+  }
+
+  const token = localStorage.getItem('scout_ai_token');
+  if (!token) return;
+
+  try {
+    const res = await fetch(`/api/my-players/${playerId}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (data.success) {
+      if (typeof showToast === 'function') showToast(`🗑️ Jugador "${player.name}" eliminado.`, 'info');
+      await window.loadLocalPlayers();
+      window.renderMyPlayersModule(true);
+    }
+  } catch (err) {
+    console.error('Error deleting player:', err);
+  }
+};
+
+window.viewLocalPlayerExpediente = async (playerOrId) => {
+  if (!playerOrId) return;
+
+  if (typeof playerOrId === 'object' && playerOrId.id) {
+    openPlayerModal(playerOrId);
+    return;
+  }
+
+  const playerId = playerOrId;
+  const localList = window.getLocalPlayersList();
+  let player = localList.find(p => p.id === playerId);
+
+  if (!player && window.prospectsCached) {
+    player = window.prospectsCached.find(p => p.id === playerId);
+  }
+
+  if (!player) {
+    try {
+      const token = localStorage.getItem('scout_ai_token');
+      const res = await fetch(`/api/players/${playerId}`, {
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+      });
+      const data = await res.json();
+      if (data && (data.id || data.player)) {
+        player = data.player || data;
+      }
+    } catch (e) {
+      console.warn('Error fetching player expediente:', e);
+    }
+  }
+
+  if (player && typeof openPlayerModal === 'function') {
+    openPlayerModal(player);
+  }
+};
+
+window.closeLocalPlayerExpedienteModal = () => {
+  const modal = document.getElementById('modal-local-player-expediente');
+  if (modal) modal.style.display = 'none';
+};
+
+window.openCoachChatAndSendMessage = async (coachUserId, playerName) => {
+  const msg = `Quiero saber más sobre este jugador: ${playerName}`;
+  
+  try {
+    const token = getMyChatsToken();
+    if (token && coachUserId) {
+      await fetch('/api/chats/contacts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ contactUserId: coachUserId })
+      });
+    }
+  } catch (e) {
+    console.warn('⚠️ No se pudo vincular el contacto del entrenador:', e);
+  }
+
+  // Navegar a Mis Chats
+  goToSection('my-chats');
+
+  if (coachUserId) {
+    await fetchMyChatsContacts();
+    selectChatContact(coachUserId);
+
+    setTimeout(async () => {
+      const inputEl = document.getElementById('my-chats-input-text');
+      if (inputEl) {
+        inputEl.value = msg;
+        await sendMyChatMessage();
+      }
+    }, 200);
+  }
+};
+
+window.sendMessageAboutPlayer = (playerName, coachUserId = null) => {
+  window.openCoachChatAndSendMessage(coachUserId, playerName);
 };
 
 window.renderProfileFavorites = () => {
@@ -5058,57 +8997,59 @@ window.loadProfilePaymentHistory = async () => {
   
   if (!tbody) return;
   
+  let payments = [];
   try {
     const res = await fetchWithAuth(`${API}/payments/history`);
     if (res.ok) {
       const data = await res.json();
-      const payments = data.payments || [];
-      
-      if (payments.length === 0) {
-        tbody.innerHTML = '';
-        if (table) table.style.display = 'none';
-        if (emptyState) emptyState.style.display = 'block';
+      payments = data.payments || [];
+      if (payments.length > 0) {
+        localStorage.setItem('scout_ai_payments_history', JSON.stringify(payments));
       } else {
-        if (emptyState) emptyState.style.display = 'none';
-        if (table) table.style.display = 'table';
-        
-        tbody.innerHTML = payments.map(p => {
-          // Format date and time safely
-          const dateObj = new Date(p.createdAt);
-          const formattedDate = dateObj.toLocaleString('es-ES', { 
-            year: 'numeric',
-            month: 'numeric',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-          });
-          
-          // Concept: dynamically mapped plan tier
-          const concept = `Suscripción Plan ${p.tier}`;
-          
-          // Amount
-          const formattedAmount = `$${parseFloat(p.amount).toFixed(2)} USD`;
-          
-          return `
-            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.2s;">
-              <td style="padding: 12px 10px; color: rgba(255,255,255,0.85);">${formattedDate}</td>
-              <td style="padding: 12px 10px; color: rgba(255,255,255,0.85); font-weight: 500;">
-                <span style="display: inline-flex; align-items: center; gap: 6px;">
-                  <span style="color: #00f0ff;">✨</span> ${concept}
-                </span>
-              </td>
-              <td style="padding: 12px 10px; color: #10b981; font-weight: 600; text-align: right;">${formattedAmount}</td>
-            </tr>
-          `;
-        }).join('');
+        payments = window.getUserPaymentHistory();
       }
     } else {
-      throw new Error('No se pudo obtener el historial del servidor');
+      payments = window.getUserPaymentHistory();
     }
   } catch (err) {
-    console.error('Error loading payment history:', err);
-    if (err.message === 'Sesión expirada') return; // Silent return if we are redirecting anyway
-    tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; padding: 20px; color: #ef4444;">⚠️ Error al cargar el historial de pagos.</td></tr>`;
+    console.warn('Payment history fetch offline fallback:', err);
+    if (err.message === 'Sesión expirada') return;
+    payments = window.getUserPaymentHistory();
+  }
+
+  if (payments.length === 0) {
+    tbody.innerHTML = '';
+    if (table) table.style.display = 'none';
+    if (emptyState) emptyState.style.display = 'block';
+  } else {
+    if (emptyState) emptyState.style.display = 'none';
+    if (table) table.style.display = 'table';
+    
+    tbody.innerHTML = payments.map(p => {
+      const dateObj = new Date(p.createdAt || Date.now());
+      const formattedDate = dateObj.toLocaleString('es-ES', { 
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+      
+      const concept = `Suscripción Plan ${p.tier}`;
+      const formattedAmount = `$${parseFloat(p.amount || 0).toFixed(2)} USD`;
+      
+      return `
+        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.2s;">
+          <td style="padding: 12px 10px; color: rgba(255,255,255,0.85);">${formattedDate}</td>
+          <td style="padding: 12px 10px; color: rgba(255,255,255,0.85); font-weight: 500;">
+            <span style="display: inline-flex; align-items: center; gap: 6px;">
+              <span style="color: #00f0ff;">✨</span> ${concept}
+            </span>
+          </td>
+          <td style="padding: 12px 10px; color: #10b981; font-weight: 600; text-align: right;">${formattedAmount}</td>
+        </tr>
+      `;
+    }).join('');
   }
 };
 
@@ -5251,23 +9192,61 @@ function setupNavigation() {
 function goToSection(name) {
   const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
   const isLocal = (user.selectedTier || '').toLowerCase() === 'local' || (user.role || '').toLowerCase() === 'local' || (user.role || '').toLowerCase() === 'entrenador local';
-  const restricted = ['players', 'my-club', 'compare', 'predictions', 'simulations'];
+  const restricted = ['players', 'my-club', 'compare', 'predictions', 'simulations', 'prospects'];
 
   if (isLocal && (restricted.includes(name) || name === 'home')) {
     name = 'chat';
+  } else if (!isLocal && name === 'my-players') {
+    name = 'prospects';
   }
 
-  document.querySelectorAll('.nav-item').forEach(b => {
-    b.classList.toggle('active', b.dataset.section === name);
-  });
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.getElementById(`section-${name}`)?.classList.add('active');
+  // Label map for section transitions
+  const sectionLabels = {
+    'home':        'Cargando Inicio...',
+    'players':     'Cargando Jugadores...',
+    'prospects':   'Cargando Prospectos...',
+    'my-club':     'Cargando Mi Club...',
+    'compare':     'Cargando Comparador...',
+    'predictions': 'Cargando Predicciones...',
+    'simulations': 'Cargando Simulaciones...',
+    'chat':        'Cargando Consultor IA...',
+    'profile':     'Cargando Perfil...',
+    'my-players':  'Cargando Mis Jugadores...',
+  };
 
-  if (name === 'my-club') renderMyClubDashboard();
-  if (name === 'players') renderPlayers();
-  if (name === 'predictions' && !predictionsLoaded) loadPredictions();
-  if (name === 'profile') renderProfile();
-  if (name === 'simulations') initSimulationsSection();
+  // Show section loader briefly during render
+  if (window.SectionLoader) window.SectionLoader.show(sectionLabels[name] || 'Cargando...');
+
+  // Double rAF ensures loader paints BEFORE section switches
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      document.querySelectorAll('.nav-item').forEach(b => {
+        b.classList.toggle('active', b.dataset.section === name);
+      });
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById(`section-${name}`)?.classList.add('active');
+
+      if (name === 'my-club') renderMyClubDashboard();
+      if (name === 'players') renderPlayers();
+      if (name === 'prospects' && window.renderProspectsModule) window.renderProspectsModule();
+      if (name === 'predictions' && !predictionsLoaded) loadPredictions();
+      if (name === 'profile') renderProfile();
+      if (name === 'simulations') initSimulationsSection();
+      if (name === 'my-players' && window.renderMyPlayersModule) window.renderMyPlayersModule();
+      if (name === 'my-chats') renderMyChatsSection();
+      if (name === 'chat') {
+        const currentSession = chatSessions.find(s => s.id === activeSessionId);
+        if (currentSession && currentSession.messages && currentSession.messages.length > 0) {
+          createNewChatSession();
+        }
+      }
+
+      // Minimum visible time = 250ms for good UX
+      setTimeout(() => {
+        if (window.SectionLoader) window.SectionLoader.hide();
+      }, 250);
+    });
+  });
 }
 
 // ──────────────────────────────────────────
@@ -5432,6 +9411,7 @@ function createPlayerCard(p) {
     </div>
     
     <button class="btn-expediente">EXPEDIENTE</button>
+    ${p.isLocalProspect ? `<button class="btn-mensaje-prospecto" onclick="event.stopPropagation(); openCoachChatAndSendMessage('${p.userId || ''}', '${escapeHtml(p.name)}')">MENSAJE</button>` : ''}
   `;
 
   const img = card.querySelector('.player-photo');
@@ -5808,6 +9788,28 @@ function getPlayerHistory(p) {
   return historyList.slice(0, 10);
 }
 
+function getEmbedYoutubeUrl(url) {
+  if (!url) return '';
+  let videoId = '';
+  if (url.includes('youtu.be/')) {
+    videoId = url.split('youtu.be/')[1]?.split('?')[0];
+  } else if (url.includes('youtube.com/watch')) {
+    try {
+      const urlParams = new URLSearchParams(url.split('?')[1]);
+      videoId = urlParams.get('v');
+    } catch (_) {}
+  } else if (url.includes('youtube.com/embed/')) {
+    return url;
+  }
+  return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
+}
+
+function getEmbedVimeoUrl(url) {
+  if (!url) return '';
+  const match = url.match(/vimeo\.com\/(\d+)/);
+  return match ? `https://player.vimeo.com/video/${match[1]}` : url;
+}
+
 function openPlayerModal(p) {
   const body = document.getElementById('modal-body');
   const mv = p.marketValue ? `€${(p.marketValue / 1000000).toFixed(0)}M` : '—';
@@ -5819,7 +9821,46 @@ function openPlayerModal(p) {
   const playerInjuries = [];
   let hasRealInjuries = false;
   
-  if (p.history && p.history.length > 0) {
+  // 1. Extraer lesiones registradas en el expediente del jugador (p.injuries)
+  let rawInjuries = p.injuries;
+  if (typeof rawInjuries === 'string' && rawInjuries.trim().startsWith('[')) {
+    try {
+      rawInjuries = JSON.parse(rawInjuries);
+    } catch (e) {
+      console.warn('Error al parsear player.injuries JSON:', e);
+    }
+  }
+
+  if (Array.isArray(rawInjuries)) {
+    hasRealInjuries = true;
+    rawInjuries.forEach(inj => {
+      if (!inj) return;
+      const type = inj.type || inj.name || (typeof inj === 'string' ? inj : 'Lesión');
+      const year = inj.year || inj.season || inj.date || '—';
+      const duration = inj.recovery || inj.duration || 'Sin especificar';
+      const severity = inj.severity || 'Moderada';
+
+      playerInjuries.push({
+        type: type,
+        severity: severity,
+        duration: duration,
+        date: year
+      });
+    });
+  } else if (typeof rawInjuries === 'string' && rawInjuries.trim() !== '' && rawInjuries !== '[]' && rawInjuries !== 'None' && rawInjuries !== 'Ninguna') {
+    hasRealInjuries = true;
+    playerInjuries.push({
+      type: rawInjuries,
+      severity: 'Moderada',
+      duration: 'Sin especificar',
+      date: '—'
+    });
+  } else if (p.isLocal || p.is_prospect || rawInjuries === '[]') {
+    hasRealInjuries = true;
+  }
+
+  // 2. Si no hay lesiones de expediente local, intentar obtener del historial de temporadas (API exterior)
+  if (!hasRealInjuries && p.history && p.history.length > 0) {
     p.history.forEach(h => {
       if (h.injuries && h.injuries !== 'None' && h.injuries !== 'Ninguna') {
         hasRealInjuries = true;
@@ -5921,7 +9962,7 @@ function openPlayerModal(p) {
             .replace(/meses/g, 'months')
             .replace(/mes/g, 'month')
             .replace(/días/g, 'days')
-            .replace(/día/g, 'day');
+            .replace(/day/g, 'día');
         }
 
         playerInjuries.push({
@@ -5936,8 +9977,13 @@ function openPlayerModal(p) {
 
   let isCurrentlyInjured = false;
   if (hasRealInjuries) {
-    const latestSeason = p.history[0];
-    if (latestSeason && latestSeason.injuries && latestSeason.injuries !== 'None' && latestSeason.injuries !== 'Ninguna') {
+    const hasActiveLocalInjury = playerInjuries.some(inj => 
+      (inj.type && (inj.type.includes('Activa') || inj.type.includes('Active'))) ||
+      (inj.duration && (inj.duration.includes('En proceso') || inj.duration.includes('In progress')))
+    );
+    const latestSeason = p.history && p.history[0];
+    const hasActiveSeasonInjury = latestSeason && latestSeason.injuries && latestSeason.injuries !== 'None' && latestSeason.injuries !== 'Ninguna';
+    if (hasActiveLocalInjury || hasActiveSeasonInjury) {
       isCurrentlyInjured = true;
     }
   } else {
@@ -5994,6 +10040,51 @@ function openPlayerModal(p) {
 
   const sortedHistory = getPlayerHistory(p);
   const initialStats = sortedHistory[0] || { goals: 0, assists: 0, matches: 0, rating: p.overallRating || 0, yellowCards: 0 };
+  const displayFlag = (p.flag && p.flag !== 'null') ? p.flag : '⚽';
+  const displayLeague = (p.league && p.league !== 'null') ? p.league : (p.category || 'Plan Local');
+  const isProspect = p.id && (String(p.id).startsWith('loc-player-') || p.category || p.userId || p.isLocalProspect);
+  const playerAge = parseInt(p.age, 10) || 0;
+  const showLegalTab = isProspect && playerAge > 0 && playerAge <= 17;
+
+  // Calcular estadísticas acumuladas de todas las temporadas para la pestaña Global
+  let globalGoalsSum = 0;
+  let globalAssistsSum = 0;
+  let globalMatchesSum = 0;
+  let globalDribblesSum = 0;
+  let globalFoulsSum = 0;
+  let weightedRatingSum = 0;
+  let totalRatingWeight = 0;
+
+  if (Array.isArray(sortedHistory) && sortedHistory.length > 0) {
+    sortedHistory.forEach(h => {
+      const m = Number(h.matches) || 0;
+      const g = Number(h.goals) || 0;
+      const a = Number(h.assists) || 0;
+      const r = Number(h.rating) || 0;
+      const d = h.dribbles !== undefined ? Number(h.dribbles) : Math.floor(10 + (a * 1.5));
+      const f = h.fouls !== undefined ? Number(h.fouls) : Math.floor(((Number(h.yellowCards) || 0) * 4) + (m * 0.8));
+
+      globalMatchesSum += m;
+      globalGoalsSum += g;
+      globalAssistsSum += a;
+      globalDribblesSum += d;
+      globalFoulsSum += f;
+
+      if (r > 0) {
+        const weight = m > 0 ? m : 1;
+        weightedRatingSum += r * weight;
+        totalRatingWeight += weight;
+      }
+    });
+  }
+
+  const globalGoals = globalGoalsSum || p.careerTotals?.goals || p.stats?.goals || 0;
+  const globalAssists = globalAssistsSum || p.careerTotals?.assists || p.stats?.assists || 0;
+  const globalMatches = globalMatchesSum || p.careerTotals?.matches || p.stats?.matches || 0;
+  const globalRatingVal = totalRatingWeight > 0 ? (weightedRatingSum / totalRatingWeight) : (p.overallRating || 0);
+  const globalRating = Number(globalRatingVal).toFixed(1);
+  const globalDribbles = globalDribblesSum || Math.floor(10 + (globalAssists * 1.5));
+  const globalFouls = globalFoulsSum || Math.floor(globalMatches * 0.8);
 
   body.innerHTML = `
     <div class="modal-header">
@@ -6002,30 +10093,32 @@ function openPlayerModal(p) {
       </div>
       <div class="modal-title-group">
         <div class="modal-flag-name">
-          <span class="modal-flag">${p.flag}</span>
+          <span class="modal-flag">${displayFlag}</span>
           <div class="modal-name">${p.name}</div>
         </div>
         <div class="modal-team" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
           <div class="modal-team-logo" data-team-name="${p.currentTeam}" style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">⚽</div>
           <span>${p.currentTeam}</span>
           <span style="color: rgba(255,255,255,0.3)">·</span>
-          <div class="modal-league-logo" data-league-name="${p.league}" style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">🌐</div>
-          <span>${p.league}</span>
+          <div class="modal-league-logo" data-league-name="${displayLeague}" style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">🌐</div>
+          <span>${displayLeague}</span>
         </div>
+        ${!isProspect ? `
         <div class="tactical-badges" style="margin-top:8px">
            <span class="t-badge" style="background:rgba(255,165,0,0.1);color:#ffa500;border-color:#ffa500">${currentLang === 'es' ? 'CONTRATO' : 'CONTRACT'} ${getEstimatedContract(p)}</span>
            <span class="t-badge" style="background:rgba(0,229,255,0.1);color:var(--cyan);border-color:var(--cyan)">${currentLang === 'es' ? 'SALARIO ESTIMADO' : 'EST. SALARY'}</span>
            <span class="t-badge" style="background:rgba(255,255,255,0.05)">${mv} ${currentLang === 'es' ? 'valor' : 'value'}</span>
-        </div>
+        </div>` : ''}
       </div>
     </div>
 
     <div class="modal-tabs">
       <button class="modal-tab active" onclick="switchModalTab(this, 'season')">${t('tab_season')}</button>
-      <button class="modal-tab" onclick="switchModalTab(this, 'competition')">${t('tab_competition')}</button>
-      <button class="modal-tab" onclick="switchModalTab(this, 'vs-team')">${t('tab_vs_team')}</button>
+      ${!isProspect ? `<button class="modal-tab" onclick="switchModalTab(this, 'competition')">${t('tab_competition')}</button>` : ''}
+      ${!isProspect ? `<button class="modal-tab" onclick="switchModalTab(this, 'vs-team')">${t('tab_vs_team')}</button>` : ''}
       <button class="modal-tab" onclick="switchModalTab(this, 'global')">${t('tab_global')}</button>
       <button class="modal-tab" onclick="switchModalTab(this, 'injuries')">${t('tab_injuries')}</button>
+      ${showLegalTab ? `<button class="modal-tab" onclick="switchModalTab(this, 'legal-contact')">${currentLang === 'es' ? 'Contacto legal' : 'Legal Contact'}</button>` : ''}
     </div>
 
     <!-- PANE: SEASON -->
@@ -6071,6 +10164,27 @@ function openPlayerModal(p) {
         </div>
       </div>
 
+      ${isProspect ? `
+      <div style="margin-top:30px; padding:20px; background:rgba(0,0,0,0.2); border-radius:12px; border:1px solid var(--border);">
+         <div style="font-size:11px; color:#00f0ff; margin-bottom:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; display:flex; justify-content:space-between; align-items:center;">
+            <span>HIGHLIGHTS</span>
+            <span style="color:rgba(255,255,255,0.45); font-size:10px;">PROSPECTO</span>
+         </div>
+         ${p.highlightUrl ? `
+         <div style="width:100%; border-radius:12px; overflow:hidden; border:1.5px solid rgba(0,240,255,0.4); background:#000; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+            ${(p.highlightUrl.includes('youtube.com') || p.highlightUrl.includes('youtu.be')) ? `
+               <iframe src="${getEmbedYoutubeUrl(p.highlightUrl)}" style="width:100%; aspect-ratio:16/9; border:none;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            ` : p.highlightUrl.includes('vimeo.com') ? `
+               <iframe src="${getEmbedVimeoUrl(p.highlightUrl)}" style="width:100%; aspect-ratio:16/9; border:none;" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+            ` : `
+               <video src="${p.highlightUrl}" controls playsinline preload="metadata" style="width:100%; display:block; max-height:400px; background:#000; outline:none; border-radius:10px;"></video>
+            `}
+         </div>` : `
+         <div style="height:180px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; color:var(--text-2); font-size:13px; font-style:italic; border:1px dashed rgba(255,255,255,0.15); border-radius:12px; background:rgba(0,0,0,0.15);">
+            <span style="font-size:24px;">🎥</span>
+            <span>Sin video de highlights disponible</span>
+         </div>`}
+      </div>` : `
       <div style="margin-top:30px; padding:20px; background:rgba(0,0,0,0.2); border-radius:12px; border:1px solid var(--border);">
          <div style="font-size:11px; color:var(--text-2); margin-bottom:12px; text-transform:uppercase; letter-spacing:1px; display:flex; justify-content:space-between;">
             <span>// ${currentLang === 'es' ? 'MAPA DE CALOR' : 'HEATMAP'}</span>
@@ -6079,9 +10193,10 @@ function openPlayerModal(p) {
          <div class="heatmap-wrapper" style="position:relative; width:100%; aspect-ratio:1.5; background:#1a2b1a; border-radius:8px; overflow:hidden; border:1px solid rgba(255,255,255,0.1);">
             <canvas id="player-heatmap" style="width:100%; height:100%;"></canvas>
          </div>
-      </div>
+      </div>`}
     </div>
 
+    ${!isProspect ? `
     <!-- PANE: COMPETITION -->
     <div id="pane-competition" class="modal-pane">
        <div class="modal-section">
@@ -6099,8 +10214,9 @@ function openPlayerModal(p) {
              <div id="modal-competition-container"></div>
           </div>
        </div>
-    </div>
+    </div>` : ''}
 
+    ${!isProspect ? `
     <!-- PANE: VS TEAM -->
     <div id="pane-vs-team" class="modal-pane">
        <div class="modal-section">
@@ -6110,41 +10226,142 @@ function openPlayerModal(p) {
              ${currentLang === 'es' ? 'No hay datos suficientes para esta comparación.' : 'Not enough data for this comparison.'}
           </div>
        </div>
-    </div>
+    </div>` : ''}
 
     <!-- PANE: GLOBAL -->
     <div id="pane-global" class="modal-pane">
       <div class="modal-section">
-        <h4>${t('modal_stats')} Globales</h4>
+        <h4>${currentLang === 'es' ? 'Stats Históricas' : 'Historical Stats'}</h4>
         <div class="modal-stats-grid">
            <div class="modal-stat">
-             <span style="font-size:16px; margin-bottom:8px">📈</span>
-             <span class="modal-stat-num">${p.careerTotals?.goals ?? 0}</span>
-             <span class="modal-stat-label">${t('career_goals')}</span>
+             <span class="modal-stat-num">${globalGoals}</span>
+             <span class="modal-stat-label">${t('goals_full')}</span>
            </div>
            <div class="modal-stat">
-             <span style="font-size:16px; margin-bottom:8px">🎂</span>
-             <span class="modal-stat-num">${p.age ?? '—'}</span>
-             <span class="modal-stat-label">${t('age')}</span>
+             <span class="modal-stat-num">${globalAssists}</span>
+             <span class="modal-stat-label">${t('assists_full')}</span>
            </div>
            <div class="modal-stat">
-             <span style="font-size:16px; margin-bottom:8px">💎</span>
-             <span class="modal-stat-num">${mv}</span>
-             <span class="modal-stat-label">${t('market_value')}</span>
+             <span class="modal-stat-num">${globalMatches}</span>
+             <span class="modal-stat-label">${t('matches_full')}</span>
+           </div>
+           <div class="modal-stat">
+             <span class="modal-stat-num">${globalRating}</span>
+             <span class="modal-stat-label">RATING</span>
+           </div>
+           <div class="modal-stat">
+             <span class="modal-stat-num">${globalDribbles}</span>
+             <span class="modal-stat-label">${currentLang === 'es' ? 'REGATES' : 'DRIBBLES'}</span>
+           </div>
+           <div class="modal-stat">
+             <span class="modal-stat-num">${globalFouls}</span>
+             <span class="modal-stat-label">${currentLang === 'es' ? 'FALTAS' : 'FOULS'}</span>
            </div>
         </div>
       </div>
 
+      <!-- INFORMACIÓN GENERAL DEL JUGADOR LOCAL -->
+      ${(() => {
+        let docTypeDisplay = 'Documento';
+        if (p.docType === 'CEDULA_DNI') docTypeDisplay = 'Cédula / DNI';
+        else if (p.docType === 'PASAPORTE') docTypeDisplay = 'Pasaporte';
+        else if (p.docType === 'REGISTRO_CIVIL') docTypeDisplay = 'Registro Civil';
+        else if (p.docType === 'NIE_OTHER') docTypeDisplay = 'NIE / Extranjería';
+        else if (p.docType) docTypeDisplay = p.docType;
+
+        const medStatus = p.medicalStatus || 'Disponible';
+        let medColor = '#00c853';
+        let medBg = 'rgba(0,200,83,0.12)';
+        if (medStatus.includes('Lesionado')) {
+          medColor = '#ef0107';
+          medBg = 'rgba(239,1,7,0.12)';
+        } else if (medStatus.includes('Precaución')) {
+          medColor = '#ffa500';
+          medBg = 'rgba(255,165,0,0.12)';
+        }
+
+        return `
+        <div class="modal-section" style="margin-top:20px;">
+          <h4>📋 ${currentLang === 'es' ? 'Ficha e Información General' : 'General Information'}</h4>
+          
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px;">
+            
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(0,240,255,0.15); border-radius: 10px; padding: 12px 14px;">
+              <div style="font-size: 11px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 4px;">Nombre Completo</div>
+              <div style="font-size: 13.5px; font-weight: 700; color: #fff;">${p.name || '—'}</div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(0,240,255,0.15); border-radius: 10px; padding: 12px 14px;">
+              <div style="font-size: 11px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 4px;">Apodo / Alias</div>
+              <div style="font-size: 13.5px; font-weight: 600; color: var(--text-1);">${p.nickname || '—'}</div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(0,240,255,0.15); border-radius: 10px; padding: 12px 14px;">
+              <div style="font-size: 11px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 4px;">Edad</div>
+              <div style="font-size: 13.5px; font-weight: 700; color: #00f0ff;">${p.age ? `${p.age} años` : '—'}</div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(0,240,255,0.15); border-radius: 10px; padding: 12px 14px;">
+              <div style="font-size: 11px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 4px;">Identificación / Documento</div>
+              <div style="font-size: 13.5px; font-weight: 700; color: #00f0ff; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                <span>${docTypeDisplay}: ${p.docNumber || '—'}</span>
+                ${p.docFileUrl ? `<a href="${p.docFileUrl}" target="_blank" style="font-size: 11px; background: rgba(0,240,255,0.15); border: 1px solid #00f0ff; color: #00f0ff; padding: 2px 8px; border-radius: 6px; text-decoration: none;" title="Ver Documento Adjunto">📎 Ver</a>` : ''}
+              </div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(0,240,255,0.15); border-radius: 10px; padding: 12px 14px;">
+              <div style="font-size: 11px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 4px;">Dorsal / Camiseta</div>
+              <div style="font-size: 13.5px; font-weight: 700; color: #ffaa00;">${p.jerseyNumber ? `#${p.jerseyNumber}` : '—'}</div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(0,240,255,0.15); border-radius: 10px; padding: 12px 14px;">
+              <div style="font-size: 11px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 4px;">Posición</div>
+              <div style="font-size: 13.5px; font-weight: 700; color: #00f0ff;">${getPositionEs(p.position || p.positionEs)}</div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(0,240,255,0.15); border-radius: 10px; padding: 12px 14px;">
+              <div style="font-size: 11px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 4px;">Pie Hábil</div>
+              <div style="font-size: 13.5px; font-weight: 600; color: var(--text-1);">${p.preferredFoot || '—'}</div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(0,240,255,0.15); border-radius: 10px; padding: 12px 14px;">
+              <div style="font-size: 11px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 4px;">Estatura & Peso</div>
+              <div style="font-size: 13.5px; font-weight: 600; color: var(--text-1);">${p.height ? `${p.height} cm` : '—'} · ${p.weight ? `${p.weight} kg` : '—'}</div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(0,240,255,0.15); border-radius: 10px; padding: 12px 14px;">
+              <div style="font-size: 11px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 4px;">Categoría</div>
+              <div style="font-size: 13.5px; font-weight: 600; color: var(--text-1);">${p.category || 'Local'}</div>
+            </div>
+
+          </div>
+
+          <div class="modal-bio" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 14px;">
+             <p style="margin: 0; line-height: 1.6; font-size: 13.5px; color: rgba(255,255,255,0.85);">${bio || (currentLang === 'es' ? 'Sin biografía o descripción registrada.' : 'No description recorded.')}</p>
+          </div>
+        </div>
+        `;
+      })()}
+
+      ${p.tacticalNotes ? `
       <div class="modal-section">
-        <h4>${t('modal_info')}</h4>
-        <div class="modal-bio"><p>${bio || '—'}</p></div>
-      </div>
+        <h4>${currentLang === 'es' ? 'Notas del Entrenador' : 'Coach Notes'}</h4>
+        <div class="modal-bio" style="border-left: 3px solid #00f0ff; background: rgba(0, 240, 255, 0.03);"><p>${p.tacticalNotes}</p></div>
+      </div>` : ''}
 
       ${p.strengths?.length ? `
       <div class="modal-section">
         <h4>${t('modal_strengths')}</h4>
         <div class="strengths-list">
           ${p.strengths.map(s => `<span class="strength-item">✓ ${s}</span>`).join('')}
+        </div>
+      </div>` : ''}
+
+      ${(p.improvements?.length || p.weaknesses?.length) ? `
+      <div class="modal-section">
+        <h4>⚡ Aspectos de Mejora</h4>
+        <div class="strengths-list">
+          ${(p.improvements || p.weaknesses).map(w => `<span class="strength-item" style="background: rgba(255,165,0,0.12); border-color: rgba(255,165,0,0.3); color: #ffaa00;">⚡ ${w}</span>`).join('')}
         </div>
       </div>` : ''}
 
@@ -6158,31 +10375,6 @@ function openPlayerModal(p) {
             }
             return `<div class="trophy-item"><span>🏆</span>${tr}</div>`;
           }).join('') : `<div class="trophy-item" style="color: var(--text-2); font-style: italic;">N/A</div>`}
-        </div>
-      </div>
-
-      <div class="modal-section">
-        <h4>${t('modal_transfers')}</h4>
-        <div class="transfers-list">
-          ${p.transfers && p.transfers.length > 0 ? p.transfers.map(tr => {
-            const from = tr.from || tr.fromTeam || '—';
-            const to = tr.to || tr.toTeam || '—';
-            let year = tr.year;
-            if (!year && tr.date) {
-              const parts = tr.date.split(/[\/-]/);
-              year = parts.length === 3 ? (parts[2].length === 4 ? parts[2] : parts[0]) : tr.date;
-            }
-            if (!year) year = '—';
-            return `
-              <div class="transfer-item">
-                <span class="transfer-year">${year}</span>
-                <span>${from}</span>
-                <span class="transfer-arrow">→</span>
-                <span>${to}</span>
-                ${tr.fee ? `<span class="transfer-fee">${tr.fee}</span>` : ''}
-              </div>
-            `;
-          }).join('') : `<div class="transfer-item" style="color: var(--text-2); font-style: italic; border: none; padding-left: 0;">N/A</div>`}
         </div>
       </div>
 
@@ -6262,6 +10454,104 @@ function openPlayerModal(p) {
        </div>
     </div>
 
+    <!-- PANE: LEGAL CONTACT (Solo para prospectos con 17 años o menos) -->
+    ${showLegalTab ? `
+    <div id="pane-legal-contact" class="modal-pane">
+       <div class="modal-section">
+          <h4 style="margin-bottom:6px; display:flex; align-items:center; gap:8px;">
+             <span>📜</span> ${currentLang === 'es' ? 'Contacto y Tutela Legal' : 'Legal Contact & Guardianship'}
+          </h4>
+          <p style="color:var(--text-2); font-size:13px; margin-bottom:16px;">
+             ${currentLang === 'es' ? 'Información del representante legal, tutor y autorizaciones registradas para deportistas menores de edad (≤17 años).' : 'Information of the legal guardian and clearances recorded for minor athletes (≤17 years).'}'
+          </p>
+
+          <!-- Representante(s) Legal(es) / Padres / Tutores -->
+          <div style="font-size: 11.5px; font-weight: 700; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">
+            ${currentLang === 'es' ? 'Representante(s) Legal(es) / Padre o Tutor' : 'Legal Guardian(s) / Parent'}
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
+            ${(() => {
+              const legalObj = typeof p.legalDetails === 'string' ? JSON.parse(p.legalDetails || '{}') : (p.legalDetails || {});
+              let guardians = Array.isArray(legalObj.guardians) ? legalObj.guardians : [];
+              if (guardians.length === 0 && (legalObj.guardianName || p.guardianName)) {
+                guardians = [{
+                  name: legalObj.guardianName || p.guardianName || '',
+                  relationship: legalObj.guardianRelationship || p.guardianRelationship || '',
+                  docType: legalObj.guardianDocType || p.guardianDocType || '',
+                  docNumber: legalObj.guardianDocNumber || p.guardianDocNumber || '',
+                  phone: legalObj.guardianPhone || p.guardianPhone || '',
+                  email: legalObj.guardianEmail || p.guardianEmail || ''
+                }];
+              }
+
+              if (guardians.length === 0 || !guardians.some(g => g.name || g.phone || g.email)) {
+                return `<div style="padding: 16px; background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.15); border-radius: 10px; color: var(--text-2); font-size: 13px; font-style: italic;">
+                  ${currentLang === 'es' ? 'Sin datos de contacto legal o tutor registrados en la ficha.' : 'No legal contact or guardian details recorded.'}
+                </div>`;
+              }
+
+              return guardians.map((g) => `
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(0,240,255,0.2); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px;">
+                     <div style="font-size: 14px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px;">
+                       <span>👤 ${g.name || (currentLang === 'es' ? 'Tutor Legal' : 'Legal Guardian')}</span>
+                       ${g.relationship ? `<span style="font-size: 11px; background: rgba(0,240,255,0.12); color: #00f0ff; border: 1px solid rgba(0,240,255,0.3); padding: 2px 8px; border-radius: 6px; font-weight: 600;">${g.relationship}</span>` : ''}
+                     </div>
+                  </div>
+
+                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; font-size: 13px;">
+                    <div>
+                      <span style="color: var(--text-2); font-size: 11px; display: block; font-weight: 600;">TELÉFONO / CONTACTO</span>
+                      <span style="color: #00f0ff; font-weight: 600;">${g.phone ? `<a href="tel:${g.phone}" style="color: #00f0ff; text-decoration: none;">📞 ${g.phone}</a>` : '—'}</span>
+                    </div>
+                    <div>
+                      <span style="color: var(--text-2); font-size: 11px; display: block; font-weight: 600;">CORREO ELECTRÓNICO</span>
+                      <span style="color: var(--text-1); font-weight: 500;">${g.email ? `<a href="mailto:${g.email}" style="color: #fff; text-decoration: none;">✉️ ${g.email}</a>` : '—'}</span>
+                    </div>
+                    <div>
+                      <span style="color: var(--text-2); font-size: 11px; display: block; font-weight: 600;">DOCUMENTO DE IDENTIDAD</span>
+                      <span style="color: var(--text-1); font-weight: 500;">${g.docType ? `${g.docType.replace('_', ' ')}: ` : ''}${g.docNumber || '—'}</span>
+                    </div>
+                  </div>
+                </div>
+              `).join('');
+            })()}
+          </div>
+
+          <!-- Documentación y Autorizaciones Adjuntas -->
+          <div style="font-size: 11.5px; font-weight: 700; color: #00f0ff; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">
+            ${currentLang === 'es' ? 'Documentación Legal & Autorizaciones' : 'Legal Documents & Clearances'}
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+             ${(() => {
+                const authObj = typeof p.authorizations === 'string' ? JSON.parse(p.authorizations || '{}') : (p.authorizations || {});
+                const sigUrl = authObj.authSignatureUrl || p.authSignatureUrl;
+                const sigName = authObj.authSignatureFileName || 'Autorizacion_Firmada.pdf';
+                const medUrl = authObj.authMedicalUrl || p.authMedicalUrl;
+                const medName = authObj.authMedicalFileName || 'Certificado_Medico.pdf';
+
+                return `
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px;">
+                   <div style="font-size: 12px; font-weight: 700; color: #fff;">✍️ Autorización de Padre/Tutor</div>
+                   <div style="font-size: 12px; color: var(--text-2);">
+                      ${sigUrl ? `<a href="${sigUrl}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; background: rgba(0,240,255,0.15); border: 1px solid #00f0ff; color: #00f0ff; padding: 6px 12px; border-radius: 6px; font-weight: 600; text-decoration: none;">📎 ${sigName}</a>` : `<span style="color: rgba(255,255,255,0.4); font-style: italic;">Sin archivo adjunto</span>`}
+                   </div>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px;">
+                   <div style="font-size: 12px; font-weight: 700; color: #fff;">🏥 Certificado / Aval Médico</div>
+                   <div style="font-size: 12px; color: var(--text-2);">
+                      ${medUrl ? `<a href="${medUrl}" target="_blank" style="display: inline-flex; align-items: center; gap: 6px; background: rgba(0,240,255,0.15); border: 1px solid #00f0ff; color: #00f0ff; padding: 6px 12px; border-radius: 6px; font-weight: 600; text-decoration: none;">📎 ${medName}</a>` : `<span style="color: rgba(255,255,255,0.4); font-style: italic;">Sin archivo adjunto</span>`}
+                   </div>
+                </div>
+                `;
+             })()}
+          </div>
+       </div>
+    </div>` : ''}
+
     <div style="margin-top:20px">
       <button class="btn-primary" style="width:100%;justify-content:center" onclick="askAboutPlayer('${p.name}')">
         💬 ${t('ask_agent_btn')} ${p.name}
@@ -6283,7 +10573,9 @@ function openPlayerModal(p) {
   // Initial Heatmap Render
   setTimeout(() => {
     renderHeatmap(p.position, '2024/25');
-    renderCompetitionStats(p, '2024/25', p.stats);
+    if (!isProspect) {
+      renderCompetitionStats(p, '2024/25', p.stats);
+    }
   }, 50);
 }
 
@@ -6533,11 +10825,21 @@ function askAboutPlayer(name) {
 // ──────────────────────────────────────────
 // CHAT
 // ──────────────────────────────────────────
+// ──────────────────────────────────────────
+// CHAT & MULTI-SESSION HISTORY
+// ──────────────────────────────────────────
 function setupChatInput() {
   const input = document.getElementById('chat-input');
   const sendBtn = document.getElementById('send-btn');
   const recordBtn = document.getElementById('record-btn');
   const muteBtn = document.getElementById('btn-mute-agent');
+  const newChatBtn = document.getElementById('btn-new-chat');
+  const toggleSidebarBtn = document.getElementById('btn-toggle-chat-sidebar');
+  const closeSidebarBtn = document.getElementById('btn-close-chat-sidebar');
+  const searchInput = document.getElementById('chat-search-input');
+  const renameChatBtn = document.getElementById('btn-rename-chat');
+  const clearAllBtn = document.getElementById('btn-clear-all-chats');
+  const clearCurrentBtn = document.getElementById('btn-clear-chat');
 
   if (muteBtn) {
     muteBtn.addEventListener('click', () => {
@@ -6552,21 +10854,376 @@ function setupChatInput() {
     recordBtn.addEventListener('click', toggleRecording);
   }
 
-  sendBtn.addEventListener('click', () => sendMessage());
+  if (sendBtn) {
+    sendBtn.addEventListener('click', () => sendMessage());
+  }
 
-  input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
+  if (input) {
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    input.addEventListener('input', () => {
+      input.style.height = 'auto';
+      const newHeight = Math.min(input.scrollHeight, 160);
+      input.style.height = newHeight + 'px';
+      if (input.scrollHeight > 160) {
+        input.style.overflowY = 'auto';
+      } else {
+        input.style.overflowY = 'hidden';
+      }
+    });
+  }
+
+  if (newChatBtn) {
+    newChatBtn.addEventListener('click', () => createNewChatSession());
+  }
+
+  if (toggleSidebarBtn) {
+    toggleSidebarBtn.addEventListener('click', () => {
+      const sidebar = document.getElementById('chat-sidebar');
+      if (!sidebar) return;
+      if (window.innerWidth <= 768) {
+        sidebar.classList.toggle('mobile-open');
+      } else {
+        sidebar.classList.toggle('collapsed');
+      }
+    });
+  }
+
+  if (closeSidebarBtn) {
+    closeSidebarBtn.addEventListener('click', () => {
+      document.getElementById('chat-sidebar')?.classList.remove('mobile-open');
+    });
+  }
+
+  const historyListEl = document.getElementById('chat-history-list');
+  if (historyListEl) {
+    historyListEl.addEventListener('click', (e) => {
+      const actionBtn = e.target.closest('.chat-history-action-btn');
+      if (actionBtn) return;
+      const item = e.target.closest('.chat-history-item');
+      if (item && item.dataset.sessionId) {
+        switchChatSession(item.dataset.sessionId);
+      }
+    });
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      renderChatSidebar(e.target.value);
+    });
+  }
+
+  if (renameChatBtn) {
+    renameChatBtn.addEventListener('click', () => {
+      if (activeSessionId) renameChatSession(activeSessionId);
+    });
+  }
+
+  if (clearAllBtn) {
+    clearAllBtn.addEventListener('click', () => clearAllChatSessions());
+  }
+
+  if (clearCurrentBtn) {
+    clearCurrentBtn.addEventListener('click', () => {
+      if (activeSessionId) deleteChatSession(activeSessionId);
+    });
+  }
+
+  // Initialize multi-session chat state
+  loadChatSessions();
+}
+
+function loadChatSessions() {
+  try {
+    const stored = localStorage.getItem('futbolai_chat_sessions_v1');
+    if (stored) {
+      chatSessions = JSON.parse(stored);
+    }
+  } catch (e) {
+    console.error('Error loading chat sessions:', e);
+    chatSessions = [];
+  }
+
+  if (Array.isArray(chatSessions)) {
+    chatSessions = chatSessions.filter(s => s.messages && s.messages.length > 0);
+  } else {
+    chatSessions = [];
+  }
+
+  const lastActiveId = localStorage.getItem('futbolai_active_session_id');
+  const found = chatSessions.find(s => s.id === lastActiveId);
+
+  if (found) {
+    activeSessionId = found.id;
+    sessionId = activeSessionId;
+  } else {
+    activeSessionId = null;
+    sessionId = null;
+  }
+
+  renderChatSidebar();
+  loadChatIAMessages();
+}
+
+function saveChatSessions() {
+  try {
+    chatSessions = chatSessions.filter(s => s.messages && s.messages.length > 0);
+    localStorage.setItem('futbolai_chat_sessions_v1', JSON.stringify(chatSessions));
+    if (activeSessionId) {
+      localStorage.setItem('futbolai_active_session_id', activeSessionId);
+    } else {
+      localStorage.removeItem('futbolai_active_session_id');
+    }
+  } catch (e) {
+    console.error('Error saving chat sessions:', e);
+  }
+}
+
+function formatSessionTime(timestamp) {
+  if (!timestamp) return '';
+  const date = new Date(timestamp);
+  const now = new Date();
+  const isToday = date.toDateString() === now.toDateString();
+  if (isToday) {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  } else {
+    return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+  }
+}
+
+function renderChatSidebar(filterQuery = '') {
+  const historyList = document.getElementById('chat-history-list');
+  if (!historyList) return;
+
+  historyList.innerHTML = '';
+  const query = (filterQuery || '').toLowerCase().trim();
+
+  const validSessions = chatSessions.filter(s => s.messages && s.messages.length > 0);
+
+  const filtered = validSessions.filter(s => {
+    if (!query) return true;
+    const titleMatch = (s.title || '').toLowerCase().includes(query);
+    const msgMatch = (s.messages || []).some(m => (m.content || '').toLowerCase().includes(query));
+    return titleMatch || msgMatch;
+  });
+
+  if (filtered.length === 0) {
+    const emptyDiv = document.createElement('div');
+    emptyDiv.style.cssText = 'padding:16px; text-align:center; color:var(--text-3); font-size:12px;';
+    emptyDiv.textContent = TRANSLATIONS[currentLang]?.no_chats_found || 'Sin conversaciones';
+    historyList.appendChild(emptyDiv);
+    return;
+  }
+
+  filtered.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+
+  filtered.forEach(session => {
+    const item = document.createElement('div');
+    const isActive = String(session.id) === String(activeSessionId);
+    item.className = `chat-history-item ${isActive ? 'active' : ''}`;
+    item.dataset.sessionId = session.id;
+
+    const timeStr = formatSessionTime(session.updatedAt || session.createdAt);
+
+    item.innerHTML = `
+      <div class="chat-history-info" onclick="switchChatSession('${session.id}')" style="cursor:pointer;flex:1;min-width:0;">
+        <div class="chat-history-title">${escapeHtml(session.title || 'Chat')}</div>
+        <div class="chat-history-time">${timeStr}</div>
+      </div>
+      <div class="chat-history-actions">
+        <button class="chat-history-action-btn edit-btn" title="${TRANSLATIONS[currentLang]?.rename_chat || 'Renombrar'}" onclick="event.stopPropagation(); renameChatSession('${session.id}')">✏️</button>
+        <button class="chat-history-action-btn" title="Eliminar" onclick="event.stopPropagation(); deleteChatSession('${session.id}')">🗑️</button>
+      </div>
+    `;
+
+    item.onclick = (e) => {
+      if (e.target.closest('.chat-history-action-btn')) return;
+      switchChatSession(session.id);
+    };
+
+    historyList.appendChild(item);
+  });
+}
+
+function createNewChatSession(customTitle = null) {
+  activeSessionId = null;
+  sessionId = null;
+
+  renderChatSidebar();
+  loadChatIAMessages();
+
+  const input = document.getElementById('chat-input');
+  if (input) input.focus();
+
+  document.getElementById('chat-sidebar')?.classList.remove('mobile-open');
+}
+
+function switchChatSession(targetSessionId) {
+  if (!targetSessionId) return;
+
+  try {
+    const stored = localStorage.getItem('futbolai_chat_sessions_v1');
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        chatSessions = parsed;
+      }
+    }
+  } catch (e) {
+    console.error('Error reloading chat sessions:', e);
+  }
+
+  const session = chatSessions.find(s => String(s.id) === String(targetSessionId));
+  if (!session) return;
+
+  activeSessionId = session.id;
+  sessionId = activeSessionId;
+
+  if (activeSessionId) {
+    localStorage.setItem('futbolai_active_session_id', activeSessionId);
+  }
+
+  renderChatSidebar();
+  loadChatIAMessages();
+
+  const input = document.getElementById('chat-input');
+  if (input) input.focus();
+
+  document.getElementById('chat-sidebar')?.classList.remove('mobile-open');
+}
+
+function renameChatSession(targetSessionId) {
+  const session = chatSessions.find(s => String(s.id) === String(targetSessionId));
+  if (!session) return;
+
+  const promptText = TRANSLATIONS[currentLang]?.prompt_rename_chat || 'Ingresa el nuevo título para esta conversación:';
+  const newTitle = prompt(promptText, session.title);
+
+  if (newTitle !== null && newTitle.trim() !== '') {
+    session.title = newTitle.trim();
+    session.updatedAt = Date.now();
+    saveChatSessions();
+    renderChatSidebar();
+  }
+}
+
+function deleteChatSession(targetSessionId) {
+  const sessionIndex = chatSessions.findIndex(s => String(s.id) === String(targetSessionId));
+  if (sessionIndex === -1) return;
+
+  const confirmMsg = TRANSLATIONS[currentLang]?.confirm_delete_chat || '¿Eliminar esta conversación?';
+  if (!confirm(confirmMsg)) return;
+
+  if (targetSessionId) {
+    fetchWithAuth(`${API}/chat/${targetSessionId}`, { method: 'DELETE' }).catch(() => {});
+  }
+
+  chatSessions.splice(sessionIndex, 1);
+
+  if (chatSessions.length === 0) {
+    createNewChatSession();
+  } else {
+    if (String(activeSessionId) === String(targetSessionId)) {
+      activeSessionId = chatSessions[0].id;
+      sessionId = activeSessionId;
+    }
+    saveChatSessions();
+    renderChatSidebar();
+    loadChatIAMessages();
+  }
+}
+
+function clearAllChatSessions() {
+  const confirmMsg = TRANSLATIONS[currentLang]?.confirm_clear_all_chats || '¿Estás seguro de eliminar todo el historial de chats?';
+  if (!confirm(confirmMsg)) return;
+
+  chatSessions.forEach(s => {
+    fetchWithAuth(`${API}/chat/${s.id}`, { method: 'DELETE' }).catch(() => {});
+  });
+
+  chatSessions = [];
+  createNewChatSession();
+}
+
+function loadChatIAMessages() {
+  const container = document.getElementById('chat-messages');
+  if (!container) return;
+
+  container.innerHTML = '';
+  const currentSession = activeSessionId ? chatSessions.find(s => String(s.id) === String(activeSessionId)) : null;
+
+  if (!currentSession || !currentSession.messages || currentSession.messages.length === 0) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'chat-welcome';
+    container.appendChild(wrapper);
+    buildChatWelcome(wrapper);
+    return;
+  }
+
+  currentSession.messages.forEach(msg => {
+    if (msg.isAudio && msg.audioData) {
+      appendAudioBubbleFromHistory(msg);
+    } else {
+      appendBubbleFromHistory(msg.role, msg.content, msg.time);
     }
   });
 
-  input.addEventListener('input', () => {
-    input.style.height = 'auto';
-    input.style.height = Math.min(input.scrollHeight, 160) + 'px';
-  });
+  scrollChat();
+}
 
-  document.getElementById('btn-clear-chat').addEventListener('click', clearChat);
+function appendBubbleFromHistory(role, text, timeStr) {
+  const container = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = `chat-bubble ${role}`;
+
+  const time = timeStr || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  div.innerHTML = `
+    <div class="bubble-avatar">${role === 'agent' ? '⚽' : '👤'}</div>
+    <div>
+      <div class="bubble-content">${markdownToHtml(text)}</div>
+      <div class="bubble-time">${time}</div>
+    </div>
+  `;
+  container.appendChild(div);
+}
+
+function appendAudioBubbleFromHistory(msg) {
+  const container = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'chat-bubble user';
+
+  const time = msg.time || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const durFmt = formatDuration(msg.durationSec || 0);
+
+  const bars = Array.from({ length: 32 }, (_, i) => {
+    const h = 4 + Math.floor(Math.abs(Math.sin(i * 0.8 + 0.2)) * 14) + Math.floor(Math.random() * 6);
+    return `<span class="waveform-bar" style="height:${h}px"></span>`;
+  }).join('');
+
+  div.innerHTML = `
+    <div class="bubble-avatar">👤</div>
+    <div class="audio-message-bubble">
+      <div class="audio-msg-inner">
+        <button class="audio-play-btn" onclick="toggleAudioPlay(this, '${msg.audioData}')">▶</button>
+        <div class="waveform-container">${bars}</div>
+        <div class="audio-meta-info">
+          <span class="audio-duration">${durFmt}</span>
+          <div class="bubble-time-container">
+            <span class="bubble-time">${time}</span>
+            <span class="check-icon">✓✓</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  container.appendChild(div);
 }
 
 function speakText(text) {
@@ -6637,7 +11294,6 @@ async function startRecording() {
     mediaRecorder = new MediaRecorder(stream);
     audioChunks = [];
 
-    // UI Transition: Show overlay, hide textarea
     document.getElementById('chat-input').style.display = 'none';
     document.getElementById('recording-overlay').style.display = 'flex';
     document.getElementById('send-btn').style.opacity = '0.4';
@@ -6662,7 +11318,11 @@ async function startRecording() {
     startRecordingTimer();
     document.getElementById('record-btn').classList.add('recording');
   } catch (err) {
-    alert('No se pudo acceder al micrófono / Could not access microphone');
+    window.showAppErrorAlert({
+      title: 'Acceso a Micrófono',
+      message: 'No se pudo acceder al micrófono.',
+      details: err.message
+    });
   }
 }
 
@@ -6671,7 +11331,6 @@ function stopRecording() {
     mediaRecorder.stop();
     isRecording = false;
     
-    // UI Transition: Show textarea, hide overlay
     document.getElementById('chat-input').style.display = 'block';
     document.getElementById('recording-overlay').style.display = 'none';
     document.getElementById('send-btn').style.opacity = '1';
@@ -6699,7 +11358,6 @@ function appendAudioBubble(audioBlob, durationSec) {
   const audioUrl = URL.createObjectURL(audioBlob);
   const durFmt = formatDuration(durationSec);
 
-  // Generate fake waveform bars (WhatsApp style)
   const bars = Array.from({ length: 32 }, (_, i) => {
     const h = 4 + Math.floor(Math.abs(Math.sin(i * 0.8 + 0.2)) * 14) + Math.floor(Math.random() * 6);
     return `<span class="waveform-bar" style="height:${h}px"></span>`;
@@ -6728,7 +11386,6 @@ function appendAudioBubble(audioBlob, durationSec) {
 }
 
 function toggleAudioPlay(btn, audioUrl) {
-  // Stop any currently playing audio
   if (window._currentAudio && !window._currentAudio.paused) {
     window._currentAudio.pause();
     window._currentAudio.currentTime = 0;
@@ -6745,7 +11402,6 @@ function toggleAudioPlay(btn, audioUrl) {
   window._currentPlayBtn = btn;
   btn.textContent = '⏸';
 
-  // Animate waveform bars while playing
   const waveformBars = btn.closest('.audio-msg-inner').querySelectorAll('.waveform-bar');
   let animFrame;
   function animateBars() {
@@ -6781,6 +11437,42 @@ async function sendMessage(text) {
   const msg = text || input.value.trim();
   if (!msg) return;
 
+  const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  const tier = (user.selectedTier || user.tier || 'Gratis').toLowerCase();
+  
+  if ((tier === 'gratis' || tier === 'pro') && user.dailyAiMessagesRemaining === 0) {
+    const maxLimit = tier === 'gratis' ? 5 : 10;
+    alert(`Has alcanzado tu límite diario de ${maxLimit} mensajes en el Chat IA para el Plan ${tier === 'pro' ? 'Pro' : 'Gratis'}.\n\nLos límites son diarios no acumulativos y se restablecerán transcurridas 24 horas desde tu primer uso.`);
+    return;
+  }
+
+  if (tier === 'plus' && user.weeklyAiMessagesRemaining === 0) {
+    alert(`Has alcanzado tu límite semanal de 30 mensajes en el Chat IA para el Plan Plus.\n\nLos límites son semanales no acumulativos y se restablecerán transcurridos 7 días desde tu primer uso.`);
+    return;
+  }
+
+  if (tier === 'enterprise' && user.weeklyAiMessagesRemaining === 0) {
+    alert(`Has alcanzado tu límite semanal de 50 mensajes en el Chat IA para el Plan Enterprise.\n\nLos límites son semanales no acumulativos y se restablecerán transcurridos 7 días desde tu primer uso.`);
+    return;
+  }
+
+  let currentSession = activeSessionId ? chatSessions.find(s => s.id === activeSessionId) : null;
+  if (!currentSession) {
+    const newId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+    const cleanPrompt = msg.trim().replace(/^¿|^\?/, '');
+    const title = cleanPrompt.substring(0, 32) + (cleanPrompt.length > 32 ? '...' : '');
+    currentSession = {
+      id: newId,
+      title: title,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      messages: []
+    };
+    chatSessions.unshift(currentSession);
+    activeSessionId = newId;
+    sessionId = activeSessionId;
+  }
+
   const welcome = document.querySelector('.chat-welcome');
   if (welcome) welcome.remove();
 
@@ -6788,13 +11480,31 @@ async function sendMessage(text) {
 
   input.value = '';
   input.style.height = 'auto';
+  input.style.overflowY = 'hidden';
 
+  const userTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   appendBubble('user', msg);
+
+  currentSession.messages.push({
+    role: 'user',
+    content: msg,
+    time: userTime
+  });
+
+  const defaultTitles = ['Nueva conversación', 'New Conversation', 'Chat'];
+  if (currentSession.messages.length === 1 || defaultTitles.includes(currentSession.title)) {
+    const cleanPrompt = msg.trim().replace(/^¿|^\?/, '');
+    currentSession.title = cleanPrompt.substring(0, 32) + (cleanPrompt.length > 32 ? '...' : '');
+  }
+  currentSession.updatedAt = Date.now();
+  saveChatSessions();
+  renderChatSidebar();
+
   const thinking = appendThinking();
   document.getElementById('send-btn').disabled = true;
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 40000); // 40s timeout
+  const timeoutId = setTimeout(() => controller.abort(), 40000);
 
   try {
     const res = await fetchWithAuth(`${API}/chat/stream`, {
@@ -6822,7 +11532,7 @@ async function sendMessage(text) {
 
       buffer += decoder.decode(value, { stream: true });
       const lines = buffer.split('\n');
-      buffer = lines.pop(); // Keep partial line in buffer
+      buffer = lines.pop();
 
       for (const line of lines) {
         const trimmed = line.trim();
@@ -6831,6 +11541,10 @@ async function sendMessage(text) {
           if (!jsonStr) continue;
           try {
             const data = JSON.parse(jsonStr);
+            if (data.user) {
+              localStorage.setItem('scout_ai_user', JSON.stringify(data.user));
+              updateDailyLimitsBadges(data.user);
+            }
             if (data.chunk) {
               if (!bubble) {
                 bubble = appendBubble('agent', '');
@@ -6846,6 +11560,18 @@ async function sendMessage(text) {
         }
       }
     }
+
+    if (replyText) {
+      const agentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      currentSession.messages.push({
+        role: 'agent',
+        content: replyText,
+        time: agentTime
+      });
+      currentSession.updatedAt = Date.now();
+      saveChatSessions();
+      renderChatSidebar();
+    }
   } catch (err) {
     if (document.querySelector('.chat-thinking')) document.querySelector('.chat-thinking').remove();
     appendBubble('agent', '⚠️ Error: ' + err.message);
@@ -6856,12 +11582,46 @@ async function sendMessage(text) {
 }
 
 async function sendAudioMessage(audioBase64, mimeType, audioBlob, durationSec) {
+  let currentSession = activeSessionId ? chatSessions.find(s => s.id === activeSessionId) : null;
+  if (!currentSession) {
+    const newId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+    const title = currentLang === 'en' ? '🎤 Voice query' : '🎤 Audio consulta';
+    currentSession = {
+      id: newId,
+      title: title,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      messages: []
+    };
+    chatSessions.unshift(currentSession);
+    activeSessionId = newId;
+    sessionId = activeSessionId;
+  }
+
   const welcome = document.querySelector('.chat-welcome');
   if (welcome) welcome.remove();
 
+  const userTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const audioUrl = URL.createObjectURL(audioBlob);
   appendAudioBubble(audioBlob, durationSec);
-  const thinking = appendThinking();
 
+  currentSession.messages.push({
+    role: 'user',
+    isAudio: true,
+    audioData: audioUrl,
+    durationSec: durationSec,
+    time: userTime
+  });
+
+  const defaultTitles = ['Nueva conversación', 'New Conversation', 'Chat'];
+  if (currentSession.messages.length === 1 || defaultTitles.includes(currentSession.title)) {
+    currentSession.title = currentLang === 'en' ? '🎤 Voice query' : '🎤 Audio consulta';
+  }
+  currentSession.updatedAt = Date.now();
+  saveChatSessions();
+  renderChatSidebar();
+
+  const thinking = appendThinking();
   document.getElementById('send-btn').disabled = true;
   document.getElementById('record-btn').disabled = true;
 
@@ -6917,7 +11677,19 @@ async function sendAudioMessage(audioBase64, mimeType, audioBlob, durationSec) {
         }
       }
     }
-    speakText(replyText);
+
+    if (replyText) {
+      const agentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      currentSession.messages.push({
+        role: 'agent',
+        content: replyText,
+        time: agentTime
+      });
+      currentSession.updatedAt = Date.now();
+      saveChatSessions();
+      renderChatSidebar();
+      speakText(replyText);
+    }
   } catch (err) {
     if (document.querySelector('.chat-thinking')) document.querySelector('.chat-thinking').remove();
     appendBubble('agent', '⚠️ Error de audio: ' + err.message);
@@ -6962,20 +11734,13 @@ function appendThinking() {
 
 function scrollChat() {
   const c = document.getElementById('chat-messages');
-  c.scrollTop = c.scrollHeight;
+  if (c) c.scrollTop = c.scrollHeight;
 }
 
 function clearChat() {
-  if (sessionId) {
-    fetchWithAuth(`${API}/chat/${sessionId}`, { method: 'DELETE' }).catch(() => {});
-    sessionId = null;
+  if (activeSessionId) {
+    deleteChatSession(activeSessionId);
   }
-  const c = document.getElementById('chat-messages');
-  const wrapper = document.createElement('div');
-  wrapper.className = 'chat-welcome';
-  c.innerHTML = '';
-  c.appendChild(wrapper);
-  buildChatWelcome(wrapper);
 }
 
 // ──────────────────────────────────────────
@@ -7071,6 +11836,25 @@ function closeComparison() {
 async function runComparison() {
   if (!selectedPlayer1 || !selectedPlayer2) return;
 
+  const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  const tier = (user.selectedTier || user.tier || 'Gratis').toLowerCase();
+
+  if ((tier === 'gratis' || tier === 'pro') && user.dailyComparisonsRemaining === 0) {
+    const maxLimit = tier === 'gratis' ? 2 : 5;
+    alert(`Has alcanzado tu límite diario de ${maxLimit} comparaciones en el Plan ${tier === 'pro' ? 'Pro' : 'Gratis'}.\n\nLos límites son diarios no acumulativos y se restablecerán transcurridas 24 horas desde tu primer uso.`);
+    return;
+  }
+
+  if (tier === 'plus' && user.weeklyComparisonsRemaining === 0) {
+    alert(`Has alcanzado tu límite semanal de 15 comparaciones en el Plan Plus.\n\nLos límites son semanales no acumulativos y se restablecerán transcurridos 7 días desde tu primer uso.`);
+    return;
+  }
+
+  if (tier === 'enterprise' && user.monthlyComparisonsRemaining === 0) {
+    alert(`Has alcanzado tu límite mensual de 50 comparaciones en el Plan Enterprise.\n\nLos límites son mensuales no acumulativos y se restablecerán transcurridos 30 días desde tu primer uso.`);
+    return;
+  }
+
   incrementUserStat('compared', { player1Id: selectedPlayer1.id, player2Id: selectedPlayer2.id });
 
   const btn = document.getElementById('btn-compare');
@@ -7088,8 +11872,19 @@ async function runComparison() {
       body: JSON.stringify({ player1Id: selectedPlayer1.id, player2Id: selectedPlayer2.id, lang: currentLang }),
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Error from server');
-    
+    if (!res.ok) {
+      if (data.user) {
+        localStorage.setItem('scout_ai_user', JSON.stringify(data.user));
+        updateDailyLimitsBadges(data.user);
+      }
+      throw new Error(data.message || data.error || 'Error en la comparación');
+    }
+
+    if (data.user) {
+      localStorage.setItem('scout_ai_user', JSON.stringify(data.user));
+      updateDailyLimitsBadges(data.user);
+    }
+
     // Inject Analysis Text
     bodyEl.innerHTML = markdownToHtml(data.analysis);
     
@@ -7106,7 +11901,7 @@ async function runComparison() {
     
   } catch (err) {
     console.error(err);
-    bodyEl.innerHTML = `<p style="color:var(--red)">${currentLang === 'es' ? 'Error al conectar con la IA.' : 'Error connecting to AI.'}</p>`;
+    bodyEl.innerHTML = `<p style="color:var(--red)">${err.message || (currentLang === 'es' ? 'Error al conectar con la IA.' : 'Error connecting to AI.')}</p>`;
     resultEl.style.display = 'block';
   }
 
@@ -7528,12 +12323,140 @@ const TIER_PRICES = {
   'Enterprise': 49.99
 };
 
+const TIER_RANKS = {
+  'Gratis': 0,
+  'Pro': 1,
+  'Plus': 2,
+  'Local': 3,
+  'Enterprise': 4
+};
+
+window.getMaxPaidTierInCycle = (userObj) => {
+  const user = userObj || JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  if (!user || !window.isBillingCycleActive(user)) return 'Gratis';
+  
+  if (user.maxPaidTierInCycle && TIER_RANKS[user.maxPaidTierInCycle] !== undefined) {
+    return user.maxPaidTierInCycle;
+  }
+  
+  const history = window.getUserPaymentHistory();
+  if (history && history.length > 0) {
+    let maxRank = TIER_RANKS[user.selectedTier] || 0;
+    let maxTier = user.selectedTier || 'Gratis';
+    const cycleStart = user.billingCycleStart ? new Date(user.billingCycleStart) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    
+    history.forEach(p => {
+      const pDate = new Date(p.createdAt || Date.now());
+      if (pDate >= cycleStart) {
+        const rank = TIER_RANKS[p.tier] || 0;
+        if (rank > maxRank) {
+          maxRank = rank;
+          maxTier = p.tier;
+        }
+      }
+    });
+    return maxTier;
+  }
+  
+  return user.selectedTier || 'Gratis';
+};
+
+// ──────────────────────────────────────────
+// MONTHLY BILLING CYCLE & PAYMENT HISTORY HELPERS
+// ──────────────────────────────────────────
+window.getUserPaymentHistory = () => {
+  try {
+    return JSON.parse(localStorage.getItem('scout_ai_payments_history') || '[]');
+  } catch (e) {
+    return [];
+  }
+};
+
+window.saveLocalPaymentRecord = (transaction) => {
+  if (!transaction) return;
+  const history = window.getUserPaymentHistory();
+  const exists = history.some(p => p.transactionId === transaction.transactionId);
+  if (!exists) {
+    history.unshift({
+      transactionId: transaction.transactionId || ('TXN-' + Math.random().toString(36).substr(2, 9).toUpperCase()),
+      amount: transaction.amount || 0,
+      currency: transaction.currency || 'USD',
+      tier: transaction.tier || 'Pro',
+      cardholderName: transaction.cardholderName || 'Usuario',
+      cardLast4: transaction.cardLast4 || '4242',
+      status: transaction.status || 'success',
+      createdAt: transaction.createdAt || new Date().toISOString()
+    });
+    localStorage.setItem('scout_ai_payments_history', JSON.stringify(history));
+  }
+};
+
+window.isBillingCycleActive = (userObj) => {
+  const user = userObj || JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  if (!user || !user.billingCycleEnd) return false;
+  try {
+    const now = new Date();
+    const end = new Date(user.billingCycleEnd);
+    return now < end;
+  } catch (e) {
+    return false;
+  }
+};
+
+window.getBillingCycleDaysRemaining = (userObj) => {
+  const user = userObj || JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  if (!user || !user.billingCycleEnd) return 0;
+  const now = new Date();
+  const end = new Date(user.billingCycleEnd);
+  const diffMs = end - now;
+  if (diffMs <= 0) return 0;
+  return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+};
+
+window.formatBillingCycleDate = (isoString) => {
+  if (!isoString) return '';
+  try {
+    const d = new Date(isoString);
+    return d.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  } catch (e) {
+    return '';
+  }
+};
+
+window.cancelSubscription = async () => {
+  const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  const endDateStr = window.formatBillingCycleDate(user.billingCycleEnd);
+  
+  if (!confirm(`¿Estás seguro de que deseas cancelar la renovación automática de tu plan ${user.selectedTier || 'actual'}?\n\nMantendrás tu acceso completo a todas las funciones hasta la fecha de vencimiento (${endDateStr}). Después de esa fecha, tu cuenta volverá al plan Gratis a menos que decidas renovar manualmente.`)) {
+    return;
+  }
+  
+  user.autoRenew = false;
+  localStorage.setItem('scout_ai_user', JSON.stringify(user));
+  
+  try {
+    const token = localStorage.getItem('scout_ai_token');
+    await fetch(`${API}/auth/unsubscribe`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+  } catch (e) {
+    console.warn('Unsubscribe backend sync note:', e);
+  }
+  
+  showToast(`ℹ️ Renovación automática cancelada. Tu plan ${user.selectedTier} se mantendrá activo hasta el ${endDateStr}.`, 'info');
+  renderProfile();
+};
+
 // Initialize listeners on the checkout form
 window.setupPaymentGateway = () => {
-  const nameInput = document.getElementById('pay-card-name');
-  const numInput = document.getElementById('pay-card-number');
-  const expInput = document.getElementById('pay-card-expiry');
-  const cvvInput = document.getElementById('pay-card-cvv');
+  const nameInput = document.getElementById('pay-field-holder') || document.getElementById('pay-card-name');
+  const numInput = document.getElementById('pay-field-digits') || document.getElementById('pay-card-number');
+  const expInput = document.getElementById('pay-field-period') || document.getElementById('pay-card-expiry');
+  const cvvInput = document.getElementById('pay-field-code') || document.getElementById('pay-card-cvv');
   const payBtn = document.getElementById('btn-simulate-payment');
   const brandSpan = document.getElementById('pay-card-brand');
 
@@ -7644,8 +12567,11 @@ window.setupPaymentGateway = () => {
 
 // Global modal trigger wrappers
 window.showPaymentModal = (tierName, price, cardElement, isUpgrade = false) => {
+  const currentUser = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
   window.pendingPaymentTier = tierName;
   window.pendingPaymentCard = cardElement;
+  window.previousPaymentTier = currentUser.selectedTier || 'Gratis';
+  window.previousPaymentRole = currentUser.role || '';
 
   const modal = document.getElementById('payment-modal');
   if (!modal) return;
@@ -7694,6 +12620,14 @@ window.closeSuccessAndDashboard = () => {
 
 window.handleSuccessContinue = () => {
   const tier = window.pendingPaymentTier;
+  const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  const prevTier = (window.previousPaymentTier || user.selectedTier || '').toLowerCase();
+  const prevRole = (window.previousPaymentRole || user.role || '').toLowerCase();
+  const wasLocal = prevTier === 'local' || prevRole === 'local' || prevRole === 'entrenador local';
+  
+  const hasValidProfessionalTeam = !!user.selectedClub && user.selectedClub !== 'Club Local' && user.selectedClub !== '' && !!user.selectedCountry && user.selectedCountry !== 'Local';
+  const isExistingUser = user.onboardingComplete || !!user.localCoachData;
+
   if (tier === 'Enterprise') {
     // Transition to the dedicated organizational role screen
     const successViewEl = document.getElementById('payment-success-view');
@@ -7709,6 +12643,15 @@ window.handleSuccessContinue = () => {
     }
   } else if (tier === 'Local') {
     window.closePaymentModal();
+    const upgradeModal = document.getElementById('upgrade-modal');
+    if (upgradeModal && upgradeModal.style.display !== 'none') {
+      window.closeUpgradeModal();
+    }
+    if (isExistingUser && !!user.localCoachData) {
+      applyPlanPermissions();
+      renderProfile();
+      return;
+    }
     const localScreen = document.getElementById('local-coach-onboarding-screen');
     if (localScreen) {
       localScreen.style.display = 'flex';
@@ -7724,20 +12667,51 @@ window.handleSuccessContinue = () => {
        });
     }
   } else {
-    const onboardingScreen = document.getElementById('onboarding-screen');
-    const isOnboarding = onboardingScreen && onboardingScreen.style.display !== 'none';
-    if (isOnboarding) {
+    // Si cambió a un plan no-local (Pro, Plus, Enterprise)
+    // 1. Si ya tenía un club profesional guardado previamente en su historial, restaurarlo
+    if (user.previousStandardClub && user.previousStandardClub !== 'Club Local' && (!user.selectedClub || user.selectedClub === 'Club Local')) {
+      user.selectedClub = user.previousStandardClub;
+      if (user.previousStandardCountry && user.previousStandardCountry !== 'Local') {
+        user.selectedCountry = user.previousStandardCountry;
+      }
+      user.selectedTier = tier;
+      localStorage.setItem('scout_ai_user', JSON.stringify(user));
+    }
+
+    // Comprobar si tras la restauración cuenta con un equipo profesional válido
+    const hasProTeamNow = !!user.selectedClub && user.selectedClub !== 'Club Local' && user.selectedClub !== '' && !!user.selectedCountry && user.selectedCountry !== 'Local';
+
+    if (!hasProTeamNow) {
+      // Hay onboarding pendiente para el nuevo plan: Mostrar pantalla de carga e iniciar onboarding de inmediato
+      if (window.SectionLoader) window.SectionLoader.show('Cargando nuevo plan...');
       window.closePaymentModal();
       const upgradeModal = document.getElementById('upgrade-modal');
       if (upgradeModal && upgradeModal.style.display !== 'none') {
         window.closeUpgradeModal();
       }
-      if (typeof window.finalizarOnboarding === 'function') {
-        window.finalizarOnboarding();
-      }
-    } else {
-      window.closeSuccessAndDashboard();
+      user.selectedTier = tier;
+      user.onboardingComplete = false;
+      user.selectedClub = ''; // Limpiar 'Club Local' para requerir selección de club profesional
+      localStorage.setItem('scout_ai_user', JSON.stringify(user));
+
+      setTimeout(() => {
+        showToast('ℹ️ Por favor, selecciona tu país y club profesional para tu nuevo plan.', 'info');
+        if (typeof window.setupOnboarding === 'function') {
+          window.setupOnboarding();
+        }
+        if (window.SectionLoader) window.SectionLoader.hide();
+      }, 400);
+      return;
     }
+
+    // Si ya cuenta con equipo profesional válido
+    if (window.SectionLoader) window.SectionLoader.show('Aplicando plan...');
+    window.closeSuccessAndDashboard();
+    setTimeout(() => {
+      applyPlanPermissions();
+      renderProfile();
+      if (window.SectionLoader) window.SectionLoader.hide();
+    }, 350);
   }
 };
 
@@ -7841,7 +12815,7 @@ window.confirmSuccessAndSaveLocalForm = async () => {
         'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify({ 
-        selectedClub: club,
+        selectedClub: 'Club Local',
         selectedCountries: [nationality],
         selectedTier: 'Local',
         localCoachData
@@ -7855,7 +12829,7 @@ window.confirmSuccessAndSaveLocalForm = async () => {
   // Reuse the user object already declared above
   user.onboardingComplete = true;
   user.role = 'Entrenador Local';
-  user.selectedClub = club;
+  user.selectedClub = 'Club Local';
   user.selectedCountry = nationality;
   user.selectedTier = 'Local';
   user.localCoachData = localCoachData;
@@ -7882,12 +12856,18 @@ window.confirmSuccessAndSaveLocalForm = async () => {
   const onboarding = document.getElementById('onboarding-screen');
   if (onboarding) {
     onboarding.style.opacity = '0';
-    setTimeout(() => { 
-      onboarding.style.display = 'none'; 
-      initDashboard(); 
+    if (window.SectionLoader) window.SectionLoader.show('Activando plan...');
+    setTimeout(() => {
+      onboarding.style.display = 'none';
+      initDashboard();
+      if (window.SectionLoader) window.SectionLoader.hide();
     }, 500);
   } else {
-    initDashboard();
+    if (window.SectionLoader) window.SectionLoader.show('Activando plan...');
+    setTimeout(() => {
+      initDashboard();
+      if (window.SectionLoader) window.SectionLoader.hide();
+    }, 400);
   }
 };
 
@@ -7964,8 +12944,8 @@ window.simulatePayment = async () => {
     return;
   }
 
-  const nameInput = document.getElementById('pay-card-name');
-  const numInput = document.getElementById('pay-card-number');
+  const nameInput = document.getElementById('pay-field-holder') || document.getElementById('pay-card-name');
+  const numInput = document.getElementById('pay-field-digits') || document.getElementById('pay-card-number');
   const amount = window.pendingPaymentAmount !== undefined ? window.pendingPaymentAmount : (TIER_PRICES[tier] || 9.99);
 
   payBtn.disabled = true;
@@ -8027,11 +13007,57 @@ window.simulatePayment = async () => {
       }
 
       if (isSuccess && result.success) {
+        // Save transaction to local payment history
+        if (result.transaction) {
+          result.transaction.tier = result.transaction.tier || tier;
+          window.saveLocalPaymentRecord(result.transaction);
+        }
+
         // 1. Update dynamic client states
         const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+        const prevTier = (window.previousPaymentTier || user.selectedTier || '').toLowerCase();
+        const prevRole = (window.previousPaymentRole || user.role || '').toLowerCase();
+        const wasLocal = prevTier === 'local' || prevRole === 'local' || prevRole === 'entrenador local';
+        const hasStandardTeam = (!!user.selectedClub && user.selectedClub !== 'Club Local' && !!user.selectedCountry && user.selectedCountry !== 'Local') ||
+                                (!!user.previousStandardClub && user.previousStandardClub !== 'Club Local') ||
+                                user.standardOnboardingCompleted === true;
+
+        const now = new Date();
+        const cycleEnd = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+        const currentMaxRank = TIER_RANKS[user.maxPaidTierInCycle] || 0;
+        const newRank = TIER_RANKS[tier] || 0;
+        user.maxPaidTierInCycle = (result.user && result.user.maxPaidTierInCycle) || (newRank >= currentMaxRank ? tier : (user.maxPaidTierInCycle || tier));
+
+        const cycleActive = window.isBillingCycleActive(user);
         user.selectedTier = tier;
+
+        if (result.user && result.user.billingCycleStart) {
+          user.billingCycleStart = result.user.billingCycleStart;
+        } else if (!user.billingCycleStart || !cycleActive) {
+          user.billingCycleStart = now.toISOString();
+        }
+
+        if (result.user && result.user.billingCycleEnd) {
+          user.billingCycleEnd = result.user.billingCycleEnd;
+        } else if (!user.billingCycleEnd || !cycleActive) {
+          user.billingCycleEnd = cycleEnd.toISOString();
+        }
+
         if (tier === 'Local') {
           user.role = 'Entrenador Local';
+        } else if (tier === 'Enterprise' && (!user.role || user.role === 'Entrenador Local')) {
+          user.role = 'Director Técnico / Presidente de Club';
+        }
+        if (wasLocal && tier !== 'Local' && !hasStandardTeam) {
+          user.onboardingComplete = false;
+        } else if (wasLocal && tier !== 'Local' && hasStandardTeam) {
+          if (user.previousStandardClub && (!user.selectedClub || user.selectedClub === 'Club Local')) {
+            user.selectedClub = user.previousStandardClub;
+          }
+          if (user.previousStandardCountry && (!user.selectedCountry || user.selectedCountry === 'Local')) {
+            user.selectedCountry = user.previousStandardCountry;
+          }
         }
         localStorage.setItem('scout_ai_user', JSON.stringify(user));
           
@@ -8529,8 +13555,15 @@ window.openUpgradeModal = () => {
   
   const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
   const currentTier = user.selectedTier || 'Gratis';
-  const currentPrice = TIER_PRICES[currentTier] || 0;
+  const maxPaidTier = window.getMaxPaidTierInCycle(user);
+  const maxPaidRank = TIER_RANKS[maxPaidTier] || 0;
+  const cycleActive = window.isBillingCycleActive(user);
+  const daysLeft = window.getBillingCycleDaysRemaining(user);
+  const endDateStr = window.formatBillingCycleDate(user.billingCycleEnd);
   
+  const bannerEl = document.getElementById('upgrade-modal-billing-banner');
+  if (bannerEl) bannerEl.style.display = 'none';
+
   document.querySelectorAll('.upgrade-card').forEach(c => {
     c.style.borderColor = 'rgba(0, 240, 255, 0.15)';
     c.style.boxShadow = '0 4px 20px rgba(0,0,0,0.3)';
@@ -8540,23 +13573,19 @@ window.openUpgradeModal = () => {
     const cardId = c.id; // upgrade-card-pro, upgrade-card-local, etc.
     const cardTierName = cardId.replace('upgrade-card-', '');
     const formattedTierName = Object.keys(TIER_PRICES).find(k => k.toLowerCase() === cardTierName) || 'Gratis';
-    const newPrice = TIER_PRICES[formattedTierName] || 0;
+    const cardRank = TIER_RANKS[formattedTierName] || 0;
     
     const lockEl = c.querySelector('.tier-lock');
     if (lockEl) {
-      if (formattedTierName === currentTier) {
+      if (cycleActive && cardRank <= maxPaidRank) {
         lockEl.style.display = 'none';
         c.style.opacity = '1';
-      } else if (newPrice > currentPrice) {
-        // Upgrade: requiere pago de diferencia. Mostrar candado.
-        lockEl.style.display = 'block';
-        lockEl.textContent = '🔒';
-        c.style.opacity = '0.75';
-      } else {
-        // Downgrade: gratuito. Mostrar flecha indicadora.
-        lockEl.style.display = 'block';
-        lockEl.textContent = '👇';
+      } else if (formattedTierName === currentTier) {
+        lockEl.style.display = 'none';
         c.style.opacity = '1';
+      } else {
+        lockEl.style.display = 'none';
+        c.style.opacity = '0.75';
       }
     }
   });
@@ -8578,10 +13607,12 @@ window.openUpgradeModal = () => {
     confirmBtn.textContent = 'Confirmar Cambio de Plan';
   }
 
+  if (typeof window.closeDowngradeConfirmModal === 'function') window.closeDowngradeConfirmModal();
   modal.style.display = 'flex';
 };
 
 window.closeUpgradeModal = () => {
+  if (typeof window.closeDowngradeConfirmModal === 'function') window.closeDowngradeConfirmModal();
   const modal = document.getElementById('upgrade-modal');
   if (modal) modal.style.display = 'none';
 };
@@ -8589,8 +13620,6 @@ window.closeUpgradeModal = () => {
 window.selectUpgradeTier = (tierName, element) => {
   const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
   const currentTier = user.selectedTier || 'Gratis';
-  const currentPrice = TIER_PRICES[currentTier] || 0;
-  const newPrice = TIER_PRICES[tierName] || 0;
   
   selectedUpgradeTierName = tierName;
   selectedUpgradeCardElement = element;
@@ -8608,13 +13637,7 @@ window.selectUpgradeTier = (tierName, element) => {
   const confirmBtn = document.getElementById('btn-save-upgrade');
   if (confirmBtn) {
     confirmBtn.disabled = (tierName === currentTier);
-    if (tierName === currentTier) {
-      confirmBtn.textContent = 'Confirmar Cambio de Plan';
-    } else if (newPrice > currentPrice) {
-      confirmBtn.textContent = `Confirmar e ir al Pago (Upgrade: +$${(newPrice - currentPrice).toFixed(2)})`;
-    } else {
-      confirmBtn.textContent = 'Confirmar Cambio (Downgrade Gratuito)';
-    }
+    confirmBtn.textContent = 'Confirmar Cambio de Plan';
   }
 };
 
@@ -8622,25 +13645,18 @@ window.showUpgradePaymentModal = (tierName, price, cardElement) => {
   const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
   const currentTier = user.selectedTier || 'Gratis';
   
-  const currentPrice = TIER_PRICES[currentTier] || 0;
-  const newPrice = TIER_PRICES[tierName] || 0;
-  
   if (tierName === currentTier) {
     window.selectUpgradeTier(tierName, cardElement);
     return;
   }
   
-  if (newPrice <= currentPrice) {
-    // Downgrade: se selecciona directamente sin pasarela de pago fiduciaria
-    window.selectUpgradeTier(tierName, cardElement);
-    showToast(`👇 Has seleccionado cambiar al plan ${tierName} (Downgrade gratuito). Confirma tu cambio abajo.`, 'info');
-    return;
-  }
-  
-  // Upgrade: requiere pago de diferencia única
-  const difference = newPrice - currentPrice;
   window.selectUpgradeTier(tierName, cardElement);
-  window.showMiniAlert(tierName, `$${difference.toFixed(2)}`, cardElement, true);
+  showToast(`Seleccionado plan ${tierName}. Haz clic en 'Confirmar Cambio de Plan' abajo.`, 'info');
+};
+
+window.closeDowngradeConfirmModal = () => {
+  const modal = document.getElementById('downgrade-confirm-modal');
+  if (modal) modal.style.display = 'none';
 };
 
 window.saveUpgradeTier = async () => {
@@ -8648,75 +13664,158 @@ window.saveUpgradeTier = async () => {
   
   const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
   const currentTier = user.selectedTier || 'Gratis';
+  if (selectedUpgradeTierName === currentTier) return;
+  
+  const maxPaidTier = window.getMaxPaidTierInCycle(user);
+  const maxPaidRank = TIER_RANKS[maxPaidTier] || 0;
+  const targetRank = TIER_RANKS[selectedUpgradeTierName] || 0;
+  const cycleActive = window.isBillingCycleActive(user);
+  const isIncludedInCycle = cycleActive && targetRank <= maxPaidRank;
+
   const currentPrice = TIER_PRICES[currentTier] || 0;
   const newPrice = TIER_PRICES[selectedUpgradeTierName] || 0;
-  
-  // Si requiere pago (es upgrade) y el usuario aún no lo ha pagado (tarjeta locked)
-  if (newPrice > currentPrice && selectedUpgradeCardElement && selectedUpgradeCardElement.style.opacity !== '1') {
-    // Si la opacidad de la tarjeta no es 1, significa que no ha completado el pago del upgrade
-    const difference = newPrice - currentPrice;
+  const maxPaidPrice = TIER_PRICES[maxPaidTier] || 0;
+  const basePrice = cycleActive ? Math.max(maxPaidPrice, currentPrice) : currentPrice;
+  const difference = Math.max(0, newPrice - basePrice);
+  const requiresPayment = !isIncludedInCycle && newPrice > currentPrice && difference > 0;
+
+  // Desplegar siempre el alert pop-up de confirmación
+  const modal = document.getElementById('downgrade-confirm-modal');
+  const msgEl = document.getElementById('downgrade-confirm-message');
+  if (msgEl) {
+    if (requiresPayment) {
+      msgEl.innerHTML = `¿Estás seguro de mejorar del plan <strong style="color: #fff;">${currentTier}</strong> al plan <strong style="color: #00f0ff;">${selectedUpgradeTierName}</strong>?<br><span style="font-size: 0.88rem; color: #00f0ff; margin-top: 8px; display: inline-block; font-weight: 700;">Requiere abono de diferencia: $${difference.toFixed(2)}.</span>`;
+    } else {
+      msgEl.innerHTML = `¿Estás seguro de cambiar del plan <strong style="color: #fff;">${currentTier}</strong> al plan <strong style="color: #00f0ff;">${selectedUpgradeTierName}</strong>?`;
+    }
+  }
+  if (modal) {
+    modal.style.display = 'flex';
+  }
+};
+
+window.executeSaveUpgradeTier = async () => {
+  window.closeDowngradeConfirmModal();
+  if (!selectedUpgradeTierName) return;
+
+  const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  const currentTier = user.selectedTier || 'Gratis';
+  if (selectedUpgradeTierName === currentTier) return;
+
+  const maxPaidTier = window.getMaxPaidTierInCycle(user);
+  const maxPaidRank = TIER_RANKS[maxPaidTier] || 0;
+  const targetRank = TIER_RANKS[selectedUpgradeTierName] || 0;
+  const cycleActive = window.isBillingCycleActive(user);
+  const isIncludedInCycle = cycleActive && targetRank <= maxPaidRank;
+
+  const currentPrice = TIER_PRICES[currentTier] || 0;
+  const newPrice = TIER_PRICES[selectedUpgradeTierName] || 0;
+  const maxPaidPrice = TIER_PRICES[maxPaidTier] || 0;
+  const basePrice = cycleActive ? Math.max(maxPaidPrice, currentPrice) : currentPrice;
+  const difference = Math.max(0, newPrice - basePrice);
+  const requiresPayment = !isIncludedInCycle && newPrice > currentPrice && difference > 0;
+
+  // ÚNICAMENTE abre la pasarela de pago si es un UPGRADE real que requiere abonar una diferencia positiva (> $0.00)
+  if (requiresPayment) {
     window.showPaymentModal(selectedUpgradeTierName, `$${difference.toFixed(2)}`, selectedUpgradeCardElement, true);
     return;
   }
 
   const saveBtn = document.getElementById('btn-save-upgrade');
-  saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
-  saveBtn.disabled = true;
+  if (saveBtn) {
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+    saveBtn.disabled = true;
+  }
+
+  const wasLocal = (currentTier || '').toLowerCase() === 'local' || (user.role || '').toLowerCase() === 'local' || (user.role || '').toLowerCase() === 'entrenador local';
+  const isTargetingLocal = selectedUpgradeTierName === 'Local';
+  const hasStandardTeam = !!user.selectedClub && user.selectedClub !== 'Club Local' && !!user.selectedCountry && user.selectedCountry !== 'Local';
+  const updatedMaxPaid = targetRank > maxPaidRank ? selectedUpgradeTierName : maxPaidTier;
   
   try {
     const res = await fetchWithAuth(`${API}/auth/onboarding`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
-        selectedTier: selectedUpgradeTierName
+        selectedTier: selectedUpgradeTierName,
+        maxPaidTierInCycle: updatedMaxPaid,
+        role: isTargetingLocal ? 'Entrenador Local' : (user.role && user.role !== 'Entrenador Local' ? user.role : 'Scout / Director Deportivo'),
+        billingCycleStart: user.billingCycleStart,
+        billingCycleEnd: user.billingCycleEnd
       })
     });
     
     if (res.ok) {
-      // Update local storage user object
-      const userObj = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+      const data = await res.json();
+      const userObj = data.user || JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
       userObj.selectedTier = selectedUpgradeTierName;
-      if (selectedUpgradeTierName === 'Local') {
+      userObj.maxPaidTierInCycle = updatedMaxPaid;
+      if (user.billingCycleStart) userObj.billingCycleStart = user.billingCycleStart;
+      if (user.billingCycleEnd) userObj.billingCycleEnd = user.billingCycleEnd;
+      const isTargetingEnterprise = selectedUpgradeTierName === 'Enterprise';
+      if (isTargetingLocal) {
         userObj.role = 'Entrenador Local';
+      } else if (isTargetingEnterprise && (!userObj.role || userObj.role === 'Entrenador Local')) {
+        userObj.role = 'Director Técnico / Presidente de Club';
       }
-      localStorage.setItem('scout_ai_user', JSON.stringify(userObj));
       
-      showToast('✅ Plan de suscripción actualizado con éxito!', 'success');
-      
-      // Refresh profile dynamic views
-      renderProfile();
-      
-      // Close the upgrade modal
+      showToast(`✅ Plan de suscripción actualizado a ${selectedUpgradeTierName} con éxito!${cycleActive ? ' (Sin costo adicional en período vigente)' : ''}`, 'success');
       closeUpgradeModal();
       
-      // Si el nuevo plan es Local y viene de un downgrade/upgrade, redirigir al formulario
-      if (selectedUpgradeTierName === 'Local') {
-        const localScreen = document.getElementById('local-coach-onboarding-screen');
-        if (localScreen) {
-          localScreen.style.display = 'flex';
+      if (window.SectionLoader) window.SectionLoader.show('Cargando nuevo plan...');
+
+      setTimeout(() => {
+        const hasValidProTeam = !!userObj.selectedClub && userObj.selectedClub !== 'Club Local' && userObj.selectedClub !== '' && !!userObj.selectedCountry && userObj.selectedCountry !== 'Local';
+        
+        // Si cambia a un plan no-local y no cuenta con equipo profesional válido
+        if (!isTargetingLocal && !hasValidProTeam) {
+          if (userObj.previousStandardClub && userObj.previousStandardClub !== 'Club Local') {
+            userObj.selectedClub = userObj.previousStandardClub;
+            if (userObj.previousStandardCountry && userObj.previousStandardCountry !== 'Local') {
+              userObj.selectedCountry = userObj.previousStandardCountry;
+            }
+            userObj.onboardingComplete = true;
+            localStorage.setItem('scout_ai_user', JSON.stringify(userObj));
+            applyPlanPermissions();
+            renderProfile();
+          } else {
+            userObj.onboardingComplete = false;
+            userObj.selectedClub = '';
+            localStorage.setItem('scout_ai_user', JSON.stringify(userObj));
+            showToast('ℹ️ Por favor, selecciona tu país y club profesional para tu nuevo plan.', 'info');
+            if (typeof window.setupOnboarding === 'function') {
+              window.setupOnboarding();
+            }
+          }
+        } else {
+          userObj.onboardingComplete = true;
+          localStorage.setItem('scout_ai_user', JSON.stringify(userObj));
+          applyPlanPermissions();
+          renderProfile();
         }
-      }
+
+        // Solo si es un usuario NUEVO seleccionando Local por primera vez sin datos
+        const isExistingLocal = userObj.onboardingComplete || !!userObj.localCoachData;
+        if (isTargetingLocal && !isExistingLocal) {
+          const localScreen = document.getElementById('local-coach-onboarding-screen');
+          if (localScreen) {
+            localScreen.style.display = 'flex';
+          }
+        }
+
+        if (window.SectionLoader) window.SectionLoader.hide();
+      }, 400);
     } else {
-      showToast('⚠️ Error al actualizar el plan en el servidor.', 'error');
+      const errData = await res.json();
+      showToast(`Error al cambiar de plan: ${errData.error || 'Intenta de nuevo'}`, 'error');
     }
   } catch (err) {
-    console.error('Upgrade tier save error:', err);
-    // Fallback: save locally
-    const userObj = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
-    userObj.selectedTier = selectedUpgradeTierName;
-    if (selectedUpgradeTierName === 'Local') {
-      userObj.role = 'Entrenador Local';
-    }
-    localStorage.setItem('scout_ai_user', JSON.stringify(userObj));
-    showToast('✅ Plan actualizado (Modo local)', 'success');
-    renderProfile();
-    closeUpgradeModal();
-    
-    if (selectedUpgradeTierName === 'Local') {
-      const localScreen = document.getElementById('local-coach-onboarding-screen');
-      if (localScreen) {
-        localScreen.style.display = 'flex';
-      }
+    console.error('Error saving tier upgrade:', err);
+    showToast('Error de conexión al cambiar de plan', 'error');
+  } finally {
+    if (saveBtn) {
+      saveBtn.innerHTML = 'Confirmar Cambio de Plan';
+      saveBtn.disabled = false;
     }
   }
 };
@@ -9254,5 +14353,702 @@ function finishSimulation() {
 window.switchLiveSimTab = switchLiveSimTab;
 window.setSimSpeed = setSimSpeed;
 window.skipMatchSimulation = skipMatchSimulation;
+
+// ─── MODULE: MIS CHATS (User-to-User Messaging) ──────────────────────────────────
+let myChatsContacts = [];
+let activeChatContact = null;
+let myChatsPollingInterval = null;
+
+function getMyChatsToken() {
+  return localStorage.getItem('scout_ai_token') || 
+         localStorage.getItem('scoutai_token') || 
+         localStorage.getItem('token') || 
+         '';
+}
+
+function hasMyChatsPlanAccess() {
+  const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  const tier = (user.selectedTier || '').toLowerCase();
+  const role = (user.role || '').toLowerCase();
+
+  const isLocal = tier === 'local' || role.includes('local');
+  const isEnterprise = tier === 'enterprise' || role.includes('enterprise') || role.includes('scout');
+
+  return isLocal || isEnterprise;
+}
+
+async function renderMyChatsSection() {
+  const wrapper = document.querySelector('#section-my-chats .my-chats-wrapper');
+  const titleBtn = document.getElementById('btn-open-find-user-modal');
+  const restrictedOverlay = document.getElementById('my-chats-restricted-overlay');
+
+  if (!hasMyChatsPlanAccess()) {
+    if (wrapper) wrapper.style.display = 'none';
+    if (titleBtn) titleBtn.style.display = 'none';
+    if (restrictedOverlay) restrictedOverlay.style.display = 'block';
+    return;
+  }
+
+  // Permiso concedido
+  if (wrapper) wrapper.style.display = 'flex';
+  if (titleBtn) titleBtn.style.display = 'block';
+  if (restrictedOverlay) restrictedOverlay.style.display = 'none';
+
+  const token = getMyChatsToken();
+  if (!token) {
+    console.warn('💬 Mis Chats: No hay token de autenticación');
+    return;
+  }
+
+  // Cargar contactos desde API
+  await fetchMyChatsContacts();
+
+  // Configurar eventos si aún no están adjuntos
+  setupMyChatsEventListeners();
+
+  // Iniciar polling automático cada 4 segundos mientras la sección esté activa
+  if (!myChatsPollingInterval) {
+    myChatsPollingInterval = setInterval(() => {
+      const section = document.getElementById('section-my-chats');
+      if (section && section.classList.contains('active') && hasMyChatsPlanAccess()) {
+        fetchMyChatsContacts(true); // silent refresh
+        if (activeChatContact) {
+          loadMyChatsMessages(true); // silent refresh
+        }
+      }
+    }, 6000);
+  }
+}
+
+async function fetchMyChatsContacts(silent = false) {
+  try {
+    const token = getMyChatsToken();
+    const res = await fetch('/api/chats/contacts', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (!res.ok) throw new Error('Error al obtener contactos');
+    const data = await res.json();
+    if (data.success) {
+      myChatsContacts = data.contacts || [];
+      renderMyChatsContactsList();
+    }
+  } catch (err) {
+    console.error('❌ Error en fetchMyChatsContacts:', err);
+    if (!silent) {
+      const container = document.getElementById('my-chats-contacts-list');
+      if (container) {
+        container.innerHTML = `
+          <div class="empty-contacts-state" style="text-align: center; color: var(--text-2); padding: 25px 15px;">
+            <p style="font-size: 0.88rem;">No hay contactos</p>
+          </div>
+        `;
+      }
+    }
+  }
+}
+
+function renderMyChatsContactsList() {
+  const container = document.getElementById('my-chats-contacts-list');
+  if (!container) return;
+
+  const searchInput = document.getElementById('my-chats-search-contacts');
+  const filterText = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+  let filtered = myChatsContacts;
+  if (filterText) {
+    filtered = myChatsContacts.filter(item => {
+      const c = item.contact || {};
+      const name = (c.displayName || c.username || '').toLowerCase();
+      const role = (c.role || '').toLowerCase();
+      const club = (c.selectedClub || '').toLowerCase();
+      return name.includes(filterText) || role.includes(filterText) || club.includes(filterText);
+    });
+  }
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div class="empty-contacts-state" style="text-align: center; color: var(--text-2); padding: 30px 15px;">
+        <p style="font-size: 0.88rem;">No hay contactos</p>
+      </div>
+    `;
+    container.dataset.lastSignature = 'empty';
+    return;
+  }
+
+  const newContactsSignature = filtered.map(item => {
+    const c = item.contact || {};
+    const lastMsgId = item.lastMessage ? item.lastMessage.id : '';
+    const isAct = activeChatContact && activeChatContact.id === c.id;
+    return `${c.id}_${lastMsgId}_${item.unreadCount}_${isAct}`;
+  }).join('|');
+
+  if (container.dataset.lastSignature === newContactsSignature) {
+    return; // Evita re-renderizado innecesario si la lista no cambió
+  }
+  container.dataset.lastSignature = newContactsSignature;
+
+  let html = '';
+  filtered.forEach(item => {
+    const c = item.contact || {};
+    const isActive = activeChatContact && activeChatContact.id === c.id;
+    const initial = (c.displayName || c.username || 'U').charAt(0).toUpperCase();
+    const roleClass = (c.role || '').toLowerCase().includes('scout') ? 'scout' : 'entrenador';
+    const lastMsgText = item.lastMessage ? item.lastMessage.content : 'Iniciar conversación...';
+    
+    // Formatear hora/fecha
+    let timeStr = '';
+    if (item.lastMessage && item.lastMessage.createdAt) {
+      const d = new Date(item.lastMessage.createdAt);
+      const now = new Date();
+      if (d.toDateString() === now.toDateString()) {
+        timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      } else {
+        timeStr = d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+      }
+    }
+
+    html += `
+      <div class="contact-card-item ${isActive ? 'active' : ''}" onclick="selectChatContact('${c.id}')">
+        <div class="contact-avatar-wrap">
+          ${c.avatarUrl 
+            ? `<img src="${c.avatarUrl}" alt="${c.displayName}" class="contact-avatar">`
+            : `<div class="contact-avatar-placeholder">${initial}</div>`
+          }
+          <span class="online-indicator"></span>
+        </div>
+        <div class="contact-info-col">
+          <div class="contact-name-row">
+            <span class="contact-name">${c.displayName || c.username}</span>
+            <span class="contact-time">${timeStr}</span>
+          </div>
+          <div class="contact-preview-row">
+            <span class="contact-last-msg">${escapeHtml(lastMsgText)}</span>
+            ${item.unreadCount > 0 ? `<span class="unread-badge-pill">${item.unreadCount}</span>` : ''}
+          </div>
+          <div style="margin-top: 4px; display: flex; align-items: center; gap: 6px;">
+            <span class="role-badge ${roleClass}">${c.role || 'Usuario'}</span>
+            ${c.selectedClub ? `<span style="font-size: 0.72rem; color: var(--text-2);">${c.selectedClub}</span>` : ''}
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+}
+
+function selectChatContact(contactUserId) {
+  const item = myChatsContacts.find(x => x.contact && x.contact.id === contactUserId);
+  if (item) {
+    activeChatContact = item.contact;
+  }
+
+  if (!activeChatContact) return;
+
+  // Actualizar UI
+  renderMyChatsContactsList();
+
+  const emptyView = document.getElementById('my-chats-empty-view');
+  const activePanel = document.getElementById('my-chats-active-panel');
+
+  if (emptyView) emptyView.style.display = 'none';
+  if (activePanel) activePanel.style.display = 'flex';
+
+  // Actualizar Header
+  const avatarEl = document.getElementById('active-chat-avatar');
+  const nameEl = document.getElementById('active-chat-name');
+  const roleEl = document.getElementById('active-chat-role');
+  const clubEl = document.getElementById('active-chat-club');
+
+  if (nameEl) nameEl.textContent = activeChatContact.displayName || activeChatContact.username;
+  if (roleEl) {
+    roleEl.textContent = activeChatContact.role || 'Usuario';
+    roleEl.className = `role-badge ${(activeChatContact.role || '').toLowerCase().includes('scout') ? 'scout' : 'entrenador'}`;
+  }
+  if (clubEl) {
+    let localClub = activeChatContact.localCoachClub;
+    if (!localClub && activeChatContact.localCoachData) {
+      try {
+        const parsed = typeof activeChatContact.localCoachData === 'string' ? JSON.parse(activeChatContact.localCoachData) : activeChatContact.localCoachData;
+        localClub = parsed.club || parsed.clubName || parsed.team || null;
+      } catch (e) {}
+    }
+
+    const isCoach = (activeChatContact.role || '').toLowerCase().includes('entrenador') || (activeChatContact.selectedTier || '').toLowerCase() === 'local' || Boolean(localClub);
+    
+    if (isCoach) {
+      const coachTeam = localClub || activeChatContact.selectedClub || 'Club Local';
+      clubEl.textContent = `Club: ${coachTeam}`;
+    } else {
+      const orgName = activeChatContact.selectedClub || activeChatContact.selectedCountry || 'Plataforma Futbol AI';
+      clubEl.textContent = `Organización: ${orgName}`;
+    }
+  }
+  if (avatarEl) {
+    if (activeChatContact.avatarUrl) {
+      avatarEl.src = activeChatContact.avatarUrl;
+      avatarEl.style.display = 'block';
+    } else {
+      avatarEl.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(activeChatContact.displayName || activeChatContact.username)}&background=00f0ff&color=05080c`;
+      avatarEl.style.display = 'block';
+    }
+  }
+
+  // Cargar mensajes de la conversación
+  loadMyChatsMessages();
+}
+
+async function loadMyChatsMessages(silent = false) {
+  if (!activeChatContact) return;
+
+  try {
+    const token = getMyChatsToken();
+    const res = await fetch(`/api/chats/messages/${activeChatContact.id}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (!res.ok) throw new Error('Error al cargar mensajes');
+    const data = await res.json();
+    if (data.success) {
+      renderMyChatsMessagesBody(data.messages || [], silent);
+    }
+  } catch (err) {
+    console.error('❌ Error en loadActiveChatMessages:', err);
+  }
+}
+
+function renderMyChatsMessagesBody(messages, silent = false) {
+  const container = document.getElementById('my-chats-messages-body');
+  if (!container) return;
+
+  const currentUser = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  const currentUserId = currentUser.id;
+
+  if (messages.length === 0) {
+    container.innerHTML = `
+      <div style="margin: auto; text-align: center; color: var(--text-2); padding: 30px;">
+        <p style="font-size: 0.9rem; margin-top: 8px;">No hay mensajes anteriores en esta conversación.</p>
+        <p style="font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-top: 4px;">Escribe un mensaje abajo para iniciar la charla.</p>
+      </div>
+    `;
+    container.dataset.lastSignature = 'empty';
+    return;
+  }
+
+  const newMsgSignature = messages.map(m => `${m.id}_${m.isRead}_${m.updatedAt || m.createdAt}`).join('|');
+  if (silent && container.dataset.lastSignature === newMsgSignature) {
+    return; // Evita re-renderizado visual de la ventana de chat si no hay mensajes nuevos
+  }
+  container.dataset.lastSignature = newMsgSignature;
+
+  let html = '';
+  let lastDateStr = '';
+
+  messages.forEach(msg => {
+    const isOutgoing = msg.senderId === currentUserId;
+    const d = new Date(msg.createdAt);
+    const dateStr = d.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+    const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    if (dateStr !== lastDateStr) {
+      lastDateStr = dateStr;
+      html += `
+        <div style="text-align: center; margin: 12px 0 6px 0;">
+          <span style="font-size: 0.7rem; font-weight: 700; color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 10px; text-transform: uppercase;">
+            ${dateStr}
+          </span>
+        </div>
+      `;
+    }
+
+    html += `
+      <div class="chat-bubble-wrap ${isOutgoing ? 'outgoing' : 'incoming'}">
+        <div class="chat-bubble">
+          ${escapeHtml(msg.content)}
+        </div>
+        <div class="chat-bubble-footer">
+          <span>${timeStr}</span>
+          ${isOutgoing ? `<span style="font-size: 0.8rem; color: #00f0ff;">${msg.isRead ? '✓✓' : '✓'}</span>` : ''}
+        </div>
+      </div>
+    `;
+  });
+
+  const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 120;
+  container.innerHTML = html;
+
+  if (!silent || isNearBottom) {
+    container.scrollTop = container.scrollHeight;
+  }
+}
+
+async function sendMyChatMessage() {
+  if (!activeChatContact) return;
+
+  const inputEl = document.getElementById('my-chats-input-text');
+  if (!inputEl) return;
+
+  const content = inputEl.value.trim();
+  if (!content) return;
+
+  inputEl.value = '';
+
+  try {
+    const token = getMyChatsToken();
+    const res = await fetch('/api/chats/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        receiverId: activeChatContact.id,
+        content
+      })
+    });
+
+    if (!res.ok) throw new Error('Error al enviar mensaje');
+    const data = await res.json();
+    if (data.success) {
+      loadMyChatsMessages();
+      fetchMyChatsContacts(true);
+    }
+  } catch (err) {
+    console.error('❌ Error en sendMyChatMessage:', err);
+    window.showAppErrorAlert({
+      title: 'Error de Chat',
+      message: 'No se pudo enviar el mensaje. Por favor intenta de nuevo.',
+      details: err.message
+    });
+  }
+}
+
+function setupMyChatsEventListeners() {
+  const sendBtn = document.getElementById('my-chats-btn-send');
+  const inputEl = document.getElementById('my-chats-input-text');
+  const searchContactsInput = document.getElementById('my-chats-search-contacts');
+  const clearHistoryBtn = document.getElementById('btn-clear-chat-history');
+  const viewProfileBtn = document.getElementById('btn-view-contact-profile');
+
+  if (sendBtn && !sendBtn.dataset.bound) {
+    sendBtn.dataset.bound = 'true';
+    sendBtn.addEventListener('click', sendMyChatMessage);
+  }
+
+  if (inputEl && !inputEl.dataset.bound) {
+    inputEl.dataset.bound = 'true';
+    inputEl.addEventListener('keyup', (e) => {
+      if (e.key === 'Enter') sendMyChatMessage();
+    });
+  }
+
+  if (searchContactsInput && !searchContactsInput.dataset.bound) {
+    searchContactsInput.dataset.bound = 'true';
+    searchContactsInput.addEventListener('input', () => {
+      renderMyChatsContactsList();
+    });
+  }
+
+  if (clearHistoryBtn && !clearHistoryBtn.dataset.bound) {
+    clearHistoryBtn.dataset.bound = 'true';
+    clearHistoryBtn.addEventListener('click', async () => {
+      if (!activeChatContact) return;
+      if (confirm(`¿Estás seguro de que deseas vaciar el historial de chat con ${activeChatContact.displayName || activeChatContact.username}?`)) {
+        try {
+          const token = getMyChatsToken();
+          await fetch(`/api/chats/messages/${activeChatContact.id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          loadMyChatsMessages();
+          fetchMyChatsContacts(true);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    });
+  }
+
+  if (viewProfileBtn && !viewProfileBtn.dataset.bound) {
+    viewProfileBtn.dataset.bound = 'true';
+    viewProfileBtn.addEventListener('click', () => {
+      if (!activeChatContact) return;
+      openUserProfileDossierModal(activeChatContact);
+    });
+  }
+}
+
+// Modal de Expediente del Usuario / Contacto (Ficha Oficial Futbol AI)
+function openUserProfileDossierModalById(userId) {
+  let contact = null;
+  if (myChatsContacts && myChatsContacts.length > 0) {
+    const item = myChatsContacts.find(x => x.contact && x.contact.id === userId);
+    if (item) contact = item.contact;
+  }
+  if (!contact && activeChatContact && activeChatContact.id === userId) {
+    contact = activeChatContact;
+  }
+  if (contact) {
+    openUserProfileDossierModal(contact);
+  } else {
+    const token = getMyChatsToken();
+    fetch(`/api/chats/search-users?q=${userId}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success && data.users && data.users.length > 0) {
+        const u = data.users.find(x => x.id === userId) || data.users[0];
+        openUserProfileDossierModal(u);
+      }
+    })
+    .catch(err => console.error(err));
+  }
+}
+
+function openUserProfileDossierModal(contactUser) {
+  let user = contactUser;
+  if (!user && typeof activeChatContact !== 'undefined') {
+    user = activeChatContact;
+  }
+  if (!user && typeof myChatsContacts !== 'undefined' && myChatsContacts.length > 0) {
+    user = myChatsContacts[0].contact;
+  }
+
+  if (!user) {
+    alert('Selecciona una conversación o contacto para ver su expediente.');
+    return;
+  }
+
+  const modal = document.getElementById('modal-user-profile-dossier');
+  if (!modal) {
+    console.error('📋 Expediente: No se encontró el modal #modal-user-profile-dossier');
+    return;
+  }
+
+  const nameEl = document.getElementById('dossier-display-name');
+  if (nameEl) nameEl.textContent = user.displayName || user.username || 'Usuario Futbol AI';
+
+  const unameEl = document.getElementById('dossier-username');
+  if (unameEl) unameEl.textContent = '@' + (user.username || 'usuario');
+
+  const hasLocalCoachData = !!user.localCoachData || (user.role || '').toLowerCase().includes('entrenador');
+  const roleText = hasLocalCoachData ? 'Entrenador' : (user.role || 'Usuario Futbol AI');
+  const roleBadge = document.getElementById('dossier-role-badge');
+  if (roleBadge) roleBadge.textContent = roleText;
+
+  const roleDetail = document.getElementById('dossier-role-detail');
+  if (roleDetail) roleDetail.textContent = roleText;
+
+  let coachClub = user.localCoachClub || null;
+  if (!coachClub && user.localCoachData) {
+    try {
+      const parsed = typeof user.localCoachData === 'string' ? JSON.parse(user.localCoachData) : user.localCoachData;
+      coachClub = parsed.club || parsed.clubName || null;
+    } catch (e) {}
+  }
+
+  const isLocalCoach = (user.role || '').toLowerCase().includes('entrenador') || (user.selectedTier || '').toLowerCase() === 'local';
+  const displayClub = (isLocalCoach && coachClub) ? coachClub : (user.selectedClub || user.selectedCountry || 'No especificado');
+
+  // Actualizar etiqueta dinámica del club
+  const clubLabel = document.getElementById('dossier-club-label');
+  if (clubLabel) {
+    clubLabel.textContent = isLocalCoach ? 'Club que Entrena' : 'Club / Afiliación';
+  }
+
+  const clubName = document.getElementById('dossier-club-name');
+  if (clubName) clubName.textContent = displayClub;
+
+  const clubDetail = document.getElementById('dossier-club-detail');
+  if (clubDetail) clubDetail.textContent = displayClub;
+
+  const emailDetail = document.getElementById('dossier-email-detail');
+  if (emailDetail) emailDetail.textContent = user.email || 'Contacto Privado / Protegido';
+
+  const avatarImg = document.getElementById('dossier-avatar');
+  if (avatarImg) {
+    avatarImg.src = user.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || user.username)}&background=00f0ff&color=080e1a&bold=true`;
+  }
+
+  const onlineIndicator = document.getElementById('dossier-online-status');
+  if (onlineIndicator) {
+    onlineIndicator.style.background = user.isOnline ? '#00ff88' : '#718096';
+    onlineIndicator.style.boxShadow = user.isOnline ? '0 0 8px #00ff88' : 'none';
+  }
+
+  modal.style.cssText = 'display: flex !important; z-index: 27000 !important;';
+}
+
+function closeUserProfileDossierModal() {
+  const modal = document.getElementById('modal-user-profile-dossier');
+  if (modal) modal.style.cssText = 'display: none !important;';
+}
+
+function handleDossierStartChat() {
+  closeUserProfileDossierModal();
+  if (activeChatContact) {
+    const input = document.getElementById('my-chats-message-input');
+    if (input) input.focus();
+  }
+}
+
+// Modal de Búsqueda de Usuarios registrados
+function openFindUserModal() {
+  if (!hasMyChatsPlanAccess()) {
+    openUpgradeModal();
+    return;
+  }
+  const modal = document.getElementById('modal-find-user');
+  if (modal) {
+    modal.style.display = 'flex';
+    const input = document.getElementById('find-user-search-input');
+    if (input) {
+      input.value = '';
+      input.focus();
+    }
+    fetchFindUserResults('');
+  }
+}
+
+function closeFindUserModal() {
+  const modal = document.getElementById('modal-find-user');
+  if (modal) modal.style.display = 'none';
+}
+
+let findUserDebounceTimeout = null;
+function handleFindUserSearchKeyup(event) {
+  const query = event.target.value;
+  clearTimeout(findUserDebounceTimeout);
+  findUserDebounceTimeout = setTimeout(() => {
+    fetchFindUserResults(query);
+  }, 300);
+}
+
+async function fetchFindUserResults(query) {
+  const container = document.getElementById('find-user-results-list');
+  if (!container) return;
+
+  container.innerHTML = `
+    <div style="text-align: center; color: var(--text-2); padding: 15px;">
+      <span class="sl-spinner" style="width: 20px; height: 20px; border-width: 2px; display: inline-block;"></span>
+      <p style="font-size: 0.85rem; margin-top: 6px;">Buscando usuarios...</p>
+    </div>
+  `;
+
+  try {
+    const token = getMyChatsToken();
+    const res = await fetch(`/api/chats/search-users?q=${encodeURIComponent(query)}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}));
+      throw new Error(errBody.error || `HTTP ${res.status}`);
+    }
+
+    const data = await res.json();
+    const users = data.users || [];
+
+    if (users.length === 0) {
+      container.innerHTML = `
+        <div style="text-align: center; color: var(--text-2); padding: 20px; font-size: 0.88rem;">
+          No se encontraron usuarios con ese criterio de búsqueda.
+        </div>
+      `;
+      return;
+    }
+
+    let html = '';
+    users.forEach(u => {
+      const initial = (u.displayName || u.username || 'U').charAt(0).toUpperCase();
+      const roleClass = (u.role || '').toLowerCase().includes('scout') ? 'scout' : 'entrenador';
+
+      html += `
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px;">
+          <div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0;">
+            <div class="contact-avatar-wrap" style="width: 38px; height: 38px;">
+              ${u.avatarUrl 
+                ? `<img src="${u.avatarUrl}" alt="${u.displayName}" class="contact-avatar" style="width: 38px; height: 38px;">`
+                : `<div class="contact-avatar-placeholder" style="width: 38px; height: 38px; font-size: 0.95rem;">${initial}</div>`
+              }
+            </div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 0.9rem; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                ${u.displayName || u.username}
+              </div>
+              <div style="display: flex; align-items: center; gap: 6px; margin-top: 2px;">
+                <span class="role-badge ${roleClass}">${u.role || 'Usuario'}</span>
+                ${u.selectedClub ? `<span style="font-size: 0.72rem; color: var(--text-2);">${u.selectedClub}</span>` : ''}
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <button class="btn btn-secondary" onclick="openUserProfileDossierModalById('${u.id}')" style="font-size: 0.78rem; padding: 6px 10px;" title="Ver Expediente">
+              📋 Perfil
+            </button>
+            <button class="btn btn-primary" onclick="startChatWithUser('${u.id}')" style="font-size: 0.78rem; padding: 6px 12px;">
+              Chat
+            </button>
+          </div>
+        </div>
+      `;
+    });
+
+    container.innerHTML = html;
+  } catch (err) {
+    console.error('❌ Error en fetchFindUserResults:', err);
+    container.innerHTML = `
+      <div style="text-align: center; color: #ff4a4a; padding: 15px; font-size: 0.85rem;">
+        ${err.message || 'Error al realizar la búsqueda.'}
+      </div>
+    `;
+  }
+}
+
+async function startChatWithUser(userId) {
+  try {
+    const token = getMyChatsToken();
+    await fetch('/api/chats/contacts', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ contactUserId: userId })
+    });
+
+    closeFindUserModal();
+
+    await fetchMyChatsContacts();
+    selectChatContact(userId);
+  } catch (err) {
+    console.error('❌ Error en startChatWithUser:', err);
+    window.showAppErrorAlert({
+      title: 'Error de Chat',
+      message: 'No se pudo iniciar el chat con este usuario.',
+      details: err.message
+    });
+  }
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+window.renderMyChatsSection = renderMyChatsSection;
+window.selectChatContact = selectChatContact;
+window.openFindUserModal = openFindUserModal;
+window.closeFindUserModal = closeFindUserModal;
+window.handleFindUserSearchKeyup = handleFindUserSearchKeyup;
+window.startChatWithUser = startChatWithUser;
+
 
 

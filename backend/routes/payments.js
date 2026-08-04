@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { Op } = require('sequelize');
 
 module.exports = ({ Payment, User }) => {
   // POST /api/payments/checkout
@@ -37,9 +38,28 @@ module.exports = ({ Payment, User }) => {
       // 4. Update the user plan tier in the database
       const user = await User.findByPk(req.user.id);
       if (user) {
-        const updateData = { selectedTier: tier };
+        const wasLocal = (user.selectedTier || '').toLowerCase() === 'local' || (user.role || '').toLowerCase() === 'entrenador local' || (user.role || '').toLowerCase() === 'local';
+        const hasStandardTeam = !!user.selectedClub && user.selectedClub !== 'Club Local' && !!user.selectedCountry && user.selectedCountry !== 'Local';
+
+        const TIER_RANKS = { 'Gratis': 0, 'Pro': 1, 'Plus': 2, 'Local': 3, 'Enterprise': 4 };
+        const currentMaxRank = TIER_RANKS[user.maxPaidTierInCycle] || 0;
+        const newRank = TIER_RANKS[tier] || 0;
+        const highestTier = newRank >= currentMaxRank ? tier : user.maxPaidTierInCycle;
+
+        const now = new Date();
+        const cycleEnd = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+        const updateData = {
+          selectedTier: tier,
+          maxPaidTierInCycle: highestTier,
+          billingCycleStart: user.billingCycleStart && now < new Date(user.billingCycleEnd || 0) ? user.billingCycleStart : now,
+          billingCycleEnd: cycleEnd,
+          autoRenew: true
+        };
         if (req.body.role) {
           updateData.role = req.body.role;
+        }
+        if (wasLocal && tier !== 'Local' && !hasStandardTeam) {
+          updateData.onboardingComplete = false;
         }
         await user.update(updateData);
       }
@@ -70,7 +90,12 @@ module.exports = ({ Payment, User }) => {
   router.get('/history', async (req, res) => {
     try {
       const payments = await Payment.findAll({
-        where: { userId: req.user.id },
+        where: {
+          [Op.or]: [
+            { userId: req.user.id },
+            { userAccount: req.user.username }
+          ]
+        },
         order: [['createdAt', 'DESC']]
       });
 

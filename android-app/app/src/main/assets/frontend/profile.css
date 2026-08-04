@@ -1059,3 +1059,1137 @@
 .tactics-col.weaknesses .grid-col-title {
   border-left-color: var(--orange) !important;
 }
+
+/* ─── Live Simulation Screen Styles ─── */
+.sim-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.01);
+}
+.badge-sm {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.badge-live {
+  background: rgba(255, 82, 82, 0.15);
+  color: var(--red);
+  border: 1px solid rgba(255, 82, 82, 0.3);
+  animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+.badge-ai {
+  background: rgba(0, 229, 255, 0.1);
+  color: var(--primary);
+  border: 1px solid rgba(0, 229, 255, 0.25);
+}
+.scoreboard-sim {
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid var(--border);
+  padding: 20px 16px;
+  text-align: center;
+}
+.crest {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 800;
+  border: 2px solid var(--border);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  overflow: hidden;
+}
+.crest img {
+  width: 70%;
+  height: 70%;
+  object-fit: contain;
+}
+.score-n {
+  font-size: 42px;
+  font-weight: 900;
+  line-height: 1;
+  font-family: monospace;
+}
+.score-s {
+  font-size: 24px;
+  color: var(--text-3);
+}
+.prog-track {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  position: relative;
+  overflow: visible;
+  margin: 10px 0;
+  border: 1px solid rgba(255, 255, 255, 0.02);
+}
+.prog-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--primary), var(--blue));
+  transition: width 0.3s ease-out;
+  width: 0%;
+}
+.ev-dot {
+  position: absolute;
+  top: -3px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid var(--bg-primary);
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
+}
+.proba-row {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin: 16px;
+  background: rgba(255, 255, 255, 0.01);
+}
+.proba-cell {
+  flex: 1;
+  text-align: center;
+  padding: 10px 4px;
+}
+.proba-cell:not(:last-child) {
+  border-right: 1px solid var(--border);
+}
+.proba-pct {
+  font-size: 16px;
+  font-weight: 800;
+  font-family: monospace;
+}
+.proba-lbl {
+  font-size: 10px;
+  color: var(--text-3);
+  margin-top: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.speed-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px 12px;
+  font-size: 12px;
+  color: var(--text-2);
+}
+.sp-btn {
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.03);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--text-2);
+  transition: all 0.2s ease;
+}
+.sp-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--border-hover);
+  color: var(--text-1);
+}
+.sp-btn.on {
+  background: var(--primary);
+  color: #040911;
+  border-color: var(--primary);
+  box-shadow: 0 0 8px rgba(0, 229, 255, 0.3);
+}
+.sim-live-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
+  padding: 0 16px;
+  margin-top: 8px;
+}
+.sim-live-tab {
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 10px 16px;
+  cursor: pointer;
+  color: var(--text-2);
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.2s ease;
+}
+.sim-live-tab:hover {
+  color: var(--primary);
+}
+.sim-live-tab.on {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.3);
+}
+.sim-live-tc {
+  display: none;
+}
+.sim-live-tc.on {
+  display: block;
+}
+.field-wrap {
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.01);
+  border-radius: var(--radius-lg);
+  margin: 16px;
+  border: 1px solid var(--border);
+}
+.stats-wrap {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.events-wrap {
+  padding: 16px;
+  max-height: 300px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ai-wrap {
+  padding: 16px;
+}
+.ai-card {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  padding: 16px;
+}
+.ai-hdr {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ai-txt {
+  font-size: 13.5px;
+  color: var(--text-2);
+  line-height: 1.6;
+}
+
+/* Event icons styles */
+.ev-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.ev-item:last-child {
+  border-bottom: none;
+}
+.ev-min {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--primary);
+  min-width: 30px;
+  padding-top: 2px;
+}
+.ev-ico {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+}
+.ic-g { background: rgba(118, 255, 3, 0.15); color: var(--green); border-color: rgba(118, 255, 3, 0.3); }
+.ic-y { background: rgba(255, 234, 0, 0.15); color: var(--yellow); border-color: rgba(255, 234, 0, 0.3); }
+.ic-r { background: rgba(255, 82, 82, 0.15); color: var(--red); border-color: rgba(255, 82, 82, 0.3); }
+.ic-s { background: rgba(0, 229, 255, 0.15); color: var(--cyan); border-color: rgba(0, 229, 255, 0.3); }
+.ev-txt {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-1);
+}
+.ev-sub {
+  font-size: 11px;
+  color: var(--text-3);
+  margin-top: 2px;
+}
+
+/* ══════════════ MOBILE PROFILE OPTIMIZATIONS ══════════════ */
+@media (max-width: 768px) {
+  /* Profile header banner height and margin adjustments */
+  .profile-header-banner {
+    height: 150px !important;
+    margin-bottom: 95px !important;
+  }
+  
+  .profile-avatar-container {
+    bottom: -70px !important;
+  }
+  
+  .profile-avatar-wrapper {
+    width: 100px !important;
+    height: 100px !important;
+  }
+  
+  .profile-name {
+    font-size: 1.5rem !important;
+  }
+
+  /* Stack profile columns and cards vertically */
+  .profile-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+
+  /* Responsive Tab Buttons - Grid Layout */
+  .profile-tabs-header {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 6px !important;
+    padding-bottom: 5px !important;
+    border-bottom: none !important;
+  }
+
+  .profile-tab-btn {
+    font-size: 11px !important;
+    padding: 8px 4px !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    text-align: center !important;
+    justify-content: center !important;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.05) !important;
+    border-radius: 8px !important;
+    width: 100% !important;
+  }
+
+  .profile-tab-btn.active {
+    border-bottom: 2px solid var(--cyan) !important;
+    color: var(--cyan) !important;
+    background: rgba(0, 240, 255, 0.05) !important;
+  }
+
+  /* Stack account info item rows vertically to prevent horizontal overflow */
+  .profile-info-item {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 4px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+    padding-bottom: 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .profile-info-item:last-child {
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+  }
+
+  .profile-info-label {
+    font-size: 12px !important;
+  }
+
+  .profile-info-val {
+    font-size: 14px !important;
+    word-break: break-all !important; /* Prevent long emails/names from overflowing */
+  }
+
+  /* Custom override for subscription plan row layout on mobile */
+  .profile-info-item[style*="display: flex"] {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+    padding: 12px 0 !important;
+  }
+
+  .profile-info-item[style*="display: flex"] > div {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+  }
+
+  /* Profile preferences toggles spacing */
+  .profile-setting-row {
+    padding: 12px 0 !important;
+    font-size: 14px !important;
+  }
+
+  /* Profile activity statistics grid spacing */
+  .profile-stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important; /* 2x2 grid is much cleaner on mobile */
+    gap: 12px !important;
+  }
+
+  .profile-stat-box {
+    padding: 15px 10px !important;
+  }
+
+  .profile-stat-num {
+    font-size: 1.6rem !important;
+  }
+
+  .profile-stat-desc {
+    font-size: 11px !important;
+  }
+
+  /* Simulation Modal Mobile Optimizations */
+  .modal-lg {
+    padding: 16px 12px !important;
+  }
+
+  .score-display {
+    gap: 12px !important;
+    padding: 15px 10px !important;
+    margin: 15px 0 25px 0 !important;
+  }
+
+  .score-team-name {
+    font-size: 14px !important;
+  }
+
+  .score-team-style {
+    font-size: 9px !important;
+  }
+
+  .score-num {
+    width: 48px !important;
+    height: 48px !important;
+    font-size: 26px !important;
+    border-radius: var(--radius-md) !important;
+  }
+
+  .score-dash {
+    font-size: 18px !important;
+  }
+
+  .scoreboard-sim {
+    padding: 12px 10px !important;
+  }
+
+  .scoreboard-sim .crest {
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  .scoreboard-sim span[style*="font-size:14px"] {
+    font-size: 11px !important;
+  }
+
+  .scoreboard-sim span[style*="font-size:13px"] {
+    font-size: 10px !important;
+  }
+
+  .proba-row {
+    margin: 10px 8px !important;
+  }
+
+  .proba-cell {
+    padding: 6px 2px !important;
+  }
+
+  .proba-pct {
+    font-size: 13px !important;
+  }
+
+  .proba-lbl {
+    font-size: 8.5px !important;
+  }
+
+  .speed-row {
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    padding: 0 10px 10px !important;
+    font-size: 11px !important;
+  }
+
+  .sp-btn {
+    padding: 4px 8px !important;
+    font-size: 10px !important;
+  }
+
+  #btn-skip-sim {
+    margin-left: 0 !important;
+    width: 100% !important;
+    text-align: center !important;
+    margin-top: 4px !important;
+  }
+
+  /* Live simulation tabs un-scrolled grid */
+  .sim-live-tabs {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important; /* 2x2 grid */
+    gap: 6px !important;
+    border-bottom: none !important;
+    padding: 0 16px !important;
+    overflow-x: visible !important; /* Disable scroll */
+  }
+
+  .sim-live-tab {
+    width: 100% !important;
+    text-align: center !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+    padding: 8px 4px !important;
+    font-size: 11.5px !important;
+    background: rgba(255, 255, 255, 0.02) !important;
+    box-sizing: border-box !important;
+    white-space: normal !important; /* Allow wraps if needed, but they are short */
+  }
+
+  .sim-live-tab.on {
+    border-color: var(--primary) !important;
+    background: rgba(0, 229, 255, 0.08) !important;
+    color: var(--primary) !important;
+    border-bottom-width: 1px !important; /* Keep border consistent */
+    text-shadow: 0 0 8px rgba(0, 229, 255, 0.3) !important;
+  }
+
+  .field-wrap {
+    margin: 10px 8px !important;
+    padding: 8px !important;
+  }
+
+  /* Post-match report tabs un-scrolled grid */
+  .sim-tabs-bar {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important; /* 2 columns */
+    gap: 6px !important;
+    border-bottom: none !important;
+    padding: 0 12px !important;
+    overflow-x: visible !important; /* Disable scroll */
+    justify-content: stretch !important;
+  }
+
+  .sim-tab-btn {
+    width: 100% !important;
+    text-align: center !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+    padding: 8px 4px !important;
+    font-size: 11px !important;
+    background: rgba(255, 255, 255, 0.02) !important;
+    box-sizing: border-box !important;
+    white-space: normal !important; /* Allow wrap for team names or long titles */
+  }
+
+  /* Span the 5th tab (AI Recommendations) across both columns */
+  .sim-tabs-bar .sim-tab-btn:nth-child(5) {
+    grid-column: span 2 !important;
+  }
+
+  .sim-tab-btn.active {
+    border-color: var(--primary) !important;
+    background: rgba(0, 229, 255, 0.08) !important;
+    color: var(--primary) !important;
+    border-bottom-width: 1px !important; /* Keep border consistent */
+    text-shadow: 0 0 8px rgba(0, 229, 255, 0.3) !important;
+  }
+
+  .results-squad-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    width: 100% !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  .player-row {
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    padding: 10px 0 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  .player-row:last-child {
+    border-bottom: none !important;
+  }
+
+  .player-row .pl-info {
+    flex: 1 !important;
+    min-width: 0 !important;
+  }
+
+  .player-row .pl-name {
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    color: #fff !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .player-row .pl-sub {
+    font-size: 11px !important;
+    color: rgba(255, 255, 255, 0.5) !important;
+    margin-top: 2px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .player-row .pl-pos-badge {
+    font-size: 10px !important;
+    padding: 2px 6px !important;
+    border-radius: 4px !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    color: rgba(255, 255, 255, 0.6) !important;
+  }
+
+  .player-row .pl-rt {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+  }
+
+  .tactical-advice {
+    padding: 12px !important;
+    gap: 8px !important;
+  }
+
+  .advice-item {
+    font-size: 11.5px !important;
+  }
+}
+
+/* ─── MIS JUGADORES (PLAN LOCAL) ─── */
+.local-player-card {
+  background: rgba(12, 19, 34, 0.85);
+  border: 1px solid rgba(0, 240, 255, 0.15);
+  border-radius: 16px;
+  padding: 16px;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.local-player-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(0, 240, 255, 0.4);
+  box-shadow: 0 10px 30px rgba(0, 240, 255, 0.18);
+  background: rgba(16, 26, 46, 0.9);
+}
+
+.local-player-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.local-player-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #00f0ff;
+  background: #080e1a;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: #00f0ff;
+  font-size: 18px;
+}
+
+.local-player-info {
+  flex: 1;
+  overflow: hidden;
+}
+
+.local-player-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 2px;
+}
+
+.local-player-nickname {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+}
+
+.local-player-rating-pill {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(0, 102, 255, 0.2));
+  border: 1px solid #00f0ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 900;
+  color: #00f0ff;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+}
+
+.local-player-badges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.lp-badge-pos {
+  background: rgba(0, 240, 255, 0.12);
+  color: #00f0ff;
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.lp-badge-cat {
+  background: rgba(112, 0, 255, 0.15);
+  color: #b070ff;
+  border: 1px solid rgba(112, 0, 255, 0.3);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.lp-badge-med {
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.lp-badge-med.disponible {
+  background: rgba(0, 255, 136, 0.12);
+  color: #00ff88;
+  border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.lp-badge-med.precaucion {
+  background: rgba(255, 170, 0, 0.12);
+  color: #ffaa00;
+  border: 1px solid rgba(255, 170, 0, 0.3);
+}
+
+.lp-badge-med.lesionado {
+  background: rgba(255, 50, 50, 0.12);
+  color: #ff3232;
+  border: 1px solid rgba(255, 50, 50, 0.3);
+}
+
+.local-player-stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 8px;
+  border-radius: 8px;
+  margin-bottom: 14px;
+  text-align: center;
+}
+
+.local-player-stat-item .val {
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.local-player-stat-item .lbl {
+  font-size: 9.5px;
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.local-player-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: auto;
+}
+
+.btn-lp-action {
+  flex: 1;
+  padding: 7px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.btn-lp-view {
+  background: rgba(0, 240, 255, 0.12);
+  color: #00f0ff;
+  border: 1px solid rgba(0, 240, 255, 0.3);
+}
+.btn-lp-view:hover {
+  background: rgba(0, 240, 255, 0.25);
+}
+
+.btn-lp-edit {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+.btn-lp-edit:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.btn-lp-del {
+  background: rgba(255, 50, 50, 0.1);
+  color: #ff5555;
+  border: 1px solid rgba(255, 50, 50, 0.25);
+}
+.btn-lp-del:hover {
+  background: rgba(255, 50, 50, 0.25);
+}
+
+/* Colorización dinámica del rating pill */
+.local-player-rating-pill.gold {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.25), rgba(255, 165, 0, 0.25)) !important;
+  border-color: #ffd700 !important;
+  color: #ffd700 !important;
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.3) !important;
+}
+
+.local-player-rating-pill.silver {
+  background: linear-gradient(135deg, rgba(224, 224, 224, 0.25), rgba(158, 158, 158, 0.25)) !important;
+  border-color: #e0e0e0 !important;
+  color: #e0e0e0 !important;
+  box-shadow: 0 0 12px rgba(224, 224, 224, 0.2) !important;
+}
+
+.local-player-rating-pill.bronze {
+  background: linear-gradient(135deg, rgba(205, 127, 50, 0.25), rgba(139, 90, 43, 0.25)) !important;
+  border-color: #cd7f32 !important;
+  color: #cd7f32 !important;
+  box-shadow: 0 0 12px rgba(205, 127, 50, 0.15) !important;
+}
+
+/* Form Tabs and tag items hover style */
+.form-tab-btn {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.form-tab-btn:hover {
+  color: #00f0ff !important;
+  opacity: 0.85;
+}
+.tag-item {
+  animation: tagAppear 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  transition: all 0.2s ease;
+}
+.tag-item:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.25);
+}
+
+@keyframes tagAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ════════════════════════════════════════════
+   GLOBAL OUTLINE BUTTON DESIGN SYSTEM
+   ════════════════════════════════════════════ */
+.btn-profile-primary, 
+.btn-profile-secondary, 
+.btn-fixture-sim, 
+.btn-sim-start, 
+.btn-lp-action, 
+.btn-lp-view, 
+.btn-lp-edit {
+  background: transparent !important;
+  border: 2px solid #00f0ff !important;
+  color: #00f0ff !important;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.2) !important;
+  transition: all 0.25s ease-in-out !important;
+}
+
+.btn-profile-primary:hover:not(:disabled), 
+.btn-profile-secondary:hover:not(:disabled), 
+.btn-fixture-sim:hover:not(:disabled), 
+.btn-sim-start:hover:not(:disabled), 
+.btn-lp-action:hover:not(:disabled), 
+.btn-lp-view:hover:not(:disabled), 
+.btn-lp-edit:hover:not(:disabled) {
+  background: rgba(0, 240, 255, 0.12) !important;
+  color: #00f0ff !important;
+  box-shadow: 0 0 25px rgba(0, 240, 255, 0.4) !important;
+  transform: translateY(-2px) !important;
+}
+
+.btn-lp-del, 
+#btn-profile-logout {
+  background: transparent !important;
+  border: 2px solid #ff4a4a !important;
+  color: #ff4a4a !important;
+  box-shadow: 0 0 15px rgba(255, 74, 74, 0.2) !important;
+}
+
+.btn-lp-del:hover, 
+#btn-profile-logout:hover {
+  background: rgba(255, 74, 74, 0.15) !important;
+  color: #ff4a4a !important;
+  box-shadow: 0 0 25px rgba(255, 74, 74, 0.4) !important;
+}
+
+/* ──────────────────────────────────────────
+   MEDIOS DE PAGO (PAYMENT METHODS) STYLES
+   ────────────────────────────────────────── */
+.payment-methods-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.payment-card-box {
+  background: linear-gradient(135deg, rgba(16, 26, 45, 0.95), rgba(8, 14, 26, 0.98));
+  border: 1.5px solid rgba(0, 240, 255, 0.2);
+  border-radius: 18px;
+  padding: 22px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 170px;
+}
+
+.payment-card-box::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(0, 240, 255, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.payment-card-box.default-card {
+  border-color: #00f0ff;
+  box-shadow: 0 0 25px rgba(0, 240, 255, 0.25);
+  background: linear-gradient(135deg, rgba(12, 34, 56, 0.95), rgba(5, 16, 32, 0.98));
+}
+
+.payment-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.payment-card-chip {
+  width: 38px;
+  height: 28px;
+  background: linear-gradient(135deg, #ffd700, #b8860b);
+  border-radius: 6px;
+  position: relative;
+  box-shadow: inset 0 0 4px rgba(0,0,0,0.5);
+}
+
+.payment-card-chip::after {
+  content: '';
+  position: absolute;
+  top: 6px; left: 6px; right: 6px; bottom: 6px;
+  border: 1px solid rgba(0,0,0,0.25);
+  border-radius: 3px;
+}
+
+.payment-card-brand-tag {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.payment-card-brand-tag.brand-visa {
+  color: #1a1f71;
+  background: #fff;
+  font-weight: 900;
+  font-style: italic;
+}
+
+.payment-card-brand-tag.brand-mastercard {
+  color: #ff5f00;
+  background: rgba(255, 95, 0, 0.15);
+  border-color: rgba(255, 95, 0, 0.3);
+}
+
+.payment-card-brand-tag.brand-amex {
+  color: #006fcf;
+  background: rgba(0, 111, 207, 0.15);
+  border-color: rgba(0, 111, 207, 0.3);
+}
+
+.payment-card-number {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #fff;
+  margin: 14px 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.payment-card-bottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: auto;
+}
+
+.payment-card-holder {
+  display: flex;
+  flex-direction: column;
+}
+
+.payment-card-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 2px;
+}
+
+.payment-card-val {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.payment-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.payment-card-btn-action {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.payment-card-btn-action:hover {
+  background: rgba(0, 240, 255, 0.15);
+  border-color: #00f0ff;
+  color: #00f0ff;
+}
+
+.payment-card-btn-delete {
+  background: rgba(255, 59, 48, 0.1);
+  border: 1px solid rgba(255, 59, 48, 0.3);
+  color: #ff3b30;
+}
+
+.payment-card-btn-delete:hover {
+  background: rgba(255, 59, 48, 0.25);
+  color: #fff;
+}
+
+.payment-default-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: linear-gradient(135deg, #00f0ff, #0072ff);
+  color: #05080c;
+  font-size: 9.5px;
+  font-weight: 900;
+  padding: 3px 12px;
+  border-bottom-left-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+}
+
+/* ──────────────────────────────────────────
+   PROFILE TABS STYLING
+   ────────────────────────────────────────── */
+.profile-tab-btn {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  border-radius: 10px !important;
+  padding: 8px 16px !important;
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.25s ease !important;
+  box-shadow: none !important;
+}
+
+.profile-tab-btn:hover {
+  background: rgba(0, 240, 255, 0.08) !important;
+  border-color: rgba(0, 240, 255, 0.3) !important;
+  color: #00f0ff !important;
+}
+
+.profile-tab-btn.active {
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(0, 114, 255, 0.2)) !important;
+  border: 1px solid #00f0ff !important;
+  color: #00f0ff !important;
+  font-weight: 700 !important;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.25) !important;
+}
+
+
+

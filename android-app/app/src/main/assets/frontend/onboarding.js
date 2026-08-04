@@ -1,6 +1,29 @@
 let _onboardingMap = null;
 
 function setupOnboarding() {
+  const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  const isExisting = user.onboardingComplete || !!user.localCoachData || !!user.selectedClub;
+
+  if (isExisting) {
+    const localScreen = document.getElementById('local-coach-onboarding-screen');
+    if (localScreen) localScreen.style.display = 'none';
+    const onboarding = document.getElementById('onboarding-screen');
+    if (onboarding) onboarding.style.display = 'none';
+    document.body.style.overflow = '';
+    document.body.style.height = '';
+    return;
+  }
+
+  if (user.selectedTier === 'Local') {
+    const localScreen = document.getElementById('local-coach-onboarding-screen');
+    if (localScreen) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.height = '100vh';
+      localScreen.style.display = 'flex';
+      return;
+    }
+  }
+
   const onboarding = document.getElementById('onboarding-screen');
   if (!onboarding) return;
   
@@ -16,88 +39,88 @@ function setupOnboarding() {
   }
   
   const leagueData = {
-    "Spain":                          { name: "España",           league: "La Liga",                          teams: 20 },
-    "United Kingdom":                 { name: "Reino Unido",      league: "Premier League / Championship",    teams: 20 },
-    "Germany":                        { name: "Alemania",         league: "Bundesliga",                       teams: 18 },
-    "France":                         { name: "Francia",          league: "Ligue 1",                          teams: 18 },
-    "Italy":                          { name: "Italia",           league: "Serie A",                          teams: 20 },
-    "Portugal":                       { name: "Portugal",         league: "Primeira Liga",                    teams: 18 },
-    "Netherlands":                    { name: "Países Bajos",     league: "Eredivisie",                       teams: 18 },
-    "Brazil":                         { name: "Brasil",           league: "Brasileirão",                      teams: 20 },
-    "Argentina":                      { name: "Argentina",        league: "Liga Profesional",                 teams: 28 },
-    "Mexico":                         { name: "México",           league: "Liga MX",                          teams: 18 },
-    "Colombia":                       { name: "Colombia",         league: "Liga BetPlay",                     teams: 20 },
-    "Chile":                          { name: "Chile",            league: "Primera División",                 teams: 16 },
-    "Uruguay":                        { name: "Uruguay",          league: "Primera División",                 teams: 16 },
-    "United States of America":       { name: "EE.UU.",           league: "MLS",                              teams: 29 },
-    "Japan":                          { name: "Japón",            league: "J1 League",                        teams: 18 },
-    "South Korea":                    { name: "Corea del Sur",    league: "K League 1",                       teams: 12 },
-    "Saudi Arabia":                   { name: "Arabia Saudí",     league: "Saudi Pro League",                 teams: 16 },
-    "Turkey":                         { name: "Turquía",          league: "Süper Lig",                        teams: 19 },
-    "Russia":                         { name: "Rusia",            league: "Premier Liga",                     teams: 16 },
-    "Belgium":                        { name: "Bélgica",          league: "First Division A",                 teams: 16 },
-    "Greece":                         { name: "Grecia",           league: "Super League",                     teams: 16 },
-    "Australia":                      { name: "Australia",        league: "A-League",                         teams: 12 },
-    "Morocco":                        { name: "Marruecos",        league: "Botola Pro",                       teams: 16 },
-    "Egypt":                          { name: "Egipto",           league: "Egyptian Premier League",          teams: 18 },
-    "South Africa":                   { name: "Sudáfrica",        league: "PSL",                              teams: 16 },
-    "China":                          { name: "China",            league: "Super League",                     teams: 16 },
-    "India":                          { name: "India",            league: "ISL",                              teams: 12 },
-    "Ecuador":                        { name: "Ecuador",          league: "LigaPro",                          teams: 16 },
-    "Peru":                           { name: "Perú",             league: "Liga 1",                           teams: 18 },
-    "Venezuela":                      { name: "Venezuela",        league: "Liga FUTVE",                       teams: 18 },
-    "Bolivia":                        { name: "Bolivia",          league: "División Profesional",             teams: 14 },
-    "Paraguay":                       { name: "Paraguay",         league: "División de Honor",                teams: 12 },
-    "Costa Rica":                     { name: "Costa Rica",       league: "Primera División",                 teams: 12 },
-    "Honduras":                       { name: "Honduras",         league: "Liga Nacional",                    teams: 10 },
-    "Sweden":                         { name: "Suecia",           league: "Allsvenskan",                      teams: 16 },
-    "Denmark":                        { name: "Dinamarca",        league: "Superliga",                        teams: 14 },
-    "Norway":                         { name: "Noruega",          league: "Eliteserien",                      teams: 16 },
-    "Switzerland":                    { name: "Suiza",            league: "Super League",                     teams: 10 },
-    "Austria":                        { name: "Austria",          league: "Bundesliga",                       teams: 12 },
-    "Ukraine":                        { name: "Ucrania",          league: "Premier League",                   teams: 16 },
-    "Romania":                        { name: "Rumanía",          league: "Liga I",                           teams: 16 },
-    "Serbia":                         { name: "Serbia",           league: "SuperLiga",                        teams: 16 },
-    "Republic of Serbia":             { name: "Serbia",           league: "SuperLiga",                        teams: 16 },
-    "Croatia":                        { name: "Croacia",          league: "HNL",                              teams: 10 },
-    "Czechia":                        { name: "Rep. Checa",       league: "Fortuna Liga",                     teams: 16 },
-    "Czech Republic":                 { name: "Rep. Checa",       league: "Fortuna Liga",                     teams: 16 },
-    "Poland":                         { name: "Polonia",          league: "Ekstraklasa",                      teams: 18 },
-    "Trinidad and Tobago":            { name: "Trinidad y Tobago",league: "TT Pro League",                    teams: 8  },
-    "Bosnia and Herzegovina":         { name: "Bosnia y Herz.",   league: "Premier Liga BiH",                 teams: 12 },
-    "North Macedonia":                { name: "Macedonia del N.", league: "Prva Liga",                        teams: 10 },
-    "Albania":                        { name: "Albania",          league: "Kategoria Superiore",              teams: 10 },
-    "Slovenia":                       { name: "Eslovenia",        league: "PrvaLiga",                         teams: 10 },
-    "Belarus":                        { name: "Bielorrusia",      league: "Vysheyshaya Liga",                 teams: 16 },
-    "Kazakhstan":                     { name: "Kazajistán",       league: "Kazakhstan Premier League",        teams: 12 },
-    "Uzbekistan":                     { name: "Uzbekistán",       league: "Uzbekistan Super League",          teams: 16 },
-    "Libya":                          { name: "Libia",            league: "Libyan Premier League",            teams: 16 },
-    "Sudan":                          { name: "Sudán",            league: "Sudan Premier League",             teams: 18 },
-    "Ethiopia":                       { name: "Etiopía",          league: "Ethiopian Premier League",         teams: 16 },
-    "Zimbabwe":                       { name: "Zimbabue",         league: "Castle Lager Premier Soccer League", teams: 16 },
-    "Zambia":                         { name: "Zambia",           league: "Super League of Zambia",           teams: 16 },
-    "Angola":                         { name: "Angola",           league: "Girabola",                         teams: 16 },
-    "Democratic Republic of the Congo":{ name: "R.D. Congo",      league: "Linafoot",                         teams: 16 },
-    "Mozambique":                     { name: "Mozambique",       league: "Moçambola",                        teams: 14 },
-    "Cuba":                           { name: "Cuba",             league: "Campeonato Nacional",              teams: 12 },
-    "El Salvador":                    { name: "El Salvador",      league: "Primera División",                 teams: 10 },
-    "Nicaragua":                      { name: "Nicaragua",        league: "Liga Primera",                     teams: 10 },
-    "Dominican Republic":             { name: "Rep. Dominicana",  league: "LDF",                              teams: 8  },
-    "Haiti":                          { name: "Haití",            league: "Ligue Haïtienne",                  teams: 8  },
-    "Syria":                          { name: "Siria",            league: "Syrian Premier League",            teams: 14 },
-    "Jordan":                         { name: "Jordania",         league: "Jordan Pro League",                teams: 12 },
-    "Lebanon":                        { name: "Líbano",           league: "Lebanese Premier League",          teams: 8  },
-    "Kuwait":                         { name: "Kuwait",           league: "Kuwait Premier League",            teams: 10 },
-    "Bahrain":                        { name: "Baréin",           league: "Bahrain Premier League",           teams: 8  },
-    "Oman":                           { name: "Omán",             league: "Oman Professional League",         teams: 12 },
-    "Yemen":                          { name: "Yemen",            league: "Yemen League",                     teams: 12 },
-    "Pakistan":                       { name: "Pakistán",         league: "Pakistan Premier Football League", teams: 8  },
-    "Bangladesh":                     { name: "Bangladés",        league: "Bangladesh Premier League",        teams: 13 },
-    "Myanmar":                        { name: "Myanmar",          league: "Myanmar National League",          teams: 8  },
-    "Philippines":                    { name: "Filipinas",        league: "Philippines Football League",      teams: 8  },
-    "Cambodia":                       { name: "Camboya",          league: "Cambodian League",                 teams: 10 },
-    "Mongolia":                       { name: "Mongolia",         league: "Mongolian Premier League",         teams: 8  },
+    "Spain":                          { name: "España",           league: "La Liga",                                    teams: 20 },
+    "United Kingdom":                 { name: "Reino Unido",      league: "Premier League / EFL Championship",          teams: 20 },
+    "Germany":                        { name: "Alemania",         league: "Bundesliga",                                 teams: 18 },
+    "France":                         { name: "Francia",          league: "Ligue 1",                                    teams: 18 },
+    "Italy":                          { name: "Italia",           league: "Serie A",                                    teams: 20 },
+    "Portugal":                       { name: "Portugal",         league: "Primeira Liga",                              teams: 18 },
+    "Netherlands":                    { name: "Países Bajos",     league: "Eredivisie",                                 teams: 18 },
+    "Brazil":                         { name: "Brasil",           league: "Brasileirão Série A",                        teams: 20 },
+    "Argentina":                      { name: "Argentina",        league: "Liga Profesional",                           teams: 30 },
+    "Mexico":                         { name: "México",           league: "Liga MX",                                    teams: 18 },
+    "Colombia":                       { name: "Colombia",         league: "Liga BetPlay Dimayor",                       teams: 20 },
+    "Chile":                          { name: "Chile",            league: "Liga de Primera",                            teams: 16 },
+    "Uruguay":                        { name: "Uruguay",          league: "Primera División (Liga AUF Uruguaya)",       teams: 16 },
+    "United States of America":       { name: "EE.UU.",           league: "MLS (Major League Soccer)",                  teams: 30 },
+    "Japan":                          { name: "Japón",            league: "J1 League",                                  teams: 20 },
+    "South Korea":                    { name: "Corea del Sur",    league: "K League 1",                                 teams: 12 },
+    "Saudi Arabia":                   { name: "Arabia Saudí",     league: "Saudi Pro League (Roshn Saudi League)",      teams: 18 },
+    "Turkey":                         { name: "Turquía",          league: "Süper Lig",                                  teams: 18 },
+    "Russia":                         { name: "Rusia",            league: "Russian Premier League",                     teams: 16 },
+    "Belgium":                        { name: "Bélgica",          league: "Belgian Pro League (First Division A)",      teams: 16 },
+    "Greece":                         { name: "Grecia",           league: "Super League Greece",                        teams: 14 },
+    "Australia":                      { name: "Australia",        league: "A-League Men",                               teams: 12 },
+    "Morocco":                        { name: "Marruecos",        league: "Botola Pro",                                 teams: 16 },
+    "Egypt":                          { name: "Egipto",           league: "Egyptian Premier League",                    teams: 21 },
+    "South Africa":                   { name: "Sudáfrica",        league: "South African Premiership",                  teams: 16 },
+    "China":                          { name: "China",            league: "Superliga de China (Chinese Super League)",  teams: 16 },
+    "India":                          { name: "India",            league: "Indian Super League (ISL)",                  teams: 14 },
+    "Ecuador":                        { name: "Ecuador",          league: "LigaPro Serie A",                            teams: 16 },
+    "Peru":                           { name: "Perú",             league: "Liga 1",                                     teams: 19 },
+    "Venezuela":                      { name: "Venezuela",        league: "Liga FUTVE",                                 teams: 14 },
+    "Bolivia":                        { name: "Bolivia",          league: "División Profesional",                       teams: 16 },
+    "Paraguay":                       { name: "Paraguay",         league: "División de Honor",                          teams: 12 },
+    "Costa Rica":                     { name: "Costa Rica",       league: "Primera División",                           teams: 10 },
+    "Honduras":                       { name: "Honduras",         league: "Liga Nacional",                              teams: 11 },
+    "Sweden":                         { name: "Suecia",           league: "Allsvenskan",                                teams: 16 },
+    "Denmark":                        { name: "Dinamarca",        league: "Danish Superliga",                           teams: 12 },
+    "Norway":                         { name: "Noruega",          league: "Eliteserien",                                teams: 16 },
+    "Switzerland":                    { name: "Suiza",            league: "Swiss Super League",                         teams: 12 },
+    "Austria":                        { name: "Austria",          league: "Bundesliga",                                 teams: 12 },
+    "Ukraine":                        { name: "Ucrania",          league: "Ukrainian Premier League",                   teams: 16 },
+    "Romania":                        { name: "Rumanía",          league: "Liga I",                                     teams: 16 },
+    "Serbia":                         { name: "Serbia",           league: "Serbian SuperLiga",                          teams: 16 },
+    "Republic of Serbia":             { name: "Serbia",           league: "Serbian SuperLiga",                          teams: 16 },
+    "Croatia":                        { name: "Croacia",          league: "Croatian Football League (HNL)",             teams: 10 },
+    "Czechia":                        { name: "Rep. Checa",       league: "Czech First League (Fortuna/Chance Liga)",   teams: 16 },
+    "Czech Republic":                 { name: "Rep. Checa",       league: "Czech First League (Fortuna/Chance Liga)",   teams: 16 },
+    "Poland":                         { name: "Polonia",          league: "Ekstraklasa",                                teams: 18 },
+    "Trinidad and Tobago":            { name: "Trinidad y Tobago",league: "TT Premier Football League (ex TT Pro League)", teams: 12 },
+    "Bosnia and Herzegovina":         { name: "Bosnia y Herz.",   league: "Premier League of Bosnia and Herzegovina",   teams: 10 },
+    "North Macedonia":                { name: "Macedonia del N.", league: "Macedonian First Football League",           teams: 12 },
+    "Albania":                        { name: "Albania",          league: "Kategoria Superiore",                        teams: 10 },
+    "Slovenia":                       { name: "Eslovenia",        league: "Slovenian PrvaLiga",                         teams: 10 },
+    "Belarus":                        { name: "Bielorrusia",      league: "Belarusian Premier League",                  teams: 16 },
+    "Kazakhstan":                     { name: "Kazajistán",       league: "Kazakhstan Premier League",                  teams: 16 },
+    "Uzbekistan":                     { name: "Uzbekistán",       league: "Uzbekistan Super League",                    teams: 16 },
+    "Libya":                          { name: "Libia",            league: "Libyan Premier League",                      teams: 36 },
+    "Sudan":                          { name: "Sudán",            league: "Sudan Premier League",                       teams: 8  },
+    "Ethiopia":                       { name: "Etiopía",          league: "Ethiopian Premier League",                   teams: 20 },
+    "Zimbabwe":                       { name: "Zimbabue",         league: "Castle Lager Premier Soccer League",         teams: 18 },
+    "Zambia":                         { name: "Zambia",           league: "Zambia Super League",                        teams: 18 },
+    "Angola":                         { name: "Angola",           league: "Girabola",                                   teams: 16 },
+    "Democratic Republic of the Congo":{ name: "R.D. Congo",      league: "Linafoot",                                   teams: 30 },
+    "Mozambique":                     { name: "Mozambique",       league: "Moçambola",                                  teams: 14 },
+    "Cuba":                           { name: "Cuba",             league: "Campeonato Nacional (Liga Nacional de Fútbol)", teams: 16 },
+    "El Salvador":                    { name: "El Salvador",      league: "Primera División (Liga Pepsi)",              teams: 12 },
+    "Nicaragua":                      { name: "Nicaragua",        league: "Liga Primera",                               teams: 10 },
+    "Dominican Republic":             { name: "Rep. Dominicana",  league: "LDF (Liga Dominicana de Fútbol)",            teams: 10 },
+    "Haiti":                          { name: "Haití",            league: "Ligue Haïtienne",                            teams: 13 },
+    "Syria":                          { name: "Siria",            league: "Prime Premier League (ex Syrian Premier League)", teams: 16 },
+    "Jordan":                         { name: "Jordania",         league: "Jordanian Pro League",                       teams: 10 },
+    "Lebanon":                        { name: "Líbano",           league: "Lebanese Premier League",                    teams: 12 },
+    "Kuwait":                         { name: "Kuwait",           league: "Kuwaiti Premier League",                     teams: 10 },
+    "Bahrain":                        { name: "Baréin",           league: "Bahraini Premier League",                    teams: 12 },
+    "Oman":                           { name: "Omán",             league: "Oman Professional League",                   teams: 13 },
+    "Pakistan":                       { name: "Pakistán",         league: "Pakistan Premier Football League",           teams: 0  },
+    "Bangladesh":                     { name: "Bangladés",        league: "Bangladesh Football League (ex Bangladesh Premier League)", teams: 10 },
+    "Myanmar":                        { name: "Myanmar",          league: "Myanmar National League",                    teams: 12 },
+    "Philippines":                    { name: "Filipinas",        league: "Philippines Football League",                teams: 11 },
+    "Cambodia":                       { name: "Camboya",          league: "Cambodian Premier League",                   teams: 11 },
+    "Mongolia":                       { name: "Mongolia",         league: "Mongolian Premier League",                   teams: 9  }
   };
+
 
   function getCountryName(props) {
     return props.ADMIN || props.NAME_LONG || props.NAME || props.name || '';
@@ -266,7 +289,8 @@ function setupOnboarding() {
   // ── MULTI-STEP FLOW HANDLERS ────────────────────────────────────────────────
   let currentStep = 1;
   let selectedClub = null;
-  let selectedTier = null;
+  const storedUser = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  let selectedTier = storedUser.selectedTier || null;
 
   const step1Container = document.getElementById('onboarding-step1-container');
   const step2Container = document.getElementById('onboarding-step2-container');
@@ -659,17 +683,19 @@ function setupOnboarding() {
 
   window.goToStep1 = () => {
     currentStep = 1;
-    step1Container.style.display = 'block';
+    step1Container.style.display = 'none';
     step2Container.style.display = 'none';
-    step3Container.style.display = 'none';
+    step3Container.style.display = 'flex';
     
-    stepText.textContent = "Paso 1 de 2";
-    stepTitle.innerHTML = "¿Qué ligas quieres explorar?";
-    stepSubtitle.textContent = "Selecciona los países con ligas profesionales que más te interesan.";
+    if (stepText) stepText.textContent = "Paso 1 de 3";
+    stepTitle.innerHTML = "¿Cuál es tu plan?";
+    stepSubtitle.textContent = "Tu experiencia se adaptará según tu suscripción elegida.";
     
-    dotStep1.className = 'step-dot active';
-    dotStep2.className = 'step-dot';
+    if (dotStep1) dotStep1.className = 'step-dot active';
+    if (dotStep2) dotStep2.className = 'step-dot';
     if (dotStep3) dotStep3.className = 'step-dot';
+    
+    updateStep3UI();
   };
 
   window.selectCountryDirectly = (name) => {
@@ -677,24 +703,57 @@ function setupOnboarding() {
     updateUI();
   };
 
-  window.goToStep2 = async () => {
-    if (selectedCountries.length === 0) return;
+  window.goToStep2 = () => {
+    if (!selectedTier) return;
     
     currentStep = 2;
+    step1Container.style.display = 'block'; // Map Selection
+    step2Container.style.display = 'none';
+    step3Container.style.display = 'none';
+    
+    if (stepText) stepText.textContent = "Paso 2 de 3";
+    stepTitle.innerHTML = "¿Qué ligas quieres explorar?";
+    stepSubtitle.textContent = "Selecciona los países con ligas profesionales que más te interesan.";
+    
+    if (dotStep1) dotStep1.className = 'step-dot';
+    if (dotStep2) dotStep2.className = 'step-dot active';
+    if (dotStep3) dotStep3.className = 'step-dot';
+    
+    updateUI();
+    
+    // Invalidate size of leaflet map so it renders properly when visible
+    if (map) {
+      setTimeout(() => {
+        map.invalidateSize({ animate: false });
+        if (geoJsonLayer) {
+          if (isMobileDevice) {
+            map.setView([20, 0], 1.5, { animate: false });
+          } else {
+            map.fitBounds(geoJsonLayer.getBounds(), { padding: [0, 0] });
+          }
+        }
+      }, 100);
+    }
+  };
+
+  window.goToStep3 = async () => {
+    if (selectedCountries.length === 0) return;
+    
+    currentStep = 3;
     step1Container.style.display = 'none';
-    step2Container.style.display = 'flex';
+    step2Container.style.display = 'flex'; // Club Selection
     step3Container.style.display = 'none';
     
     const countryKey = selectedCountries[0];
     const data = leagueData[countryKey] || { name: countryKey, league: "Liga Profesional" };
     
-    stepText.textContent = "Paso 2 de 2";
+    if (stepText) stepText.textContent = "Paso 3 de 3";
     stepTitle.innerHTML = `¿A qué club de <span style="color: #00f0ff; text-shadow: 0 0 10px rgba(0, 240, 255, 0.4);">${data.name}</span> perteneces?`;
     stepSubtitle.textContent = `Mostrando clubes de ${data.league} seleccionada anteriormente.`;
     
-    dotStep1.className = 'step-dot';
-    dotStep2.className = 'step-dot active';
-    if (dotStep3) dotStep3.className = 'step-dot';
+    if (dotStep1) dotStep1.className = 'step-dot';
+    if (dotStep2) dotStep2.className = 'step-dot';
+    if (dotStep3) dotStep3.className = 'step-dot active';
     
     // Set flag and labels in left panel
     const flagImg = document.getElementById('step2-country-flag');
@@ -879,23 +938,6 @@ function setupOnboarding() {
     }
   }
 
-  window.goToStep3 = () => {
-    if (!selectedClub) return;
-    
-    currentStep = 3;
-    step1Container.style.display = 'none';
-    step2Container.style.display = 'none';
-    step3Container.style.display = 'flex';
-    
-    stepText.textContent = "Paso 3 de 3";
-    stepTitle.innerHTML = "¿Cuál es tu plan?";
-    stepSubtitle.textContent = "Tu experiencia se adaptará según tu suscripción elegida.";
-    
-    dotStep1.className = 'step-dot';
-    dotStep2.className = 'step-dot';
-    if (dotStep3) dotStep3.className = 'step-dot active';
-  };
-
   window.selectTier = (tierName, element) => {
     selectedTier = tierName;
     
@@ -925,6 +967,20 @@ function setupOnboarding() {
       chip.style.display = 'flex';
       hint.style.display = 'none';
       finalBtn.disabled = false;
+      
+      if (selectedTier === 'Local') {
+        finalBtn.innerHTML = 'Comenzar →';
+        finalBtn.onclick = (e) => {
+          if (e) e.preventDefault();
+          window.showLocalCoachFormModal();
+        };
+      } else {
+        finalBtn.innerHTML = 'Continuar →';
+        finalBtn.onclick = (e) => {
+          if (e) e.preventDefault();
+          window.goToStep2();
+        };
+      }
     } else {
       chip.style.display = 'none';
       hint.style.display = 'block';
@@ -933,9 +989,15 @@ function setupOnboarding() {
   }
 
   window.finalizarOnboarding = async () => {
-    if (!selectedCountries.length || !selectedClub || !selectedTier) return;
+    // Si es plan Local, no requiere países ni club
+    if (selectedTier === 'Local') {
+      if (!selectedTier) return;
+    } else {
+      if (!selectedCountries.length || !selectedClub || !selectedTier) return;
+    }
     
-    const finalBtn = document.getElementById('btn-onboarding-final');
+    const targetBtnId = (selectedTier === 'Local') ? 'btn-onboarding-final' : 'btn-confirmar-club';
+    const finalBtn = document.getElementById(targetBtnId);
     const originalText = finalBtn ? finalBtn.textContent : '';
     if (finalBtn) {
       finalBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
@@ -948,8 +1010,8 @@ function setupOnboarding() {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          selectedCountries,
-          selectedClub,
+          selectedCountries: selectedCountries || [],
+          selectedClub: selectedClub || '',
           selectedTier
         })
       });
@@ -966,8 +1028,8 @@ function setupOnboarding() {
     // Fallback: Siempre completar exitosamente a nivel de cliente para despliegues estáticos
     const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
     user.onboardingComplete = true;
-    user.selectedCountry = selectedCountries.join(', ');
-    user.selectedClub = selectedClub;
+    user.selectedCountry = selectedCountries.length ? selectedCountries.join(', ') : 'Local';
+    user.selectedClub = selectedClub || 'Club Local';
     user.selectedTier = selectedTier;
     localStorage.setItem('scout_ai_user', JSON.stringify(user));
     localStorage.removeItem('scout_ai_swaps'); // Clear custom swaps on club change!
@@ -1089,6 +1151,13 @@ function setupOnboarding() {
       .catch(err => {
         console.error('Failed to load GeoJSON map data:', err);
       });
+  }
+  
+  // Inicializar en el Paso 1 (Planes) o en el Paso 2 si ya se seleccionó y pagó un tier de pago
+  if (selectedTier && (selectedTier === 'Pro' || selectedTier === 'Plus')) {
+    goToStep2();
+  } else {
+    goToStep1();
   }
 }
 

@@ -1,0 +1,1674 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>FutbolAI — Diagrama Entidad-Relación Master</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+      background-color: #0F172A;
+      color: #F8FAFC;
+      padding: 30px;
+      width: 3200px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
+      border: 2px solid #334155;
+      border-radius: 12px;
+      padding: 24px 32px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    .title-area h1 {
+      font-size: 28px;
+      font-weight: 800;
+      color: #FFFFFF;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    .title-area p {
+      font-size: 14px;
+      color: #94A3B8;
+    }
+
+    .legend-bar {
+      display: flex;
+      gap: 16px;
+      background: #1E293B;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 12px 20px;
+      align-items: center;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .badge-sample {
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .badge-pk { background: #FEF3C7; color: #B45309; }
+    .badge-fk { background: #E0E7FF; color: #3730A3; }
+    .badge-null { background: #334155; color: #94A3B8; }
+    .badge-notnull { background: #451A03; color: #F87171; border: 1px solid #7F1D1D; }
+
+    /* Grid Layout for ERD Tables */
+    .erd-grid {
+      display: grid;
+      grid-template-columns: 700px 750px 750px 700px;
+      gap: 40px;
+      position: relative;
+    }
+
+    .column-group {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    /* Table Card */
+    .table-card {
+      background: #1E293B;
+      border: 2px solid #334155;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    }
+    .table-card.central-hub {
+      border: 3px solid #2563EB;
+      box-shadow: 0 0 25px rgba(37,99,235,0.4);
+    }
+
+    .card-header {
+      padding: 12px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #FFFFFF;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .card-header .count-tag {
+      font-size: 12px;
+      background: rgba(255,255,255,0.2);
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+
+    .fields-list {
+      padding: 6px 0;
+      background: #0F172A;
+    }
+    .field-row {
+      display: grid;
+      grid-template-columns: 70px 1fr 140px 85px;
+      align-items: center;
+      padding: 6px 14px;
+      font-size: 13px;
+      border-bottom: 1px solid #1E293B;
+    }
+    .field-row:nth-child(even) {
+      background: rgba(30, 41, 59, 0.4);
+    }
+    .field-row.is-pk {
+      background: rgba(254, 243, 199, 0.08);
+    }
+    .field-row.is-fk {
+      background: rgba(224, 231, 255, 0.08);
+    }
+
+    .col-name {
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-weight: 600;
+    }
+    .field-row.is-pk .col-name { color: #F59E0B; font-weight: 700; }
+    .field-row.is-fk .col-name { color: #60A5FA; font-weight: 700; }
+
+    .col-type {
+      color: #94A3B8;
+      font-size: 12px;
+      font-family: monospace;
+    }
+    .col-null {
+      font-size: 11px;
+      font-weight: 700;
+      text-align: right;
+    }
+    .null-yes { color: #64748B; }
+    .null-no { color: #EF4444; }
+
+    .fk-ref-label {
+      font-size: 11px;
+      color: #38BDF8;
+      font-weight: 600;
+      margin-left: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="title-area">
+      <h1>FUTBOL AI — DIAGRAMA ENTIDAD RELACIÓN MASTER (ERD COMPLETO)</h1>
+      <p>MICROSOFT SQL SERVER | BASE DE DATOS: FutbolAI | 15 TABLAS | 100% CAMPOS MAPEADOS (186 CAMPOS)</p>
+    </div>
+    <div class="legend-bar">
+      <div class="legend-item"><span class="badge-sample badge-pk">[PK]</span> Primary Key</div>
+      <div class="legend-item"><span class="badge-sample badge-fk">[FK]</span> Foreign Key</div>
+      <div class="legend-item"><span class="badge-sample badge-notnull">NOT NULL</span> Requerido</div>
+      <div class="legend-item"><span class="badge-sample badge-null">NULL</span> Opcional</div>
+    </div>
+  </div>
+
+  <div class="erd-grid">
+<div class="column-group">
+      <div class="table-card ">
+        <div class="card-header" style="background-color: #1E3A8A;">
+          <span>TABLA: EXPIRED_REGISTRATIONS</span>
+          <span class="count-tag">2 campos</span>
+        </div>
+        <div class="fields-list">
+    
+        <div class="field-row is-pk ">
+          <div><span class="badge-sample badge-pk">[PK]</span></div>
+          <div class="col-name">username</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">expiredAt</div>
+          <div class="col-type">datetimeoffset</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        </div>
+      </div>
+    
+      <div class="table-card ">
+        <div class="card-header" style="background-color: #1E3A8A;">
+          <span>TABLA: PASSKEYS</span>
+          <span class="count-tag">8 campos</span>
+        </div>
+        <div class="fields-list">
+    
+        <div class="field-row is-pk ">
+          <div><span class="badge-sample badge-pk">[PK]</span></div>
+          <div class="col-name">id</div>
+          <div class="col-type">char(36)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">credentialId</div>
+          <div class="col-type">nvarchar(512)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">publicKey</div>
+          <div class="col-type">nvarchar(MAX)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">counter</div>
+          <div class="col-type">bigint</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">transports</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">createdAt</div>
+          <div class="col-type">datetimeoffset</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">updatedAt</div>
+          <div class="col-type">datetimeoffset</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  is-fk">
+          <div><span class="badge-sample badge-fk">[FK]</span></div>
+          <div class="col-name">userId<span class="fk-ref-label">➞ users.id</span></div>
+          <div class="col-type">char(36)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        </div>
+      </div>
+    
+      <div class="table-card ">
+        <div class="card-header" style="background-color: #0369A1;">
+          <span>TABLA: DIRECT_MESSAGES</span>
+          <span class="count-tag">7 campos</span>
+        </div>
+        <div class="fields-list">
+    
+        <div class="field-row is-pk ">
+          <div><span class="badge-sample badge-pk">[PK]</span></div>
+          <div class="col-name">id</div>
+          <div class="col-type">char(36)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  is-fk">
+          <div><span class="badge-sample badge-fk">[FK]</span></div>
+          <div class="col-name">senderId<span class="fk-ref-label">➞ users.id</span></div>
+          <div class="col-type">char(36)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  is-fk">
+          <div><span class="badge-sample badge-fk">[FK]</span></div>
+          <div class="col-name">receiverId<span class="fk-ref-label">➞ users.id</span></div>
+          <div class="col-type">char(36)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">content</div>
+          <div class="col-type">nvarchar(MAX)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">isRead</div>
+          <div class="col-type">bit</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">createdAt</div>
+          <div class="col-type">datetimeoffset</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">updatedAt</div>
+          <div class="col-type">datetimeoffset</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        </div>
+      </div>
+    
+      <div class="table-card ">
+        <div class="card-header" style="background-color: #0369A1;">
+          <span>TABLA: USER_CONTACTS</span>
+          <span class="count-tag">6 campos</span>
+        </div>
+        <div class="fields-list">
+    
+        <div class="field-row is-pk ">
+          <div><span class="badge-sample badge-pk">[PK]</span></div>
+          <div class="col-name">id</div>
+          <div class="col-type">char(36)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  is-fk">
+          <div><span class="badge-sample badge-fk">[FK]</span></div>
+          <div class="col-name">userId<span class="fk-ref-label">➞ users.id</span></div>
+          <div class="col-type">char(36)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  is-fk">
+          <div><span class="badge-sample badge-fk">[FK]</span></div>
+          <div class="col-name">contactUserId<span class="fk-ref-label">➞ users.id</span></div>
+          <div class="col-type">char(36)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">nickname</div>
+          <div class="col-type">nvarchar(100)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">createdAt</div>
+          <div class="col-type">datetimeoffset</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">updatedAt</div>
+          <div class="col-type">datetimeoffset</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        </div>
+      </div>
+    
+      <div class="table-card ">
+        <div class="card-header" style="background-color: #9F1239;">
+          <span>TABLA: QUERY_LOGS</span>
+          <span class="count-tag">5 campos</span>
+        </div>
+        <div class="fields-list">
+    
+        <div class="field-row is-pk ">
+          <div><span class="badge-sample badge-pk">[PK]</span></div>
+          <div class="col-name">id</div>
+          <div class="col-type">int</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">message</div>
+          <div class="col-type">nvarchar(MAX)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">createdAt</div>
+          <div class="col-type">datetimeoffset</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">updatedAt</div>
+          <div class="col-type">datetimeoffset</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  is-fk">
+          <div><span class="badge-sample badge-fk">[FK]</span></div>
+          <div class="col-name">userId<span class="fk-ref-label">➞ users.id</span></div>
+          <div class="col-type">char(36)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        </div>
+      </div>
+    
+      <div class="table-card ">
+        <div class="card-header" style="background-color: #9F1239;">
+          <span>TABLA: COMPARISON_LOGS</span>
+          <span class="count-tag">6 campos</span>
+        </div>
+        <div class="fields-list">
+    
+        <div class="field-row is-pk ">
+          <div><span class="badge-sample badge-pk">[PK]</span></div>
+          <div class="col-name">id</div>
+          <div class="col-type">int</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">player1Id</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">player2Id</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">createdAt</div>
+          <div class="col-type">datetimeoffset</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">updatedAt</div>
+          <div class="col-type">datetimeoffset</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  is-fk">
+          <div><span class="badge-sample badge-fk">[FK]</span></div>
+          <div class="col-name">userId<span class="fk-ref-label">➞ users.id</span></div>
+          <div class="col-type">char(36)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        </div>
+      </div>
+    
+      <div class="table-card ">
+        <div class="card-header" style="background-color: #9F1239;">
+          <span>TABLA: FAVORITE_LOGS</span>
+          <span class="count-tag">6 campos</span>
+        </div>
+        <div class="fields-list">
+    
+        <div class="field-row is-pk ">
+          <div><span class="badge-sample badge-pk">[PK]</span></div>
+          <div class="col-name">id</div>
+          <div class="col-type">int</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">playerId</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">action</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">createdAt</div>
+          <div class="col-type">datetimeoffset</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">updatedAt</div>
+          <div class="col-type">datetimeoffset</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  is-fk">
+          <div><span class="badge-sample badge-fk">[FK]</span></div>
+          <div class="col-name">userId<span class="fk-ref-label">➞ users.id</span></div>
+          <div class="col-type">char(36)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        </div>
+      </div>
+    </div><div class="column-group">
+      <div class="table-card central-hub">
+        <div class="card-header" style="background-color: #1E3A8A;">
+          <span>TABLA: USERS</span>
+          <span class="count-tag">46 campos</span>
+        </div>
+        <div class="fields-list">
+    
+        <div class="field-row is-pk ">
+          <div><span class="badge-sample badge-pk">[PK]</span></div>
+          <div class="col-name">id</div>
+          <div class="col-type">char(36)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">username</div>
+          <div class="col-type">nvarchar(100)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">passwordHash</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">role</div>
+          <div class="col-type">nvarchar(150)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">avatarUrl</div>
+          <div class="col-type">nvarchar(500)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">isActive</div>
+          <div class="col-type">bit</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">lastLogin</div>
+          <div class="col-type">datetimeoffset</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">createdAt</div>
+          <div class="col-type">datetimeoffset</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">updatedAt</div>
+          <div class="col-type">datetimeoffset</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">onboardingComplete</div>
+          <div class="col-type">bit</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">selectedCountry</div>
+          <div class="col-type">nvarchar(100)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">selectedClub</div>
+          <div class="col-type">nvarchar(100)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">preferredFormation</div>
+          <div class="col-type">nvarchar(50)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">preferredStyle</div>
+          <div class="col-type">nvarchar(50)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">selectedTier</div>
+          <div class="col-type">nvarchar(50)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">nombres</div>
+          <div class="col-type">nvarchar(100)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">apellidos</div>
+          <div class="col-type">nvarchar(100)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">telefono</div>
+          <div class="col-type">nvarchar(50)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">email</div>
+          <div class="col-type">nvarchar(150)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">isVerified</div>
+          <div class="col-type">bit</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">otpCode</div>
+          <div class="col-type">nvarchar(6)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">otpExpires</div>
+          <div class="col-type">datetimeoffset</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">localCoachData</div>
+          <div class="col-type">nvarchar(MAX)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">maxPaidTier</div>
+          <div class="col-type">nvarchar(50)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">billingCycleStart</div>
+          <div class="col-type">datetimeoffset</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">savedCardholderName</div>
+          <div class="col-type">nvarchar(100)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">savedCardLast4</div>
+          <div class="col-type">nvarchar(4)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">savedCardBrand</div>
+          <div class="col-type">nvarchar(20)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">savedCardExp</div>
+          <div class="col-type">nvarchar(7)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">autoRenew</div>
+          <div class="col-type">bit</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">savedCardExpMonth</div>
+          <div class="col-type">nvarchar(2)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">savedCardExpYear</div>
+          <div class="col-type">nvarchar(4)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">savedCardHolder</div>
+          <div class="col-type">nvarchar(100)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">billingCycleEnd</div>
+          <div class="col-type">datetimeoffset</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">maxPaidTierInCycle</div>
+          <div class="col-type">nvarchar(50)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">hasPasskey</div>
+          <div class="col-type">bit</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">passkeyCredentialId</div>
+          <div class="col-type">nvarchar(MAX)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">passkeyPublicKey</div>
+          <div class="col-type">nvarchar(MAX)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">passkeyCounter</div>
+          <div class="col-type">int</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">passkeyPinHash</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">passkeyChallenge</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">passkeyDeviceInfo</div>
+          <div class="col-type">nvarchar(MAX)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">passkeyWebAuthnDevice</div>
+          <div class="col-type">nvarchar(MAX)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">passkeyPinDevice</div>
+          <div class="col-type">nvarchar(MAX)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">securityQuestions</div>
+          <div class="col-type">nvarchar(MAX)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">featureSettings</div>
+          <div class="col-type">nvarchar(MAX)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        </div>
+      </div>
+    
+      <div class="table-card ">
+        <div class="card-header" style="background-color: #581C87;">
+          <span>TABLA: LEAGUES</span>
+          <span class="count-tag">4 campos</span>
+        </div>
+        <div class="fields-list">
+    
+        <div class="field-row is-pk ">
+          <div><span class="badge-sample badge-pk">[PK]</span></div>
+          <div class="col-name">id</div>
+          <div class="col-type">int</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">name</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">country</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">flagIso</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        </div>
+      </div>
+    
+      <div class="table-card ">
+        <div class="card-header" style="background-color: #581C87;">
+          <span>TABLA: TEAMS</span>
+          <span class="count-tag">4 campos</span>
+        </div>
+        <div class="fields-list">
+    
+        <div class="field-row is-pk ">
+          <div><span class="badge-sample badge-pk">[PK]</span></div>
+          <div class="col-name">id</div>
+          <div class="col-type">int</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">name</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">leagueName</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">country</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        </div>
+      </div>
+    
+      <div class="table-card ">
+        <div class="card-header" style="background-color: #334155;">
+          <span>TABLA: SYSDIAGRAMS</span>
+          <span class="count-tag">5 campos</span>
+        </div>
+        <div class="fields-list">
+    
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">name</div>
+          <div class="col-type">nvarchar(128)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">principal_id</div>
+          <div class="col-type">int</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row is-pk ">
+          <div><span class="badge-sample badge-pk">[PK]</span></div>
+          <div class="col-name">diagram_id</div>
+          <div class="col-type">int</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">version</div>
+          <div class="col-type">int</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">definition</div>
+          <div class="col-type">varbinary(MAX)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        </div>
+      </div>
+    </div><div class="column-group">
+      <div class="table-card ">
+        <div class="card-header" style="background-color: #065F46;">
+          <span>TABLA: PLAYERS</span>
+          <span class="count-tag">31 campos</span>
+        </div>
+        <div class="fields-list">
+    
+        <div class="field-row is-pk ">
+          <div><span class="badge-sample badge-pk">[PK]</span></div>
+          <div class="col-name">id</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">name</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">photoId</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">nickname</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">age</div>
+          <div class="col-type">int</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">nationality</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">nationalityEs</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">flag</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">position</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">positionEs</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">currentTeam</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">league</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">country</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">jerseyNumber</div>
+          <div class="col-type">int</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">height</div>
+          <div class="col-type">int</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">weight</div>
+          <div class="col-type">int</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">preferredFoot</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">marketValue</div>
+          <div class="col-type">bigint</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">overallRating</div>
+          <div class="col-type">float</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">stats</div>
+          <div class="col-type">nvarchar(MAX)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">careerTotals</div>
+          <div class="col-type">nvarchar(MAX)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">trophies</div>
+          <div class="col-type">nvarchar(MAX)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">transfers</div>
+          <div class="col-type">nvarchar(MAX)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">bio</div>
+          <div class="col-type">nvarchar(MAX)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">bioEs</div>
+          <div class="col-type">nvarchar(MAX)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">strengths</div>
+          <div class="col-type">nvarchar(MAX)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">tags</div>
+          <div class="col-type">nvarchar(MAX)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">history</div>
+          <div class="col-type">nvarchar(MAX)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">createdAt</div>
+          <div class="col-type">datetimeoffset</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">updatedAt</div>
+          <div class="col-type">datetimeoffset</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">userId</div>
+          <div class="col-type">char(36)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        </div>
+      </div>
+    
+      <div class="table-card ">
+        <div class="card-header" style="background-color: #78350F;">
+          <span>TABLA: PAYMENT_METHODS</span>
+          <span class="count-tag">12 campos</span>
+        </div>
+        <div class="fields-list">
+    
+        <div class="field-row is-pk ">
+          <div><span class="badge-sample badge-pk">[PK]</span></div>
+          <div class="col-name">id</div>
+          <div class="col-type">int</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">userId</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">cardholderName</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">cardBrand</div>
+          <div class="col-type">nvarchar(50)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">last4</div>
+          <div class="col-type">nvarchar(4)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">expMonth</div>
+          <div class="col-type">nvarchar(2)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">expYear</div>
+          <div class="col-type">nvarchar(4)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">encryptedCardDetails</div>
+          <div class="col-type">nvarchar(MAX)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">isDefault</div>
+          <div class="col-type">bit</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">userAccount</div>
+          <div class="col-type">nvarchar(100)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">createdAt</div>
+          <div class="col-type">datetimeoffset</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">updatedAt</div>
+          <div class="col-type">datetimeoffset</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        </div>
+      </div>
+    
+      <div class="table-card ">
+        <div class="card-header" style="background-color: #78350F;">
+          <span>TABLA: PAYMENTS</span>
+          <span class="count-tag">14 campos</span>
+        </div>
+        <div class="fields-list">
+    
+        <div class="field-row is-pk ">
+          <div><span class="badge-sample badge-pk">[PK]</span></div>
+          <div class="col-name">id</div>
+          <div class="col-type">int</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">transactionId</div>
+          <div class="col-type">nvarchar(100)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">amount</div>
+          <div class="col-type">float</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">currency</div>
+          <div class="col-type">nvarchar(10)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">tier</div>
+          <div class="col-type">nvarchar(50)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">cardholderName</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">cardLast4</div>
+          <div class="col-type">nvarchar(4)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">status</div>
+          <div class="col-type">nvarchar(50)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">createdAt</div>
+          <div class="col-type">datetimeoffset</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">updatedAt</div>
+          <div class="col-type">datetimeoffset</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  is-fk">
+          <div><span class="badge-sample badge-fk">[FK]</span></div>
+          <div class="col-name">userId<span class="fk-ref-label">➞ users.id</span></div>
+          <div class="col-type">char(36)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">userAccount</div>
+          <div class="col-type">nvarchar(100)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">userEmail</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">pdfUrl</div>
+          <div class="col-type">nvarchar(500)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        </div>
+      </div>
+    </div><div class="column-group">
+      <div class="table-card ">
+        <div class="card-header" style="background-color: #065F46;">
+          <span>TABLA: PROSPECTS</span>
+          <span class="count-tag">36 campos</span>
+        </div>
+        <div class="fields-list">
+    
+        <div class="field-row is-pk ">
+          <div><span class="badge-sample badge-pk">[PK]</span></div>
+          <div class="col-name">id</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  is-fk">
+          <div><span class="badge-sample badge-fk">[FK]</span></div>
+          <div class="col-name">userId<span class="fk-ref-label">➞ users.id</span></div>
+          <div class="col-type">char(36)</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">name</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">nickname</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">age</div>
+          <div class="col-type">int</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">jerseyNumber</div>
+          <div class="col-type">int</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">position</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">positionEs</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">overallRating</div>
+          <div class="col-type">float</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">category</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">preferredFoot</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">height</div>
+          <div class="col-type">int</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">weight</div>
+          <div class="col-type">int</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">medicalStatus</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">photoUrl</div>
+          <div class="col-type">nvarchar(MAX)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">photoId</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">currentTeam</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">league</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">country</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">nationality</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">nationalityEs</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">flag</div>
+          <div class="col-type">nvarchar(255)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">marketValue</div>
+          <div class="col-type">bigint</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">bio</div>
+          <div class="col-type">nvarchar(MAX)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">bioEs</div>
+          <div class="col-type">nvarchar(MAX)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">stats</div>
+          <div class="col-type">nvarchar(MAX)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">strengths</div>
+          <div class="col-type">nvarchar(MAX)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">trophies</div>
+          <div class="col-type">nvarchar(MAX)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">tags</div>
+          <div class="col-type">nvarchar(MAX)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">history</div>
+          <div class="col-type">nvarchar(MAX)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">createdAt</div>
+          <div class="col-type">datetimeoffset</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">updatedAt</div>
+          <div class="col-type">datetimeoffset</div>
+          <div class="col-null null-no">NOT NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">improvements</div>
+          <div class="col-type">nvarchar(MAX)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">weaknesses</div>
+          <div class="col-type">nvarchar(MAX)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">tacticalNotes</div>
+          <div class="col-type">nvarchar(MAX)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        <div class="field-row  ">
+          <div><span></span></div>
+          <div class="col-name">highlightUrl</div>
+          <div class="col-type">nvarchar(MAX)</div>
+          <div class="col-null null-yes">NULL</div>
+        </div>
+      
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

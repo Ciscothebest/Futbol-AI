@@ -1673,3 +1673,534 @@
     font-size: 11.5px !important;
   }
 }
+
+/* ─── MIS JUGADORES (PLAN LOCAL) ─── */
+.local-player-card {
+  background: rgba(12, 19, 34, 0.85);
+  border: 1px solid rgba(0, 240, 255, 0.15);
+  border-radius: 16px;
+  padding: 16px;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.local-player-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(0, 240, 255, 0.4);
+  box-shadow: 0 10px 30px rgba(0, 240, 255, 0.18);
+  background: rgba(16, 26, 46, 0.9);
+}
+
+.local-player-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.local-player-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #00f0ff;
+  background: #080e1a;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: #00f0ff;
+  font-size: 18px;
+}
+
+.local-player-info {
+  flex: 1;
+  overflow: hidden;
+}
+
+.local-player-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 2px;
+}
+
+.local-player-nickname {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+}
+
+.local-player-rating-pill {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(0, 102, 255, 0.2));
+  border: 1px solid #00f0ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 900;
+  color: #00f0ff;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+}
+
+.local-player-badges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.lp-badge-pos {
+  background: rgba(0, 240, 255, 0.12);
+  color: #00f0ff;
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.lp-badge-cat {
+  background: rgba(112, 0, 255, 0.15);
+  color: #b070ff;
+  border: 1px solid rgba(112, 0, 255, 0.3);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.lp-badge-med {
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.lp-badge-med.disponible {
+  background: rgba(0, 255, 136, 0.12);
+  color: #00ff88;
+  border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.lp-badge-med.precaucion {
+  background: rgba(255, 170, 0, 0.12);
+  color: #ffaa00;
+  border: 1px solid rgba(255, 170, 0, 0.3);
+}
+
+.lp-badge-med.lesionado {
+  background: rgba(255, 50, 50, 0.12);
+  color: #ff3232;
+  border: 1px solid rgba(255, 50, 50, 0.3);
+}
+
+.local-player-stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 8px;
+  border-radius: 8px;
+  margin-bottom: 14px;
+  text-align: center;
+}
+
+.local-player-stat-item .val {
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.local-player-stat-item .lbl {
+  font-size: 9.5px;
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.local-player-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: auto;
+}
+
+.btn-lp-action {
+  flex: 1;
+  padding: 7px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.btn-lp-view {
+  background: rgba(0, 240, 255, 0.12);
+  color: #00f0ff;
+  border: 1px solid rgba(0, 240, 255, 0.3);
+}
+.btn-lp-view:hover {
+  background: rgba(0, 240, 255, 0.25);
+}
+
+.btn-lp-msg {
+  background: rgba(0, 240, 255, 0.15);
+  color: #00f0ff;
+  border: 1px solid rgba(0, 240, 255, 0.4);
+}
+.btn-lp-msg:hover {
+  background: rgba(0, 240, 255, 0.3);
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+}
+
+.btn-lp-edit {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+.btn-lp-edit:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.btn-lp-del {
+  background: rgba(255, 50, 50, 0.1);
+  color: #ff5555;
+  border: 1px solid rgba(255, 50, 50, 0.25);
+}
+.btn-lp-del:hover {
+  background: rgba(255, 50, 50, 0.25);
+}
+
+/* Colorización dinámica del rating pill */
+.local-player-rating-pill.gold {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.25), rgba(255, 165, 0, 0.25)) !important;
+  border-color: #ffd700 !important;
+  color: #ffd700 !important;
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.3) !important;
+}
+
+.local-player-rating-pill.silver {
+  background: linear-gradient(135deg, rgba(224, 224, 224, 0.25), rgba(158, 158, 158, 0.25)) !important;
+  border-color: #e0e0e0 !important;
+  color: #e0e0e0 !important;
+  box-shadow: 0 0 12px rgba(224, 224, 224, 0.2) !important;
+}
+
+.local-player-rating-pill.bronze {
+  background: linear-gradient(135deg, rgba(205, 127, 50, 0.25), rgba(139, 90, 43, 0.25)) !important;
+  border-color: #cd7f32 !important;
+  color: #cd7f32 !important;
+  box-shadow: 0 0 12px rgba(205, 127, 50, 0.15) !important;
+}
+
+/* Form Tabs and tag items hover style */
+.form-tab-btn {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.form-tab-btn:hover {
+  color: #00f0ff !important;
+  opacity: 0.85;
+}
+.tag-item {
+  animation: tagAppear 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  transition: all 0.2s ease;
+}
+.tag-item:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.25);
+}
+
+@keyframes tagAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ════════════════════════════════════════════
+   GLOBAL OUTLINE BUTTON DESIGN SYSTEM
+   ════════════════════════════════════════════ */
+.btn-profile-primary, 
+.btn-profile-secondary, 
+.btn-fixture-sim, 
+.btn-sim-start, 
+.btn-lp-action, 
+.btn-lp-view, 
+.btn-lp-edit {
+  background: transparent !important;
+  border: 2px solid #00f0ff !important;
+  color: #00f0ff !important;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.2) !important;
+  transition: all 0.25s ease-in-out !important;
+}
+
+.btn-profile-primary:hover:not(:disabled), 
+.btn-profile-secondary:hover:not(:disabled), 
+.btn-fixture-sim:hover:not(:disabled), 
+.btn-sim-start:hover:not(:disabled), 
+.btn-lp-action:hover:not(:disabled), 
+.btn-lp-view:hover:not(:disabled), 
+.btn-lp-edit:hover:not(:disabled) {
+  background: rgba(0, 240, 255, 0.12) !important;
+  color: #00f0ff !important;
+  box-shadow: 0 0 25px rgba(0, 240, 255, 0.4) !important;
+  transform: translateY(-2px) !important;
+}
+
+.btn-lp-del, 
+#btn-profile-logout {
+  background: transparent !important;
+  border: 2px solid #ff4a4a !important;
+  color: #ff4a4a !important;
+  box-shadow: 0 0 15px rgba(255, 74, 74, 0.2) !important;
+}
+
+.btn-lp-del:hover, 
+#btn-profile-logout:hover {
+  background: rgba(255, 74, 74, 0.15) !important;
+  color: #ff4a4a !important;
+  box-shadow: 0 0 25px rgba(255, 74, 74, 0.4) !important;
+}
+
+/* ──────────────────────────────────────────
+   MEDIOS DE PAGO (PAYMENT METHODS) STYLES
+   ────────────────────────────────────────── */
+.payment-methods-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.payment-card-box {
+  background: linear-gradient(135deg, rgba(16, 26, 45, 0.95), rgba(8, 14, 26, 0.98));
+  border: 1.5px solid rgba(0, 240, 255, 0.2);
+  border-radius: 18px;
+  padding: 22px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 170px;
+}
+
+.payment-card-box::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(0, 240, 255, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.payment-card-box.default-card {
+  border-color: #00f0ff;
+  box-shadow: 0 0 25px rgba(0, 240, 255, 0.25);
+  background: linear-gradient(135deg, rgba(12, 34, 56, 0.95), rgba(5, 16, 32, 0.98));
+}
+
+.payment-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.payment-card-chip {
+  width: 38px;
+  height: 28px;
+  background: linear-gradient(135deg, #ffd700, #b8860b);
+  border-radius: 6px;
+  position: relative;
+  box-shadow: inset 0 0 4px rgba(0,0,0,0.5);
+}
+
+.payment-card-chip::after {
+  content: '';
+  position: absolute;
+  top: 6px; left: 6px; right: 6px; bottom: 6px;
+  border: 1px solid rgba(0,0,0,0.25);
+  border-radius: 3px;
+}
+
+.payment-card-brand-tag {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.payment-card-brand-tag.brand-visa {
+  color: #1a1f71;
+  background: #fff;
+  font-weight: 900;
+  font-style: italic;
+}
+
+.payment-card-brand-tag.brand-mastercard {
+  color: #ff5f00;
+  background: rgba(255, 95, 0, 0.15);
+  border-color: rgba(255, 95, 0, 0.3);
+}
+
+.payment-card-brand-tag.brand-amex {
+  color: #006fcf;
+  background: rgba(0, 111, 207, 0.15);
+  border-color: rgba(0, 111, 207, 0.3);
+}
+
+.payment-card-number {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #fff;
+  margin: 14px 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.payment-card-bottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: auto;
+}
+
+.payment-card-holder {
+  display: flex;
+  flex-direction: column;
+}
+
+.payment-card-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 2px;
+}
+
+.payment-card-val {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.payment-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.payment-card-btn-action {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.payment-card-btn-action:hover {
+  background: rgba(0, 240, 255, 0.15);
+  border-color: #00f0ff;
+  color: #00f0ff;
+}
+
+.payment-card-btn-delete {
+  background: rgba(255, 59, 48, 0.1);
+  border: 1px solid rgba(255, 59, 48, 0.3);
+  color: #ff3b30;
+}
+
+.payment-card-btn-delete:hover {
+  background: rgba(255, 59, 48, 0.25);
+  color: #fff;
+}
+
+.payment-default-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: linear-gradient(135deg, #00f0ff, #0072ff);
+  color: #05080c;
+  font-size: 9.5px;
+  font-weight: 900;
+  padding: 3px 12px;
+  border-bottom-left-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+}
+
+/* ──────────────────────────────────────────
+   PROFILE TABS STYLING
+   ────────────────────────────────────────── */
+.profile-tab-btn {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  border-radius: 10px !important;
+  padding: 8px 16px !important;
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.25s ease !important;
+  box-shadow: none !important;
+}
+
+.profile-tab-btn:hover {
+  background: rgba(0, 240, 255, 0.08) !important;
+  border-color: rgba(0, 240, 255, 0.3) !important;
+  color: #00f0ff !important;
+}
+
+.profile-tab-btn.active {
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(0, 114, 255, 0.2)) !important;
+  border: 1px solid #00f0ff !important;
+  color: #00f0ff !important;
+  font-weight: 700 !important;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.25) !important;
+}
+
+
+

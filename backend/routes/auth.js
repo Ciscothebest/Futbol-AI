@@ -237,7 +237,7 @@ module.exports = ({ User, JWT_SECRET }) => {
   };
 
   // ─── Middleware: verify JWT ─────────────────────────────────────
-  const authenticate = (req, res, next) => {
+  const authenticate = async (req, res, next) => {
     const header = req.headers.authorization;
     if (!header || !header.startsWith('Bearer ')) {
       return res.status(401).json({ error: 'Token requerido' });
@@ -245,6 +245,16 @@ module.exports = ({ User, JWT_SECRET }) => {
     try {
       const token = header.split(' ')[1];
       req.user = jwt.verify(token, JWT_SECRET);
+
+      if (req.user && req.user.id) {
+        let dbUser = await User.findByPk(req.user.id);
+        if (!dbUser && req.user.username) {
+          dbUser = await User.findOne({ where: { username: req.user.username } });
+        }
+        if (dbUser) {
+          req.user.id = dbUser.id;
+        }
+      }
       next();
     } catch {
       return res.status(401).json({ error: 'Token inválido o expirado' });
@@ -370,11 +380,26 @@ module.exports = ({ User, JWT_SECRET }) => {
         return res.status(401).json({ error: 'Credenciales incorrectas' });
       }
 
-      await user.update({ lastLogin: new Date() });
+      // Generate a temporary passkey verification token (valid 10 minutes)
+      const tempToken = jwt.sign({ id: user.id, username: user.username, isPasskeyPending: true }, JWT_SECRET, { expiresIn: '10m' });
 
-      const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, JWT_SECRET, { expiresIn: '30d' });
-
-      res.json({ token, user: user.toPublicJSON() });
+      if (!user.hasPasskey) {
+        return res.json({
+          requiresPasskey: true,
+          passkeyStep: 'create',
+          tempToken,
+          username: user.username,
+          message: 'Se requiere crear una Passkey como complemento obligatorio al inicio de sesión en Futbol AI Local.'
+        });
+      } else {
+        return res.json({
+          requiresPasskey: true,
+          passkeyStep: 'verify',
+          tempToken,
+          username: user.username,
+          message: 'Por favor verifica tu Passkey para completar el inicio de sesión en Futbol AI Local.'
+        });
+      }
     } catch (err) {
       console.error('Login error:', err);
       res.status(500).json({ error: 'Error al iniciar sesión', details: err.message });
@@ -415,18 +440,258 @@ module.exports = ({ User, JWT_SECRET }) => {
 
       console.log(`✅ User ${user.username} successfully verified email ${user.email}`);
 
-      // Auto-login upon verification: generate token and return it
-      const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, JWT_SECRET, { expiresIn: '30d' });
+      const tempToken = jwt.sign({ id: user.id, username: user.username, isPasskeyPending: true }, JWT_SECRET, { expiresIn: '10m' });
 
       res.json({ 
         success: true, 
-        message: 'Cuenta verificada con éxito', 
-        token, 
+        message: 'Cuenta verificada con éxito. Procede a configurar tu Passkey obligatoria.', 
+        requiresPasskey: true,
+        passkeyStep: 'create',
+        tempToken, 
         user: user.toPublicJSON() 
       });
     } catch (err) {
       console.error('Verify OTP error:', err);
       res.status(500).json({ error: 'Error al verificar código OTP', details: err.message });
+    }
+  });
+
+  // ─── PASSKEY ENDPOINTS ───────────────────────────────────────────
+  const crypto = require('crypto');
+  const bcrypt = require('bcryptjs');
+
+  router.post('/passkey/register-options', authenticate, async (req, res) => {
+    try {
+      const user = await User.findByPk(req.user.id);
+      if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
+
+      const challenge = crypto.randomBytes(32).toString('base64url');
+      await user.update({ passkeyChallenge: challenge });
+
+      const rpId = (req.hostname === 'localhost' || req.hostname === '127.0.0.1') ? 'localhost' : req.hostname;
+      res.json({
+        challenge,
+        rp: { name: 'Futbol AI Local', id: rpId },
+        user: {
+          id: Buffer.from(user.id).toString('base64url'),
+          name: user.username,
+          displayName: `${user.nombres || user.username}`
+        },
+        pubKeyCredParams: [
+          { alg: -7, type: 'public-key' },
+          { alg: -257, type: 'public-key' }
+        ],
+        authenticatorSelection: {
+          userVerification: 'preferred',
+          residentKey: 'preferred'
+        },
+        timeout: 60000
+      });
+    } catch (err) {
+      console.error('Passkey register-options error:', err);
+      res.status(500).json({ error: 'Error al generar opciones de Passkey', details: err.message });
+    }
+  });
+
+  router.post('/passkey/register-verify', authenticate, async (req, res) => {
+    try {
+      const { credential, pin, deviceInfo } = req.body;
+      const user = await User.findByPk(req.user.id);
+      if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
+
+      const userAgent = req.headers['user-agent'] || '';
+      let detectedDevice = deviceInfo;
+      if (!detectedDevice) {
+        if (/android/i.test(userAgent)) detectedDevice = 'Dispositivo Móvil Android';
+        else if (/iphone|ipad|ipod/i.test(userAgent)) detectedDevice = 'Dispositivo iOS (iPhone/iPad)';
+        else if (/macintosh|mac os x/i.test(userAgent)) detectedDevice = 'Equipo Mac (macOS)';
+        else if (/windows/i.test(userAgent)) detectedDevice = 'Equipo PC (Windows)';
+        else detectedDevice = 'Dispositivo de Acceso Registrado';
+      }
+
+      const credId = (credential && (credential.id || credential.rawId)) ? (credential.id || credential.rawId) : null;
+
+      if (credId) {
+        await user.update({
+          passkeyCredentialId: credId,
+          passkeyPublicKey: JSON.stringify(credential),
+          passkeyWebAuthnDevice: detectedDevice,
+          passkeyDeviceInfo: detectedDevice,
+          hasPasskey: true,
+          passkeyChallenge: null,
+          lastLogin: new Date()
+        });
+      } else if (pin) {
+        if (!/^\d{6}$/.test(String(pin).trim())) {
+          return res.status(400).json({ error: 'El PIN de Passkey debe ser exactamente de 6 dígitos numéricos' });
+        }
+        const pinHash = await bcrypt.hash(String(pin).trim(), 12);
+        const mainDevice = user.passkeyWebAuthnDevice || detectedDevice;
+        await user.update({
+          passkeyPinHash: pinHash,
+          passkeyPinDevice: detectedDevice,
+          passkeyDeviceInfo: mainDevice,
+          hasPasskey: true,
+          passkeyChallenge: null,
+          lastLogin: new Date()
+        });
+      } else {
+        return res.status(400).json({ error: 'Se requiere una credencial WebAuthn o PIN Passkey' });
+      }
+
+      await user.reload();
+      console.log(`🔐 Passkey successfully configured for user: ${user.username}, credId: ${!!user.passkeyCredentialId}, hasPin: ${!!user.passkeyPinHash}`);
+
+      const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, JWT_SECRET, { expiresIn: '30d' });
+      res.json({
+        success: true,
+        message: 'Passkey configurada con éxito',
+        token,
+        user: user.toPublicJSON()
+      });
+    } catch (err) {
+      console.error('Passkey register-verify error:', err);
+      res.status(500).json({ error: 'Error al registrar Passkey', details: err.message });
+    }
+  });
+
+  router.post('/passkey/remove-method', authenticate, async (req, res) => {
+    try {
+      const { method } = req.body;
+      const user = await User.findByPk(req.user.id);
+      if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
+
+      let newPasskeyCredentialId = user.passkeyCredentialId;
+      let newPasskeyPinHash = user.passkeyPinHash;
+      let newPasskeyPublicKey = user.passkeyPublicKey;
+      let newPasskeyWebAuthnDevice = user.passkeyWebAuthnDevice;
+      let newPasskeyPinDevice = user.passkeyPinDevice;
+
+      if (method === 'webauthn') {
+        newPasskeyCredentialId = null;
+        newPasskeyPublicKey = null;
+        newPasskeyWebAuthnDevice = null;
+      } else if (method === 'pin') {
+        newPasskeyPinHash = null;
+        newPasskeyPinDevice = null;
+      } else {
+        return res.status(400).json({ error: 'Método no válido' });
+      }
+
+      const hasRemaining = !!(newPasskeyCredentialId || newPasskeyPinHash);
+      const mainDeviceInfo = hasRemaining ? (newPasskeyWebAuthnDevice || newPasskeyPinDevice || user.passkeyDeviceInfo) : null;
+
+      await user.update({
+        passkeyCredentialId: newPasskeyCredentialId,
+        passkeyPublicKey: newPasskeyPublicKey,
+        passkeyPinHash: newPasskeyPinHash,
+        passkeyWebAuthnDevice: newPasskeyWebAuthnDevice,
+        passkeyPinDevice: newPasskeyPinDevice,
+        passkeyDeviceInfo: mainDeviceInfo,
+        hasPasskey: hasRemaining
+      });
+
+      await user.reload();
+      res.json({
+        success: true,
+        message: `Método Passkey ${method} desvinculado exitosamente`,
+        user: user.toPublicJSON()
+      });
+    } catch (err) {
+      console.error('Remove passkey method error:', err);
+      res.status(500).json({ error: 'Error al remover método Passkey', details: err.message });
+    }
+  });
+
+  router.post('/passkey/update-device', authenticate, async (req, res) => {
+    try {
+      const { deviceInfo } = req.body;
+      const user = await User.findByPk(req.user.id);
+      if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
+
+      if (!deviceInfo || !deviceInfo.trim()) {
+        return res.status(400).json({ error: 'Debes proporcionar un nombre de dispositivo válido' });
+      }
+
+      const cleanDevice = deviceInfo.trim();
+
+      await user.update({
+        passkeyDeviceInfo: cleanDevice,
+        passkeyWebAuthnDevice: user.passkeyCredentialId ? cleanDevice : user.passkeyWebAuthnDevice,
+        passkeyPinDevice: user.passkeyPinHash ? cleanDevice : user.passkeyPinDevice
+      });
+
+      await user.reload();
+      console.log(`📱 Passkey device info explicitly updated to "${cleanDevice}" for user ${user.username}`);
+
+      res.json({
+        success: true,
+        message: 'Nombre de dispositivo actualizado con éxito',
+        user: user.toPublicJSON()
+      });
+    } catch (err) {
+      console.error('Update passkey device error:', err);
+      res.status(500).json({ error: 'Error al actualizar dispositivo', details: err.message });
+    }
+  });
+
+  router.post('/passkey/login-options', authenticate, async (req, res) => {
+    try {
+      const user = await User.findByPk(req.user.id);
+      if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
+
+      const challenge = crypto.randomBytes(32).toString('base64url');
+      await user.update({ passkeyChallenge: challenge });
+
+      const allowCredentials = user.passkeyCredentialId ? [{ id: user.passkeyCredentialId, type: 'public-key' }] : [];
+      res.json({
+        challenge,
+        allowCredentials,
+        timeout: 60000
+      });
+    } catch (err) {
+      console.error('Passkey login-options error:', err);
+      res.status(500).json({ error: 'Error al generar desafío Passkey', details: err.message });
+    }
+  });
+
+  router.post('/passkey/login-verify', authenticate, async (req, res) => {
+    try {
+      const { credential, pin } = req.body;
+      const user = await User.findByPk(req.user.id);
+      if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
+
+      if (credential && credential.id) {
+        const updateData = { lastLogin: new Date(), passkeyChallenge: null, hasPasskey: true };
+        if (!user.passkeyCredentialId) {
+          updateData.passkeyCredentialId = credential.id;
+          updateData.passkeyPublicKey = JSON.stringify(credential);
+        }
+        await user.update(updateData);
+      } else if (pin) {
+        if (!user.passkeyPinHash) {
+          return res.status(400).json({ error: 'No hay un PIN Passkey registrado para este usuario. Usa la opción biométrica o vuelve a crear una Passkey.' });
+        }
+        const validPin = await bcrypt.compare(String(pin).trim(), user.passkeyPinHash);
+        if (!validPin) {
+          return res.status(401).json({ error: 'PIN Passkey incorrecto' });
+        }
+        await user.update({ lastLogin: new Date(), passkeyChallenge: null, hasPasskey: true });
+      } else {
+        return res.status(400).json({ error: 'Se requiere autenticación por Passkey o PIN' });
+      }
+
+      console.log(`🔑 Passkey login successful for user: ${user.username}`);
+      const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, JWT_SECRET, { expiresIn: '30d' });
+      res.json({
+        success: true,
+        message: 'Autenticación Passkey exitosa',
+        token,
+        user: user.toPublicJSON()
+      });
+    } catch (err) {
+      console.error('Passkey login-verify error:', err);
+      res.status(500).json({ error: 'Error al verificar Passkey', details: err.message });
     }
   });
 
@@ -515,8 +780,14 @@ module.exports = ({ User, JWT_SECRET }) => {
 
   router.get('/me', authenticate, async (req, res) => {
     try {
-      const user = await User.findByPk(req.user.id);
+      let user = await User.findByPk(req.user.id);
+      if (!user && req.user.username) {
+        user = await User.findOne({ where: { username: req.user.username } });
+      }
       if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
+      if (user.checkAndResetDailyLimits) {
+        await user.checkAndResetDailyLimits();
+      }
       res.json({ user: user.toPublicJSON() });
     } catch (err) {
       res.status(500).json({ error: err.message });
@@ -527,7 +798,10 @@ module.exports = ({ User, JWT_SECRET }) => {
     try {
       const { selectedCountries, selectedClub, preferredFormation, preferredStyle, selectedTier, localCoachData } = req.body;
       const selectedCountry = req.body.selectedCountry !== undefined ? req.body.selectedCountry : selectedCountries;
-      const user = await User.findByPk(req.user.id);
+      let user = await User.findByPk(req.user.id);
+      if (!user && req.user.username) {
+        user = await User.findOne({ where: { username: req.user.username } });
+      }
       if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
       
       const updateData = {};
@@ -552,8 +826,28 @@ module.exports = ({ User, JWT_SECRET }) => {
       if (localCoachData !== undefined) {
         updateData.localCoachData = typeof localCoachData === 'object' ? JSON.stringify(localCoachData) : localCoachData;
       }
+      if (req.body.billingCycleStart !== undefined) {
+        updateData.billingCycleStart = req.body.billingCycleStart;
+      }
+      if (req.body.billingCycleEnd !== undefined) {
+        updateData.billingCycleEnd = req.body.billingCycleEnd;
+      }
+      if (req.body.autoRenew !== undefined) {
+        updateData.autoRenew = !!req.body.autoRenew;
+      }
+      if (req.body.maxPaidTierInCycle !== undefined) {
+        updateData.maxPaidTierInCycle = req.body.maxPaidTierInCycle;
+      }
       
-      updateData.onboardingComplete = true;
+      const wasLocal = (user.selectedTier || '').toLowerCase() === 'local' || (user.role || '').toLowerCase() === 'entrenador local';
+      const isTargetingLocal = selectedTier === 'Local';
+      const hasStandardTeam = (selectedClub && selectedClub !== 'Club Local') || (user.selectedClub && user.selectedClub !== 'Club Local' && user.selectedClub !== '');
+      
+      if (wasLocal && !isTargetingLocal && !hasStandardTeam && selectedClub === undefined) {
+        updateData.onboardingComplete = false;
+      } else {
+        updateData.onboardingComplete = true;
+      }
       
       await user.update(updateData);
       
@@ -561,6 +855,62 @@ module.exports = ({ User, JWT_SECRET }) => {
     } catch (err) {
       console.error('Onboarding update error:', err);
       res.status(500).json({ error: 'Error al actualizar onboarding', details: err.message });
+    }
+  });
+
+  router.post('/unsubscribe', authenticate, async (req, res) => {
+    try {
+      const user = await User.findByPk(req.user.id);
+      if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
+
+      await user.update({ autoRenew: false });
+      res.json({ success: true, message: 'Renovación automática cancelada exitosamente', user: user.toPublicJSON() });
+    } catch (err) {
+      console.error('Unsubscribe error:', err);
+      res.status(500).json({ error: 'Error al desuscribirse', details: err.message });
+    }
+  });
+
+  router.get('/local-players', authenticate, async (req, res) => {
+    try {
+      const user = await User.findByPk(req.user.id);
+      if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
+      let data = {};
+      if (user.localCoachData) {
+        try {
+          data = typeof user.localCoachData === 'string' ? JSON.parse(user.localCoachData) : user.localCoachData;
+        } catch (e) {
+          data = {};
+        }
+      }
+      res.json({ success: true, players: Array.isArray(data.players) ? data.players : [] });
+    } catch (err) {
+      res.status(500).json({ error: 'Error al obtener jugadores locales', details: err.message });
+    }
+  });
+
+  router.post('/local-players', authenticate, async (req, res) => {
+    try {
+      const { players } = req.body;
+      if (!Array.isArray(players)) {
+        return res.status(400).json({ error: 'players debe ser un arreglo de jugadores' });
+      }
+      const user = await User.findByPk(req.user.id);
+      if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
+      
+      let data = {};
+      if (user.localCoachData) {
+        try {
+          data = typeof user.localCoachData === 'string' ? JSON.parse(user.localCoachData) : user.localCoachData;
+        } catch (e) {
+          data = {};
+        }
+      }
+      data.players = players;
+      await user.update({ localCoachData: JSON.stringify(data) });
+      res.json({ success: true, players: data.players, user: user.toPublicJSON() });
+    } catch (err) {
+      res.status(500).json({ error: 'Error al actualizar jugadores locales', details: err.message });
     }
   });
 
@@ -646,6 +996,77 @@ module.exports = ({ User, JWT_SECRET }) => {
     } catch (err) {
       console.error('Avatar upload error:', err);
       res.status(500).json({ error: 'Error al subir la imagen de perfil', details: err.message });
+    }
+  });
+
+  // ─── SECURITY QUESTIONS ENDPOINTS ────────────────────────────────
+  router.get('/security-questions', authenticate, async (req, res) => {
+    try {
+      const user = await User.findByPk(req.user.id);
+      if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
+
+      let questions = [];
+      if (user.securityQuestions) {
+        try {
+          const parsed = typeof user.securityQuestions === 'string' ? JSON.parse(user.securityQuestions) : user.securityQuestions;
+          if (Array.isArray(parsed)) {
+            questions = parsed.map(q => ({ question: q.question }));
+          }
+        } catch (e) {
+          questions = [];
+        }
+      }
+      res.json({ success: true, questions, hasConfigured: questions.length === 3 });
+    } catch (err) {
+      console.error('Get security questions error:', err);
+      res.status(500).json({ error: 'Error al obtener preguntas de seguridad', details: err.message });
+    }
+  });
+
+  router.post('/security-questions', authenticate, async (req, res) => {
+    try {
+      const { items } = req.body;
+      if (!Array.isArray(items) || items.length !== 3) {
+        return res.status(400).json({ error: 'Debes proporcionar exactamente 3 preguntas de seguridad con sus respuestas' });
+      }
+
+      const bcrypt = require('bcryptjs');
+      const processedItems = [];
+
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        if (!item || !item.question || !item.answer) {
+          return res.status(400).json({ error: `La pregunta y respuesta #${i + 1} son obligatorias` });
+        }
+        const qStr = String(item.question).trim();
+        const aStr = String(item.answer).trim().toLowerCase();
+
+        if (qStr.length < 5) {
+          return res.status(400).json({ error: `La pregunta #${i + 1} debe tener al menos 5 caracteres` });
+        }
+        if (aStr.length < 2) {
+          return res.status(400).json({ error: `La respuesta #${i + 1} debe tener al menos 2 caracteres` });
+        }
+
+        const answerHash = await bcrypt.hash(aStr, 10);
+        processedItems.push({
+          question: qStr,
+          answerHash: answerHash
+        });
+      }
+
+      const user = await User.findByPk(req.user.id);
+      if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
+
+      await user.update({
+        securityQuestions: JSON.stringify(processedItems)
+      });
+
+      console.log(`❓ Security questions updated for user ${user.username}`);
+      res.json({ success: true, message: '3 preguntas de seguridad guardadas exitosamente', user: user.toPublicJSON() });
+    } catch (err) {
+      console.error('Save security questions error:', err);
+      res.status(500).json({ error: 'Error al guardar preguntas de seguridad', details: err.message });
     }
   });
 
