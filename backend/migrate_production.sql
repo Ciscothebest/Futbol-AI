@@ -114,3 +114,14 @@ CREATE INDEX IF NOT EXISTS ix_payment_methods_user_id  ON payment_methods ("user
 -- FIN DE MIGRACIÃ“N
 -- DespuÃ©s de ejecutar, reiniciar el servicio en Render para aplicar cambios.
 -- =============================================================================
+
+-- --- TABLA: teams (columnas de estadísticas de liga) --------------------------
+-- Agregadas el 2026-08-04 - faltaban en producción
+ALTER TABLE teams ADD COLUMN IF NOT EXISTS position INTEGER;
+ALTER TABLE teams ADD COLUMN IF NOT EXISTS pj      INTEGER;
+ALTER TABLE teams ADD COLUMN IF NOT EXISTS g       INTEGER;
+ALTER TABLE teams ADD COLUMN IF NOT EXISTS e       INTEGER;
+ALTER TABLE teams ADD COLUMN IF NOT EXISTS p       INTEGER;
+ALTER TABLE teams ADD COLUMN IF NOT EXISTS gf      INTEGER;
+ALTER TABLE teams ADD COLUMN IF NOT EXISTS gc      INTEGER;
+ALTER TABLE teams ADD COLUMN IF NOT EXISTS pts     INTEGER;

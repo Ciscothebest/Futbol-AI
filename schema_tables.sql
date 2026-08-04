@@ -187,6 +187,8 @@ CREATE TABLE teams (
     pts                       INTEGER
 );
 
+-- NOTA: En PostgreSQL usar SERIAL o GENERATED ALWAYS AS IDENTITY en lugar de AUTOINCREMENT
+
 CREATE INDEX ix_teams_league_name         ON teams (leagueName);
 CREATE INDEX ix_teams_country              ON teams (country);
 
