@@ -9,8 +9,9 @@ async function seedLeaguesAndTeams(force = false) {
   await Team.sync({ force: force });
 
   const existingLeaguesCount = await League.count();
-  if (!force && existingLeaguesCount >= 78) {
-    console.log(`✅ Leagues and teams already seeded (${existingLeaguesCount} leagues). Skipping.`);
+  const existingTeamsCount = await Team.count();
+  if (!force && existingLeaguesCount === 79 && existingTeamsCount === 1205) {
+    console.log(`✅ Leagues and teams already seeded (${existingLeaguesCount} leagues, ${existingTeamsCount} teams). Skipping.`);
     return;
   }
 
