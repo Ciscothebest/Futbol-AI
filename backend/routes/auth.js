@@ -468,9 +468,11 @@ module.exports = ({ User, JWT_SECRET }) => {
       const challenge = crypto.randomBytes(32).toString('base64url');
       await user.update({ passkeyChallenge: challenge });
 
-      // Determine rpId: use the actual hostname so it always matches the current domain
+      // rpId must match the frontend domain exactly.
+      // In production: futbolai.netlify.app (set via WEBAUTHN_RP_ID env var)
+      // In local dev: localhost
       const isLocal = req.hostname === 'localhost' || req.hostname === '127.0.0.1';
-      const rpId = isLocal ? 'localhost' : req.hostname;
+      const rpId = isLocal ? 'localhost' : (process.env.WEBAUTHN_RP_ID || req.hostname);
       const rpName = isLocal ? 'Futbol AI (Local)' : 'Futbol AI';
 
       res.json({
@@ -647,9 +649,9 @@ module.exports = ({ User, JWT_SECRET }) => {
       const challenge = crypto.randomBytes(32).toString('base64url');
       await user.update({ passkeyChallenge: challenge });
 
-      // rpId must match the domain used during registration
+      // rpId must match exactly what was used during registration
       const isLocal = req.hostname === 'localhost' || req.hostname === '127.0.0.1';
-      const rpId = isLocal ? 'localhost' : req.hostname;
+      const rpId = isLocal ? 'localhost' : (process.env.WEBAUTHN_RP_ID || req.hostname);
 
       const allowCredentials = user.passkeyCredentialId ? [{ id: user.passkeyCredentialId, type: 'public-key' }] : [];
       res.json({

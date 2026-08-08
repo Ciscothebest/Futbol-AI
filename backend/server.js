@@ -35,15 +35,15 @@ app.use('/api/auth', authRouter({ User, JWT_SECRET }));
 // Must be at /.well-known/webauthn, return application/json,
 // and list all valid origins that can use this RP ID.
 app.get('/.well-known/webauthn', (req, res) => {
-  const host = req.hostname;
-  const isLocal = host === 'localhost' || host === '127.0.0.1';
+  const isLocal = req.hostname === 'localhost' || req.hostname === '127.0.0.1';
   const origins = isLocal
-    ? ['http://localhost:3001', 'http://127.0.0.1:3001']
+    ? ['http://localhost:3001', 'http://127.0.0.1:3001', 'http://localhost:5500']
     : [
-        `https://${host}`,
-        `https://futbolai.abacusai.app`
-      ];
+        process.env.WEBAUTHN_ORIGIN || `https://${process.env.WEBAUTHN_RP_ID}`,
+        `https://futbolai.netlify.app`
+      ].filter(Boolean);
   res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Access-Control-Allow-Origin', '*');
   res.json({ origins });
 });
 
