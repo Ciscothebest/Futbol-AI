@@ -468,10 +468,14 @@ module.exports = ({ User, JWT_SECRET }) => {
       const challenge = crypto.randomBytes(32).toString('base64url');
       await user.update({ passkeyChallenge: challenge });
 
-      const rpId = (req.hostname === 'localhost' || req.hostname === '127.0.0.1') ? 'localhost' : req.hostname;
+      // Determine rpId: use the actual hostname so it always matches the current domain
+      const isLocal = req.hostname === 'localhost' || req.hostname === '127.0.0.1';
+      const rpId = isLocal ? 'localhost' : req.hostname;
+      const rpName = isLocal ? 'Futbol AI (Local)' : 'Futbol AI';
+
       res.json({
         challenge,
-        rp: { name: 'Futbol AI Local', id: rpId },
+        rp: { name: rpName, id: rpId },
         user: {
           id: Buffer.from(user.id).toString('base64url'),
           name: user.username,
@@ -643,11 +647,17 @@ module.exports = ({ User, JWT_SECRET }) => {
       const challenge = crypto.randomBytes(32).toString('base64url');
       await user.update({ passkeyChallenge: challenge });
 
+      // rpId must match the domain used during registration
+      const isLocal = req.hostname === 'localhost' || req.hostname === '127.0.0.1';
+      const rpId = isLocal ? 'localhost' : req.hostname;
+
       const allowCredentials = user.passkeyCredentialId ? [{ id: user.passkeyCredentialId, type: 'public-key' }] : [];
       res.json({
         challenge,
+        rpId,
         allowCredentials,
-        timeout: 60000
+        timeout: 60000,
+        userVerification: 'preferred'
       });
     } catch (err) {
       console.error('Passkey login-options error:', err);

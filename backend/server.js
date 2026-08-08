@@ -31,6 +31,22 @@ app.use(express.static(FRONTEND_PATH));
 const authRouter = require('./routes/auth');
 app.use('/api/auth', authRouter({ User, JWT_SECRET }));
 
+// ─── WebAuthn Well-Known Endpoint (required by Chrome 128+) ──────
+// Must be at /.well-known/webauthn, return application/json,
+// and list all valid origins that can use this RP ID.
+app.get('/.well-known/webauthn', (req, res) => {
+  const host = req.hostname;
+  const isLocal = host === 'localhost' || host === '127.0.0.1';
+  const origins = isLocal
+    ? ['http://localhost:3001', 'http://127.0.0.1:3001']
+    : [
+        `https://${host}`,
+        `https://futbolai.abacusai.app`
+      ];
+  res.setHeader('Content-Type', 'application/json');
+  res.json({ origins });
+});
+
 // ─── Auth Middleware ──────────────────────────────────────────────
 const authenticate = async (req, res, next) => {
   const header = req.headers.authorization;
