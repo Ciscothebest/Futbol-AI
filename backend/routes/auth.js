@@ -475,6 +475,15 @@ module.exports = ({ User, JWT_SECRET }) => {
       const rpId = isLocal ? 'localhost' : (process.env.WEBAUTHN_RP_ID || req.hostname);
       const rpName = isLocal ? 'Futbol AI (Local)' : 'Futbol AI';
 
+      const attachment = req.body?.attachment || req.query?.attachment;
+      const selectionOptions = {
+        userVerification: 'preferred',
+        residentKey: 'preferred'
+      };
+      if (attachment === 'platform' || attachment === 'cross-platform') {
+        selectionOptions.authenticatorAttachment = attachment;
+      }
+
       res.json({
         challenge,
         rp: { name: rpName, id: rpId },
@@ -487,10 +496,7 @@ module.exports = ({ User, JWT_SECRET }) => {
           { alg: -7, type: 'public-key' },
           { alg: -257, type: 'public-key' }
         ],
-        authenticatorSelection: {
-          userVerification: 'preferred',
-          residentKey: 'preferred'
-        },
+        authenticatorSelection: selectionOptions,
         timeout: 60000
       });
     } catch (err) {

@@ -6424,12 +6424,20 @@ window.executeWebAuthnRegistration = async (optionType = 'device') => {
   const token = localStorage.getItem('scout_ai_token');
   if (!token) return;
 
-  let optionTitle = 'Passkey Biométrica';
-  if (optionType === 'mobile') optionTitle = 'Passkey Móvil';
-  if (optionType === 'key') optionTitle = 'Llave de Seguridad Física';
-  if (optionType === 'manager') optionTitle = 'Gestor de Contraseñas';
+  let optionTitle = 'Biometría / Windows Hello';
+  let attachment = 'platform';
+  if (optionType === 'mobile') {
+    optionTitle = 'Dispositivo Móvil (QR)';
+    attachment = 'cross-platform';
+  } else if (optionType === 'key') {
+    optionTitle = 'Llave de Seguridad Física';
+    attachment = 'cross-platform';
+  } else if (optionType === 'manager') {
+    optionTitle = 'Gestor de Contraseñas';
+    attachment = 'cross-platform';
+  }
 
-  window.showPasskeyModal('loading', `Vinculación: ${optionTitle}`, 'FutbolAI se está conectando con tu dispositivo. Selecciona tu método preferido en la ventana de seguridad del sistema...');
+  window.showPasskeyModal('loading', `Vinculación: ${optionTitle}`, 'FutbolAI se está conectando con tu dispositivo. Se solicita autenticación directa...');
 
   try {
     const optRes = await fetch('/api/auth/passkey/register-options', {
@@ -6437,13 +6445,19 @@ window.executeWebAuthnRegistration = async (optionType = 'device') => {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
-      }
+      },
+      body: JSON.stringify({ attachment })
     });
     const options = await optRes.json();
     if (!optRes.ok) throw new Error(options.error || 'Error al solicitar desafío');
 
     if (!window.PublicKeyCredential) {
       throw new Error('Navegador no soporta WebAuthn directamente. Usa la opción de PIN de respaldo.');
+    }
+
+    if (!options.authenticatorSelection) options.authenticatorSelection = {};
+    if (attachment) {
+      options.authenticatorSelection.authenticatorAttachment = attachment;
     }
 
     options.challenge = base64UrlToBuffer(options.challenge);
