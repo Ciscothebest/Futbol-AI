@@ -2547,8 +2547,8 @@ function renderDashboardPerformanceChart(teamColor) {
   teamColor = teamColor || '#00f0ff';
   const ctx2d = ctx.getContext('2d');
   const gradient = ctx2d.createLinearGradient(0, 0, 0, 120);
-  gradient.addColorStop(0, getOpacityColor(teamColor, 0.35));
-  gradient.addColorStop(1, getOpacityColor(teamColor, 0));
+  gradient.addColorStop(0, `${teamColor}`);
+  gradient.addColorStop(1, `${teamColor}`);
 
   const resultLabel = isEs
     ? { 'V': 'Victoria', 'W': 'Victoria', 'E': 'Empate', 'D': 'Derrota', 'L': 'Derrota' }
@@ -3934,18 +3934,148 @@ function updateProfileUI(user) {
   applyPlanPermissions();
 }
 
+function updateDailyLimitsBadges(user) {
+  if (!user) user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  const tier = (user.selectedTier || user.tier || 'Gratis').toLowerCase();
+  const isGratis = tier === 'gratis';
+  const isPro = tier === 'pro';
+  const isPlus = tier === 'plus';
+  const isEnterprise = tier === 'enterprise';
+
+  // 1. Compare Daily/Weekly/Monthly Badge
+  const compareBadge = document.getElementById('compare-daily-limit-badge');
+  if (compareBadge) {
+    if (isGratis || isPro) {
+      const maxLimit = isGratis ? 2 : 5;
+      const remaining = user.dailyComparisonsRemaining !== undefined && user.dailyComparisonsRemaining !== null 
+        ? user.dailyComparisonsRemaining 
+        : Math.max(0, maxLimit - (user.dailyComparisonsCount || 0));
+      compareBadge.style.display = 'inline-flex';
+      compareBadge.innerHTML = `Plan ${isPro ? 'Pro' : 'Gratis'}: ${remaining}/${maxLimit} comparaciones hoy`;
+      compareBadge.style.background = remaining === 0 ? 'rgba(255, 59, 48, 0.15)' : 'rgba(0, 240, 255, 0.1)';
+      compareBadge.style.borderColor = remaining === 0 ? '#ff3b30' : 'rgba(0, 240, 255, 0.3)';
+      compareBadge.style.color = remaining === 0 ? '#ff3b30' : '#00f0ff';
+    } else if (isPlus) {
+      const maxLimit = 15;
+      const remaining = user.weeklyComparisonsRemaining !== undefined && user.weeklyComparisonsRemaining !== null
+        ? user.weeklyComparisonsRemaining
+        : Math.max(0, maxLimit - (user.weeklyComparisonsCount || 0));
+      compareBadge.style.display = 'inline-flex';
+      compareBadge.innerHTML = `Plan Plus: ${remaining}/${maxLimit} comparaciones esta semana`;
+      compareBadge.style.background = remaining === 0 ? 'rgba(255, 59, 48, 0.15)' : 'rgba(0, 240, 255, 0.1)';
+      compareBadge.style.borderColor = remaining === 0 ? '#ff3b30' : 'rgba(0, 240, 255, 0.3)';
+      compareBadge.style.color = remaining === 0 ? '#ff3b30' : '#00f0ff';
+    } else if (isEnterprise) {
+      const maxLimit = 50;
+      const remaining = user.monthlyComparisonsRemaining !== undefined && user.monthlyComparisonsRemaining !== null
+        ? user.monthlyComparisonsRemaining
+        : Math.max(0, maxLimit - (user.monthlyComparisonsCount || 0));
+      compareBadge.style.display = 'inline-flex';
+      compareBadge.innerHTML = `Plan Enterprise: ${remaining}/${maxLimit} comparaciones este mes`;
+      compareBadge.style.background = remaining === 0 ? 'rgba(255, 59, 48, 0.15)' : 'rgba(0, 240, 255, 0.1)';
+      compareBadge.style.borderColor = remaining === 0 ? '#ff3b30' : 'rgba(0, 240, 255, 0.3)';
+      compareBadge.style.color = remaining === 0 ? '#ff3b30' : '#00f0ff';
+    } else {
+      compareBadge.style.display = 'none';
+    }
+  }
+
+  // 2. Chat IA Daily/Weekly Badge
+  const chatBadge = document.getElementById('chat-daily-limit-badge');
+  if (chatBadge) {
+    if (isGratis || isPro) {
+      const maxLimit = isGratis ? 5 : 10;
+      const remaining = user.dailyAiMessagesRemaining !== undefined && user.dailyAiMessagesRemaining !== null
+        ? user.dailyAiMessagesRemaining
+        : Math.max(0, maxLimit - (user.dailyAiMessagesCount || 0));
+      chatBadge.style.display = 'inline-flex';
+      chatBadge.innerHTML = `Plan ${isPro ? 'Pro' : 'Gratis'}: ${remaining}/${maxLimit} mensajes hoy`;
+      chatBadge.style.background = remaining === 0 ? 'rgba(255, 59, 48, 0.15)' : 'rgba(0, 240, 255, 0.1)';
+      chatBadge.style.borderColor = remaining === 0 ? '#ff3b30' : 'rgba(0, 240, 255, 0.3)';
+      chatBadge.style.color = remaining === 0 ? '#ff3b30' : '#00f0ff';
+    } else if (isPlus) {
+      const maxLimit = 30;
+      const remaining = user.weeklyAiMessagesRemaining !== undefined && user.weeklyAiMessagesRemaining !== null
+        ? user.weeklyAiMessagesRemaining
+        : Math.max(0, maxLimit - (user.weeklyAiMessagesCount || 0));
+      chatBadge.style.display = 'inline-flex';
+      chatBadge.innerHTML = `Plan Plus: ${remaining}/${maxLimit} mensajes esta semana`;
+      chatBadge.style.background = remaining === 0 ? 'rgba(255, 59, 48, 0.15)' : 'rgba(0, 240, 255, 0.1)';
+      chatBadge.style.borderColor = remaining === 0 ? '#ff3b30' : 'rgba(0, 240, 255, 0.3)';
+      chatBadge.style.color = remaining === 0 ? '#ff3b30' : '#00f0ff';
+    } else if (isEnterprise) {
+      const maxLimit = 50;
+      const remaining = user.weeklyAiMessagesRemaining !== undefined && user.weeklyAiMessagesRemaining !== null
+        ? user.weeklyAiMessagesRemaining
+        : Math.max(0, maxLimit - (user.weeklyAiMessagesCount || 0));
+      chatBadge.style.display = 'inline-flex';
+      chatBadge.innerHTML = `Plan Enterprise: ${remaining}/${maxLimit} mensajes esta semana`;
+      chatBadge.style.background = remaining === 0 ? 'rgba(255, 59, 48, 0.15)' : 'rgba(0, 240, 255, 0.1)';
+      chatBadge.style.borderColor = remaining === 0 ? '#ff3b30' : 'rgba(0, 240, 255, 0.3)';
+      chatBadge.style.color = remaining === 0 ? '#ff3b30' : '#00f0ff';
+    } else {
+      chatBadge.style.display = 'none';
+    }
+  }
+
+  // 3. Mi Club Pitch Edit Guard
+  const pitchEditBtn = document.getElementById('db-btn-edit-formation');
+  if (pitchEditBtn) {
+    if (isGratis) {
+      pitchEditBtn.title = 'Edición restringida en Plan Gratis (Solo Resumen de Temporada disponible)';
+      pitchEditBtn.onclick = (e) => {
+        e.preventDefault();
+        alert('En el Plan Gratis tienes acceso únicamente al Resumen de Temporada de tu equipo.\n\nPara visualizar la alineación general o personalizar tácticas, actualiza a un plan superior (Pro, Plus, Local o Enterprise).');
+      };
+    } else if (isPro) {
+      pitchEditBtn.title = 'Edición de alineación restringida en Plan Pro (Modo Lectura de Alineación General)';
+      pitchEditBtn.onclick = (e) => {
+        e.preventDefault();
+        alert('En el Plan Pro puedes consultar la Alineación General del equipo, pero la edición personalizada de alineaciones y tácticas está reservada para los planes Plus, Local y Enterprise.');
+      };
+    } else {
+      pitchEditBtn.onclick = null;
+    }
+  }
+
+  // 4. Mi Club AI Alerts Guard
+  const alertsCard = document.querySelector('.db-alerts-card');
+  if (alertsCard) {
+    if (isGratis || isPro || isPlus) {
+      const alertsList = document.getElementById('db-alerts-list');
+      if (alertsList) {
+        alertsList.innerHTML = `<div style="padding: 15px; text-align: center; color: rgba(255,255,255,0.6); font-size: 0.85rem;">Las Alertas IA están reservadas para los planes Local y Enterprise.</div>`;
+      }
+    }
+  }
+}
+
 function applyPlanPermissions() {
   const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
-  const tier = (user.selectedTier || user.tier || user.maxPaidTierInCycle || '').toLowerCase();
+  const tier = (user.selectedTier || user.tier || user.maxPaidTierInCycle || 'Gratis').toLowerCase();
   const role = (user.role || '').toLowerCase();
+  const isGratis = tier === 'gratis';
+  const isPro = tier === 'pro';
+  const isPlus = tier === 'plus';
   const isLocal = tier === 'local' || role === 'local' || role === 'entrenador local';
   const isEnterprise = tier === 'enterprise' || role.includes('enterprise') || role.includes('gerente') || role.includes('director') || role.includes('scout');
   const restrictedInLocal = ['players', 'my-club', 'compare', 'predictions', 'simulations', 'prospects'];
 
   document.querySelectorAll('.nav-item').forEach(btn => {
     const section = btn.dataset.section;
-    if (isLocal) {
-      // Plan local: solo accede a sus módulos locales
+    if (isGratis || isPro) {
+      if (['my-club', 'players', 'compare', 'chat'].includes(section)) {
+        btn.style.display = 'flex';
+      } else {
+        btn.style.display = 'none';
+      }
+    } else if (isPlus) {
+      if (['my-club', 'players', 'compare', 'chat', 'simulations'].includes(section)) {
+        btn.style.display = 'flex';
+      } else {
+        btn.style.display = 'none';
+      }
+    } else if (isLocal) {
       if (section === 'my-players') {
         btn.style.display = 'flex';
       } else if (restrictedInLocal.includes(section)) {
@@ -3954,16 +4084,13 @@ function applyPlanPermissions() {
         btn.style.display = 'flex';
       }
     } else if (isEnterprise) {
-      // Enterprise: accede a todo excepto Mis Jugadores (local) y Predicciones
-      if (section === 'my-players') {
-        btn.style.display = 'none';
-      } else if (section === 'predictions') {
+      // Enterprise: Acceso a todos sus módulos excluyendo únicamente "my-players" (Mis Jugadores)
+      if (section === 'my-players' || section === 'predictions') {
         btn.style.display = 'none';
       } else {
-        btn.style.display = 'flex'; // Incluyendo Prospectos
+        btn.style.display = 'flex';
       }
     } else {
-      // Planes Free, Plus, Pro: acceden a todo excepto Mis Jugadores, Prospectos y Predicciones
       if (section === 'my-players' || section === 'prospects' || section === 'predictions') {
         btn.style.display = 'none';
       } else {
@@ -3974,13 +4101,21 @@ function applyPlanPermissions() {
 
   const activeBtn = document.querySelector('.nav-item.active');
   const currentSection = activeBtn ? activeBtn.dataset.section : 'players';
-  if (isLocal && (restrictedInLocal.includes(currentSection) || currentSection === 'home')) {
+  if ((isGratis || isPro) && !['my-club', 'players', 'compare', 'chat', 'profile', 'requirements'].includes(currentSection)) {
+    goToSection('players');
+  } else if (isPlus && !['my-club', 'players', 'compare', 'chat', 'simulations', 'profile', 'requirements'].includes(currentSection)) {
+    goToSection('players');
+  } else if (isEnterprise && !['my-club', 'players', 'compare', 'chat', 'simulations', 'prospects', 'profile', 'requirements'].includes(currentSection)) {
+    goToSection('players');
+  } else if (isLocal && (restrictedInLocal.includes(currentSection) || currentSection === 'home')) {
     goToSection('my-players');
   } else if (!isLocal && currentSection === 'my-players') {
     goToSection('players');
   } else if (!isEnterprise && !isLocal && currentSection === 'prospects') {
     goToSection('players');
   }
+
+  updateDailyLimitsBadges(user);
 }
 
 // ─── Section Navigation ──────────────────────────────────────────────────
@@ -4213,12 +4348,36 @@ async function initSimulationsSection() {
       simBtn.disabled = false;
     });
     
-    simBtn.addEventListener('click', () => {
+    simBtn.addEventListener('click', async () => {
+      const currentUser = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+      const tier = (currentUser.selectedTier || currentUser.tier || 'Gratis').toLowerCase();
+
+      if (tier === 'gratis' || tier === 'pro') {
+        alert('El módulo de Simulaciones no está disponible para tu plan. Por favor actualiza al Plan Plus, Local o Enterprise.');
+        return;
+      }
+
+      if (tier === 'plus' || tier === 'enterprise') {
+        try {
+          const res = await fetchWithAuth(`${API}/simulations/consume`, { method: 'POST' });
+          const data = await res.json();
+          if (!res.ok) {
+            alert(data.message || data.error || `Has alcanzado el límite mensual de simulaciones para el Plan ${tier === 'enterprise' ? 'Enterprise' : 'Plus'}.`);
+            return;
+          }
+          if (data.user) {
+            localStorage.setItem('scout_ai_user', JSON.stringify(data.user));
+            updateDailyLimitsBadges(data.user);
+          }
+        } catch (err) {
+          console.error('Error al consumir simulación:', err);
+        }
+      }
+
       const opponent = select.value;
       const awayOvrText = document.getElementById('arena-away-rating').textContent;
       const awayOvr = parseInt(awayOvrText.replace('OVR ', '')) || 75;
       
-      const currentUser = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
       const currentClub = currentUser.selectedClub || 'FC Barcelona';
       
       // Calculate homeOvr dynamically based on current club starting XI
@@ -6207,11 +6366,70 @@ window.closePasskeyStatusModal = () => {
   }
 };
 
+window.openPasskeySelectorModal = () => {
+  const modal = document.getElementById('passkey-selector-modal');
+  if (modal) {
+    modal.style.display = 'flex';
+    window.selectPasskeyOption('device');
+  } else {
+    window.executeWebAuthnRegistration('device');
+  }
+};
+
+window.closePasskeySelectorModal = () => {
+  const modal = document.getElementById('passkey-selector-modal');
+  if (modal) modal.style.display = 'none';
+};
+
+window.selectPasskeyOption = (optKey) => {
+  const keys = ['device', 'manager', 'mobile', 'key', 'pin'];
+  keys.forEach(k => {
+    const card = document.getElementById(`passkey-opt-${k}`);
+    if (card) {
+      if (k === optKey) {
+        card.style.background = 'rgba(0, 240, 255, 0.08)';
+        card.style.borderColor = '#00f0ff';
+        const radio = card.querySelector('input[type="radio"]');
+        if (radio) radio.checked = true;
+      } else {
+        card.style.background = 'rgba(255, 255, 255, 0.02)';
+        card.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+      }
+    }
+  });
+};
+
+window.confirmPasskeyOptionSelection = async () => {
+  const checked = document.querySelector('input[name="passkey_dest_opt"]:checked');
+  const optVal = checked ? checked.value : 'device';
+  
+  window.closePasskeySelectorModal();
+
+  if (optVal === 'pin') {
+    const pinInput = document.getElementById('profile-passkey-pin-input');
+    if (pinInput) {
+      pinInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      pinInput.focus();
+    }
+  } else {
+    await window.executeWebAuthnRegistration(optVal);
+  }
+};
+
 window.updatePasskeyWebAuthn = async () => {
+  window.openPasskeySelectorModal();
+};
+
+window.executeWebAuthnRegistration = async (optionType = 'device') => {
   const token = localStorage.getItem('scout_ai_token');
   if (!token) return;
 
-  window.showPasskeyModal('loading', 'Vinculación Biométrica Passkey', 'Por favor realiza la autenticación en tu dispositivo (Windows Hello, huella dactilar o rostro)...');
+  let optionTitle = 'Passkey Biométrica';
+  if (optionType === 'mobile') optionTitle = 'Passkey Móvil';
+  if (optionType === 'key') optionTitle = 'Llave de Seguridad Física';
+  if (optionType === 'manager') optionTitle = 'Gestor de Contraseñas';
+
+  window.showPasskeyModal('loading', `Vinculación: ${optionTitle}`, 'FutbolAI se está conectando con tu dispositivo. Selecciona tu método preferido en la ventana de seguridad del sistema...');
 
   try {
     const optRes = await fetch('/api/auth/passkey/register-options', {
@@ -6258,7 +6476,7 @@ window.updatePasskeyWebAuthn = async () => {
       localStorage.setItem('scout_ai_token', verifyResult.token);
     }
 
-    window.showPasskeyModal('success', '¡Passkey Biométrica Vinculada!', '✅ Tu Passkey biométrica se ha registrado y activado exitosamente.', 3000);
+    window.showPasskeyModal('success', '¡Passkey Vinculada Exitosamente!', '✅ Tu Passkey se ha registrado y guardado en tu cuenta.', 3000);
     if (verifyResult.user) {
       window.renderSecurityPasskeyUser(verifyResult.user);
     } else {
@@ -6266,7 +6484,10 @@ window.updatePasskeyWebAuthn = async () => {
     }
   } catch (err) {
     console.error('Passkey update error:', err);
-    const errMsg = err.name === 'NotAllowedError' ? 'Operación cancelada por el usuario.' : err.message;
+    let errMsg = err.message;
+    if (err.name === 'NotAllowedError') {
+      errMsg = 'Operación cancelada en el sistema. Puedes intentar nuevamente o configurar un PIN Passkey de respaldo.';
+    }
     window.showPasskeyModal('error', 'No se pudo vincular Passkey', errMsg);
   }
 };
@@ -6736,6 +6957,64 @@ window.renderFormImprovementsTags = () => {
   `).join('');
   const hiddenInput = document.getElementById('lp-improvements');
   if (hiddenInput) hiddenInput.value = window.tempImprovementsTags.join(', ');
+};
+
+window.tempInjuriesList = [];
+
+window.addLocalPlayerInjury = () => {
+  const typeInput = document.getElementById('lp-injury-type');
+  const yearInput = document.getElementById('lp-injury-year');
+  const recoveryInput = document.getElementById('lp-injury-recovery');
+  const severityInput = document.getElementById('lp-injury-severity');
+
+  if (!typeInput) return;
+
+  const name = typeInput.value.trim();
+  if (!name) {
+    if (typeof showToast === 'function') showToast('Ingresa el tipo de lesión primero.', 'warning');
+    typeInput.focus();
+    return;
+  }
+
+  const year = (yearInput ? yearInput.value.trim() : '') || new Date().getFullYear().toString();
+  const recovery = recoveryInput ? recoveryInput.value.trim() : '';
+  const severity = severityInput ? severityInput.value : '';
+
+  if (!Array.isArray(window.tempInjuriesList)) window.tempInjuriesList = [];
+  window.tempInjuriesList.push({ name, season: year, recovery, severity });
+
+  typeInput.value = '';
+  if (yearInput) yearInput.value = '';
+  if (recoveryInput) recoveryInput.value = '';
+  if (severityInput) severityInput.value = '';
+
+  window.renderFormInjuries();
+};
+
+window.removeLocalPlayerInjury = (index) => {
+  if (Array.isArray(window.tempInjuriesList)) {
+    window.tempInjuriesList.splice(index, 1);
+    window.renderFormInjuries();
+  }
+};
+
+window.renderFormInjuries = () => {
+  const container = document.getElementById('lp-injuries-container');
+  if (!container) return;
+  if (!Array.isArray(window.tempInjuriesList)) window.tempInjuriesList = [];
+  if (window.tempInjuriesList.length === 0) {
+    container.innerHTML = `<span style="font-size: 11.5px; color: rgba(255,255,255,0.4); font-style: italic;">Sin lesiones registradas.</span>`;
+    return;
+  }
+  container.innerHTML = window.tempInjuriesList.map((inj, index) => {
+    const parts = [inj.season, inj.severity, inj.recovery].filter(Boolean).join(' · ');
+    return `
+      <span class="tag-item" style="background: rgba(255,77,77,0.15); border: 1px solid rgba(255,77,77,0.4); color: #ff6b6b; padding: 6px 12px; border-radius: 8px; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; font-weight: 700;">
+        ${inj.name}${parts ? ` <span style="font-weight:400; font-size:11px; color:rgba(255,107,107,0.7);">(${parts})</span>` : ''}
+        <span onclick="window.removeLocalPlayerInjury(${index})" style="cursor: pointer; font-size: 11px; color: rgba(255,255,255,0.5); margin-left: 2px;" title="Eliminar">✕</span>
+      </span>
+    `;
+  }).join('');
 };
 
 window.addLocalPlayerTrophy = () => {
@@ -7789,6 +8068,9 @@ window.openLocalPlayerFormModal = (playerId = null) => {
       const trophies = Array.isArray(player.trophies) ? player.trophies : (player.trophies ? JSON.parse(player.trophies) : []);
       window.tempTrophiesList = [...trophies];
 
+      const injuries = Array.isArray(player.injuries) ? player.injuries : (player.injuries ? JSON.parse(player.injuries) : []);
+      window.tempInjuriesList = [...injuries];
+
       const seasons = Array.isArray(player.history) ? player.history : (player.history ? JSON.parse(player.history) : []);
       window.tempSeasonsList = [...seasons];
 
@@ -7832,16 +8114,19 @@ window.openLocalPlayerFormModal = (playerId = null) => {
     const inIn = document.getElementById('lp-height-in');
     if (inIn) inIn.value = '';
     if (ratingInput) ratingInput.value = 75;
-    if (statsMatches) statsMatches.value = 0;
-    if (statsGoals) statsGoals.value = 0;
-    if (statsAssists) statsAssists.value = 0;
-    if (statsYellow) statsYellow.value = 0;
-    if (statsRed) statsRed.value = 0;
+    if (statsMatches) statsMatches.value = '';
+    if (statsGoals) statsGoals.value = '';
+    if (statsAssists) statsAssists.value = '';
+    if (statsYellow) statsYellow.value = '';
+    if (statsRed) statsRed.value = '';
+    const statsSeasonInput = document.getElementById('lp-stats-season');
+    if (statsSeasonInput) statsSeasonInput.value = '';
 
     window.removeLocalPlayerAuthSignatureFile();
     window.removeLocalPlayerAuthMedicalFile();
 
     window.tempGuardiansList = [{ name: '', relationship: '', docType: '', docNumber: '', phone: '', email: '' }];
+    window.tempInjuriesList = [];
 
     window.updateLocalPlayerPhotoPreview('');
     window.updateLocalPlayerHighlightPreview('');
@@ -7858,6 +8143,7 @@ window.openLocalPlayerFormModal = (playerId = null) => {
   window.renderFormStrengthsTags();
   window.renderFormImprovementsTags();
   window.renderFormTrophies();
+  window.renderFormInjuries();
   window.renderFormSeasons();
   window.renderFormGuardians();
 
@@ -8354,9 +8640,12 @@ window.saveLocalPlayer = async (event) => {
 
   const missingFields = [];
 
-  // ─── CAMPOS OBLIGATORIOS BÁSICOS ───
+  // ─── TAB GENERAL ───
   const nameVal = document.getElementById('lp-name')?.value.trim();
   if (!nameVal) missingFields.push({ label: 'Nombre Completo', tab: 'general', id: 'lp-name' });
+
+  const nickVal = document.getElementById('lp-nickname')?.value?.trim();
+  if (!nickVal) missingFields.push({ label: 'Apodo / Nickname', tab: 'general', id: 'lp-nickname' });
 
   const docTypeVal = document.getElementById('lp-doc-type')?.value;
   if (!docTypeVal) missingFields.push({ label: 'Documento de Identidad', tab: 'general', id: 'lp-doc-type' });
@@ -8364,13 +8653,64 @@ window.saveLocalPlayer = async (event) => {
   const docNumVal = document.getElementById('lp-doc-number')?.value?.trim();
   if (!docNumVal) missingFields.push({ label: 'Nº de Documento de Identidad', tab: 'general', id: 'lp-doc-number' });
 
+  const docFileUrlVal = document.getElementById('lp-doc-file-url')?.value || '';
+  if (!docFileUrlVal) missingFields.push({ label: 'Documento Adjunto (PDF/Imagen)', tab: 'general', id: 'lp-doc-dropzone' });
+
   const ageVal = document.getElementById('lp-age')?.value.trim();
   if (!ageVal) missingFields.push({ label: 'Edad', tab: 'general', id: 'lp-age' });
+
+  const jerseyVal = document.getElementById('lp-jersey')?.value?.trim();
+  if (!jerseyVal) missingFields.push({ label: 'Dorsal (#)', tab: 'general', id: 'lp-jersey' });
 
   const posVal = document.getElementById('lp-position')?.value;
   if (!posVal) missingFields.push({ label: 'Posición', tab: 'general', id: 'lp-position' });
 
-  // ─── TAB AUTORIZACIONES (DOCUMENTOS REQUERIDOS) ───
+  const footVal = document.getElementById('lp-foot')?.value;
+  if (!footVal) missingFields.push({ label: 'Pie Hábil', tab: 'general', id: 'lp-foot' });
+
+  const heightCm = window.getLocalPlayerHeightCm();
+  if (!heightCm) missingFields.push({ label: 'Altura', tab: 'general', id: 'lp-height' });
+
+  const weightKg = window.getLocalPlayerWeightKg();
+  if (!weightKg) missingFields.push({ label: 'Peso', tab: 'general', id: 'lp-weight' });
+
+  const catVal = document.getElementById('lp-category')?.value;
+  if (!catVal) missingFields.push({ label: 'Categoría', tab: 'general', id: 'lp-category' });
+
+  const medVal = document.getElementById('lp-medical')?.value;
+  if (!medVal) missingFields.push({ label: 'Estado Médico', tab: 'general', id: 'lp-medical' });
+
+  const photoUrlVal = document.getElementById('lp-photourl')?.value?.trim();
+  if (!photoUrlVal) missingFields.push({ label: 'Foto de Perfil', tab: 'general', id: 'lp-photo-dropzone' });
+
+  const bioVal = document.getElementById('lp-bio')?.value?.trim();
+  if (!bioVal) missingFields.push({ label: 'Breve Biografía', tab: 'general', id: 'lp-bio' });
+
+  // ─── TAB DEPORTIVO ───
+  if (!window.tempStrengthsTags || window.tempStrengthsTags.length === 0) {
+    missingFields.push({ label: 'Habilidades', tab: 'deportivo', id: 'lp-strength-input' });
+  }
+
+  if (!window.tempImprovementsTags || window.tempImprovementsTags.length === 0) {
+    missingFields.push({ label: 'Aspectos de Mejora', tab: 'deportivo', id: 'lp-improvement-input' });
+  }
+
+  const tacVal = document.getElementById('lp-tactical-notes')?.value?.trim();
+  if (!tacVal) missingFields.push({ label: 'Notas del Entrenador', tab: 'deportivo', id: 'lp-tactical-notes' });
+
+  const highlightVal = document.getElementById('lp-highlight-url')?.value?.trim() || document.getElementById('lp-highlight-external-url')?.value?.trim();
+  if (!highlightVal) missingFields.push({ label: 'Highlights (Video)', tab: 'deportivo', id: 'lp-highlight-dropzone' });
+
+  // ─── TAB HISTORIAL ───
+  if (!window.tempSeasonsList || window.tempSeasonsList.length === 0) {
+    missingFields.push({ label: 'Temporadas Registradas', tab: 'historial', id: 'lp-stats-season' });
+  }
+
+  if (!window.tempTrophiesList || window.tempTrophiesList.length === 0) {
+    missingFields.push({ label: 'Palmarés / Trofeos', tab: 'historial', id: 'lp-trophy-name' });
+  }
+
+  // ─── TAB AUTORIZACIONES ───
   const authSignatureUrl = document.getElementById('lp-auth-signature-file-url')?.value || '';
   const authSignatureLabel = document.getElementById('lp-auth-signature-file-name')?.textContent || '';
   const authSignatureFileName = authSignatureLabel.startsWith('📎 ') ? authSignatureLabel.replace('📎 ', '') : '';
@@ -8387,7 +8727,7 @@ window.saveLocalPlayer = async (event) => {
     missingFields.push({ label: 'Certificado Médico de Aptitud', tab: 'autorizaciones', id: 'lp-auth-medical-file-box' });
   }
 
-  // ─── TAB LEGAL (INFORMACIÓN DE TUTORES - SOLO PARA MENORES DE 18 AÑOS) ───
+  // ─── TAB LEGAL (SOLO MENORES DE 18 AÑOS) ───
   const parsedAge = parseInt(ageVal, 10);
   const isMinorPlayer = ageVal !== '' && !isNaN(parsedAge) && parsedAge <= 17;
   const guardiansList = Array.isArray(window.tempGuardiansList) ? window.tempGuardiansList : [];
@@ -8512,6 +8852,7 @@ window.saveLocalPlayer = async (event) => {
     improvements: JSON.stringify(window.tempImprovementsTags),
     weaknesses: JSON.stringify(window.tempImprovementsTags),
     trophies: JSON.stringify(window.tempTrophiesList),
+    injuries: JSON.stringify(window.tempInjuriesList || []),
     tags: JSON.stringify([category, medicalStatus, 'Cantera']),
     history: JSON.stringify(historySeasons)
   };
@@ -11158,6 +11499,25 @@ async function sendMessage(text) {
   const msg = text || input.value.trim();
   if (!msg) return;
 
+  const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  const tier = (user.selectedTier || user.tier || 'Gratis').toLowerCase();
+  
+  if ((tier === 'gratis' || tier === 'pro') && user.dailyAiMessagesRemaining === 0) {
+    const maxLimit = tier === 'gratis' ? 5 : 10;
+    alert(`Has alcanzado tu límite diario de ${maxLimit} mensajes en el Chat IA para el Plan ${tier === 'pro' ? 'Pro' : 'Gratis'}.\n\nLos límites son diarios no acumulativos y se restablecerán transcurridas 24 horas desde tu primer uso.`);
+    return;
+  }
+
+  if (tier === 'plus' && user.weeklyAiMessagesRemaining === 0) {
+    alert(`Has alcanzado tu límite semanal de 30 mensajes en el Chat IA para el Plan Plus.\n\nLos límites son semanales no acumulativos y se restablecerán transcurridos 7 días desde tu primer uso.`);
+    return;
+  }
+
+  if (tier === 'enterprise' && user.weeklyAiMessagesRemaining === 0) {
+    alert(`Has alcanzado tu límite semanal de 50 mensajes en el Chat IA para el Plan Enterprise.\n\nLos límites son semanales no acumulativos y se restablecerán transcurridos 7 días desde tu primer uso.`);
+    return;
+  }
+
   let currentSession = activeSessionId ? chatSessions.find(s => s.id === activeSessionId) : null;
   if (!currentSession) {
     const newId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
@@ -11243,6 +11603,10 @@ async function sendMessage(text) {
           if (!jsonStr) continue;
           try {
             const data = JSON.parse(jsonStr);
+            if (data.user) {
+              localStorage.setItem('scout_ai_user', JSON.stringify(data.user));
+              updateDailyLimitsBadges(data.user);
+            }
             if (data.chunk) {
               if (!bubble) {
                 bubble = appendBubble('agent', '');
@@ -11534,6 +11898,25 @@ function closeComparison() {
 async function runComparison() {
   if (!selectedPlayer1 || !selectedPlayer2) return;
 
+  const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  const tier = (user.selectedTier || user.tier || 'Gratis').toLowerCase();
+
+  if ((tier === 'gratis' || tier === 'pro') && user.dailyComparisonsRemaining === 0) {
+    const maxLimit = tier === 'gratis' ? 2 : 5;
+    alert(`Has alcanzado tu límite diario de ${maxLimit} comparaciones en el Plan ${tier === 'pro' ? 'Pro' : 'Gratis'}.\n\nLos límites son diarios no acumulativos y se restablecerán transcurridas 24 horas desde tu primer uso.`);
+    return;
+  }
+
+  if (tier === 'plus' && user.weeklyComparisonsRemaining === 0) {
+    alert(`Has alcanzado tu límite semanal de 15 comparaciones en el Plan Plus.\n\nLos límites son semanales no acumulativos y se restablecerán transcurridos 7 días desde tu primer uso.`);
+    return;
+  }
+
+  if (tier === 'enterprise' && user.monthlyComparisonsRemaining === 0) {
+    alert(`Has alcanzado tu límite mensual de 50 comparaciones en el Plan Enterprise.\n\nLos límites son mensuales no acumulativos y se restablecerán transcurridos 30 días desde tu primer uso.`);
+    return;
+  }
+
   incrementUserStat('compared', { player1Id: selectedPlayer1.id, player2Id: selectedPlayer2.id });
 
   const btn = document.getElementById('btn-compare');
@@ -11551,8 +11934,19 @@ async function runComparison() {
       body: JSON.stringify({ player1Id: selectedPlayer1.id, player2Id: selectedPlayer2.id, lang: currentLang }),
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Error from server');
-    
+    if (!res.ok) {
+      if (data.user) {
+        localStorage.setItem('scout_ai_user', JSON.stringify(data.user));
+        updateDailyLimitsBadges(data.user);
+      }
+      throw new Error(data.message || data.error || 'Error en la comparación');
+    }
+
+    if (data.user) {
+      localStorage.setItem('scout_ai_user', JSON.stringify(data.user));
+      updateDailyLimitsBadges(data.user);
+    }
+
     // Inject Analysis Text
     bodyEl.innerHTML = markdownToHtml(data.analysis);
     
@@ -11569,7 +11963,7 @@ async function runComparison() {
     
   } catch (err) {
     console.error(err);
-    bodyEl.innerHTML = `<p style="color:var(--red)">${currentLang === 'es' ? 'Error al conectar con la IA.' : 'Error connecting to AI.'}</p>`;
+    bodyEl.innerHTML = `<p style="color:var(--red)">${err.message || (currentLang === 'es' ? 'Error al conectar con la IA.' : 'Error connecting to AI.')}</p>`;
     resultEl.style.display = 'block';
   }
 

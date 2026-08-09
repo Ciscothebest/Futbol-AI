@@ -6366,11 +6366,70 @@ window.closePasskeyStatusModal = () => {
   }
 };
 
+window.openPasskeySelectorModal = () => {
+  const modal = document.getElementById('passkey-selector-modal');
+  if (modal) {
+    modal.style.display = 'flex';
+    window.selectPasskeyOption('device');
+  } else {
+    window.executeWebAuthnRegistration('device');
+  }
+};
+
+window.closePasskeySelectorModal = () => {
+  const modal = document.getElementById('passkey-selector-modal');
+  if (modal) modal.style.display = 'none';
+};
+
+window.selectPasskeyOption = (optKey) => {
+  const keys = ['device', 'manager', 'mobile', 'key', 'pin'];
+  keys.forEach(k => {
+    const card = document.getElementById(`passkey-opt-${k}`);
+    if (card) {
+      if (k === optKey) {
+        card.style.background = 'rgba(0, 240, 255, 0.08)';
+        card.style.borderColor = '#00f0ff';
+        const radio = card.querySelector('input[type="radio"]');
+        if (radio) radio.checked = true;
+      } else {
+        card.style.background = 'rgba(255, 255, 255, 0.02)';
+        card.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+      }
+    }
+  });
+};
+
+window.confirmPasskeyOptionSelection = async () => {
+  const checked = document.querySelector('input[name="passkey_dest_opt"]:checked');
+  const optVal = checked ? checked.value : 'device';
+  
+  window.closePasskeySelectorModal();
+
+  if (optVal === 'pin') {
+    const pinInput = document.getElementById('profile-passkey-pin-input');
+    if (pinInput) {
+      pinInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      pinInput.focus();
+    }
+  } else {
+    await window.executeWebAuthnRegistration(optVal);
+  }
+};
+
 window.updatePasskeyWebAuthn = async () => {
+  window.openPasskeySelectorModal();
+};
+
+window.executeWebAuthnRegistration = async (optionType = 'device') => {
   const token = localStorage.getItem('scout_ai_token');
   if (!token) return;
 
-  window.showPasskeyModal('loading', 'Vinculación Biométrica Passkey', 'Por favor realiza la autenticación en tu dispositivo (Windows Hello, huella dactilar o rostro)...');
+  let optionTitle = 'Passkey Biométrica';
+  if (optionType === 'mobile') optionTitle = 'Passkey Móvil';
+  if (optionType === 'key') optionTitle = 'Llave de Seguridad Física';
+  if (optionType === 'manager') optionTitle = 'Gestor de Contraseñas';
+
+  window.showPasskeyModal('loading', `Vinculación: ${optionTitle}`, 'FutbolAI se está conectando con tu dispositivo. Selecciona tu método preferido en la ventana de seguridad del sistema...');
 
   try {
     const optRes = await fetch('/api/auth/passkey/register-options', {
@@ -6417,7 +6476,7 @@ window.updatePasskeyWebAuthn = async () => {
       localStorage.setItem('scout_ai_token', verifyResult.token);
     }
 
-    window.showPasskeyModal('success', '¡Passkey Biométrica Vinculada!', '✅ Tu Passkey biométrica se ha registrado y activado exitosamente.', 3000);
+    window.showPasskeyModal('success', '¡Passkey Vinculada Exitosamente!', '✅ Tu Passkey se ha registrado y guardado en tu cuenta.', 3000);
     if (verifyResult.user) {
       window.renderSecurityPasskeyUser(verifyResult.user);
     } else {
@@ -6425,7 +6484,10 @@ window.updatePasskeyWebAuthn = async () => {
     }
   } catch (err) {
     console.error('Passkey update error:', err);
-    const errMsg = err.name === 'NotAllowedError' ? 'Operación cancelada por el usuario.' : err.message;
+    let errMsg = err.message;
+    if (err.name === 'NotAllowedError') {
+      errMsg = 'Operación cancelada en el sistema. Puedes intentar nuevamente o configurar un PIN Passkey de respaldo.';
+    }
     window.showPasskeyModal('error', 'No se pudo vincular Passkey', errMsg);
   }
 };
