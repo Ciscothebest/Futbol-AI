@@ -832,7 +832,6 @@
               <h3 data-i18n="chat_agent_name">FutbolAI Agent</h3>
               <p class="agent-status" id="agent-status-text">Online — Gemini Powered</p>
             </div>
-            <div id="chat-daily-limit-badge" style="display: none; margin-left: auto; background: rgba(0, 240, 255, 0.1); border: 1px solid rgba(0, 240, 255, 0.3); color: #00f0ff; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600;"></div>
             <button class="btn-icon" id="btn-mute-agent" title="Silenciar Agente / Mute Agent">🔊</button>
           </div>
 
@@ -976,9 +975,8 @@
 
     <!-- COMPARE SECTION -->
     <section class="section" id="section-compare">
-      <div class="section-title-bar" style="display: flex; align-items: center; justify-content: space-between;">
+      <div class="section-title-bar">
         <h2 data-i18n="section_compare">⚖️ Comparar Jugadores</h2>
-        <div id="compare-daily-limit-badge" style="display: none; background: rgba(0, 240, 255, 0.1); border: 1px solid rgba(0, 240, 255, 0.3); color: #00f0ff; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600;"></div>
       </div>
 
       <div class="compare-selectors">
@@ -1748,9 +1746,6 @@
                       </div>
                     </div>
                   </div>
-                  <button onclick="window.openPasskeySelectorModal()" style="padding: 9px 18px; font-size: 0.86rem; font-weight: 700; background: linear-gradient(135deg, #00f0ff, #00a2ff); color: #05080c; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 0 16px rgba(0, 240, 255, 0.35);">
-                    🔑 Configurar Passkey
-                  </button>
                 </div>
 
                 <!-- Detailed Passkey Methods List Container -->
@@ -2741,27 +2736,27 @@
               <!-- Campo Temporada -->
               <div>
                 <label style="font-size: 10.5px; font-weight: 700; color: rgba(255,255,255,0.9); display: block; margin-bottom: 4px;">Temporada</label>
-                <input type="text" id="lp-stats-season" placeholder="2024/25" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.3); border-radius: 6px; padding: 8px; color: #00f0ff; font-weight: 700; font-size: 13px; outline: none;">
+                <input type="text" id="lp-stats-season" placeholder="Ej. 2024/25" value="2024/25" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.3); border-radius: 6px; padding: 8px; color: #00f0ff; font-weight: 700; font-size: 13px; outline: none;">
               </div>
               <div>
                 <label style="font-size: 10.5px; font-weight: 700; color: rgba(255,255,255,0.7); display: block; margin-bottom: 4px;">Partidos</label>
-                <input type="number" id="lp-stats-matches" min="0" placeholder="0" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.2); border-radius: 6px; padding: 8px; color: #fff; font-size: 13px; outline: none;">
+                <input type="number" id="lp-stats-matches" min="0" value="0" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.2); border-radius: 6px; padding: 8px; color: #fff; font-size: 13px; outline: none;">
               </div>
               <div>
                 <label style="font-size: 10.5px; font-weight: 700; color: rgba(255,255,255,0.7); display: block; margin-bottom: 4px;">Goles</label>
-                <input type="number" id="lp-stats-goals" min="0" placeholder="0" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.2); border-radius: 6px; padding: 8px; color: #fff; font-size: 13px; outline: none;">
+                <input type="number" id="lp-stats-goals" min="0" value="0" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.2); border-radius: 6px; padding: 8px; color: #fff; font-size: 13px; outline: none;">
               </div>
               <div>
                 <label style="font-size: 10.5px; font-weight: 700; color: rgba(255,255,255,0.7); display: block; margin-bottom: 4px;">Asistencias</label>
-                <input type="number" id="lp-stats-assists" min="0" placeholder="0" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.2); border-radius: 6px; padding: 8px; color: #fff; font-size: 13px; outline: none;">
+                <input type="number" id="lp-stats-assists" min="0" value="0" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.2); border-radius: 6px; padding: 8px; color: #fff; font-size: 13px; outline: none;">
               </div>
               <div>
                 <label style="font-size: 10.5px; font-weight: 700; color: rgba(255,255,255,0.7); display: block; margin-bottom: 4px;">T. Amarillas</label>
-                <input type="number" id="lp-stats-yellow" min="0" placeholder="0" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.2); border-radius: 6px; padding: 8px; color: #fff; font-size: 13px; outline: none;">
+                <input type="number" id="lp-stats-yellow" min="0" value="0" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.2); border-radius: 6px; padding: 8px; color: #fff; font-size: 13px; outline: none;">
               </div>
               <div>
                 <label style="font-size: 10.5px; font-weight: 700; color: rgba(255,255,255,0.7); display: block; margin-bottom: 4px;">T. Rojas</label>
-                <input type="number" id="lp-stats-red" min="0" placeholder="0" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.2); border-radius: 6px; padding: 8px; color: #fff; font-size: 13px; outline: none;">
+                <input type="number" id="lp-stats-red" min="0" value="0" style="width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.2); border-radius: 6px; padding: 8px; color: #fff; font-size: 13px; outline: none;">
               </div>
             </div>
 
@@ -3055,98 +3050,6 @@
       </div>
     </div>
   </div>
-  <!-- ──────────────── MODAL POPUP: SELECCIONAR Y CONFIGURAR PASSKEY ──────────────── -->
-  <div id="passkey-selector-modal" style="display: none; position: fixed; inset: 0; z-index: 999999; background: rgba(5, 8, 16, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); align-items: center; justify-content: center; padding: 20px;">
-    <div style="background: rgba(12, 20, 35, 0.97); border: 1.5px solid rgba(0, 240, 255, 0.4); box-shadow: 0 0 60px rgba(0, 240, 255, 0.25); border-radius: 24px; width: 100%; max-width: 490px; padding: 28px 24px; color: #fff; position: relative;">
-      
-      <!-- Header -->
-      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(0, 240, 255, 0.15); padding-bottom: 16px; margin-bottom: 20px;">
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <div style="width: 40px; height: 40px; background: rgba(0, 240, 255, 0.1); border: 1px solid rgba(0, 240, 255, 0.3); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px;">
-            🛡️
-          </div>
-          <div>
-            <div style="color: #fff; font-size: 1.05rem; font-weight: 800; font-family: 'Segoe UI', sans-serif;">Seguridad Passkey FutbolAI</div>
-            <div style="color: rgba(0, 240, 255, 0.9); font-size: 0.78rem; font-weight: 600;">futbolai.netlify.app</div>
-          </div>
-        </div>
-        <button onclick="window.closePasskeySelectorModal()" style="background: none; border: none; color: rgba(255,255,255,0.4); font-size: 22px; cursor: pointer; padding: 4px;">✕</button>
-      </div>
-
-      <!-- Title & Explanation -->
-      <h3 style="color: #fff; font-size: 1.2rem; font-weight: 800; margin-bottom: 6px; text-align: center;">Elige dónde guardar tu Passkey</h3>
-      <p style="color: rgba(255, 255, 255, 0.68); font-size: 0.86rem; line-height: 1.45; text-align: center; margin-bottom: 20px;">
-        Selecciona la opción deseada para registrar tu clave de acceso segura en tu cuenta:
-      </p>
-
-      <!-- Options -->
-      <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px;">
-        
-        <!-- Option 1: Device -->
-        <label onclick="window.selectPasskeyOption('device')" class="passkey-opt-card" id="passkey-opt-device" style="display: flex; align-items: center; gap: 14px; padding: 13px 16px; background: rgba(0, 240, 255, 0.08); border: 1.5px solid #00f0ff; border-radius: 14px; cursor: pointer; transition: all 0.2s;">
-          <input type="radio" name="passkey_dest_opt" value="device" checked style="accent-color: #00f0ff; width: 18px; height: 18px;" />
-          <div style="font-size: 24px; width: 30px; text-align: center;">💻</div>
-          <div style="flex: 1;">
-            <div style="color: #fff; font-size: 0.92rem; font-weight: 700;">Este dispositivo (Windows Hello / Biometría)</div>
-            <div style="color: rgba(255, 255, 255, 0.55); font-size: 0.78rem;">Huella dactilar, reconocimiento facial o PIN de Windows</div>
-          </div>
-        </label>
-
-        <!-- Option 2: Password Manager -->
-        <label onclick="window.selectPasskeyOption('manager')" class="passkey-opt-card" id="passkey-opt-manager" style="display: flex; align-items: center; gap: 14px; padding: 13px 16px; background: rgba(255, 255, 255, 0.02); border: 1.5px solid rgba(255, 255, 255, 0.1); border-radius: 14px; cursor: pointer; transition: all 0.2s;">
-          <input type="radio" name="passkey_dest_opt" value="manager" style="accent-color: #00f0ff; width: 18px; height: 18px;" />
-          <div style="font-size: 24px; width: 30px; text-align: center;">🔑</div>
-          <div style="flex: 1;">
-            <div style="color: #fff; font-size: 0.92rem; font-weight: 700;">Microsoft Password Manager / Navegador</div>
-            <div style="color: rgba(255, 255, 255, 0.55); font-size: 0.78rem;">Guardar en Microsoft Password Manager o Chrome</div>
-          </div>
-        </label>
-
-        <!-- Option 3: Mobile -->
-        <label onclick="window.selectPasskeyOption('mobile')" class="passkey-opt-card" id="passkey-opt-mobile" style="display: flex; align-items: center; gap: 14px; padding: 13px 16px; background: rgba(255, 255, 255, 0.02); border: 1.5px solid rgba(255, 255, 255, 0.1); border-radius: 14px; cursor: pointer; transition: all 0.2s;">
-          <input type="radio" name="passkey_dest_opt" value="mobile" style="accent-color: #00f0ff; width: 18px; height: 18px;" />
-          <div style="font-size: 24px; width: 30px; text-align: center;">📱</div>
-          <div style="flex: 1;">
-            <div style="color: #fff; font-size: 0.92rem; font-weight: 700;">Dispositivo Móvil (iPhone, iPad, Android)</div>
-            <div style="color: rgba(255, 255, 255, 0.55); font-size: 0.78rem;">Vincular escaneando código QR desde tu teléfono</div>
-          </div>
-        </label>
-
-        <!-- Option 4: Physical Key -->
-        <label onclick="window.selectPasskeyOption('key')" class="passkey-opt-card" id="passkey-opt-key" style="display: flex; align-items: center; gap: 14px; padding: 13px 16px; background: rgba(255, 255, 255, 0.02); border: 1.5px solid rgba(255, 255, 255, 0.1); border-radius: 14px; cursor: pointer; transition: all 0.2s;">
-          <input type="radio" name="passkey_dest_opt" value="key" style="accent-color: #00f0ff; width: 18px; height: 18px;" />
-          <div style="font-size: 24px; width: 30px; text-align: center;">🔌</div>
-          <div style="flex: 1;">
-            <div style="color: #fff; font-size: 0.92rem; font-weight: 700;">Llave de Seguridad Física</div>
-            <div style="color: rgba(255, 255, 255, 0.55); font-size: 0.78rem;">Conectar llave USB física (YubiKey / FIDO2)</div>
-          </div>
-        </label>
-
-        <!-- Option 5: FutbolAI PIN -->
-        <label onclick="window.selectPasskeyOption('pin')" class="passkey-opt-card" id="passkey-opt-pin" style="display: flex; align-items: center; gap: 14px; padding: 13px 16px; background: rgba(255, 255, 255, 0.02); border: 1.5px solid rgba(255, 255, 255, 0.1); border-radius: 14px; cursor: pointer; transition: all 0.2s;">
-          <input type="radio" name="passkey_dest_opt" value="pin" style="accent-color: #00f0ff; width: 18px; height: 18px;" />
-          <div style="font-size: 24px; width: 30px; text-align: center;">🔢</div>
-          <div style="flex: 1;">
-            <div style="color: #fff; font-size: 0.92rem; font-weight: 700;">PIN Passkey de Respaldo FutbolAI</div>
-            <div style="color: rgba(255, 255, 255, 0.55); font-size: 0.78rem;">PIN directo de 6 dígitos en la app (sin popup de Windows)</div>
-          </div>
-        </label>
-
-      </div>
-
-      <!-- Action Buttons -->
-      <div style="display: flex; gap: 12px;">
-        <button onclick="window.closePasskeySelectorModal()" style="flex: 1; padding: 12px; font-size: 0.9rem; font-weight: 700; background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; cursor: pointer;">
-          Cancelar
-        </button>
-        <button onclick="window.confirmPasskeyOptionSelection()" style="flex: 1.4; padding: 12px; font-size: 0.9rem; font-weight: 700; background: linear-gradient(135deg, #00f0ff, #00a2ff); color: #05080c; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);">
-          Continuar con Passkey
-        </button>
-      </div>
-
-    </div>
-  </div>
-
   <!-- ──────────────── MODAL POPUP: ESTADO / CARGANDO PASSKEY ──────────────── -->
   <div id="passkey-status-modal" style="display: none; position: fixed; inset: 0; z-index: 999999; background: rgba(5, 8, 16, 0.82); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); align-items: center; justify-content: center; padding: 20px;">
     <style>
@@ -3355,7 +3258,7 @@
   </div>
 
   <script src="error-alert.js?v=1.0"></script>
-  <script src="app.js?v=16.0"></script>
+  <script src="app.js?v=13.0"></script>
   <script src="onboarding.js?v=3.0"></script>
 </body>
 
