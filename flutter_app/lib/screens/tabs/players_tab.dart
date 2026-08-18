@@ -266,7 +266,7 @@ class _PlayersTabState extends State<PlayersTab> {
                                             borderRadius: BorderRadius.circular(4),
                                           ),
                                           child: Text(
-                                            '${player.overallRating.toInt()}',
+                                            player.formattedMarketValue,
                                             style: const TextStyle(color: Color(0xFFFEBE10), fontSize: 9, fontWeight: FontWeight.bold),
                                           ),
                                         ),

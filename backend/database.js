@@ -84,7 +84,6 @@ const Player = sequelize.define('Player', {
   weight: DataTypes.INTEGER,
   preferredFoot: DataTypes.STRING,
   marketValue: DataTypes.BIGINT,
-  overallRating: DataTypes.FLOAT,
   stats: {
     type: DataTypes.TEXT,
     get() {
@@ -237,7 +236,6 @@ const Prospect = sequelize.define('Prospect', {
   jerseyNumber: DataTypes.INTEGER,
   position: DataTypes.STRING,
   positionEs: DataTypes.STRING,
-  overallRating: DataTypes.FLOAT,
   category: DataTypes.STRING,
   preferredFoot: DataTypes.STRING,
   height: DataTypes.INTEGER,

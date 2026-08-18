@@ -556,7 +556,7 @@ class _MyClubTabState extends State<MyClubTab> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(player.name, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-                        Text('${player.positionEs} · OVR ${player.overallRating.toInt()}', style: const TextStyle(color: Color(0xFF00F0FF), fontSize: 12)),
+                        Text('${player.positionEs} · ${player.formattedMarketValue}', style: const TextStyle(color: Color(0xFF00F0FF), fontSize: 12)),
                       ],
                     ),
                   ),

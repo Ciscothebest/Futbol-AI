@@ -138,7 +138,7 @@ class _CompareTabState extends State<CompareTab> {
                     style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, letterSpacing: 0.5),
                   ),
                   const SizedBox(height: 16),
-                  _buildH2HBar('Valoración Global', p1!.overallRating, p2!.overallRating, compProv),
+                  _buildH2HBar('Valor de Contrato', p1!.marketValue.toDouble(), p2!.marketValue.toDouble(), compProv),
                   _buildH2HBar('Goles de Club', p1.stats['goals'] ?? 0.0, p2.stats['goals'] ?? 0.0, compProv),
                   _buildH2HBar('Asistencias de Club', p1.stats['assists'] ?? 0.0, p2.stats['assists'] ?? 0.0, compProv),
                   _buildH2HBar('Valor de Mercado (€)', p1.marketValue, p2.marketValue, compProv),
@@ -260,7 +260,7 @@ class _CompareTabState extends State<CompareTab> {
                       const SizedBox(height: 2),
                       // Rating & Club
                       Text(
-                        'OVR ${player.overallRating.toInt()} · ${player.currentTeam}',
+                        '${player.formattedMarketValue} · ${player.currentTeam}',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.center,
@@ -419,7 +419,7 @@ class _CompareTabState extends State<CompareTab> {
                                     child: Image.network(p.avatarUrl, width: 28, height: 28, fit: BoxFit.cover),
                                   ),
                                   title: Text(p.name, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
-                                  subtitle: Text('${p.currentTeam} · OVR ${p.overallRating.toInt()}', style: const TextStyle(color: Color(0xFF00F0FF), fontSize: 10)),
+                                  subtitle: Text('${p.currentTeam} · ${p.formattedMarketValue}', style: const TextStyle(color: Color(0xFF00F0FF), fontSize: 10)),
                                   onTap: () {
                                     if (slotIndex == 1) {
                                       compProv.selectPlayer1(p);

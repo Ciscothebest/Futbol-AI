@@ -836,8 +836,8 @@
           <select id="prospects-sort" class="sort-select" onchange="if (window.renderProspectsModule) window.renderProspectsModule();">
             <option value="name_asc">NOMBRE (A-Z)</option>
             <option value="name_desc">NOMBRE (Z-A)</option>
-            <option value="rating_desc">VALORACIÓN (MAYOR A MENOR)</option>
-            <option value="rating_asc">VALORACIÓN (MENOR A MAYOR)</option>
+            <option value="contract_desc">VALOR DE CONTRATO (MAYOR A MENOR)</option>
+            <option value="contract_asc">VALOR DE CONTRATO (MENOR A MAYOR)</option>
           </select>
         </div>
       </div>
@@ -1177,7 +1177,7 @@
               <div class="arena-team home">
                 <div class="arena-badge" id="arena-home-badge">🛡️</div>
                 <span class="arena-team-name" id="arena-home-name">Local</span>
-                <span class="arena-rating" id="arena-home-rating">OVR --</span>
+                <span class="arena-rating" id="arena-home-rating">VALOR --</span>
               </div>
               
               <div class="arena-vs">VS</div>
@@ -1190,7 +1190,7 @@
                 </div>
                 <div class="arena-badge" id="arena-away-badge">🚩</div>
                 <span class="arena-team-name" id="arena-away-name">Visitante</span>
-                <span class="arena-rating" id="arena-away-rating">OVR --</span>
+                <span class="arena-rating" id="arena-away-rating">VALOR --</span>
               </div>
             </div>
 
@@ -1673,8 +1673,8 @@
                   <div class="profile-stat-desc">Disponibles</div>
                 </div>
                 <div class="profile-stat-box" style="border-left: 3px solid #ffaa00;">
-                  <div class="profile-stat-num" id="local-roster-avg-rating">0.0</div>
-                  <div class="profile-stat-desc">Rating Promedio</div>
+                  <div class="profile-stat-num" id="local-roster-total-value">€0M</div>
+                  <div class="profile-stat-desc">Valor Plantilla</div>
                 </div>
                 <div class="profile-stat-box" style="border-left: 3px solid #7000ff;">
                   <div class="profile-stat-num" id="local-roster-top-cat">—</div>
@@ -3318,7 +3318,7 @@
   </div>
 
   <script src="error-alert.js?v=1.0"></script>
-  <script src="app.js?v=13.0"></script>
+  <script src="app.js?v=13.3"></script>
   <script src="onboarding.js?v=3.0"></script>
 </body>
 

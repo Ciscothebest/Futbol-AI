@@ -1,3 +1,16 @@
+function formatContractValue(val) {
+  if (!val || isNaN(val) || val <= 0) return '€5M';
+  const num = Number(val);
+  if (num >= 1000000) {
+    const millions = (num / 1000000).toFixed(num % 1000000 === 0 ? 0 : 1);
+    return `€${millions}M`;
+  } else if (num >= 1000) {
+    return `€${(num / 1000).toFixed(0)}K`;
+  } else {
+    return `€${num}`;
+  }
+}
+
 /* ══════════════════════════════════════════
    FUTBOLAI — Main Application Logic
    ══════════════════════════════════════════ */
@@ -5078,7 +5091,7 @@ window.openTacticalEditorModal = function() {
             <span class="modal-player-name" style="font-size: 13.5px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0;">${p.name || p.nickname || 'Jugador'}</span>
             <span style="font-size: 11px; color: rgba(255,255,255,0.4); text-transform: uppercase; flex-shrink: 0;">${p.position || 'N/A'}</span>
           </div>
-          <div style="font-weight: 800; color: #00f0ff; font-size: 14px; flex-shrink: 0;">${p.overallRating || 75}</div>
+          <div style="font-weight: 800; color: #00f0ff; font-size: 14px; flex-shrink: 0;">${formatContractValue(p.marketValue)}</div>
         </div>
       `;
     }).join('');
@@ -5100,7 +5113,7 @@ window.openTacticalEditorModal = function() {
               <span class="modal-player-name" style="font-size: 13.5px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0;">${p.name || p.nickname || 'Jugador'}</span>
               <span style="font-size: 11px; color: rgba(255,255,255,0.4); text-transform: uppercase; flex-shrink: 0;">${p.position || 'N/A'}</span>
             </div>
-            <div style="font-weight: 800; color: #ffbe10; font-size: 14px; flex-shrink: 0;">${p.overallRating || 75}</div>
+            <div style="font-weight: 800; color: #ffbe10; font-size: 14px; flex-shrink: 0;">${formatContractValue(p.marketValue)}</div>
           </div>
         `;
       }).join('');
@@ -5287,7 +5300,7 @@ window.openTacticalEditorModal = function() {
           : (currentLang === 'es' ? 'Suplente' : 'Substitute');
         const tooltip = isVirtual
           ? `${slot.roleEs} (${currentLang === 'es' ? 'Jugador Virtual' : 'Virtual Player'})`
-          : `${player.name || player.nickname} (OVR ${player.overallRating})&#10;${currentLang === 'es' ? 'Ajuste' : 'Fit'}: ${fitPercentage}%&#10;${statusText}`;
+          : `${player.name || player.nickname} (OVR ${formatContractValue(player.marketValue)})&#10;${currentLang === 'es' ? 'Ajuste' : 'Fit'}: ${fitPercentage}%&#10;${statusText}`;
 
         return `
           <div style="position: absolute; left: ${slot.left}%; top: ${slot.top}%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; z-index: 20; pointer-events: auto;" title="${tooltip}">
@@ -5838,7 +5851,7 @@ async function initSimulationsSection() {
       // Load opponent rating
       const oppPlayers = await fetchTeamPlayers(opponentName);
       const awayOvr = calculateTeamAverageRating(oppPlayers);
-      document.getElementById('arena-away-rating').textContent = `OVR ${awayOvr}`;
+      document.getElementById('arena-away-rating').textContent = `VALOR ${formatContractValue(awayOvr * 10000000)}`;
       
       // Load logo
       loadTeamLogo(opponentName, 'arena-away-badge');
@@ -6058,7 +6071,7 @@ function resetAwayArena() {
   document.getElementById('arena-away-name').textContent = 'Visitante';
   document.getElementById('arena-away-badge').classList.remove('active-away');
   document.getElementById('arena-away-badge').innerHTML = '🚩';
-  document.getElementById('arena-away-rating').textContent = 'OVR --';
+  document.getElementById('arena-away-rating').textContent = 'VALOR --';
   document.getElementById('btn-run-simulation').disabled = true;
 }
 
@@ -8563,79 +8576,11 @@ window.renderMyPlayersModule = async (skipFetch = false) => {
   const badgeEl = document.getElementById('my-players-count-badge');
   const totalEl = document.getElementById('local-roster-total');
   const availEl = document.getElementById('local-roster-available');
-  const avgRatingEl = document.getElementById('local-roster-avg-rating');
-  const topCatEl = document.getElementById('local-roster-top-cat');
-
-  // Main Module Section elements
-  const emptyMainEl = document.getElementById('local-players-empty-main');
-  const upgradeNoticeMainEl = document.getElementById('local-players-upgrade-notice-main');
-  const gridMainEl = document.getElementById('local-players-grid-main');
-  const headerCountEl = document.getElementById('my-players-header-count');
-  const totalMainEl = document.getElementById('local-roster-total-main');
-  const availMainEl = document.getElementById('local-roster-available-main');
-  const avgRatingMainEl = document.getElementById('local-roster-avg-rating-main');
-  const topCatMainEl = document.getElementById('local-roster-top-cat-main');
-
-  if (!isLocalCoach) {
-    if (upgradeNoticeEl) upgradeNoticeEl.style.display = 'block';
-    if (upgradeNoticeMainEl) upgradeNoticeMainEl.style.display = 'block';
-    if (emptyEl) emptyEl.style.display = 'none';
-    if (emptyMainEl) emptyMainEl.style.display = 'none';
-    if (gridEl) gridEl.style.display = 'none';
-    if (gridMainEl) gridMainEl.style.display = 'none';
-    if (badgeEl) badgeEl.textContent = 'Plan Local';
-    if (headerCountEl) headerCountEl.textContent = '0 Jugadores';
-    return;
-  }
-
-  if (upgradeNoticeEl) upgradeNoticeEl.style.display = 'none';
-  if (upgradeNoticeMainEl) upgradeNoticeMainEl.style.display = 'none';
-  
-  if (!skipFetch) {
-    window.loadLocalPlayers().then(() => {
-      window.renderMyPlayersModule(true);
-    });
-  }
-
-  const players = window.getLocalPlayersList();
-  if (badgeEl) badgeEl.textContent = players.length;
-  if (headerCountEl) headerCountEl.textContent = `${players.length} Jugadores`;
-  if (totalEl) totalEl.textContent = players.length;
-  if (totalMainEl) totalMainEl.textContent = players.length;
-
-  if (players.length === 0) {
-    if (emptyEl) emptyEl.style.display = 'block';
-    if (emptyMainEl) emptyMainEl.style.display = 'block';
-    if (gridEl) gridEl.style.display = 'none';
-    if (gridMainEl) gridMainEl.style.display = 'none';
-    if (availEl) availEl.textContent = '0';
-    if (availMainEl) availMainEl.textContent = '0';
-    if (avgRatingEl) avgRatingEl.textContent = '0.0';
-    if (avgRatingMainEl) avgRatingMainEl.textContent = '0.0';
-    if (topCatEl) topCatEl.textContent = '—';
-    if (topCatMainEl) topCatMainEl.textContent = '—';
-    return;
-  }
-
-  if (emptyEl) emptyEl.style.display = 'none';
-  if (emptyMainEl) emptyMainEl.style.display = 'none';
-  if (gridEl) gridEl.style.display = 'grid';
-  if (gridMainEl) gridMainEl.style.display = 'grid';
-
-  // Calculate Metrics
-  const availableCount = players.filter(p => p.medicalStatus !== 'Lesionado').length;
-  const avgRating = (players.reduce((sum, p) => sum + Number(p.overallRating || 70), 0) / players.length).toFixed(1);
-
-  // Dominant category
-  const cats = {};
-  players.forEach(p => { const c = p.category || 'Sub-17'; cats[c] = (cats[c] || 0) + 1; });
-  let domCat = '—';
-  let maxCount = 0;
-  Object.keys(cats).forEach(c => { if (cats[c] > maxCount) { maxCount = cats[c]; domCat = c; } });
-
-  if (availEl) availEl.textContent = availableCount;
-  if (availMainEl) availMainEl.textContent = availableCount;
-  if (avgRatingEl) avgRatingEl.textContent = avgRating;
+  const totalValEl = document.getElementById('local-roster-total-value');
+    if (totalValEl) {
+      const totalVal = players.reduce((sum, p) => sum + (Number(p.marketValue) || 5000000), 0);
+      totalValEl.textContent = formatContractValue(totalVal);
+    }
   if (avgRatingMainEl) avgRatingMainEl.textContent = avgRating;
   if (topCatEl) topCatEl.textContent = domCat;
   if (topCatMainEl) topCatMainEl.textContent = domCat;
@@ -10797,9 +10742,89 @@ async function loadPlayers() {
 function renderFeaturedPlayers() {
   const top = [...allPlayers].slice(0, 8);
   const grid = document.getElementById('featured-grid');
+  if (grid) {
+    grid.innerHTML = '';
+    top.forEach(p => grid.appendChild(createPlayerCard(p)));
+    if (typeof loadAllLogos === 'function') loadAllLogos();
+  }
+}
+
+currentPage = 1;
+const PLAYERS_PER_PAGE = 24;
+
+function renderPlayers(playersToRender) {
+  const list = playersToRender || allPlayers || [];
+  const grid = document.getElementById('players-grid');
+  const countTag = document.getElementById('players-count-tag');
+  const noResults = document.getElementById('no-results');
+  const paginationControls = document.getElementById('pagination-controls');
+
+  if (countTag) {
+    countTag.textContent = `${list.length} ${typeof currentLang !== 'undefined' && currentLang === 'es' ? 'jugadores' : 'players'}`;
+  }
+
+  if (!grid) return;
   grid.innerHTML = '';
-  top.forEach(p => grid.appendChild(createPlayerCard(p)));
-  loadAllLogos(); // Load logos
+
+  if (!list || list.length === 0) {
+    if (noResults) noResults.style.display = 'block';
+    if (paginationControls) paginationControls.style.display = 'none';
+    return;
+  }
+
+  if (noResults) noResults.style.display = 'none';
+
+  const totalPages = Math.ceil(list.length / PLAYERS_PER_PAGE) || 1;
+  if (currentPage > totalPages) currentPage = totalPages;
+  if (currentPage < 1) currentPage = 1;
+
+  const start = (currentPage - 1) * PLAYERS_PER_PAGE;
+  const end = start + PLAYERS_PER_PAGE;
+  const pagePlayers = list.slice(start, end);
+
+  pagePlayers.forEach(p => {
+    grid.appendChild(createPlayerCard(p));
+  });
+
+  if (paginationControls) {
+    if (totalPages > 1) {
+      paginationControls.style.display = 'flex';
+      const pageInfo = document.getElementById('page-info');
+      if (pageInfo) {
+        pageInfo.textContent = `${typeof currentLang !== 'undefined' && currentLang === 'es' ? 'Página' : 'Page'} ${currentPage} / ${totalPages}`;
+      }
+      const prevBtn = document.getElementById('prev-page-btn');
+      const nextBtn = document.getElementById('next-page-btn');
+      if (prevBtn) prevBtn.disabled = currentPage === 1;
+      if (nextBtn) nextBtn.disabled = currentPage === totalPages;
+    } else {
+      paginationControls.style.display = 'none';
+    }
+  }
+
+  if (typeof loadAllLogos === 'function') {
+    loadAllLogos();
+  }
+}
+
+function prevPage() {
+  if (currentPage > 1) {
+    currentPage--;
+    if (typeof window.applyAppFilters === 'function') {
+      window.applyAppFilters();
+    } else {
+      renderPlayers();
+    }
+  }
+}
+
+function nextPage() {
+  currentPage++;
+  if (typeof window.applyAppFilters === 'function') {
+    window.applyAppFilters();
+  } else {
+    renderPlayers();
+  }
 }
 
 function getPlayerCareerAverageRating(p) {
@@ -10850,7 +10875,7 @@ function createPlayerCard(p) {
   card.style.setProperty('--team-color', color);
 
   const favClass = isFavorite(p.id) ? 'fav-btn active' : 'fav-btn';
-  const careerAvgRating = getPlayerCareerAverageRating(p);
+  const contractValueStr = formatContractValue(p.marketValue);
 
   card.innerHTML = `
     <button class="${favClass}" onclick="event.stopPropagation(); toggleFavorite('${p.id}', this)" title="Marcar como favorito">★</button>
@@ -10875,8 +10900,8 @@ function createPlayerCard(p) {
       </div>
 
       <div class="player-rating-star">
-        <span class="star">⭐</span>
-        <span>${careerAvgRating}</span>
+        <span class="star" style="display:inline-flex; align-items:center;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#00f0ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 22 8.5 12 22 2 8.5 12 2"></polygon></svg></span>
+        <span>${formatContractValue(p.marketValue)}</span>
       </div>
     </div>
     
@@ -13699,7 +13724,7 @@ function fillH2HBars(p1, p2) {
     { label: currentLang === 'es' ? 'Goles' : 'Goals', v1: p1.stats.goals, v2: p2.stats.goals, max: 50 },
     { label: currentLang === 'es' ? 'Asistencias' : 'Assists', v1: p1.stats.assists, v2: p2.stats.assists, max: 20 },
     { label: currentLang === 'es' ? 'Partidos' : 'Matches', v1: p1.stats.matches, v2: p2.stats.matches, max: 50 },
-    { label: 'Rating', v1: p1.overallRating, v2: p2.overallRating, max: 10 },
+    { label: 'Valor de Contrato', v1: formatContractValue(p1.marketValue), v2: formatContractValue(p2.marketValue), isText: true },
     { label: currentLang === 'es' ? 'Velocidad' : 'Pace', v1: p1S[0], v2: p2S[0], max: 100 },
     { label: currentLang === 'es' ? 'Disparo' : 'Shooting', v1: p1S[1], v2: p2S[1], max: 100 },
     { label: currentLang === 'es' ? 'Pase' : 'Passing', v1: p1S[2], v2: p2S[2], max: 100 },

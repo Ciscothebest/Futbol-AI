@@ -19,8 +19,18 @@ class Player {
   final int? weight;
   final String? preferredFoot;
   final int marketValue;
-  final double overallRating;
   final Map<String, dynamic> stats;
+
+  String get formattedMarketValue {
+    if (marketValue <= 0) return '€5M';
+    if (marketValue >= 1000000) {
+      final double m = marketValue / 1000000;
+      return '€${m.toStringAsFixed(m % 1 == 0 ? 0 : 1)}M';
+    } else if (marketValue >= 1000) {
+      return '€${(marketValue / 1000).toStringAsFixed(0)}K';
+    }
+    return '€$marketValue';
+  }
   final Map<String, dynamic> careerTotals;
   final List<dynamic> trophies;
   final List<dynamic> transfers;
@@ -50,7 +60,6 @@ class Player {
     this.weight,
     this.preferredFoot,
     required this.marketValue,
-    required this.overallRating,
     required this.stats,
     required this.careerTotals,
     required this.trophies,
@@ -108,9 +117,6 @@ class Player {
       marketValue: json['marketValue'] is int 
           ? json['marketValue'] 
           : (int.tryParse(json['marketValue']?.toString() ?? '') ?? 0),
-      overallRating: json['overallRating'] is num 
-          ? (json['overallRating'] as num).toDouble() 
-          : (double.tryParse(json['overallRating']?.toString() ?? '') ?? 0.0),
       stats: parseJsonMap(json['stats']),
       careerTotals: parseJsonMap(json['careerTotals']),
       trophies: parseJsonList(json['trophies']),
@@ -144,7 +150,6 @@ class Player {
       'weight': weight,
       'preferredFoot': preferredFoot,
       'marketValue': marketValue,
-      'overallRating': overallRating,
       'stats': stats,
       'careerTotals': careerTotals,
       'trophies': trophies,

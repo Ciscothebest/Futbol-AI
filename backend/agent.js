@@ -57,10 +57,10 @@ class FootballAgent {
       const players = await Player.findAll({
         where: { [Op.or]: orConditions, userId: null },
         limit,
-        order: [['overallRating', 'DESC']],
+        order: [['marketValue', 'DESC']],
         attributes: [
           'id', 'name', 'nickname', 'flag', 'currentTeam', 'league',
-          'position', 'overallRating', 'stats', 'bio', 'bioEs',
+          'position', 'stats', 'bio', 'bioEs',
           'trophies', 'strengths', 'age', 'nationality', 'marketValue',
           'history', 'weaknesses'
         ]
@@ -107,14 +107,14 @@ class FootballAgent {
       });
       const topPlayers = await Player.findAll({
         where: { userId: null },
-        order: [['overallRating', 'DESC']],
+        order: [['marketValue', 'DESC']],
         limit: 5,
-        attributes: ['name', 'currentTeam', 'overallRating', 'position', 'league']
+        attributes: ['name', 'currentTeam', 'marketValue', 'position', 'league']
       });
       return {
         totalPlayers,
         leagues: leagues.map(l => l.league).filter(Boolean),
-        topPlayers: topPlayers.map(p => `${p.name} (${p.currentTeam}, ${p.league}, ${p.position}, Rating: ${p.overallRating})`)
+        topPlayers: topPlayers.map(p => `${p.name} (${p.currentTeam}, ${p.league}, ${p.position}, Valor: €${((p.marketValue||0)/1000000).toFixed(0)}M)`)
       };
     } catch (e) {
       return null;
@@ -147,7 +147,7 @@ class FootballAgent {
       ctx += `\nBase de datos: ${appStats.totalPlayers} jugadores profesionales registrados.`;
       ctx += `\nLigas cubiertas: ${appStats.leagues.join(', ') || 'Múltiples ligas globales'}.`;
       if (appStats.topPlayers.length > 0) {
-        ctx += `\nTop jugadores por rating en la app: ${appStats.topPlayers.join(' | ')}.`;
+        ctx += `\nTop jugadores por valor de mercado en la app: ${appStats.topPlayers.join(' | ')}.`;
       }
     }
 
@@ -160,8 +160,8 @@ class FootballAgent {
         ctx += `\n• ${p.name}`;
         if (p.nickname) ctx += ` (alias: ${p.nickname})`;
         ctx += `\n  Equipo: ${p.currentTeam} | Liga: ${p.league || 'N/A'} | Posición: ${p.position}`;
-        ctx += `\n  Edad: ${p.age || 'N/A'} | Nacionalidad: ${p.nationality || 'N/A'} | Rating Global: ${p.overallRating}`;
-        if (p.marketValue) ctx += ` | Valor: €${(p.marketValue/1000000).toFixed(1)}M`;
+        ctx += `\n  Edad: ${p.age || 'N/A'} | Nacionalidad: ${p.nationality || 'N/A'}`;
+        if (p.marketValue) ctx += ` | Valor de Contrato: €${(p.marketValue/1000000).toFixed(1)}M`;
         if (statsStr) ctx += `\n  Estadísticas: ${statsStr}`;
         if (p.strengths) ctx += `\n  Fortalezas: ${p.strengths}`;
         if (p.weaknesses) ctx += `\n  Debilidades: ${p.weaknesses}`;
@@ -396,7 +396,7 @@ class FootballAgent {
       equipo: p.currentTeam,
       liga: p.league,
       posicion: p.position,
-      rating: p.overallRating,
+      valorContrato: p.marketValue ? `€${(p.marketValue/1000000).toFixed(1)}M` : 'N/A',
       nacionalidad: p.nationality,
       edad: p.age,
       valorMercado: p.marketValue ? `€${(p.marketValue/1000000).toFixed(1)}M` : 'N/A',
@@ -417,8 +417,8 @@ class FootballAgent {
   }
 
   async getPredictions(lang = 'es') {
-    const topPlayers = await Player.findAll({ where: { userId: null }, order: [['overallRating', 'DESC']], limit: 10 });
-    const topPlayersList = topPlayers.map(p => `${p.name} (${p.currentTeam}, ${p.league}, ${p.overallRating} rating)`).join(', ');
+    const topPlayers = await Player.findAll({ where: { userId: null }, order: [['marketValue', 'DESC']], limit: 10 });
+    const topPlayersList = topPlayers.map(p => `${p.name} (${p.currentTeam}, ${p.league}, Valor: €${((p.marketValue||0)/1000000).toFixed(0)}M)`).join(', ');
 
     const prompt = `Genera un informe detallado de predicciones tácticas y de rendimiento con IA para la temporada actual (2024-25).\nJugadores top en la base de datos: ${topPlayersList}.\n\nEscribe en ${lang === 'en' ? 'Inglés' : 'Español'} en formato Markdown elegante. Incluye:\n- 🏆 Candidatos al Balón de Oro y Bota de Oro.\n- 🚀 Jugadores Revelación y Promesas a seguir.\n- 🔄 Predicciones de Fichajes y Mercado.\n- 📊 Tendencias Tácticas Dominantes.`;
 

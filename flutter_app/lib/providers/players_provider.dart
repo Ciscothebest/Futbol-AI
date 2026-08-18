@@ -43,7 +43,7 @@ class PlayersProvider with ChangeNotifier {
 
   // Filtered lists for simple localized computations (e.g. Featured players)
   List<Player> get featuredPlayers {
-    final elite = _players.where((p) => p.overallRating >= 88).toList();
+    final elite = _players.where((p) => p.marketValue >= 50000000).toList();
     if (elite.isNotEmpty) return elite.take(6).toList();
     return _players.take(6).toList();
   }

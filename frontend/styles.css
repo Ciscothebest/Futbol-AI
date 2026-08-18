@@ -1405,15 +1405,20 @@ body {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  font-weight: 900;
-  font-size: 16px;
+  font-weight: 800;
+  font-size: 13.5px;
   margin-top: 10px;
-  padding: 5px 12px;
-  background: rgba(255, 234, 0, 0.05);
+  padding: 4px 12px;
+  background: rgba(0, 240, 255, 0.08);
   border-radius: 20px;
-  border: 1px solid rgba(255, 234, 0, 0.1);
+  border: 1px solid rgba(0, 240, 255, 0.25);
+  color: #00f0ff;
 }
-.player-rating-star .star { color: #ffea00; font-size: 14px; text-shadow: 0 0 10px rgba(255, 234, 0, 0.5); }
+.player-rating-star .star {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
 
 
 /* ══════════════ TOPBAR (mobile) ══════════════ */

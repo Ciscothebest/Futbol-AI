@@ -143,7 +143,7 @@ app.get('/api/players', authenticate, async (req, res) => {
     let results = await Player.findAll({
       where,
       limit: limit ? parseInt(limit) : undefined,
-      order: [['overallRating', 'DESC']]
+      order: [['marketValue', 'DESC']]
     });
     
     // Inject avatar data
@@ -1671,7 +1671,11 @@ function startServer(retries = 2) {
             count = await Player.count();
             console.log(`✅ Seeded ${missingPlayers.length} missing players successfully! Total is now ${count}.`);
           } else {
-            console.log(`✅ All ${totalJsonPlayers} players from players.json are already in the database.`);
+            console.log(`✅ All ${totalJsonPlayers} players from players.json exist in database. Updating market values...`);
+            for (const p of fileData.players) {
+              await Player.update({ marketValue: p.marketValue || 0 }, { where: { id: p.id } });
+            }
+            console.log(`✅ Synchronized marketValue for ${totalJsonPlayers} players.`);
           }
         } else {
           console.warn('⚠️ Seeding warning: knowledge/players.json not found.');
