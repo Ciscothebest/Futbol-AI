@@ -1644,39 +1644,40 @@ function startServer(retries = 2) {
         const fs = require('fs');
         if (fs.existsSync(playersFile)) {
           const fileData = JSON.parse(fs.readFileSync(playersFile, 'utf8'));
-          const totalJsonPlayers = fileData.players.length;
+          const playersList = Array.isArray(fileData) ? fileData : (fileData.players || []);
+          const totalJsonPlayers = playersList.length;
           
           // Get all existing player IDs in DB
           const dbPlayers = await Player.findAll({ attributes: ['id'] });
           const dbPlayerIds = new Set(dbPlayers.map(p => p.id));
           
           // Filter out players already in DB
-          const missingPlayers = fileData.players.filter(p => !dbPlayerIds.has(p.id));
+          const missingPlayers = playersList.filter(p => !dbPlayerIds.has(p.id));
           
           if (missingPlayers.length > 0) {
             console.log(`🌱 Database Seeding: Syncing ${missingPlayers.length} missing players from players.json...`);
             const playersToInsert = missingPlayers.map(p => {
               return {
                 ...p,
-                stats: p.stats ? JSON.stringify(p.stats) : null,
-                careerTotals: p.careerTotals ? JSON.stringify(p.careerTotals) : null,
-                trophies: p.trophies ? JSON.stringify(p.trophies) : null,
-                transfers: p.transfers ? JSON.stringify(p.transfers) : null,
-                strengths: p.strengths ? JSON.stringify(p.strengths) : null,
-                tags: p.tags ? JSON.stringify(p.tags) : null,
-                history: p.history ? JSON.stringify(p.history) : null
+                stats: p.stats ? (typeof p.stats === 'string' ? p.stats : JSON.stringify(p.stats)) : null,
+                careerTotals: p.careerTotals ? (typeof p.careerTotals === 'string' ? p.careerTotals : JSON.stringify(p.careerTotals)) : null,
+                trophies: p.trophies ? (typeof p.trophies === 'string' ? p.trophies : JSON.stringify(p.trophies)) : null,
+                transfers: p.transfers ? (typeof p.transfers === 'string' ? p.transfers : JSON.stringify(p.transfers)) : null,
+                strengths: p.strengths ? (typeof p.strengths === 'string' ? p.strengths : JSON.stringify(p.strengths)) : null,
+                tags: p.tags ? (typeof p.tags === 'string' ? p.tags : JSON.stringify(p.tags)) : null,
+                history: p.history ? (typeof p.history === 'string' ? p.history : JSON.stringify(p.history)) : null
               };
             });
             await Player.bulkCreate(playersToInsert);
             count = await Player.count();
             console.log(`✅ Seeded ${missingPlayers.length} missing players successfully! Total is now ${count}.`);
-          } else {
-            console.log(`✅ All ${totalJsonPlayers} players from players.json exist in database. Updating market values...`);
-            for (const p of fileData.players) {
-              await Player.update({ marketValue: p.marketValue || 0 }, { where: { id: p.id } });
-            }
-            console.log(`✅ Synchronized marketValue for ${totalJsonPlayers} players.`);
           }
+
+          console.log(`✅ Synchronizing market values for ${totalJsonPlayers} players across database...`);
+          for (const p of playersList) {
+            await Player.update({ marketValue: p.marketValue || 0 }, { where: { id: p.id } });
+          }
+          console.log(`✅ Synchronized marketValue for ${totalJsonPlayers} players in active database.`);
         } else {
           console.warn('⚠️ Seeding warning: knowledge/players.json not found.');
         }
