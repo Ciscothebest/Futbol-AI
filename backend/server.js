@@ -157,7 +157,7 @@ app.get('/api/players', authenticate, async (req, res) => {
       let avatarUrl = '';
       
       if (photoId) {
-        avatarUrl = `${apiHost}/api/player-photo/${photoId}?v=2`;
+        avatarUrl = (photoId.startsWith('http://') || photoId.startsWith('https://')) ? photoId : `${apiHost}/api/player-photo/${photoId}?v=2`;
       } else if (fs.existsSync(localImgPath)) {
         avatarUrl = `/assets/players/${data.id}.png`;
       } else {
@@ -278,7 +278,7 @@ app.get('/api/players/:id', async (req, res) => {
     
     data.photoId = photoId || null;
     if (photoId) {
-      data.avatarUrl = `${apiHost}/api/player-photo/${photoId}?v=2`;
+      data.avatarUrl = (photoId.startsWith('http://') || photoId.startsWith('https://')) ? photoId : `${apiHost}/api/player-photo/${photoId}?v=2`;
     } else if (fs.existsSync(localImgPath)) {
       data.avatarUrl = `/assets/players/${data.id}.png`;
     } else {
@@ -292,17 +292,30 @@ app.get('/api/players/:id', async (req, res) => {
 });
 
 // ─── Image Proxy ──────────────────────────────────────────────────
-app.get('/api/player-photo/:id', (req, res) => {
+app.get(['/api/player-photo/:id', '/api/player-photo/*'], (req, res) => {
   const https = require('https');
-  const idStr = String(req.params.id).padStart(6, '0');
+  const http = require('http');
+  const rawId = req.params.id || req.params[0] || '';
+  const decodedId = decodeURIComponent(rawId);
+
+  if (decodedId.startsWith('http://') || decodedId.startsWith('https://')) {
+    return res.redirect(decodedId);
+  }
+
+  const cleanNumericId = decodedId.replace(/[^0-9]/g, '');
+  if (!cleanNumericId) {
+    return res.status(404).send('Invalid photo ID');
+  }
+
+  const idStr = String(cleanNumericId).padStart(6, '0');
   const p1 = idStr.substring(0, 3);
   const p2 = idStr.substring(3, 6);
   
   const options = {
     headers: {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
       'Referer': 'https://sofifa.com/',
-      'Accept': 'image/png,image/webp,*/*;q=0.8'
+      'Accept': 'image/png,image/webp,image/jpeg,*/*;q=0.8'
     }
   };
 
@@ -311,14 +324,15 @@ app.get('/api/player-photo/:id', (req, res) => {
 
   function fetchImage() {
     if (currentYearIdx >= years.length) {
-      return res.status(404).send('Image not found');
+      // Fallback redirect to Dicebear initials if SoFIFA image not found
+      return res.redirect(`https://api.dicebear.com/9.x/initials/svg?seed=Player&backgroundColor=0d1117&textColor=ffffff&radius=50`);
     }
     const year = years[currentYearIdx];
     const url = `https://cdn.sofifa.net/players/${p1}/${p2}/${year}_120.png`;
     
     https.get(url, options, (proxyRes) => {
       if (proxyRes.statusCode !== 200) {
-        proxyRes.resume(); // Consume the stream to free up memory
+        proxyRes.resume();
         currentYearIdx++;
         return fetchImage();
       }
@@ -1053,7 +1067,16 @@ function fetchAbacusLogo(type, id) {
       if (res.statusCode === 302 || res.statusCode === 301) {
         resolve(res.headers.location);
       } else if (res.statusCode === 200) {
-        resolve(res.responseUrl || url);
+        let body = '';
+        res.on('data', chunk => body += chunk);
+        res.on('end', () => {
+          try {
+            const parsed = JSON.parse(body);
+            resolve(parsed.logo_url || parsed.logoUrl || parsed.url || null);
+          } catch (e) {
+            resolve(null);
+          }
+        });
       } else {
         resolve(null);
       }

@@ -191,7 +191,7 @@ class _MyClubTabState extends State<MyClubTab> {
                                   ),
                                 ),
                               Text(
-                                '$country · Temporada 2024/25',
+                                '$country · Temporada 2025/26',
                                 style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 11, fontWeight: FontWeight.w500),
                               ),
                             ],

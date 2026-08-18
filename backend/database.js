@@ -35,7 +35,9 @@ if (useProductionPostgres) {
   });
 } else {
   console.log('🐘 Using SQL Server (MSSQL) database...');
-  const dbHost = process.env.DB_HOST || 'localhost';
+  let rawHost = process.env.DB_HOST || '127.0.0.1';
+  // Avoid tedious IPv6 ::1 lookup sequence error on Windows when 'localhost' is provided
+  const dbHost = (rawHost === 'localhost') ? '127.0.0.1' : rawHost;
   const isLocalHost = dbHost === 'localhost' || dbHost === '127.0.0.1';
 
   // In cloud databases (like AWS RDS / Azure SQL), encryption is usually required.
@@ -137,6 +139,19 @@ const Player = sequelize.define('Player', {
     type: DataTypes.TEXT,
     get() {
       const val = this.getDataValue('history');
+      if (typeof val === 'object') return val;
+      try { return val ? JSON.parse(val) : []; } catch(e) { return []; }
+    }
+  },
+  medicalStatus: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    defaultValue: 'Disponible'
+  },
+  injuries: {
+    type: DataTypes.TEXT,
+    get() {
+      const val = this.getDataValue('injuries');
       if (typeof val === 'object') return val;
       try { return val ? JSON.parse(val) : []; } catch(e) { return []; }
     }

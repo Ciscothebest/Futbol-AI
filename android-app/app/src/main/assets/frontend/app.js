@@ -9,7 +9,7 @@ const TRANSLATIONS = {
   es: {
     nav_home: 'Inicio', nav_my_club: 'Mi Club', nav_players: 'Jugadores', nav_chat: 'Chat IA',
     nav_compare: 'Comparar', nav_predictions: 'Predicciones', nav_simulations: 'Simulaciones', section_simulations: '🎮 Simulador de Partidos IA', sim_report_title: 'Reporte de Simulación IA',
-    db_my_club: 'Mi Club', db_position: 'Posición', db_goals: 'Goles', db_xg: 'xG',
+    db_my_club: 'Mi Club', db_position: 'Posición', db_goals: 'Goles Favor (GF)', db_xg: 'xG', db_wins: 'Ganados (G)', db_draws: 'Empatados (E)', db_losses: 'Perdidos (P)', db_gc: 'Goles Contra (GC)', db_dg: 'Dif. Goles (DG)',
     db_matches: 'Partidos', db_next_matches: 'Próximos partidos', db_title_formation: 'Alineación Titular',
     db_btn_edit_formation: 'Editar alineación', db_alerts_title: 'Alertas IA',
     db_performance_title: 'Rendimiento reciente', db_chat_title: 'Chat IA',
@@ -116,7 +116,7 @@ const TRANSLATIONS = {
   en: {
     nav_home: 'Home', nav_my_club: 'My Club', nav_players: 'Players', nav_chat: 'AI Chat',
     nav_compare: 'Compare', nav_predictions: 'Predictions', nav_simulations: 'Simulations', section_simulations: '🎮 AI Match Simulator', sim_report_title: 'AI Simulation Report',
-    db_my_club: 'My Club', db_position: 'Position', db_goals: 'Goals', db_xg: 'xG',
+    db_my_club: 'My Club', db_position: 'Position', db_goals: 'Goals For (GF)', db_xg: 'xG', db_wins: 'Wins (W)', db_draws: 'Draws (D)', db_losses: 'Losses (L)', db_gc: 'Goals Conceded (GA)', db_dg: 'Goal Diff (GD)',
     db_matches: 'Matches', db_next_matches: 'Upcoming Matches', db_title_formation: 'Starting XI',
     db_btn_edit_formation: 'Edit Formation', db_alerts_title: 'AI Alerts',
     db_performance_title: 'Recent Performance', db_chat_title: 'AI Chat',
@@ -1037,117 +1037,1604 @@ function getClubTheme(clubName) {
 }
 
 function getDeterministicStats(clubName, countryName) {
-  // Normalize country name
-  const country = (countryName || "").toLowerCase().trim();
-  
-  // List of main countries
-  const mainCountries = [
-    "espana", "españa", "spain",
-    "reino unido", "united kingdom", "uk", "england", "great britain",
-    "alemania", "germany",
-    "francia", "france",
-    "italia", "italy",
-    "portugal",
-    "paises bajos", "países bajos", "netherlands", "holland",
-    "brasil", "brazil",
-    "argentina",
-    "mexico", "méxico",
-    "arabia saudi", "arabia saudí", "saudi arabia",
-    "ee.uu.", "eeuu", "usa", "united states of america", "united states"
-  ];
-  
-  const isMainCountry = mainCountries.some(mc => country.includes(mc) || mc.includes(country));
-  
-  if (!isMainCountry) {
-    // For very secondary leagues, show "To be defined" (TBD)
-    const isEs = currentLang === 'es';
-    const tbdText = isEs ? "Por definir" : "To be defined";
-    return { pos: tbdText, matches: tbdText, goals: tbdText, xG: tbdText };
+  if (!clubName) {
+    return { pos: "1º", matches: 38, g: 31, e: 1, p: 6, goals: 95, gc: 36, dg: "+59", xG: "91.2", season: "2025/26" };
   }
   
-  // Otherwise, it's a main country/league!
-  // Let's provide highly realistic final 2024/25 standings.
   const realStats = {
-    // --- SPAIN (La Liga) ---
-    "FC Barcelona": { pos: 1, matches: 38, goals: 102, xG: "98.6" },
-    "Real Madrid": { pos: 2, matches: 38, goals: 78, xG: "76.2" },
-    "Atlético de Madrid": { pos: 3, matches: 38, goals: 70, xG: "68.4" },
-    "Girona FC": { pos: 4, matches: 38, goals: 65, xG: "64.1" },
-    "Athletic Club": { pos: 5, matches: 38, goals: 61, xG: "59.8" },
-    "Real Sociedad": { pos: 6, matches: 38, goals: 56, xG: "55.3" },
-    "Real Betis": { pos: 7, matches: 38, goals: 54, xG: "53.2" },
-    "Villarreal CF": { pos: 8, matches: 38, goals: 58, xG: "57.5" },
-    "Valencia CF": { pos: 9, matches: 38, goals: 48, xG: "46.9" },
-    "Sevilla FC": { pos: 10, matches: 38, goals: 50, xG: "49.1" },
-    
-    // --- UNITED KINGDOM / ENGLAND (Premier League) ---
-    "Liverpool": { pos: 1, matches: 38, goals: 83, xG: "81.5" },
-    "Arsenal": { pos: 2, matches: 38, goals: 74, xG: "72.8" },
-    "Manchester City": { pos: 3, matches: 38, goals: 76, xG: "75.1" },
-    "Chelsea": { pos: 4, matches: 38, goals: 69, xG: "67.8" },
-    "Manchester United": { pos: 5, matches: 38, goals: 58, xG: "56.4" },
-    "Tottenham Hotspur": { pos: 6, matches: 38, goals: 68, xG: "66.2" },
-    "Newcastle United": { pos: 7, matches: 38, goals: 62, xG: "60.9" },
-    "Aston Villa": { pos: 8, matches: 38, goals: 60, xG: "59.1" },
-    
-    // --- ITALY (Serie A) ---
-    "Napoli": { pos: 1, matches: 38, goals: 72, xG: "70.1" },
-    "Inter Milan": { pos: 2, matches: 38, goals: 75, xG: "74.8" },
-    "Atalanta": { pos: 3, matches: 38, goals: 78, xG: "76.4" },
-    "Juventus": { pos: 4, matches: 38, goals: 65, xG: "63.2" },
-    "AS Roma": { pos: 5, matches: 38, goals: 58, xG: "57.1" },
-    "SS Lazio": { pos: 6, matches: 38, goals: 60, xG: "58.9" },
-    "Fiorentina": { pos: 7, matches: 38, goals: 56, xG: "55.4" },
-    "AC Milan": { pos: 8, matches: 38, goals: 52, xG: "53.4" },
-    
-    // --- GERMANY (Bundesliga) ---
-    "Bayern München": { pos: 1, matches: 34, goals: 92, xG: "89.5" },
-    "Bayern Munich": { pos: 1, matches: 34, goals: 92, xG: "89.5" },
-    "Bayer 04 Leverkusen": { pos: 2, matches: 34, goals: 81, xG: "78.4" },
-    "Bayer Leverkusen": { pos: 2, matches: 34, goals: 81, xG: "78.4" },
-    "Eintracht Frankfurt": { pos: 3, matches: 34, goals: 68, xG: "66.2" },
-    "Borussia Dortmund": { pos: 4, matches: 34, goals: 72, xG: "70.8" },
-    "RB Leipzig": { pos: 5, matches: 34, goals: 64, xG: "63.1" },
-    "VfB Stuttgart": { pos: 6, matches: 34, goals: 60, xG: "59.4" },
-    
-    // --- FRANCE (Ligue 1) ---
-    "Paris Saint-Germain": { pos: 1, matches: 34, goals: 86, xG: "84.2" },
-    "PSG": { pos: 1, matches: 34, goals: 86, xG: "84.2" },
-    "Olympique de Marseille": { pos: 2, matches: 34, goals: 68, xG: "66.9" },
-    "Olympique Marseille": { pos: 2, matches: 34, goals: 68, xG: "66.9" },
-    "AS Monaco": { pos: 3, matches: 34, goals: 62, xG: "60.4" },
-    "LOSC Lille": { pos: 4, matches: 34, goals: 58, xG: "56.8" },
-    "OGC Nice": { pos: 5, matches: 34, goals: 54, xG: "52.9" },
-    
-    // --- USA (MLS) ---
-    "Inter Miami CF": { pos: 1, matches: 34, goals: 79, xG: "76.4" },
-    "LA Galaxy": { pos: 2, matches: 34, goals: 69, xG: "67.1" },
-    "Columbus Crew": { pos: 3, matches: 34, goals: 65, xG: "63.8" },
-    
-    // --- SAUDI ARABIA ---
-    "Al-Hilal SFC": { pos: 1, matches: 34, goals: 90, xG: "88.2" },
-    "Al-Nassr FC": { pos: 2, matches: 34, goals: 78, xG: "76.9" },
-    "Al-Ittihad Club": { pos: 3, matches: 34, goals: 72, xG: "70.5" }
-  };
+    "FC Barcelona": {
+        "pos": 1,
+        "matches": 38,
+        "g": 31,
+        "e": 1,
+        "p": 6,
+        "goals": 95,
+        "gc": 36,
+        "dg": "+59",
+        "xG": "91.2"
+    },
+    "Real Madrid": {
+        "pos": 2,
+        "matches": 38,
+        "g": 27,
+        "e": 5,
+        "p": 6,
+        "goals": 77,
+        "gc": 35,
+        "dg": "+42",
+        "xG": "73.9"
+    },
+    "Villarreal": {
+        "pos": 3,
+        "matches": 38,
+        "g": 22,
+        "e": 6,
+        "p": 10,
+        "goals": 72,
+        "gc": 46,
+        "dg": "+26",
+        "xG": "69.1"
+    },
+    "Villarreal CF": {
+        "pos": 3,
+        "matches": 38,
+        "g": 22,
+        "e": 6,
+        "p": 10,
+        "goals": 72,
+        "gc": 46,
+        "dg": "+26",
+        "xG": "69.1"
+    },
+    "Atlético de Madrid": {
+        "pos": 4,
+        "matches": 38,
+        "g": 21,
+        "e": 6,
+        "p": 11,
+        "goals": 62,
+        "gc": 44,
+        "dg": "+18",
+        "xG": "59.5"
+    },
+    "Atletico Madrid": {
+        "pos": 4,
+        "matches": 38,
+        "g": 21,
+        "e": 6,
+        "p": 11,
+        "goals": 62,
+        "gc": 44,
+        "dg": "+18",
+        "xG": "59.5"
+    },
+    "Real Betis": {
+        "pos": 5,
+        "matches": 38,
+        "g": 15,
+        "e": 15,
+        "p": 8,
+        "goals": 59,
+        "gc": 48,
+        "dg": "+11",
+        "xG": "56.6"
+    },
+    "Celta de Vigo": {
+        "pos": 6,
+        "matches": 38,
+        "g": 14,
+        "e": 12,
+        "p": 12,
+        "goals": 53,
+        "gc": 48,
+        "dg": "+5",
+        "xG": "50.9"
+    },
+    "Getafe": {
+        "pos": 7,
+        "matches": 38,
+        "g": 15,
+        "e": 6,
+        "p": 17,
+        "goals": 32,
+        "gc": 38,
+        "dg": "-6",
+        "xG": "30.7"
+    },
+    "Rayo Vallecano": {
+        "pos": 8,
+        "matches": 38,
+        "g": 12,
+        "e": 14,
+        "p": 12,
+        "goals": 41,
+        "gc": 44,
+        "dg": "-3",
+        "xG": "39.4"
+    },
+    "Valencia": {
+        "pos": 9,
+        "matches": 38,
+        "g": 13,
+        "e": 10,
+        "p": 15,
+        "goals": 46,
+        "gc": 55,
+        "dg": "-9",
+        "xG": "44.2"
+    },
+    "Valencia CF": {
+        "pos": 9,
+        "matches": 38,
+        "g": 13,
+        "e": 10,
+        "p": 15,
+        "goals": 46,
+        "gc": 55,
+        "dg": "-9",
+        "xG": "44.2"
+    },
+    "Real Sociedad": {
+        "pos": 10,
+        "matches": 38,
+        "g": 11,
+        "e": 13,
+        "p": 14,
+        "goals": 59,
+        "gc": 61,
+        "dg": "-2",
+        "xG": "56.6"
+    },
+    "Espanyol": {
+        "pos": 11,
+        "matches": 38,
+        "g": 12,
+        "e": 10,
+        "p": 16,
+        "goals": 43,
+        "gc": 55,
+        "dg": "-12",
+        "xG": "41.3"
+    },
+    "Athletic Club": {
+        "pos": 12,
+        "matches": 38,
+        "g": 13,
+        "e": 6,
+        "p": 19,
+        "goals": 43,
+        "gc": 58,
+        "dg": "-15",
+        "xG": "41.3"
+    },
+    "Sevilla": {
+        "pos": 13,
+        "matches": 38,
+        "g": 12,
+        "e": 7,
+        "p": 19,
+        "goals": 46,
+        "gc": 60,
+        "dg": "-14",
+        "xG": "44.2"
+    },
+    "Sevilla FC": {
+        "pos": 13,
+        "matches": 38,
+        "g": 12,
+        "e": 7,
+        "p": 19,
+        "goals": 46,
+        "gc": 60,
+        "dg": "-14",
+        "xG": "44.2"
+    },
+    "Alaves": {
+        "pos": 14,
+        "matches": 38,
+        "g": 11,
+        "e": 10,
+        "p": 17,
+        "goals": 44,
+        "gc": 56,
+        "dg": "-12",
+        "xG": "42.2"
+    },
+    "Alavés": {
+        "pos": 14,
+        "matches": 38,
+        "g": 11,
+        "e": 10,
+        "p": 17,
+        "goals": 44,
+        "gc": 56,
+        "dg": "-12",
+        "xG": "42.2"
+    },
+    "Elche": {
+        "pos": 15,
+        "matches": 38,
+        "g": 10,
+        "e": 13,
+        "p": 15,
+        "goals": 49,
+        "gc": 57,
+        "dg": "-8",
+        "xG": "47.0"
+    },
+    "Levante": {
+        "pos": 16,
+        "matches": 38,
+        "g": 11,
+        "e": 9,
+        "p": 18,
+        "goals": 47,
+        "gc": 61,
+        "dg": "-14",
+        "xG": "45.1"
+    },
+    "Osasuna": {
+        "pos": 17,
+        "matches": 38,
+        "g": 11,
+        "e": 9,
+        "p": 18,
+        "goals": 44,
+        "gc": 50,
+        "dg": "-6",
+        "xG": "42.2"
+    },
+    "Mallorca": {
+        "pos": 18,
+        "matches": 38,
+        "g": 11,
+        "e": 9,
+        "p": 18,
+        "goals": 47,
+        "gc": 57,
+        "dg": "-10",
+        "xG": "45.1"
+    },
+    "Girona": {
+        "pos": 19,
+        "matches": 38,
+        "g": 9,
+        "e": 14,
+        "p": 15,
+        "goals": 39,
+        "gc": 55,
+        "dg": "-16",
+        "xG": "37.4"
+    },
+    "Girona FC": {
+        "pos": 19,
+        "matches": 38,
+        "g": 9,
+        "e": 14,
+        "p": 15,
+        "goals": 39,
+        "gc": 55,
+        "dg": "-16",
+        "xG": "37.4"
+    },
+    "Real Oviedo": {
+        "pos": 20,
+        "matches": 38,
+        "g": 6,
+        "e": 11,
+        "p": 21,
+        "goals": 26,
+        "gc": 60,
+        "dg": "-34",
+        "xG": "25.0"
+    },
+    "Arsenal": {
+        "pos": 1,
+        "matches": 38,
+        "g": 26,
+        "e": 7,
+        "p": 5,
+        "goals": 71,
+        "gc": 27,
+        "dg": "+44",
+        "xG": "68.2"
+    },
+    "Manchester City": {
+        "pos": 2,
+        "matches": 38,
+        "g": 23,
+        "e": 9,
+        "p": 6,
+        "goals": 77,
+        "gc": 35,
+        "dg": "+42",
+        "xG": "73.9"
+    },
+    "Manchester United": {
+        "pos": 3,
+        "matches": 38,
+        "g": 20,
+        "e": 11,
+        "p": 7,
+        "goals": 69,
+        "gc": 50,
+        "dg": "+19",
+        "xG": "66.2"
+    },
+    "Aston Villa": {
+        "pos": 4,
+        "matches": 38,
+        "g": 19,
+        "e": 8,
+        "p": 11,
+        "goals": 56,
+        "gc": 49,
+        "dg": "+7",
+        "xG": "53.8"
+    },
+    "Liverpool": {
+        "pos": 5,
+        "matches": 38,
+        "g": 17,
+        "e": 9,
+        "p": 12,
+        "goals": 63,
+        "gc": 53,
+        "dg": "+10",
+        "xG": "60.5"
+    },
+    "AFC Bournemouth": {
+        "pos": 6,
+        "matches": 38,
+        "g": 13,
+        "e": 18,
+        "p": 7,
+        "goals": 58,
+        "gc": 54,
+        "dg": "+4",
+        "xG": "55.7"
+    },
+    "Bournemouth": {
+        "pos": 6,
+        "matches": 38,
+        "g": 13,
+        "e": 18,
+        "p": 7,
+        "goals": 58,
+        "gc": 54,
+        "dg": "+4",
+        "xG": "55.7"
+    },
+    "Sunderland": {
+        "pos": 7,
+        "matches": 38,
+        "g": 14,
+        "e": 12,
+        "p": 12,
+        "goals": 42,
+        "gc": 48,
+        "dg": "-6",
+        "xG": "40.3"
+    },
+    "Brighton & Hove Albion": {
+        "pos": 8,
+        "matches": 38,
+        "g": 14,
+        "e": 11,
+        "p": 13,
+        "goals": 52,
+        "gc": 46,
+        "dg": "+6",
+        "xG": "49.9"
+    },
+    "Brighton": {
+        "pos": 8,
+        "matches": 38,
+        "g": 14,
+        "e": 11,
+        "p": 13,
+        "goals": 52,
+        "gc": 46,
+        "dg": "+6",
+        "xG": "49.9"
+    },
+    "Brentford": {
+        "pos": 9,
+        "matches": 38,
+        "g": 14,
+        "e": 11,
+        "p": 13,
+        "goals": 55,
+        "gc": 52,
+        "dg": "+3",
+        "xG": "52.8"
+    },
+    "Chelsea": {
+        "pos": 10,
+        "matches": 38,
+        "g": 14,
+        "e": 10,
+        "p": 14,
+        "goals": 58,
+        "gc": 52,
+        "dg": "+6",
+        "xG": "55.7"
+    },
+    "Fulham": {
+        "pos": 11,
+        "matches": 38,
+        "g": 15,
+        "e": 7,
+        "p": 16,
+        "goals": 47,
+        "gc": 51,
+        "dg": "-4",
+        "xG": "45.1"
+    },
+    "Newcastle United": {
+        "pos": 12,
+        "matches": 38,
+        "g": 14,
+        "e": 7,
+        "p": 17,
+        "goals": 53,
+        "gc": 55,
+        "dg": "-2",
+        "xG": "50.9"
+    },
+    "Everton": {
+        "pos": 13,
+        "matches": 38,
+        "g": 13,
+        "e": 10,
+        "p": 15,
+        "goals": 47,
+        "gc": 50,
+        "dg": "-3",
+        "xG": "45.1"
+    },
+    "Leeds United": {
+        "pos": 14,
+        "matches": 38,
+        "g": 11,
+        "e": 14,
+        "p": 13,
+        "goals": 49,
+        "gc": 56,
+        "dg": "-7",
+        "xG": "47.0"
+    },
+    "Crystal Palace": {
+        "pos": 15,
+        "matches": 38,
+        "g": 11,
+        "e": 12,
+        "p": 15,
+        "goals": 41,
+        "gc": 51,
+        "dg": "-10",
+        "xG": "39.4"
+    },
+    "Nottingham Forest": {
+        "pos": 16,
+        "matches": 38,
+        "g": 11,
+        "e": 11,
+        "p": 16,
+        "goals": 48,
+        "gc": 51,
+        "dg": "-3",
+        "xG": "46.1"
+    },
+    "Tottenham Hotspur": {
+        "pos": 17,
+        "matches": 38,
+        "g": 10,
+        "e": 11,
+        "p": 17,
+        "goals": 48,
+        "gc": 57,
+        "dg": "-9",
+        "xG": "46.1"
+    },
+    "Tottenham": {
+        "pos": 17,
+        "matches": 38,
+        "g": 10,
+        "e": 11,
+        "p": 17,
+        "goals": 48,
+        "gc": 57,
+        "dg": "-9",
+        "xG": "46.1"
+    },
+    "West Ham United": {
+        "pos": 18,
+        "matches": 38,
+        "g": 10,
+        "e": 9,
+        "p": 19,
+        "goals": 46,
+        "gc": 65,
+        "dg": "-19",
+        "xG": "44.2"
+    },
+    "Burnley": {
+        "pos": 19,
+        "matches": 38,
+        "g": 4,
+        "e": 10,
+        "p": 24,
+        "goals": 38,
+        "gc": 75,
+        "dg": "-37",
+        "xG": "36.5"
+    },
+    "Wolverhampton Wanderers": {
+        "pos": 20,
+        "matches": 38,
+        "g": 3,
+        "e": 11,
+        "p": 24,
+        "goals": 27,
+        "gc": 68,
+        "dg": "-41",
+        "xG": "25.9"
+    },
+    "Inter Milan": {
+        "pos": 1,
+        "matches": 38,
+        "g": 27,
+        "e": 6,
+        "p": 5,
+        "goals": 89,
+        "gc": 35,
+        "dg": "+54",
+        "xG": "85.4"
+    },
+    "Inter": {
+        "pos": 1,
+        "matches": 38,
+        "g": 27,
+        "e": 6,
+        "p": 5,
+        "goals": 89,
+        "gc": 35,
+        "dg": "+54",
+        "xG": "85.4"
+    },
+    "Napoli": {
+        "pos": 2,
+        "matches": 38,
+        "g": 23,
+        "e": 7,
+        "p": 8,
+        "goals": 58,
+        "gc": 36,
+        "dg": "+22",
+        "xG": "55.7"
+    },
+    "AS Roma": {
+        "pos": 3,
+        "matches": 38,
+        "g": 23,
+        "e": 4,
+        "p": 11,
+        "goals": 59,
+        "gc": 31,
+        "dg": "+28",
+        "xG": "56.6"
+    },
+    "Como": {
+        "pos": 4,
+        "matches": 38,
+        "g": 20,
+        "e": 11,
+        "p": 7,
+        "goals": 65,
+        "gc": 29,
+        "dg": "+36",
+        "xG": "62.4"
+    },
+    "AC Milan": {
+        "pos": 5,
+        "matches": 38,
+        "g": 20,
+        "e": 10,
+        "p": 8,
+        "goals": 53,
+        "gc": 35,
+        "dg": "+18",
+        "xG": "50.9"
+    },
+    "Juventus": {
+        "pos": 6,
+        "matches": 38,
+        "g": 19,
+        "e": 12,
+        "p": 7,
+        "goals": 61,
+        "gc": 34,
+        "dg": "+27",
+        "xG": "58.6"
+    },
+    "Atalanta": {
+        "pos": 7,
+        "matches": 38,
+        "g": 15,
+        "e": 14,
+        "p": 9,
+        "goals": 51,
+        "gc": 36,
+        "dg": "+15",
+        "xG": "49.0"
+    },
+    "Bologna": {
+        "pos": 8,
+        "matches": 38,
+        "g": 16,
+        "e": 8,
+        "p": 14,
+        "goals": 49,
+        "gc": 46,
+        "dg": "+3",
+        "xG": "47.0"
+    },
+    "Lazio": {
+        "pos": 9,
+        "matches": 38,
+        "g": 14,
+        "e": 12,
+        "p": 12,
+        "goals": 41,
+        "gc": 40,
+        "dg": "+1",
+        "xG": "39.4"
+    },
+    "SS Lazio": {
+        "pos": 9,
+        "matches": 38,
+        "g": 14,
+        "e": 12,
+        "p": 12,
+        "goals": 41,
+        "gc": 40,
+        "dg": "+1",
+        "xG": "39.4"
+    },
+    "Udinese": {
+        "pos": 10,
+        "matches": 38,
+        "g": 14,
+        "e": 8,
+        "p": 16,
+        "goals": 45,
+        "gc": 48,
+        "dg": "-3",
+        "xG": "43.2"
+    },
+    "Sassuolo": {
+        "pos": 11,
+        "matches": 38,
+        "g": 14,
+        "e": 7,
+        "p": 17,
+        "goals": 46,
+        "gc": 50,
+        "dg": "-4",
+        "xG": "44.2"
+    },
+    "Torino": {
+        "pos": 12,
+        "matches": 38,
+        "g": 12,
+        "e": 9,
+        "p": 17,
+        "goals": 44,
+        "gc": 63,
+        "dg": "-19",
+        "xG": "42.2"
+    },
+    "Parma": {
+        "pos": 13,
+        "matches": 38,
+        "g": 11,
+        "e": 12,
+        "p": 15,
+        "goals": 28,
+        "gc": 46,
+        "dg": "-18",
+        "xG": "26.9"
+    },
+    "Cagliari": {
+        "pos": 14,
+        "matches": 38,
+        "g": 11,
+        "e": 10,
+        "p": 17,
+        "goals": 40,
+        "gc": 53,
+        "dg": "-13",
+        "xG": "38.4"
+    },
+    "Fiorentina": {
+        "pos": 15,
+        "matches": 38,
+        "g": 9,
+        "e": 15,
+        "p": 14,
+        "goals": 41,
+        "gc": 50,
+        "dg": "-9",
+        "xG": "39.4"
+    },
+    "Genoa": {
+        "pos": 16,
+        "matches": 38,
+        "g": 10,
+        "e": 11,
+        "p": 17,
+        "goals": 41,
+        "gc": 51,
+        "dg": "-10",
+        "xG": "39.4"
+    },
+    "Lecce": {
+        "pos": 17,
+        "matches": 38,
+        "g": 10,
+        "e": 8,
+        "p": 20,
+        "goals": 28,
+        "gc": 50,
+        "dg": "-22",
+        "xG": "26.9"
+    },
+    "Cremonese": {
+        "pos": 18,
+        "matches": 38,
+        "g": 8,
+        "e": 10,
+        "p": 20,
+        "goals": 32,
+        "gc": 57,
+        "dg": "-25",
+        "xG": "30.7"
+    },
+    "Hellas Verona": {
+        "pos": 19,
+        "matches": 38,
+        "g": 3,
+        "e": 12,
+        "p": 23,
+        "goals": 25,
+        "gc": 61,
+        "dg": "-36",
+        "xG": "24.0"
+    },
+    "Pisa": {
+        "pos": 20,
+        "matches": 38,
+        "g": 2,
+        "e": 12,
+        "p": 24,
+        "goals": 26,
+        "gc": 71,
+        "dg": "-45",
+        "xG": "25.0"
+    },
+    "Bayern Munich": {
+        "pos": 1,
+        "matches": 34,
+        "g": 28,
+        "e": 5,
+        "p": 1,
+        "goals": 122,
+        "gc": 36,
+        "dg": "+86",
+        "xG": "117.1"
+    },
+    "Bayern München": {
+        "pos": 1,
+        "matches": 34,
+        "g": 28,
+        "e": 5,
+        "p": 1,
+        "goals": 122,
+        "gc": 36,
+        "dg": "+86",
+        "xG": "117.1"
+    },
+    "Borussia Dortmund": {
+        "pos": 2,
+        "matches": 34,
+        "g": 22,
+        "e": 7,
+        "p": 5,
+        "goals": 70,
+        "gc": 34,
+        "dg": "+36",
+        "xG": "67.2"
+    },
+    "RB Leipzig": {
+        "pos": 3,
+        "matches": 34,
+        "g": 20,
+        "e": 5,
+        "p": 9,
+        "goals": 66,
+        "gc": 47,
+        "dg": "+19",
+        "xG": "63.4"
+    },
+    "VfB Stuttgart": {
+        "pos": 4,
+        "matches": 34,
+        "g": 18,
+        "e": 8,
+        "p": 8,
+        "goals": 71,
+        "gc": 49,
+        "dg": "+22",
+        "xG": "68.2"
+    },
+    "TSG Hoffenheim": {
+        "pos": 5,
+        "matches": 34,
+        "g": 18,
+        "e": 7,
+        "p": 9,
+        "goals": 65,
+        "gc": 52,
+        "dg": "+13",
+        "xG": "62.4"
+    },
+    "Bayer Leverkusen": {
+        "pos": 6,
+        "matches": 34,
+        "g": 17,
+        "e": 8,
+        "p": 9,
+        "goals": 68,
+        "gc": 47,
+        "dg": "+21",
+        "xG": "65.3"
+    },
+    "SC Freiburg": {
+        "pos": 7,
+        "matches": 34,
+        "g": 13,
+        "e": 8,
+        "p": 13,
+        "goals": 51,
+        "gc": 57,
+        "dg": "-6",
+        "xG": "49.0"
+    },
+    "Eintracht Frankfurt": {
+        "pos": 8,
+        "matches": 34,
+        "g": 11,
+        "e": 11,
+        "p": 12,
+        "goals": 61,
+        "gc": 65,
+        "dg": "-4",
+        "xG": "58.6"
+    },
+    "FC Augsburg": {
+        "pos": 9,
+        "matches": 34,
+        "g": 12,
+        "e": 7,
+        "p": 15,
+        "goals": 45,
+        "gc": 61,
+        "dg": "-16",
+        "xG": "43.2"
+    },
+    "Mainz 05": {
+        "pos": 10,
+        "matches": 34,
+        "g": 10,
+        "e": 10,
+        "p": 14,
+        "goals": 44,
+        "gc": 53,
+        "dg": "-9",
+        "xG": "42.2"
+    },
+    "Union Berlin": {
+        "pos": 11,
+        "matches": 34,
+        "g": 10,
+        "e": 9,
+        "p": 15,
+        "goals": 44,
+        "gc": 58,
+        "dg": "-14",
+        "xG": "42.2"
+    },
+    "Borussia Monchengladbach": {
+        "pos": 12,
+        "matches": 34,
+        "g": 9,
+        "e": 11,
+        "p": 14,
+        "goals": 42,
+        "gc": 53,
+        "dg": "-11",
+        "xG": "40.3"
+    },
+    "Hamburger SV": {
+        "pos": 13,
+        "matches": 34,
+        "g": 9,
+        "e": 11,
+        "p": 14,
+        "goals": 40,
+        "gc": 54,
+        "dg": "-14",
+        "xG": "38.4"
+    },
+    "1. FC Koln": {
+        "pos": 14,
+        "matches": 34,
+        "g": 7,
+        "e": 11,
+        "p": 16,
+        "goals": 49,
+        "gc": 63,
+        "dg": "-14",
+        "xG": "47.0"
+    },
+    "Werder Bremen": {
+        "pos": 15,
+        "matches": 34,
+        "g": 8,
+        "e": 8,
+        "p": 18,
+        "goals": 37,
+        "gc": 60,
+        "dg": "-23",
+        "xG": "35.5"
+    },
+    "VfL Wolfsburg": {
+        "pos": 16,
+        "matches": 34,
+        "g": 7,
+        "e": 8,
+        "p": 19,
+        "goals": 45,
+        "gc": 69,
+        "dg": "-24",
+        "xG": "43.2"
+    },
+    "1. FC Heidenheim": {
+        "pos": 17,
+        "matches": 34,
+        "g": 6,
+        "e": 8,
+        "p": 20,
+        "goals": 41,
+        "gc": 72,
+        "dg": "-31",
+        "xG": "39.4"
+    },
+    "FC St. Pauli": {
+        "pos": 18,
+        "matches": 34,
+        "g": 6,
+        "e": 8,
+        "p": 20,
+        "goals": 29,
+        "gc": 60,
+        "dg": "-31",
+        "xG": "27.8"
+    },
+    "CR Flamengo": {
+        "pos": 1,
+        "matches": 38,
+        "g": 23,
+        "e": 10,
+        "p": 5,
+        "goals": 78,
+        "gc": 27,
+        "dg": "+51",
+        "xG": "74.9"
+    },
+    "Flamengo": {
+        "pos": 1,
+        "matches": 38,
+        "g": 23,
+        "e": 10,
+        "p": 5,
+        "goals": 78,
+        "gc": 27,
+        "dg": "+51",
+        "xG": "74.9"
+    },
+    "Palmeiras": {
+        "pos": 2,
+        "matches": 38,
+        "g": 23,
+        "e": 7,
+        "p": 8,
+        "goals": 66,
+        "gc": 33,
+        "dg": "+33",
+        "xG": "63.4"
+    },
+    "Cruzeiro": {
+        "pos": 3,
+        "matches": 38,
+        "g": 19,
+        "e": 13,
+        "p": 6,
+        "goals": 55,
+        "gc": 31,
+        "dg": "+24",
+        "xG": "52.8"
+    },
+    "Mirassol": {
+        "pos": 4,
+        "matches": 38,
+        "g": 18,
+        "e": 13,
+        "p": 7,
+        "goals": 63,
+        "gc": 39,
+        "dg": "+24",
+        "xG": "60.5"
+    },
+    "Fluminense": {
+        "pos": 5,
+        "matches": 38,
+        "g": 19,
+        "e": 7,
+        "p": 12,
+        "goals": 50,
+        "gc": 39,
+        "dg": "+11",
+        "xG": "48.0"
+    },
+    "Botafogo": {
+        "pos": 6,
+        "matches": 38,
+        "g": 17,
+        "e": 12,
+        "p": 9,
+        "goals": 58,
+        "gc": 38,
+        "dg": "+20",
+        "xG": "55.7"
+    },
+    "Bahia": {
+        "pos": 7,
+        "matches": 38,
+        "g": 17,
+        "e": 9,
+        "p": 12,
+        "goals": 50,
+        "gc": 47,
+        "dg": "+3",
+        "xG": "48.0"
+    },
+    "São Paulo FC": {
+        "pos": 8,
+        "matches": 38,
+        "g": 14,
+        "e": 9,
+        "p": 15,
+        "goals": 43,
+        "gc": 47,
+        "dg": "-4",
+        "xG": "41.3"
+    },
+    "Grêmio": {
+        "pos": 9,
+        "matches": 38,
+        "g": 13,
+        "e": 10,
+        "p": 15,
+        "goals": 47,
+        "gc": 50,
+        "dg": "-3",
+        "xG": "45.1"
+    },
+    "RB Bragantino": {
+        "pos": 10,
+        "matches": 38,
+        "g": 14,
+        "e": 6,
+        "p": 18,
+        "goals": 45,
+        "gc": 57,
+        "dg": "-12",
+        "xG": "43.2"
+    },
+    "Atlético Mineiro": {
+        "pos": 11,
+        "matches": 38,
+        "g": 12,
+        "e": 12,
+        "p": 14,
+        "goals": 43,
+        "gc": 44,
+        "dg": "-1",
+        "xG": "41.3"
+    },
+    "Santos FC": {
+        "pos": 12,
+        "matches": 38,
+        "g": 12,
+        "e": 11,
+        "p": 15,
+        "goals": 45,
+        "gc": 50,
+        "dg": "-5",
+        "xG": "43.2"
+    },
+    "Corinthians": {
+        "pos": 13,
+        "matches": 38,
+        "g": 12,
+        "e": 11,
+        "p": 15,
+        "goals": 42,
+        "gc": 47,
+        "dg": "-5",
+        "xG": "40.3"
+    },
+    "Vasco da Gama": {
+        "pos": 14,
+        "matches": 38,
+        "g": 13,
+        "e": 6,
+        "p": 19,
+        "goals": 55,
+        "gc": 60,
+        "dg": "-5",
+        "xG": "52.8"
+    },
+    "Vitória": {
+        "pos": 15,
+        "matches": 38,
+        "g": 11,
+        "e": 12,
+        "p": 15,
+        "goals": 35,
+        "gc": 52,
+        "dg": "-17",
+        "xG": "33.6"
+    },
+    "Internacional": {
+        "pos": 16,
+        "matches": 38,
+        "g": 11,
+        "e": 11,
+        "p": 16,
+        "goals": 44,
+        "gc": 57,
+        "dg": "-13",
+        "xG": "42.2"
+    },
+    "Ceará": {
+        "pos": 17,
+        "matches": 38,
+        "g": 11,
+        "e": 10,
+        "p": 17,
+        "goals": 34,
+        "gc": 40,
+        "dg": "-6",
+        "xG": "32.6"
+    },
+    "Fortaleza": {
+        "pos": 18,
+        "matches": 38,
+        "g": 11,
+        "e": 10,
+        "p": 17,
+        "goals": 44,
+        "gc": 58,
+        "dg": "-14",
+        "xG": "42.2"
+    },
+    "Juventude": {
+        "pos": 19,
+        "matches": 38,
+        "g": 9,
+        "e": 8,
+        "p": 21,
+        "goals": 35,
+        "gc": 69,
+        "dg": "-34",
+        "xG": "33.6"
+    },
+    "Sport Recife": {
+        "pos": 20,
+        "matches": 38,
+        "g": 2,
+        "e": 11,
+        "p": 25,
+        "goals": 28,
+        "gc": 75,
+        "dg": "-47",
+        "xG": "26.9"
+    },
+    "Rosario Central": {
+        "pos": 1,
+        "matches": 32,
+        "g": 18,
+        "e": 12,
+        "p": 2,
+        "goals": 40,
+        "gc": 16,
+        "dg": "+24",
+        "xG": "38.4"
+    },
+    "Boca Juniors": {
+        "pos": 2,
+        "matches": 32,
+        "g": 18,
+        "e": 8,
+        "p": 6,
+        "goals": 52,
+        "gc": 23,
+        "dg": "+29",
+        "xG": "49.9"
+    },
+    "Argentinos Juniors": {
+        "pos": 3,
+        "matches": 32,
+        "g": 16,
+        "e": 9,
+        "p": 7,
+        "goals": 42,
+        "gc": 22,
+        "dg": "+20",
+        "xG": "40.3"
+    },
+    "River Plate": {
+        "pos": 4,
+        "matches": 32,
+        "g": 14,
+        "e": 11,
+        "p": 7,
+        "goals": 41,
+        "gc": 24,
+        "dg": "+17",
+        "xG": "39.4"
+    },
+    "Racing Club": {
+        "pos": 5,
+        "matches": 32,
+        "g": 16,
+        "e": 5,
+        "p": 11,
+        "goals": 42,
+        "gc": 29,
+        "dg": "+13",
+        "xG": "40.3"
+    },
+    "Deportivo Riestra": {
+        "pos": 6,
+        "matches": 32,
+        "g": 13,
+        "e": 13,
+        "p": 6,
+        "goals": 32,
+        "gc": 19,
+        "dg": "+13",
+        "xG": "30.7"
+    },
+    "San Lorenzo": {
+        "pos": 7,
+        "matches": 32,
+        "g": 13,
+        "e": 12,
+        "p": 7,
+        "goals": 27,
+        "gc": 21,
+        "dg": "+6",
+        "xG": "25.9"
+    },
+    "Lanús": {
+        "pos": 8,
+        "matches": 32,
+        "g": 13,
+        "e": 11,
+        "p": 8,
+        "goals": 33,
+        "gc": 24,
+        "dg": "+9",
+        "xG": "31.7"
+    },
+    "Tigre": {
+        "pos": 9,
+        "matches": 32,
+        "g": 13,
+        "e": 10,
+        "p": 9,
+        "goals": 32,
+        "gc": 25,
+        "dg": "+7",
+        "xG": "30.7"
+    },
+    "Barracas Central": {
+        "pos": 10,
+        "matches": 32,
+        "g": 12,
+        "e": 13,
+        "p": 7,
+        "goals": 39,
+        "gc": 35,
+        "dg": "+4",
+        "xG": "37.4"
+    },
+    "Independiente": {
+        "pos": 11,
+        "matches": 32,
+        "g": 12,
+        "e": 11,
+        "p": 9,
+        "goals": 37,
+        "gc": 25,
+        "dg": "+12",
+        "xG": "35.5"
+    },
+    "Huracán": {
+        "pos": 12,
+        "matches": 32,
+        "g": 12,
+        "e": 11,
+        "p": 9,
+        "goals": 29,
+        "gc": 27,
+        "dg": "+2",
+        "xG": "27.8"
+    },
+    "Independiente Rivadavia": {
+        "pos": 13,
+        "matches": 32,
+        "g": 10,
+        "e": 13,
+        "p": 9,
+        "goals": 34,
+        "gc": 34,
+        "dg": "0",
+        "xG": "32.6"
+    },
+    "Central Córdoba (SdE)": {
+        "pos": 14,
+        "matches": 32,
+        "g": 10,
+        "e": 12,
+        "p": 10,
+        "goals": 38,
+        "gc": 33,
+        "dg": "+5",
+        "xG": "36.5"
+    },
+    "Estudiantes (LP)": {
+        "pos": 15,
+        "matches": 32,
+        "g": 11,
+        "e": 9,
+        "p": 12,
+        "goals": 35,
+        "gc": 37,
+        "dg": "-2",
+        "xG": "33.6"
+    },
+    "Vélez Sarsfield": {
+        "pos": 16,
+        "matches": 32,
+        "g": 11,
+        "e": 7,
+        "p": 14,
+        "goals": 26,
+        "gc": 34,
+        "dg": "-8",
+        "xG": "25.0"
+    },
+    "Unión": {
+        "pos": 17,
+        "matches": 32,
+        "g": 9,
+        "e": 12,
+        "p": 11,
+        "goals": 31,
+        "gc": 30,
+        "dg": "+1",
+        "xG": "29.8"
+    },
+    "Defensa y Justicia": {
+        "pos": 18,
+        "matches": 32,
+        "g": 10,
+        "e": 8,
+        "p": 14,
+        "goals": 32,
+        "gc": 41,
+        "dg": "-9",
+        "xG": "30.7"
+    },
+    "Gimnasia y Esgrima (LP)": {
+        "pos": 19,
+        "matches": 32,
+        "g": 11,
+        "e": 5,
+        "p": 16,
+        "goals": 23,
+        "gc": 34,
+        "dg": "-11",
+        "xG": "22.1"
+    },
+    "Belgrano": {
+        "pos": 20,
+        "matches": 32,
+        "g": 7,
+        "e": 16,
+        "p": 9,
+        "goals": 26,
+        "gc": 34,
+        "dg": "-8",
+        "xG": "25.0"
+    },
+    "Banfield": {
+        "pos": 21,
+        "matches": 32,
+        "g": 9,
+        "e": 8,
+        "p": 15,
+        "goals": 29,
+        "gc": 40,
+        "dg": "-11",
+        "xG": "27.8"
+    },
+    "Platense": {
+        "pos": 22,
+        "matches": 32,
+        "g": 8,
+        "e": 11,
+        "p": 13,
+        "goals": 25,
+        "gc": 36,
+        "dg": "-11",
+        "xG": "24.0"
+    },
+    "Sarmiento (J)": {
+        "pos": 23,
+        "matches": 32,
+        "g": 7,
+        "e": 14,
+        "p": 11,
+        "goals": 24,
+        "gc": 36,
+        "dg": "-12",
+        "xG": "23.0"
+    },
+    "Talleres (C)": {
+        "pos": 24,
+        "matches": 32,
+        "g": 7,
+        "e": 13,
+        "p": 12,
+        "goals": 20,
+        "gc": 27,
+        "dg": "-7",
+        "xG": "19.2"
+    },
+    "Atlético Tucumán": {
+        "pos": 25,
+        "matches": 32,
+        "g": 10,
+        "e": 4,
+        "p": 18,
+        "goals": 34,
+        "gc": 43,
+        "dg": "-9",
+        "xG": "32.6"
+    },
+    "Instituto": {
+        "pos": 26,
+        "matches": 32,
+        "g": 8,
+        "e": 10,
+        "p": 14,
+        "goals": 25,
+        "gc": 37,
+        "dg": "-12",
+        "xG": "24.0"
+    },
+    "Newell's Old Boys": {
+        "pos": 27,
+        "matches": 32,
+        "g": 8,
+        "e": 9,
+        "p": 15,
+        "goals": 25,
+        "gc": 38,
+        "dg": "-13",
+        "xG": "24.0"
+    },
+    "Aldosivi": {
+        "pos": 28,
+        "matches": 32,
+        "g": 9,
+        "e": 6,
+        "p": 17,
+        "goals": 31,
+        "gc": 46,
+        "dg": "-15",
+        "xG": "29.8"
+    },
+    "Godoy Cruz": {
+        "pos": 29,
+        "matches": 32,
+        "g": 4,
+        "e": 17,
+        "p": 11,
+        "goals": 19,
+        "gc": 37,
+        "dg": "-18",
+        "xG": "18.2"
+    },
+    "San Martín (SJ)": {
+        "pos": 30,
+        "matches": 32,
+        "g": 6,
+        "e": 10,
+        "p": 16,
+        "goals": 18,
+        "gc": 34,
+        "dg": "-16",
+        "xG": "17.3"
+    }
+};
   
-  if (realStats[clubName]) {
-    const stats = realStats[clubName];
+  const norm = (s) => (s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
+  const targetNorm = norm(clubName);
+  
+  let found = realStats[clubName];
+  if (!found) {
+    for (const key of Object.keys(realStats)) {
+      if (norm(key) === targetNorm) {
+        found = realStats[key];
+        break;
+      }
+    }
+  }
+  
+  if (found) {
+    const posStr = typeof found.pos === 'number' ? `${found.pos}º` : String(found.pos);
+    const goalsVal = found.goals !== undefined ? found.goals : found.gf;
+    const gcVal = found.gc !== undefined ? found.gc : 0;
+    const diff = goalsVal - gcVal;
+    const dgStr = found.dg !== undefined ? found.dg : (diff > 0 ? `+${diff}` : `${diff}`);
     return {
-      pos: `${stats.pos}º`,
-      matches: stats.matches,
-      goals: stats.goals,
-      xG: stats.xG
+      pos: posStr,
+      matches: found.matches,
+      g: found.g !== undefined ? found.g : 0,
+      e: found.e !== undefined ? found.e : 0,
+      p: found.p !== undefined ? found.p : 0,
+      goals: goalsVal,
+      gc: gcVal,
+      dg: dgStr,
+      xG: found.xG || (goalsVal * 0.96).toFixed(1),
+      season: "2025/26"
     };
   }
   
-  // For any other club in a main country, generate realistic but deterministic statistics:
+  // Deterministic fallback for any other club:
   let hash = 0;
   for (let i = 0; i < clubName.length; i++) {
     hash = clubName.charCodeAt(i) + ((hash << 5) - hash);
   }
   const absHash = Math.abs(hash);
-  
-  // Set correct matches count for the league
+  const country = (countryName || "").toLowerCase().trim();
   let leagueMatches = 38;
   if (country.includes("germany") || country.includes("alemania") ||
       country.includes("france") || country.includes("francia") ||
@@ -1156,15 +2643,27 @@ function getDeterministicStats(clubName, countryName) {
     leagueMatches = 34;
   }
   
-  const pos = (absHash % 16) + 5; // Positions 5th to 20th
-  const goals = Math.round(leagueMatches * (0.8 + (absHash % 12) / 10)); // realistic mid-table goals
-  const xG = (goals * (0.92 + (absHash % 16) / 100)).toFixed(1);
+  const pos = (absHash % 16) + 5;
+  const g = Math.round(leagueMatches * (0.5 + (absHash % 10) / 20));
+  const e = Math.round((leagueMatches - g) * 0.4);
+  const p = Math.max(0, leagueMatches - g - e);
+  const goals = Math.round(leagueMatches * (0.8 + (absHash % 12) / 10));
+  const gc = Math.round(leagueMatches * (0.7 + (absHash % 10) / 10));
+  const diff = goals - gc;
+  const dg = diff > 0 ? `+${diff}` : `${diff}`;
+  const xG = (goals * 0.95).toFixed(1);
   
   return {
     pos: `${pos}º`,
     matches: leagueMatches,
+    g: g,
+    e: e,
+    p: p,
     goals: goals,
-    xG: xG
+    gc: gc,
+    dg: dg,
+    xG: xG,
+    season: "2025/26"
   };
 }
 
@@ -2547,8 +4046,8 @@ function renderDashboardPerformanceChart(teamColor) {
   teamColor = teamColor || '#00f0ff';
   const ctx2d = ctx.getContext('2d');
   const gradient = ctx2d.createLinearGradient(0, 0, 0, 120);
-  gradient.addColorStop(0, getOpacityColor(teamColor, 0.35));
-  gradient.addColorStop(1, getOpacityColor(teamColor, 0));
+  gradient.addColorStop(0, `${teamColor}`);
+  gradient.addColorStop(1, `${teamColor}`);
 
   const resultLabel = isEs
     ? { 'V': 'Victoria', 'W': 'Victoria', 'E': 'Empate', 'D': 'Derrota', 'L': 'Derrota' }
@@ -3934,18 +5433,148 @@ function updateProfileUI(user) {
   applyPlanPermissions();
 }
 
+function updateDailyLimitsBadges(user) {
+  if (!user) user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  const tier = (user.selectedTier || user.tier || 'Gratis').toLowerCase();
+  const isGratis = tier === 'gratis';
+  const isPro = tier === 'pro';
+  const isPlus = tier === 'plus';
+  const isEnterprise = tier === 'enterprise';
+
+  // 1. Compare Daily/Weekly/Monthly Badge
+  const compareBadge = document.getElementById('compare-daily-limit-badge');
+  if (compareBadge) {
+    if (isGratis || isPro) {
+      const maxLimit = isGratis ? 2 : 5;
+      const remaining = user.dailyComparisonsRemaining !== undefined && user.dailyComparisonsRemaining !== null 
+        ? user.dailyComparisonsRemaining 
+        : Math.max(0, maxLimit - (user.dailyComparisonsCount || 0));
+      compareBadge.style.display = 'inline-flex';
+      compareBadge.innerHTML = `Plan ${isPro ? 'Pro' : 'Gratis'}: ${remaining}/${maxLimit} comparaciones hoy`;
+      compareBadge.style.background = remaining === 0 ? 'rgba(255, 59, 48, 0.15)' : 'rgba(0, 240, 255, 0.1)';
+      compareBadge.style.borderColor = remaining === 0 ? '#ff3b30' : 'rgba(0, 240, 255, 0.3)';
+      compareBadge.style.color = remaining === 0 ? '#ff3b30' : '#00f0ff';
+    } else if (isPlus) {
+      const maxLimit = 15;
+      const remaining = user.weeklyComparisonsRemaining !== undefined && user.weeklyComparisonsRemaining !== null
+        ? user.weeklyComparisonsRemaining
+        : Math.max(0, maxLimit - (user.weeklyComparisonsCount || 0));
+      compareBadge.style.display = 'inline-flex';
+      compareBadge.innerHTML = `Plan Plus: ${remaining}/${maxLimit} comparaciones esta semana`;
+      compareBadge.style.background = remaining === 0 ? 'rgba(255, 59, 48, 0.15)' : 'rgba(0, 240, 255, 0.1)';
+      compareBadge.style.borderColor = remaining === 0 ? '#ff3b30' : 'rgba(0, 240, 255, 0.3)';
+      compareBadge.style.color = remaining === 0 ? '#ff3b30' : '#00f0ff';
+    } else if (isEnterprise) {
+      const maxLimit = 50;
+      const remaining = user.monthlyComparisonsRemaining !== undefined && user.monthlyComparisonsRemaining !== null
+        ? user.monthlyComparisonsRemaining
+        : Math.max(0, maxLimit - (user.monthlyComparisonsCount || 0));
+      compareBadge.style.display = 'inline-flex';
+      compareBadge.innerHTML = `Plan Enterprise: ${remaining}/${maxLimit} comparaciones este mes`;
+      compareBadge.style.background = remaining === 0 ? 'rgba(255, 59, 48, 0.15)' : 'rgba(0, 240, 255, 0.1)';
+      compareBadge.style.borderColor = remaining === 0 ? '#ff3b30' : 'rgba(0, 240, 255, 0.3)';
+      compareBadge.style.color = remaining === 0 ? '#ff3b30' : '#00f0ff';
+    } else {
+      compareBadge.style.display = 'none';
+    }
+  }
+
+  // 2. Chat IA Daily/Weekly Badge
+  const chatBadge = document.getElementById('chat-daily-limit-badge');
+  if (chatBadge) {
+    if (isGratis || isPro) {
+      const maxLimit = isGratis ? 5 : 10;
+      const remaining = user.dailyAiMessagesRemaining !== undefined && user.dailyAiMessagesRemaining !== null
+        ? user.dailyAiMessagesRemaining
+        : Math.max(0, maxLimit - (user.dailyAiMessagesCount || 0));
+      chatBadge.style.display = 'inline-flex';
+      chatBadge.innerHTML = `Plan ${isPro ? 'Pro' : 'Gratis'}: ${remaining}/${maxLimit} mensajes hoy`;
+      chatBadge.style.background = remaining === 0 ? 'rgba(255, 59, 48, 0.15)' : 'rgba(0, 240, 255, 0.1)';
+      chatBadge.style.borderColor = remaining === 0 ? '#ff3b30' : 'rgba(0, 240, 255, 0.3)';
+      chatBadge.style.color = remaining === 0 ? '#ff3b30' : '#00f0ff';
+    } else if (isPlus) {
+      const maxLimit = 30;
+      const remaining = user.weeklyAiMessagesRemaining !== undefined && user.weeklyAiMessagesRemaining !== null
+        ? user.weeklyAiMessagesRemaining
+        : Math.max(0, maxLimit - (user.weeklyAiMessagesCount || 0));
+      chatBadge.style.display = 'inline-flex';
+      chatBadge.innerHTML = `Plan Plus: ${remaining}/${maxLimit} mensajes esta semana`;
+      chatBadge.style.background = remaining === 0 ? 'rgba(255, 59, 48, 0.15)' : 'rgba(0, 240, 255, 0.1)';
+      chatBadge.style.borderColor = remaining === 0 ? '#ff3b30' : 'rgba(0, 240, 255, 0.3)';
+      chatBadge.style.color = remaining === 0 ? '#ff3b30' : '#00f0ff';
+    } else if (isEnterprise) {
+      const maxLimit = 50;
+      const remaining = user.weeklyAiMessagesRemaining !== undefined && user.weeklyAiMessagesRemaining !== null
+        ? user.weeklyAiMessagesRemaining
+        : Math.max(0, maxLimit - (user.weeklyAiMessagesCount || 0));
+      chatBadge.style.display = 'inline-flex';
+      chatBadge.innerHTML = `Plan Enterprise: ${remaining}/${maxLimit} mensajes esta semana`;
+      chatBadge.style.background = remaining === 0 ? 'rgba(255, 59, 48, 0.15)' : 'rgba(0, 240, 255, 0.1)';
+      chatBadge.style.borderColor = remaining === 0 ? '#ff3b30' : 'rgba(0, 240, 255, 0.3)';
+      chatBadge.style.color = remaining === 0 ? '#ff3b30' : '#00f0ff';
+    } else {
+      chatBadge.style.display = 'none';
+    }
+  }
+
+  // 3. Mi Club Pitch Edit Guard
+  const pitchEditBtn = document.getElementById('db-btn-edit-formation');
+  if (pitchEditBtn) {
+    if (isGratis) {
+      pitchEditBtn.title = 'Edición restringida en Plan Gratis (Solo Resumen de Temporada disponible)';
+      pitchEditBtn.onclick = (e) => {
+        e.preventDefault();
+        alert('En el Plan Gratis tienes acceso únicamente al Resumen de Temporada de tu equipo.\n\nPara visualizar la alineación general o personalizar tácticas, actualiza a un plan superior (Pro, Plus, Local o Enterprise).');
+      };
+    } else if (isPro) {
+      pitchEditBtn.title = 'Edición de alineación restringida en Plan Pro (Modo Lectura de Alineación General)';
+      pitchEditBtn.onclick = (e) => {
+        e.preventDefault();
+        alert('En el Plan Pro puedes consultar la Alineación General del equipo, pero la edición personalizada de alineaciones y tácticas está reservada para los planes Plus, Local y Enterprise.');
+      };
+    } else {
+      pitchEditBtn.onclick = null;
+    }
+  }
+
+  // 4. Mi Club AI Alerts Guard
+  const alertsCard = document.querySelector('.db-alerts-card');
+  if (alertsCard) {
+    if (isGratis || isPro || isPlus) {
+      const alertsList = document.getElementById('db-alerts-list');
+      if (alertsList) {
+        alertsList.innerHTML = `<div style="padding: 15px; text-align: center; color: rgba(255,255,255,0.6); font-size: 0.85rem;">Las Alertas IA están reservadas para los planes Local y Enterprise.</div>`;
+      }
+    }
+  }
+}
+
 function applyPlanPermissions() {
   const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
-  const tier = (user.selectedTier || user.tier || user.maxPaidTierInCycle || '').toLowerCase();
+  const tier = (user.selectedTier || user.tier || user.maxPaidTierInCycle || 'Gratis').toLowerCase();
   const role = (user.role || '').toLowerCase();
+  const isGratis = tier === 'gratis';
+  const isPro = tier === 'pro';
+  const isPlus = tier === 'plus';
   const isLocal = tier === 'local' || role === 'local' || role === 'entrenador local';
   const isEnterprise = tier === 'enterprise' || role.includes('enterprise') || role.includes('gerente') || role.includes('director') || role.includes('scout');
   const restrictedInLocal = ['players', 'my-club', 'compare', 'predictions', 'simulations', 'prospects'];
 
   document.querySelectorAll('.nav-item').forEach(btn => {
     const section = btn.dataset.section;
-    if (isLocal) {
-      // Plan local: solo accede a sus módulos locales
+    if (isGratis || isPro) {
+      if (['my-club', 'players', 'compare', 'chat'].includes(section)) {
+        btn.style.display = 'flex';
+      } else {
+        btn.style.display = 'none';
+      }
+    } else if (isPlus) {
+      if (['my-club', 'players', 'compare', 'chat', 'simulations'].includes(section)) {
+        btn.style.display = 'flex';
+      } else {
+        btn.style.display = 'none';
+      }
+    } else if (isLocal) {
       if (section === 'my-players') {
         btn.style.display = 'flex';
       } else if (restrictedInLocal.includes(section)) {
@@ -3954,16 +5583,13 @@ function applyPlanPermissions() {
         btn.style.display = 'flex';
       }
     } else if (isEnterprise) {
-      // Enterprise: accede a todo excepto Mis Jugadores (local) y Predicciones
-      if (section === 'my-players') {
-        btn.style.display = 'none';
-      } else if (section === 'predictions') {
+      // Enterprise: Acceso a todos sus módulos excluyendo únicamente "my-players" (Mis Jugadores)
+      if (section === 'my-players' || section === 'predictions') {
         btn.style.display = 'none';
       } else {
-        btn.style.display = 'flex'; // Incluyendo Prospectos
+        btn.style.display = 'flex';
       }
     } else {
-      // Planes Free, Plus, Pro: acceden a todo excepto Mis Jugadores, Prospectos y Predicciones
       if (section === 'my-players' || section === 'prospects' || section === 'predictions') {
         btn.style.display = 'none';
       } else {
@@ -3974,13 +5600,21 @@ function applyPlanPermissions() {
 
   const activeBtn = document.querySelector('.nav-item.active');
   const currentSection = activeBtn ? activeBtn.dataset.section : 'players';
-  if (isLocal && (restrictedInLocal.includes(currentSection) || currentSection === 'home')) {
+  if ((isGratis || isPro) && !['my-club', 'players', 'compare', 'chat', 'profile', 'requirements'].includes(currentSection)) {
+    goToSection('players');
+  } else if (isPlus && !['my-club', 'players', 'compare', 'chat', 'simulations', 'profile', 'requirements'].includes(currentSection)) {
+    goToSection('players');
+  } else if (isEnterprise && !['my-club', 'players', 'compare', 'chat', 'simulations', 'prospects', 'profile', 'requirements'].includes(currentSection)) {
+    goToSection('players');
+  } else if (isLocal && (restrictedInLocal.includes(currentSection) || currentSection === 'home')) {
     goToSection('my-players');
   } else if (!isLocal && currentSection === 'my-players') {
     goToSection('players');
   } else if (!isEnterprise && !isLocal && currentSection === 'prospects') {
     goToSection('players');
   }
+
+  updateDailyLimitsBadges(user);
 }
 
 // ─── Section Navigation ──────────────────────────────────────────────────
@@ -4213,12 +5847,36 @@ async function initSimulationsSection() {
       simBtn.disabled = false;
     });
     
-    simBtn.addEventListener('click', () => {
+    simBtn.addEventListener('click', async () => {
+      const currentUser = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+      const tier = (currentUser.selectedTier || currentUser.tier || 'Gratis').toLowerCase();
+
+      if (tier === 'gratis' || tier === 'pro') {
+        alert('El módulo de Simulaciones no está disponible para tu plan. Por favor actualiza al Plan Plus, Local o Enterprise.');
+        return;
+      }
+
+      if (tier === 'plus' || tier === 'enterprise') {
+        try {
+          const res = await fetchWithAuth(`${API}/simulations/consume`, { method: 'POST' });
+          const data = await res.json();
+          if (!res.ok) {
+            alert(data.message || data.error || `Has alcanzado el límite mensual de simulaciones para el Plan ${tier === 'enterprise' ? 'Enterprise' : 'Plus'}.`);
+            return;
+          }
+          if (data.user) {
+            localStorage.setItem('scout_ai_user', JSON.stringify(data.user));
+            updateDailyLimitsBadges(data.user);
+          }
+        } catch (err) {
+          console.error('Error al consumir simulación:', err);
+        }
+      }
+
       const opponent = select.value;
       const awayOvrText = document.getElementById('arena-away-rating').textContent;
       const awayOvr = parseInt(awayOvrText.replace('OVR ', '')) || 75;
       
-      const currentUser = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
       const currentClub = currentUser.selectedClub || 'FC Barcelona';
       
       // Calculate homeOvr dynamically based on current club starting XI
@@ -6738,6 +8396,64 @@ window.renderFormImprovementsTags = () => {
   if (hiddenInput) hiddenInput.value = window.tempImprovementsTags.join(', ');
 };
 
+window.tempInjuriesList = [];
+
+window.addLocalPlayerInjury = () => {
+  const typeInput = document.getElementById('lp-injury-type');
+  const yearInput = document.getElementById('lp-injury-year');
+  const recoveryInput = document.getElementById('lp-injury-recovery');
+  const severityInput = document.getElementById('lp-injury-severity');
+
+  if (!typeInput) return;
+
+  const name = typeInput.value.trim();
+  if (!name) {
+    if (typeof showToast === 'function') showToast('Ingresa el tipo de lesión primero.', 'warning');
+    typeInput.focus();
+    return;
+  }
+
+  const year = (yearInput ? yearInput.value.trim() : '') || new Date().getFullYear().toString();
+  const recovery = recoveryInput ? recoveryInput.value.trim() : '';
+  const severity = severityInput ? severityInput.value : '';
+
+  if (!Array.isArray(window.tempInjuriesList)) window.tempInjuriesList = [];
+  window.tempInjuriesList.push({ name, season: year, recovery, severity });
+
+  typeInput.value = '';
+  if (yearInput) yearInput.value = '';
+  if (recoveryInput) recoveryInput.value = '';
+  if (severityInput) severityInput.value = '';
+
+  window.renderFormInjuries();
+};
+
+window.removeLocalPlayerInjury = (index) => {
+  if (Array.isArray(window.tempInjuriesList)) {
+    window.tempInjuriesList.splice(index, 1);
+    window.renderFormInjuries();
+  }
+};
+
+window.renderFormInjuries = () => {
+  const container = document.getElementById('lp-injuries-container');
+  if (!container) return;
+  if (!Array.isArray(window.tempInjuriesList)) window.tempInjuriesList = [];
+  if (window.tempInjuriesList.length === 0) {
+    container.innerHTML = `<span style="font-size: 11.5px; color: rgba(255,255,255,0.4); font-style: italic;">Sin lesiones registradas.</span>`;
+    return;
+  }
+  container.innerHTML = window.tempInjuriesList.map((inj, index) => {
+    const parts = [inj.season, inj.severity, inj.recovery].filter(Boolean).join(' · ');
+    return `
+      <span class="tag-item" style="background: rgba(255,77,77,0.15); border: 1px solid rgba(255,77,77,0.4); color: #ff6b6b; padding: 6px 12px; border-radius: 8px; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; font-weight: 700;">
+        ${inj.name}${parts ? ` <span style="font-weight:400; font-size:11px; color:rgba(255,107,107,0.7);">(${parts})</span>` : ''}
+        <span onclick="window.removeLocalPlayerInjury(${index})" style="cursor: pointer; font-size: 11px; color: rgba(255,255,255,0.5); margin-left: 2px;" title="Eliminar">✕</span>
+      </span>
+    `;
+  }).join('');
+};
+
 window.addLocalPlayerTrophy = () => {
   const nameInput = document.getElementById('lp-trophy-name');
   const seasonInput = document.getElementById('lp-trophy-season');
@@ -6968,7 +8684,7 @@ window.filterLocalPlayersMain = () => {
   gridEl.innerHTML = filtered.map(p => {
     const medClass = p.medicalStatus === 'Lesionado' ? 'lesionado' : (p.medicalStatus === 'Precaución' ? 'precaucion' : 'disponible');
     const medLabel = p.medicalStatus || 'Disponible';
-    const photoSrc = p.photoUrl || (p.photoId ? `https://cdn.sofifa.net/players/p1/p2/${p.photoId}.png` : '');
+    const photoSrc = p.avatarUrl || p.photoUrl || (p.photoId ? (p.photoId.startsWith('http') ? p.photoId : getAbsoluteUrl('/api/player-photo/' + p.photoId)) : '');
     const avatarHtml = photoSrc 
       ? `<img src="${photoSrc}" class="local-player-avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><div class="local-player-avatar" style="display:none;">#${p.jerseyNumber || '10'}</div>`
       : `<div class="local-player-avatar">#${p.jerseyNumber || '10'}</div>`;
@@ -7071,7 +8787,7 @@ window.filterLocalPlayers = () => {
   gridEl.innerHTML = filtered.map(p => {
     const medClass = p.medicalStatus === 'Lesionado' ? 'lesionado' : (p.medicalStatus === 'Precaución' ? 'precaucion' : 'disponible');
     const medLabel = p.medicalStatus || 'Disponible';
-    const photoSrc = p.photoUrl || (p.photoId ? `https://cdn.sofifa.net/players/p1/p2/${p.photoId}.png` : '');
+    const photoSrc = p.avatarUrl || p.photoUrl || (p.photoId ? (p.photoId.startsWith('http') ? p.photoId : getAbsoluteUrl('/api/player-photo/' + p.photoId)) : '');
     const avatarHtml = photoSrc 
       ? `<img src="${photoSrc}" class="local-player-avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><div class="local-player-avatar" style="display:none;">#${p.jerseyNumber || '10'}</div>`
       : `<div class="local-player-avatar">#${p.jerseyNumber || '10'}</div>`;
@@ -7789,6 +9505,9 @@ window.openLocalPlayerFormModal = (playerId = null) => {
       const trophies = Array.isArray(player.trophies) ? player.trophies : (player.trophies ? JSON.parse(player.trophies) : []);
       window.tempTrophiesList = [...trophies];
 
+      const injuries = Array.isArray(player.injuries) ? player.injuries : (player.injuries ? JSON.parse(player.injuries) : []);
+      window.tempInjuriesList = [...injuries];
+
       const seasons = Array.isArray(player.history) ? player.history : (player.history ? JSON.parse(player.history) : []);
       window.tempSeasonsList = [...seasons];
 
@@ -7832,16 +9551,19 @@ window.openLocalPlayerFormModal = (playerId = null) => {
     const inIn = document.getElementById('lp-height-in');
     if (inIn) inIn.value = '';
     if (ratingInput) ratingInput.value = 75;
-    if (statsMatches) statsMatches.value = 0;
-    if (statsGoals) statsGoals.value = 0;
-    if (statsAssists) statsAssists.value = 0;
-    if (statsYellow) statsYellow.value = 0;
-    if (statsRed) statsRed.value = 0;
+    if (statsMatches) statsMatches.value = '';
+    if (statsGoals) statsGoals.value = '';
+    if (statsAssists) statsAssists.value = '';
+    if (statsYellow) statsYellow.value = '';
+    if (statsRed) statsRed.value = '';
+    const statsSeasonInput = document.getElementById('lp-stats-season');
+    if (statsSeasonInput) statsSeasonInput.value = '';
 
     window.removeLocalPlayerAuthSignatureFile();
     window.removeLocalPlayerAuthMedicalFile();
 
     window.tempGuardiansList = [{ name: '', relationship: '', docType: '', docNumber: '', phone: '', email: '' }];
+    window.tempInjuriesList = [];
 
     window.updateLocalPlayerPhotoPreview('');
     window.updateLocalPlayerHighlightPreview('');
@@ -7858,6 +9580,7 @@ window.openLocalPlayerFormModal = (playerId = null) => {
   window.renderFormStrengthsTags();
   window.renderFormImprovementsTags();
   window.renderFormTrophies();
+  window.renderFormInjuries();
   window.renderFormSeasons();
   window.renderFormGuardians();
 
@@ -8354,9 +10077,12 @@ window.saveLocalPlayer = async (event) => {
 
   const missingFields = [];
 
-  // ─── CAMPOS OBLIGATORIOS BÁSICOS ───
+  // ─── TAB GENERAL ───
   const nameVal = document.getElementById('lp-name')?.value.trim();
   if (!nameVal) missingFields.push({ label: 'Nombre Completo', tab: 'general', id: 'lp-name' });
+
+  const nickVal = document.getElementById('lp-nickname')?.value?.trim();
+  if (!nickVal) missingFields.push({ label: 'Apodo / Nickname', tab: 'general', id: 'lp-nickname' });
 
   const docTypeVal = document.getElementById('lp-doc-type')?.value;
   if (!docTypeVal) missingFields.push({ label: 'Documento de Identidad', tab: 'general', id: 'lp-doc-type' });
@@ -8364,13 +10090,64 @@ window.saveLocalPlayer = async (event) => {
   const docNumVal = document.getElementById('lp-doc-number')?.value?.trim();
   if (!docNumVal) missingFields.push({ label: 'Nº de Documento de Identidad', tab: 'general', id: 'lp-doc-number' });
 
+  const docFileUrlVal = document.getElementById('lp-doc-file-url')?.value || '';
+  if (!docFileUrlVal) missingFields.push({ label: 'Documento Adjunto (PDF/Imagen)', tab: 'general', id: 'lp-doc-dropzone' });
+
   const ageVal = document.getElementById('lp-age')?.value.trim();
   if (!ageVal) missingFields.push({ label: 'Edad', tab: 'general', id: 'lp-age' });
+
+  const jerseyVal = document.getElementById('lp-jersey')?.value?.trim();
+  if (!jerseyVal) missingFields.push({ label: 'Dorsal (#)', tab: 'general', id: 'lp-jersey' });
 
   const posVal = document.getElementById('lp-position')?.value;
   if (!posVal) missingFields.push({ label: 'Posición', tab: 'general', id: 'lp-position' });
 
-  // ─── TAB AUTORIZACIONES (DOCUMENTOS REQUERIDOS) ───
+  const footVal = document.getElementById('lp-foot')?.value;
+  if (!footVal) missingFields.push({ label: 'Pie Hábil', tab: 'general', id: 'lp-foot' });
+
+  const heightCm = window.getLocalPlayerHeightCm();
+  if (!heightCm) missingFields.push({ label: 'Altura', tab: 'general', id: 'lp-height' });
+
+  const weightKg = window.getLocalPlayerWeightKg();
+  if (!weightKg) missingFields.push({ label: 'Peso', tab: 'general', id: 'lp-weight' });
+
+  const catVal = document.getElementById('lp-category')?.value;
+  if (!catVal) missingFields.push({ label: 'Categoría', tab: 'general', id: 'lp-category' });
+
+  const medVal = document.getElementById('lp-medical')?.value;
+  if (!medVal) missingFields.push({ label: 'Estado Médico', tab: 'general', id: 'lp-medical' });
+
+  const photoUrlVal = document.getElementById('lp-photourl')?.value?.trim();
+  if (!photoUrlVal) missingFields.push({ label: 'Foto de Perfil', tab: 'general', id: 'lp-photo-dropzone' });
+
+  const bioVal = document.getElementById('lp-bio')?.value?.trim();
+  if (!bioVal) missingFields.push({ label: 'Breve Biografía', tab: 'general', id: 'lp-bio' });
+
+  // ─── TAB DEPORTIVO ───
+  if (!window.tempStrengthsTags || window.tempStrengthsTags.length === 0) {
+    missingFields.push({ label: 'Habilidades', tab: 'deportivo', id: 'lp-strength-input' });
+  }
+
+  if (!window.tempImprovementsTags || window.tempImprovementsTags.length === 0) {
+    missingFields.push({ label: 'Aspectos de Mejora', tab: 'deportivo', id: 'lp-improvement-input' });
+  }
+
+  const tacVal = document.getElementById('lp-tactical-notes')?.value?.trim();
+  if (!tacVal) missingFields.push({ label: 'Notas del Entrenador', tab: 'deportivo', id: 'lp-tactical-notes' });
+
+  const highlightVal = document.getElementById('lp-highlight-url')?.value?.trim() || document.getElementById('lp-highlight-external-url')?.value?.trim();
+  if (!highlightVal) missingFields.push({ label: 'Highlights (Video)', tab: 'deportivo', id: 'lp-highlight-dropzone' });
+
+  // ─── TAB HISTORIAL ───
+  if (!window.tempSeasonsList || window.tempSeasonsList.length === 0) {
+    missingFields.push({ label: 'Temporadas Registradas', tab: 'historial', id: 'lp-stats-season' });
+  }
+
+  if (!window.tempTrophiesList || window.tempTrophiesList.length === 0) {
+    missingFields.push({ label: 'Palmarés / Trofeos', tab: 'historial', id: 'lp-trophy-name' });
+  }
+
+  // ─── TAB AUTORIZACIONES ───
   const authSignatureUrl = document.getElementById('lp-auth-signature-file-url')?.value || '';
   const authSignatureLabel = document.getElementById('lp-auth-signature-file-name')?.textContent || '';
   const authSignatureFileName = authSignatureLabel.startsWith('📎 ') ? authSignatureLabel.replace('📎 ', '') : '';
@@ -8387,7 +10164,7 @@ window.saveLocalPlayer = async (event) => {
     missingFields.push({ label: 'Certificado Médico de Aptitud', tab: 'autorizaciones', id: 'lp-auth-medical-file-box' });
   }
 
-  // ─── TAB LEGAL (INFORMACIÓN DE TUTORES - SOLO PARA MENORES DE 18 AÑOS) ───
+  // ─── TAB LEGAL (SOLO MENORES DE 18 AÑOS) ───
   const parsedAge = parseInt(ageVal, 10);
   const isMinorPlayer = ageVal !== '' && !isNaN(parsedAge) && parsedAge <= 17;
   const guardiansList = Array.isArray(window.tempGuardiansList) ? window.tempGuardiansList : [];
@@ -8512,6 +10289,7 @@ window.saveLocalPlayer = async (event) => {
     improvements: JSON.stringify(window.tempImprovementsTags),
     weaknesses: JSON.stringify(window.tempImprovementsTags),
     trophies: JSON.stringify(window.tempTrophiesList),
+    injuries: JSON.stringify(window.tempInjuriesList || []),
     tags: JSON.stringify([category, medicalStatus, 'Cantera']),
     history: JSON.stringify(historySeasons)
   };
@@ -9024,84 +10802,55 @@ function renderFeaturedPlayers() {
   loadAllLogos(); // Load logos
 }
 
-function renderPlayers(list) {
-  filteredPlayers = list ?? allPlayers;
-  currentPage = 0;
-  document.getElementById('players-count-tag').textContent =
-    `${filteredPlayers.length} ${t('count_tag')}`;
-  document.getElementById('no-results').style.display =
-    filteredPlayers.length === 0 ? 'flex' : 'none';
-  showPage(0);
-}
-
-function showPage(page) {
-  currentPage = page;
-  const grid = document.getElementById('players-grid');
-  Array.from(grid.querySelectorAll('.player-card')).forEach(c => c.remove());
-  const start = currentPage * PAGE_SIZE;
-  const slice = filteredPlayers.slice(start, start + PAGE_SIZE);
-  slice.forEach(p => grid.appendChild(createPlayerCard(p)));
-  updatePaginationControls();
-  loadAllLogos(); // Load logos
-  
-  // Scroll to top of section
-  const section = document.getElementById('section-players');
-  if (section) section.scrollIntoView({ behavior: 'smooth' });
-}
-
-window.prevPage = function() {
-  if (currentPage > 0) {
-    showPage(currentPage - 1);
+function getPlayerCareerAverageRating(p) {
+  if (!p) return '7.0';
+  let historyArr = p.history;
+  if (typeof historyArr === 'string') {
+    try { historyArr = JSON.parse(historyArr); } catch(e) { historyArr = null; }
   }
-};
-
-window.nextPage = function() {
-  if ((currentPage + 1) * PAGE_SIZE < filteredPlayers.length) {
-    showPage(currentPage + 1);
+  if (Array.isArray(historyArr) && historyArr.length > 0) {
+    const validRatings = historyArr
+      .map(h => parseFloat(h.rating))
+      .filter(r => !isNaN(r) && r > 0)
+      .map(r => r > 10 ? r / 10 : r);
+    if (validRatings.length > 0) {
+      const sum = validRatings.reduce((a, b) => a + b, 0);
+      return (sum / validRatings.length).toFixed(1);
+    }
   }
-};
-
-function updatePaginationControls() {
-  const controls = document.getElementById('pagination-controls');
-  if (!controls) return;
-  const totalPages = Math.ceil(filteredPlayers.length / PAGE_SIZE);
-  if (totalPages <= 1) {
-    controls.style.display = 'none';
-    return;
+  const raw = parseFloat(p.overallRating);
+  if (!isNaN(raw) && raw > 0) {
+    const norm = raw > 10 ? raw / 10 : raw;
+    return norm.toFixed(1);
   }
-  controls.style.display = 'flex';
-  const prevBtn = document.getElementById('prev-page-btn');
-  const nextBtn = document.getElementById('next-page-btn');
-  const info = document.getElementById('page-info');
-  
-  if (prevBtn) {
-    prevBtn.disabled = currentPage === 0;
-    prevBtn.innerHTML = currentLang === 'en' ? '⬅️ Previous' : '⬅️ Anterior';
-  }
-  if (nextBtn) {
-    nextBtn.disabled = currentPage >= totalPages - 1;
-    nextBtn.innerHTML = currentLang === 'en' ? 'Next ➡️' : 'Siguiente ➡️';
-  }
-  if (info) {
-    const pageWord = currentLang === 'en' ? 'Page' : 'Página';
-    const ofWord = currentLang === 'en' ? 'of' : 'de';
-    info.textContent = `${pageWord} ${currentPage + 1} ${ofWord} ${totalPages}`;
-  }
+  return '7.0';
 }
 
 function createPlayerCard(p) {
   const card = document.createElement('div');
   card.className = 'player-card';
+
+  let avatarUrl = p.avatarUrl || p.photoUrl;
+  if (!avatarUrl || avatarUrl.trim() === '') {
+    if (p.photoId && p.photoId.trim() !== '') {
+      avatarUrl = (p.photoId.startsWith('http://') || p.photoId.startsWith('https://'))
+        ? p.photoId
+        : getAbsoluteUrl('/api/player-photo/' + p.photoId);
+    } else {
+      const pInitials = (p.name || 'J').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+      avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(pInitials)}&background=00f0ff&color=0d1117&size=128`;
+    }
+  }
+
+  const nameParts = (p.name || '').split(' ');
+  const firstName = nameParts.length > 1 ? nameParts.slice(0, -1).join(' ') : p.name;
+  const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : '';
+
   const color = getTeamColor(p.currentTeam);
-  const avatarUrl = getAbsoluteUrl(p.avatarUrl);
-
-  const names = p.name.trim().split(' ');
-  const firstName = names[0];
-  const lastName = names.length > 1 ? names.slice(1).join(' ') : p.currentTeam;
-
   card.style.setProperty('--team-color', color);
 
   const favClass = isFavorite(p.id) ? 'fav-btn active' : 'fav-btn';
+  const careerAvgRating = getPlayerCareerAverageRating(p);
 
   card.innerHTML = `
     <button class="${favClass}" onclick="event.stopPropagation(); toggleFavorite('${p.id}', this)" title="Marcar como favorito">★</button>
@@ -9127,7 +10876,7 @@ function createPlayerCard(p) {
 
       <div class="player-rating-star">
         <span class="star">⭐</span>
-        <span>${Number(p.overallRating).toFixed(1)}</span>
+        <span>${careerAvgRating}</span>
       </div>
     </div>
     
@@ -9531,6 +11280,152 @@ function getEmbedVimeoUrl(url) {
   return match ? `https://player.vimeo.com/video/${match[1]}` : url;
 }
 
+function translateInjuryToSpanish(raw) {
+  if (!raw || typeof raw !== 'string') return 'Lesión no especificada';
+  const str = raw.trim();
+  const lower = str.toLowerCase();
+
+  // Traducción tácita y directa 1-a-1 de términos médicos exactos
+  if (lower === 'ill' || lower === 'illness' || lower === 'sick') return 'Enfermo';
+  if (lower === 'unknown injury') return 'Lesión desconocida';
+  if (lower === 'minor knock') return 'Golpe leve';
+  if (lower === 'knock') return 'Golpe';
+  if (lower === 'foot bruise') return 'Contusión en el pie';
+  if (lower === 'dead leg') return 'Contusión en el muslo';
+  if (lower === 'muscular problems' || lower === 'muscle problems') return 'Problemas musculares';
+  if (lower === 'muscle injury') return 'Lesión muscular';
+  if (lower === 'muscle strain') return 'Distensión muscular';
+  if (lower === 'muscle tear') return 'Desgarro muscular';
+  if (lower === 'torn muscle fiber' || lower === 'muscle fiber tear') return 'Rotura de fibras musculares';
+  if (lower === 'hamstring injury') return 'Lesión de isquiotibiales';
+  if (lower === 'hamstring strain') return 'Distensión de isquiotibiales';
+  if (lower === 'hamstring pull') return 'Tirón en el isquiotibial';
+  if (lower === 'hamstring tear' || lower === 'hamstring muscle injury') return 'Desgarro de isquiotibiales';
+  if (lower === 'cruciate ligament tear' || lower === 'acl tear') return 'Rotura del ligamento cruzado';
+  if (lower === 'cruciate ligament injury') return 'Lesión del ligamento cruzado';
+  if (lower === 'inner ligament stretch of the knee') return 'Elongación del ligamento interno de la rodilla';
+  if (lower === 'inner knee ligament' || lower === 'knee ligament') return 'Lesión del ligamento de la rodilla';
+  if (lower === 'patellar tendon irritation') return 'Irritación del tendón rotuliano';
+  if (lower === 'achilles tendonitis') return 'Tendinitis de Aquiles';
+  if (lower === 'achilles tendon injury') return 'Lesión del tendón de Aquiles';
+  if (lower === 'adductor pain') return 'Dolor de aductor';
+  if (lower === 'adductor injury') return 'Lesión de aductor';
+  if (lower === 'adductor strain') return 'Distensión de aductor';
+  if (lower === 'calf injury') return 'Lesión en la pantorrilla';
+  if (lower === 'calf strain') return 'Distensión en la pantorrilla';
+  if (lower === 'knee injury') return 'Lesión de rodilla';
+  if (lower === 'knee problems') return 'Problemas de rodilla';
+  if (lower === 'ankle sprain' || lower === 'sprained ankle') return 'Esguince de tobillo';
+  if (lower === 'ankle injury') return 'Lesión de tobillo';
+  if (lower === 'foot injury') return 'Lesión en el pie';
+  if (lower === 'back problems') return 'Problemas de espalda';
+  if (lower === 'lumbago') return 'Lumbalgia';
+  if (lower === 'groin strain') return 'Distensión en la ingle';
+  if (lower === 'groin injury') return 'Lesión en la ingle';
+  if (lower === 'pubalgia') return 'Pubalgia';
+  if (lower === 'meniscus injury') return 'Lesión de menisco';
+  if (lower === 'meniscus tear') return 'Rotura de menisco';
+  if (lower === 'corona virus' || lower === 'covid') return 'COVID-19';
+  if (lower === 'quarantine') return 'Cuarentena';
+  if (lower === 'fitness' || lower === 'lack of fitness') return 'Falta de forma física';
+  if (lower === 'overstretching') return 'Sobreestiramiento muscular';
+  if (lower === 'tonsillitis') return 'Amigdalitis';
+  if (lower === 'flu') return 'Gripe';
+  if (lower === 'cold') return 'Resfriado';
+  if (lower === 'fever') return 'Fiebre';
+  if (lower === 'stomach flu') return 'Gastroenteritis';
+  if (lower === 'broken hand') return 'Fractura de mano';
+  if (lower === 'broken thumb') return 'Fractura de pulgar';
+  if (lower === 'broken leg') return 'Fractura de pierna';
+  if (lower === 'fracture') return 'Fractura';
+  if (lower === 'arthroscopy') return 'Artroscopia';
+  if (lower === 'surgery' || lower === 'operation') return 'Operación quirúrgica';
+  if (lower === 'concussion') return 'Concusión cerebral';
+  if (lower === 'head injury') return 'Traumatismo craneal';
+  if (lower === 'shoulder dislocation') return 'Luxación de hombro';
+  if (lower === 'shoulder injury') return 'Lesión de hombro';
+
+  // Si no coincide con un término exacto, sustituir palabras clave directas
+  let translated = str
+    .replace(/\bTear\b/gi, 'Rotura')
+    .replace(/\bStrain\b/gi, 'Distensión')
+    .replace(/\bSprain\b/gi, 'Esguince')
+    .replace(/\bInjury\b/gi, 'Lesión')
+    .replace(/\bProblems\b/gi, 'Problemas')
+    .replace(/\bPain\b/gi, 'Dolor')
+    .replace(/\bFracture\b/gi, 'Fractura')
+    .replace(/\bBruise\b/gi, 'Contusión')
+    .replace(/\bInflammation\b/gi, 'Inflamación')
+    .replace(/\bMuscle\b/gi, 'Muscular')
+    .replace(/\bKnee\b/gi, 'de Rodilla')
+    .replace(/\bAnkle\b/gi, 'de Tobillo')
+    .replace(/\bFoot\b/gi, 'del Pie')
+    .replace(/\bHand\b/gi, 'de la Mano')
+    .replace(/\bThigh\b/gi, 'del Muslo')
+    .replace(/\bCalf\b/gi, 'de la Pantorrilla')
+    .replace(/\bGroin\b/gi, 'de la Ingle')
+    .replace(/\bShoulder\b/gi, 'del Hombro')
+    .replace(/\bBack\b/gi, 'de Espalda');
+
+  return translated.charAt(0).toUpperCase() + translated.slice(1);
+}
+
+function formatDurationHumanReadable(fromDateStr, untilDateStr, rawDaysStr, lang = 'es') {
+  let days = 0;
+  
+  // 1. Prioridad 1: Leer el valor exacto de días reportado por Transfermarkt (ej. "6 days" -> 6)
+  if (rawDaysStr) {
+    const match = String(rawDaysStr).match(/([0-9]+)/);
+    if (match) {
+      days = parseInt(match[1], 10);
+    }
+  }
+
+  // 2. Prioridad 2: Cálculo inclusivo de días entre fecha de inicio y fecha de fin (+1 día inclusivo)
+  if (days <= 0 && fromDateStr && untilDateStr && fromDateStr.includes('/') && untilDateStr.includes('/')) {
+    const p1 = fromDateStr.split('/');
+    const p2 = untilDateStr.split('/');
+    if (p1.length === 3 && p2.length === 3) {
+      const d1 = new Date(parseInt(p1[2], 10), parseInt(p1[1], 10) - 1, parseInt(p1[0], 10));
+      const d2 = new Date(parseInt(p2[2], 10), parseInt(p2[1], 10) - 1, parseInt(p2[0], 10));
+      const diffMs = d2.getTime() - d1.getTime();
+      if (!isNaN(diffMs) && diffMs >= 0) {
+        days = Math.round(diffMs / (1000 * 60 * 60 * 24)) + 1; // Conteo inclusivo de días
+      }
+    }
+  }
+
+  if (days <= 0) return lang === 'es' ? 'Sin especificar' : 'Unspecified';
+
+  // Desglose jerárquico estricto: Año -> Mes -> Semana -> Días
+  const years = Math.floor(days / 365);
+  const remAfterYears = days % 365;
+
+  const months = Math.floor(remAfterYears / 30);
+  const remAfterMonths = remAfterYears % 30;
+
+  const weeks = Math.floor(remAfterMonths / 7);
+  const remDays = remAfterMonths % 7;
+
+  const parts = [];
+  if (years > 0) {
+    parts.push(lang === 'es' ? (years === 1 ? '1 año' : `${years} años`) : (years === 1 ? '1 year' : `${years} years`));
+  }
+  if (months > 0) {
+    parts.push(lang === 'es' ? (months === 1 ? '1 mes' : `${months} meses`) : (months === 1 ? '1 month' : `${months} months`));
+  }
+  if (weeks > 0) {
+    parts.push(lang === 'es' ? (weeks === 1 ? '1 semana' : `${weeks} semanas`) : (weeks === 1 ? '1 week' : `${weeks} weeks`));
+  }
+  if (remDays > 0 || parts.length === 0) {
+    parts.push(lang === 'es' ? (remDays === 1 ? '1 día' : `${remDays} días`) : (remDays === 1 ? '1 day' : `${remDays} days`));
+  }
+
+  if (parts.length === 1) return parts[0];
+  if (parts.length === 2) return `${parts[0]} ${lang === 'es' ? 'y' : 'and'} ${parts[1]}`;
+  return `${parts.slice(0, -1).join(', ')} ${lang === 'es' ? 'y' : 'and'} ${parts[parts.length - 1]}`;
+}
+
 function openPlayerModal(p) {
   const body = document.getElementById('modal-body');
   const mv = p.marketValue ? `€${(p.marketValue / 1000000).toFixed(0)}M` : '—';
@@ -9556,16 +11451,56 @@ function openPlayerModal(p) {
     hasRealInjuries = true;
     rawInjuries.forEach(inj => {
       if (!inj) return;
-      const type = inj.type || inj.name || (typeof inj === 'string' ? inj : 'Lesión');
-      const year = inj.year || inj.season || inj.date || '—';
-      const duration = inj.recovery || inj.duration || 'Sin especificar';
-      const severity = inj.severity || 'Moderada';
+      let rawType = inj.type || inj.injury || inj.name || (typeof inj === 'string' ? inj : 'Lesión');
+      let type = rawType;
+      let season = inj.season || inj.year || (inj.fromDate ? inj.fromDate.split('/').slice(-1)[0] : '—');
+      let severity = inj.severity || 'Moderada';
+
+      let calculatedDuration = formatDurationHumanReadable(inj.fromDate, inj.untilDate, inj.days || inj.duration || inj.recovery, currentLang);
+
+      if (currentLang === 'es' && typeof rawType === 'string') {
+        type = translateInjuryToSpanish(rawType);
+      }
+
+      let numDays = 0;
+      if (inj.days) {
+        const m = String(inj.days).match(/([0-9]+)/);
+        if (m) numDays = parseInt(m[1], 10);
+      }
+      if (numDays <= 0 && inj.fromDate && inj.untilDate && inj.fromDate.includes('/') && inj.untilDate.includes('/')) {
+        const p1 = inj.fromDate.split('/');
+        const p2 = inj.untilDate.split('/');
+        if (p1.length === 3 && p2.length === 3) {
+          const d1 = new Date(parseInt(p1[2], 10), parseInt(p1[1], 10) - 1, parseInt(p1[0], 10));
+          const d2 = new Date(parseInt(p2[2], 10), parseInt(p2[1], 10) - 1, parseInt(p2[0], 10));
+          const diffMs = d2.getTime() - d1.getTime();
+          if (!isNaN(diffMs) && diffMs >= 0) numDays = Math.round(diffMs / (1000 * 60 * 60 * 24)) + 1;
+        }
+      }
+
+      const tLower = String(type).toLowerCase();
+      if (
+        tLower.includes('cruzado') || 
+        tLower.includes('rotura') || 
+        tLower.includes('desgarro') || 
+        tLower.includes('fractura') || 
+        tLower.includes('artroscopia') || 
+        tLower.includes('cirugía') || 
+        tLower.includes('operación') ||
+        numDays >= 30
+      ) {
+        severity = currentLang === 'es' ? 'Grave' : 'Severe';
+      } else if (numDays >= 14 || tLower.includes('distensión') || tLower.includes('esguince') || tLower.includes('strain') || tLower.includes('sprain')) {
+        severity = currentLang === 'es' ? 'Moderada' : 'Moderate';
+      } else {
+        severity = currentLang === 'es' ? 'Leve' : 'Mild';
+      }
 
       playerInjuries.push({
         type: type,
         severity: severity,
-        duration: duration,
-        date: year
+        duration: calculatedDuration,
+        season: season
       });
     });
   } else if (typeof rawInjuries === 'string' && rawInjuries.trim() !== '' && rawInjuries !== '[]' && rawInjuries !== 'None' && rawInjuries !== 'Ninguna') {
@@ -10160,7 +12095,7 @@ function openPlayerModal(p) {
                       <div>
                          <div style="font-weight:600; font-size:14px; color:var(--text-1);">${inj.type}</div>
                          <div style="font-size:12px; color:var(--text-2); margin-top:4px;">
-                            ${currentLang === 'es' ? 'Fecha' : 'Date'}: <strong>${inj.date}</strong> · ${currentLang === 'es' ? 'Duración' : 'Duration'}: <strong>${inj.duration}</strong>
+                            ${currentLang === 'es' ? 'Temporada' : 'Season'}: <strong>${inj.season || '—'}</strong> · ${currentLang === 'es' ? 'Duración' : 'Duration'}: <strong>${inj.duration}</strong>
                          </div>
                       </div>
                       <div>
@@ -11158,6 +13093,25 @@ async function sendMessage(text) {
   const msg = text || input.value.trim();
   if (!msg) return;
 
+  const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  const tier = (user.selectedTier || user.tier || 'Gratis').toLowerCase();
+  
+  if ((tier === 'gratis' || tier === 'pro') && user.dailyAiMessagesRemaining === 0) {
+    const maxLimit = tier === 'gratis' ? 5 : 10;
+    alert(`Has alcanzado tu límite diario de ${maxLimit} mensajes en el Chat IA para el Plan ${tier === 'pro' ? 'Pro' : 'Gratis'}.\n\nLos límites son diarios no acumulativos y se restablecerán transcurridas 24 horas desde tu primer uso.`);
+    return;
+  }
+
+  if (tier === 'plus' && user.weeklyAiMessagesRemaining === 0) {
+    alert(`Has alcanzado tu límite semanal de 30 mensajes en el Chat IA para el Plan Plus.\n\nLos límites son semanales no acumulativos y se restablecerán transcurridos 7 días desde tu primer uso.`);
+    return;
+  }
+
+  if (tier === 'enterprise' && user.weeklyAiMessagesRemaining === 0) {
+    alert(`Has alcanzado tu límite semanal de 50 mensajes en el Chat IA para el Plan Enterprise.\n\nLos límites son semanales no acumulativos y se restablecerán transcurridos 7 días desde tu primer uso.`);
+    return;
+  }
+
   let currentSession = activeSessionId ? chatSessions.find(s => s.id === activeSessionId) : null;
   if (!currentSession) {
     const newId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
@@ -11243,6 +13197,10 @@ async function sendMessage(text) {
           if (!jsonStr) continue;
           try {
             const data = JSON.parse(jsonStr);
+            if (data.user) {
+              localStorage.setItem('scout_ai_user', JSON.stringify(data.user));
+              updateDailyLimitsBadges(data.user);
+            }
             if (data.chunk) {
               if (!bubble) {
                 bubble = appendBubble('agent', '');
@@ -11534,6 +13492,25 @@ function closeComparison() {
 async function runComparison() {
   if (!selectedPlayer1 || !selectedPlayer2) return;
 
+  const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  const tier = (user.selectedTier || user.tier || 'Gratis').toLowerCase();
+
+  if ((tier === 'gratis' || tier === 'pro') && user.dailyComparisonsRemaining === 0) {
+    const maxLimit = tier === 'gratis' ? 2 : 5;
+    alert(`Has alcanzado tu límite diario de ${maxLimit} comparaciones en el Plan ${tier === 'pro' ? 'Pro' : 'Gratis'}.\n\nLos límites son diarios no acumulativos y se restablecerán transcurridas 24 horas desde tu primer uso.`);
+    return;
+  }
+
+  if (tier === 'plus' && user.weeklyComparisonsRemaining === 0) {
+    alert(`Has alcanzado tu límite semanal de 15 comparaciones en el Plan Plus.\n\nLos límites son semanales no acumulativos y se restablecerán transcurridos 7 días desde tu primer uso.`);
+    return;
+  }
+
+  if (tier === 'enterprise' && user.monthlyComparisonsRemaining === 0) {
+    alert(`Has alcanzado tu límite mensual de 50 comparaciones en el Plan Enterprise.\n\nLos límites son mensuales no acumulativos y se restablecerán transcurridos 30 días desde tu primer uso.`);
+    return;
+  }
+
   incrementUserStat('compared', { player1Id: selectedPlayer1.id, player2Id: selectedPlayer2.id });
 
   const btn = document.getElementById('btn-compare');
@@ -11551,8 +13528,19 @@ async function runComparison() {
       body: JSON.stringify({ player1Id: selectedPlayer1.id, player2Id: selectedPlayer2.id, lang: currentLang }),
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Error from server');
-    
+    if (!res.ok) {
+      if (data.user) {
+        localStorage.setItem('scout_ai_user', JSON.stringify(data.user));
+        updateDailyLimitsBadges(data.user);
+      }
+      throw new Error(data.message || data.error || 'Error en la comparación');
+    }
+
+    if (data.user) {
+      localStorage.setItem('scout_ai_user', JSON.stringify(data.user));
+      updateDailyLimitsBadges(data.user);
+    }
+
     // Inject Analysis Text
     bodyEl.innerHTML = markdownToHtml(data.analysis);
     
@@ -11569,7 +13557,7 @@ async function runComparison() {
     
   } catch (err) {
     console.error(err);
-    bodyEl.innerHTML = `<p style="color:var(--red)">${currentLang === 'es' ? 'Error al conectar con la IA.' : 'Error connecting to AI.'}</p>`;
+    bodyEl.innerHTML = `<p style="color:var(--red)">${err.message || (currentLang === 'es' ? 'Error al conectar con la IA.' : 'Error connecting to AI.')}</p>`;
     resultEl.style.display = 'block';
   }
 
