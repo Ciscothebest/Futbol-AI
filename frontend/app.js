@@ -8057,11 +8057,19 @@ function findBestPlayerForSlot(slot, index, clubPlayers, styleKey, usedPlayerIds
     broadPositions = ['GK'];
   }
 
-  // Helper to filter and sort candidates
+  // Helper to filter and sort candidates by market value (Top 11 in value with position coherence)
   function getBestCandidate(filterFn) {
     const candidates = clubPlayers.filter(p => !usedPlayerIds.has(p.id) && filterFn(p));
     if (candidates.length > 0) {
-      candidates.sort((a, b) => calculatePlayerFit(b, styleKey) - calculatePlayerFit(a, styleKey));
+      candidates.sort((a, b) => {
+        const valB = parseMarketValueNumber(b.marketValue || b.valorMercado);
+        const valA = parseMarketValueNumber(a.marketValue || a.valorMercado);
+        if (valB !== valA) return valB - valA;
+        const ovrB = Number(b.overallRating || b.overall || 70);
+        const ovrA = Number(a.overallRating || a.overall || 70);
+        if (ovrB !== ovrA) return ovrB - ovrA;
+        return calculatePlayerFit(b, styleKey) - calculatePlayerFit(a, styleKey);
+      });
       return candidates[0];
     }
     return null;
@@ -10007,13 +10015,17 @@ async function initSimulationsSection() {
   const arenaHomeEl = document.getElementById('arena-home-name');
   if (arenaHomeEl) arenaHomeEl.textContent = myClubName;
   
-  // Load my team total roster market value
-  const homePlayers = await fetchTeamPlayers(myClubName);
-  let homeValue = calculateTeamRosterValue(homePlayers);
-  if (!homeValue || homeValue === 0) {
-    const homeStartingXI = getUserClubStartingXI(myClubName, user);
-    const homeOvr = calculateStartingXIAverageRating(homeStartingXI);
-    homeValue = homeOvr * 10000000;
+  // Load my team total roster market value for Simulation Arena
+  const simRoster = getSimulationHomeRoster(myClubName);
+  let homeValue = 0;
+  if (simRoster.startingXI && simRoster.startingXI.length > 0) {
+    homeValue = calculateTeamRosterValue(simRoster.totalRoster);
+  } else {
+    const homePlayers = await fetchTeamPlayers(myClubName);
+    if (homePlayers && homePlayers.length > 0) {
+      const { startingXI, bench } = selectTop11CoherentLineup(homePlayers);
+      homeValue = calculateTeamRosterValue([...startingXI, ...bench]);
+    }
   }
   const ratingEl = document.getElementById('arena-home-rating');
   if (ratingEl) ratingEl.textContent = `VALOR ${formatContractValue(homeValue)}`;
@@ -10071,11 +10083,11 @@ async function initSimulationsSection() {
       document.getElementById('arena-away-name').textContent = opponentName;
       document.getElementById('arena-away-badge').classList.add('active-away');
       
-      // Load opponent rating / roster value
-      const oppPlayers = await fetchTeamPlayers(opponentName);
-      let awayValue = calculateTeamRosterValue(oppPlayers);
+      // Load opponent rating / roster value excluding transferred players
+      const simAway = await getSimulationAwayRoster(opponentName, myClubName);
+      let awayValue = calculateTeamRosterValue(simAway.startingXI.length > 0 ? simAway.startingXI : simAway.totalRoster);
       if (!awayValue || awayValue === 0) {
-        const awayOvr = calculateTeamAverageRating(oppPlayers);
+        const awayOvr = calculateTeamAverageRating(simAway.availableAwayPlayers);
         awayValue = awayOvr * 10000000;
       }
       document.getElementById('arena-away-rating').textContent = `VALOR ${formatContractValue(awayValue)}`;
@@ -10486,6 +10498,72 @@ let currentSimBench = [];
 let selectedSimSlotIndex = 0;
 let currentSimPosFilter = '';
 
+function getSimulationHomeRoster(homeName) {
+  const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  const clubName = homeName || user.selectedClub || 'FC Barcelona';
+
+  const savedRaw = localStorage.getItem('sim_custom_roster_' + clubName);
+  if (savedRaw) {
+    try {
+      const parsed = JSON.parse(savedRaw);
+      if (parsed.startingXI && Array.isArray(parsed.startingXI) && parsed.startingXI.length > 0) {
+        return {
+          startingXI: parsed.startingXI,
+          bench: parsed.bench || [],
+          totalRoster: [...parsed.startingXI, ...(parsed.bench || [])]
+        };
+      }
+    } catch(e) {}
+  }
+
+  if (window.simCustomRosters && window.simCustomRosters[clubName] && window.simCustomRosters[clubName].startingXI) {
+    return {
+      startingXI: window.simCustomRosters[clubName].startingXI,
+      bench: window.simCustomRosters[clubName].bench || [],
+      totalRoster: [...window.simCustomRosters[clubName].startingXI, ...(window.simCustomRosters[clubName].bench || [])]
+    };
+  }
+
+  return { startingXI: null, bench: null, totalRoster: null };
+}
+
+async function getSimulationAwayRoster(awayName, homeClubName) {
+  const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  const homeClub = homeClubName || user.selectedClub || 'FC Barcelona';
+
+  // 1. Get home team simulation lineup to identify transferred players
+  const simHomeData = getSimulationHomeRoster(homeClub);
+  const homeStartingXI = simHomeData.startingXI || [];
+  const homeBench = simHomeData.bench || [];
+  const allHomeSimPlayers = [...homeStartingXI, ...homeBench];
+
+  // Build a Set of names and IDs of players currently in the home team's simulation lineup
+  const homePlayerIds = new Set(allHomeSimPlayers.map(p => p.id).filter(Boolean));
+  const homePlayerNames = new Set(allHomeSimPlayers.map(p => normalizeString((p.name || '').toLowerCase())));
+
+  // 2. Fetch raw players for away team
+  let rawAwayPlayers = await fetchTeamPlayers(awayName);
+  if (!rawAwayPlayers || rawAwayPlayers.length === 0) {
+    if (window.allPlayers && Array.isArray(window.allPlayers)) {
+      rawAwayPlayers = window.allPlayers.filter(p => p.currentTeam === awayName);
+    }
+  }
+
+  // 3. Exclude any player who has been transferred into the home team's simulation lineup!
+  const availableAwayPlayers = (rawAwayPlayers || []).filter(p => {
+    if (p.id && homePlayerIds.has(p.id)) return false;
+    const pNameNorm = normalizeString((p.name || '').toLowerCase());
+    if (homePlayerNames.has(pNameNorm)) return false;
+    return true;
+  });
+
+  // 4. Use selectTop11CoherentLineup to build the away team's starting XI and bench from their remaining depth!
+  const { startingXI, bench } = selectTop11CoherentLineup(availableAwayPlayers);
+  const totalRoster = [...startingXI, ...bench];
+
+  return { startingXI, bench, totalRoster, availableAwayPlayers };
+}
+
 window.openSimLineupModal = async function() {
   const modal = document.getElementById('sim-lineup-editor-modal');
   if (!modal) return;
@@ -10493,8 +10571,20 @@ window.openSimLineupModal = async function() {
   const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
   const myClubName = user.selectedClub || 'FC Barcelona';
 
-  modal.style.display = 'flex';
+  modal.style.setProperty('display', 'flex', 'important');
   document.body.style.overflow = 'hidden';
+
+  // Show platform interactive loading screen overlay
+  const loadingOverlay = document.getElementById('sim-modal-loading-overlay');
+  const fillBar = document.getElementById('sim-modal-progress-fill');
+  const textLabel = document.getElementById('sim-modal-progress-text');
+
+  if (loadingOverlay) {
+    loadingOverlay.style.display = 'flex';
+    loadingOverlay.style.opacity = '1';
+  }
+  if (fillBar) fillBar.style.width = '35%';
+  if (textLabel) textLabel.textContent = 'Cargando plantilla y base de datos...';
 
   // Load custom simulation squad if saved, otherwise fetch or generate default
   const savedRaw = localStorage.getItem('sim_custom_roster_' + myClubName);
@@ -10512,11 +10602,14 @@ window.openSimLineupModal = async function() {
     currentSimBench = [];
   }
 
+  if (fillBar) fillBar.style.width = '70%';
+
   if (!currentSimStartingXI || currentSimStartingXI.length === 0) {
     const realPlayers = await fetchTeamPlayers(myClubName);
     if (realPlayers && realPlayers.length > 0) {
-      currentSimStartingXI = realPlayers.slice(0, 11);
-      currentSimBench = realPlayers.slice(11, 18);
+      const topLineup = selectTop11CoherentLineup(realPlayers);
+      currentSimStartingXI = topLineup.startingXI;
+      currentSimBench = topLineup.bench;
     } else {
       currentSimStartingXI = getUserClubStartingXI(myClubName, user);
       currentSimBench = [];
@@ -10528,13 +10621,75 @@ window.openSimLineupModal = async function() {
   renderSimModalBench();
   renderSimModalGlobalPlayers('');
   setupSimModalSearchListeners();
+
+  if (fillBar) fillBar.style.width = '100%';
+
+  // Smoothly fade out loading overlay once data is ready
+  setTimeout(() => {
+    if (loadingOverlay) {
+      loadingOverlay.style.opacity = '0';
+      setTimeout(() => {
+        loadingOverlay.style.display = 'none';
+      }, 300);
+    }
+  }, 450);
 };
 
 window.closeSimLineupModal = function() {
   const modal = document.getElementById('sim-lineup-editor-modal');
-  if (modal) modal.style.display = 'none';
+  if (modal) modal.style.setProperty('display', 'none', 'important');
   document.body.style.overflow = '';
 };
+
+function renderSimModalSkeletons() {
+  const xiContainer = document.getElementById('sim-modal-starting-xi');
+  const benchContainer = document.getElementById('sim-modal-bench');
+  const globalContainer = document.getElementById('sim-modal-global-players-list');
+  const valueEl = document.getElementById('sim-modal-value');
+
+  if (valueEl) valueEl.textContent = 'CARGANDO...';
+
+  const skeletonHtml = `
+    <div class="sim-skeleton-card">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div style="width: 28px; height: 18px; background: rgba(0, 240, 255, 0.15); border-radius: 4px;"></div>
+        <div style="width: 28px; height: 28px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <div style="width: 100px; height: 11px; background: rgba(255,255,255,0.15); border-radius: 3px;"></div>
+          <div style="width: 60px; height: 9px; background: rgba(255,255,255,0.08); border-radius: 3px;"></div>
+        </div>
+      </div>
+      <div style="width: 55px; height: 20px; background: rgba(0, 240, 255, 0.1); border-radius: 6px;"></div>
+    </div>
+  `;
+
+  if (xiContainer) {
+    xiContainer.innerHTML = Array(5).fill(skeletonHtml).join('');
+  }
+  if (benchContainer) {
+    benchContainer.innerHTML = Array(2).fill(skeletonHtml).join('');
+  }
+  if (globalContainer) {
+    globalContainer.innerHTML = Array(6).fill(skeletonHtml).join('');
+  }
+}
+
+function parseMarketValueNumber(val) {
+  if (typeof val === 'number') {
+    if (isNaN(val) || val <= 0) return 20000000;
+    return val;
+  }
+  if (!val) return 20000000;
+  const str = String(val).toUpperCase().trim();
+  let num = parseFloat(str.replace(/[^0-9.]/g, ''));
+  if (isNaN(num)) return 20000000;
+  if (str.includes('M')) {
+    num = num * 1000000;
+  } else if (str.includes('K')) {
+    num = num * 1000;
+  }
+  return num;
+}
 
 function renderSimModalStartingXI() {
   const container = document.getElementById('sim-modal-starting-xi');
@@ -10546,7 +10701,8 @@ function renderSimModalStartingXI() {
   let totalVal = 0;
 
   currentSimStartingXI.forEach((p, idx) => {
-    totalVal += (p.marketValue || 50000000);
+    const valNum = parseMarketValueNumber(p.marketValue);
+    totalVal += valNum;
     const item = document.createElement('div');
     const isSelected = selectedSimSlotIndex === idx;
     item.style.cssText = `display: flex; align-items: center; justify-content: space-between; padding: 7px 10px; background: ${isSelected ? 'rgba(0, 240, 255, 0.15)' : 'rgba(255, 255, 255, 0.03)'}; border: 1px solid ${isSelected ? '#00f0ff' : 'rgba(255, 255, 255, 0.08)'}; border-radius: 8px; cursor: pointer; transition: all 0.2s;`;
@@ -10564,7 +10720,7 @@ function renderSimModalStartingXI() {
         </div>
       </div>
       <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
-        <span style="font-size: 11px; font-weight: 700; color: #00f0ff;">${formatContractValue(p.marketValue || 50000000)}</span>
+        <span style="font-size: 11px; font-weight: 700; color: #00f0ff;">${formatContractValue(valNum)}</span>
         <button onclick="event.stopPropagation(); selectSimSlot(${idx})" style="font-size: 10.5px; font-weight: 700; padding: 3px 7px; background: ${isSelected ? '#00f0ff' : 'rgba(255,255,255,0.06)'}; border: 1px solid rgba(0,240,255,0.3); color: ${isSelected ? '#000' : '#fff'}; border-radius: 5px; cursor: pointer;">
           ${isSelected ? 'Seleccionado' : 'Elegir'}
         </button>
@@ -10624,14 +10780,38 @@ function renderSimModalGlobalPlayers(query = '') {
 
   container.innerHTML = '';
 
+  const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  const myClubName = (user.selectedClub || 'FC Barcelona').toLowerCase();
+  const nMyClub = normalizeString(myClubName);
+
   const playersSource = (window.allPlayers && Array.isArray(window.allPlayers) && window.allPlayers.length > 0) ? window.allPlayers : [];
   const nQuery = normalizeString(query.toLowerCase());
 
+  // Set of player names already in current sim XI or bench
+  const currentSimPlayerNames = new Set([
+    ...currentSimStartingXI.map(p => normalizeString((p.name || '').toLowerCase())),
+    ...currentSimBench.map(p => normalizeString((p.name || '').toLowerCase()))
+  ]);
+
   const filtered = playersSource.filter(p => {
     if (!p || !p.name) return false;
+
+    // Exclude players from user's active club to avoid confusion
+    const pTeam = normalizeString((p.currentTeam || '').toLowerCase());
+    if (pTeam && (pTeam === nMyClub || pTeam.includes(nMyClub) || nMyClub.includes(pTeam))) {
+      return false;
+    }
+
+    // Exclude players already selected in current sim XI or bench
+    const pNameNorm = normalizeString((p.name || '').toLowerCase());
+    if (currentSimPlayerNames.has(pNameNorm)) return false;
+
+    // Positional Filter
     if (currentSimPosFilter && !isPositionMatch(p.position || p.positionEs, currentSimPosFilter)) return false;
+
+    // Search Query Filter
     if (!nQuery) return true;
-    return normalizeString(p.name).includes(nQuery) ||
+    return pNameNorm.includes(nQuery) ||
            normalizeString(p.currentTeam || '').includes(nQuery) ||
            normalizeString(p.nationality || '').includes(nQuery);
   });
@@ -10649,25 +10829,76 @@ function renderSimModalGlobalPlayers(query = '') {
 
   visible.forEach(p => {
     const item = document.createElement('div');
-    item.style.cssText = 'display: flex; align-items: center; justify-content: space-between; padding: 7px 10px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.07); border-radius: 8px; transition: background 0.2s;';
-    
+    item.className = 'sim-global-player-card';
+    item.style.cssText = `
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      padding: 9px 12px; 
+      background: linear-gradient(135deg, rgba(12, 22, 38, 0.8), rgba(8, 14, 26, 0.95)); 
+      border: 1px solid rgba(0, 240, 255, 0.18); 
+      border-radius: 12px; 
+      transition: all 0.22s ease; 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    `;
+
+    item.onmouseover = () => {
+      item.style.borderColor = 'rgba(0, 240, 255, 0.55)';
+      item.style.background = 'linear-gradient(135deg, rgba(16, 30, 52, 0.95), rgba(10, 18, 34, 0.98))';
+      item.style.boxShadow = '0 0 15px rgba(0, 240, 255, 0.18)';
+    };
+    item.onmouseout = () => {
+      item.style.borderColor = 'rgba(0, 240, 255, 0.18)';
+      item.style.background = 'linear-gradient(135deg, rgba(12, 22, 38, 0.8), rgba(8, 14, 26, 0.95))';
+      item.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
+    };
+
     const posCode = p.position || 'MED';
     const avatarUrl = p.avatarUrl || p.photoUrl || `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(p.name)}&backgroundColor=0d1117&textColor=ffffff&radius=50`;
+    const valNum = parseMarketValueNumber(p.marketValue);
+
+    // Dynamic Position Badge Styling
+    let posBadgeStyle = 'color: #00f0ff; background: rgba(0, 240, 255, 0.12); border: 1px solid rgba(0, 240, 255, 0.35);';
+    if (['ST', 'CF', 'LW', 'RW', 'DC', 'EI', 'ED', 'DEL'].includes(posCode)) {
+      posBadgeStyle = 'color: #ff3366; background: rgba(255, 51, 102, 0.12); border: 1px solid rgba(255, 51, 102, 0.35);';
+    } else if (['CB', 'LB', 'RB', 'DFC', 'LI', 'LD', 'DEF'].includes(posCode)) {
+      posBadgeStyle = 'color: #00ff88; background: rgba(0, 255, 136, 0.12); border: 1px solid rgba(0, 255, 136, 0.35);';
+    } else if (['GK', 'PO', 'POR'].includes(posCode)) {
+      posBadgeStyle = 'color: #ffbe10; background: rgba(255, 190, 16, 0.12); border: 1px solid rgba(255, 190, 16, 0.35);';
+    }
+
+    const flagStr = p.flag ? `${p.flag} ` : '';
 
     item.innerHTML = `
-      <div style="display: flex; align-items: center; gap: 8px; min-width: 0;">
-        <span style="font-size: 10px; font-weight: 800; color: #00f0ff; background: rgba(0, 240, 255, 0.1); border: 1px solid rgba(0, 240, 255, 0.3); padding: 2px 6px; border-radius: 4px; flex-shrink: 0;">${posCode}</span>
-        <img src="${avatarUrl}" style="width: 26px; height: 26px; border-radius: 50%; object-fit: cover; flex-shrink: 0;" onerror="this.src='${getSilhouetteNoImageSvg()}'" />
+      <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+        <span style="font-size: 10px; font-weight: 800; padding: 3px 6px; border-radius: 5px; flex-shrink: 0; ${posBadgeStyle}">${posCode}</span>
+        <img src="${avatarUrl}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1.5px solid rgba(0, 240, 255, 0.3); flex-shrink: 0;" onerror="this.src='${getSilhouetteNoImageSvg()}'" />
         <div style="min-width: 0;">
-          <div style="font-size: 12px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.name}</div>
-          <div style="font-size: 10px; color: rgba(255,255,255,0.4);">${p.currentTeam || 'Jugadores'} · ${formatContractValue(p.marketValue || 20000000)}</div>
+          <div style="font-size: 12.5px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${flagStr}${p.name}</div>
+          <div style="font-size: 10.5px; color: rgba(255,255,255,0.45); display: flex; align-items: center; gap: 5px; margin-top: 1px;">
+            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px;">${p.currentTeam || 'Jugadores'}</span>
+            <span style="color: rgba(255,255,255,0.25);">•</span>
+            <span style="color: #00f0ff; font-weight: 700; flex-shrink: 0;">${formatContractValue(valNum)}</span>
+          </div>
         </div>
       </div>
-      <div style="display: flex; gap: 4px; flex-shrink: 0;">
-        <button onclick="insertGlobalPlayerToSimXI('${p.id}')" style="font-size: 10.5px; font-weight: 700; padding: 4px 8px; background: rgba(0,240,255,0.15); border: 1px solid #00f0ff; color: #00f0ff; border-radius: 6px; cursor: pointer;">
+      <div style="display: flex; gap: 5px; flex-shrink: 0; margin-left: 8px;">
+        <button 
+          onclick="insertGlobalPlayerToSimXI('${p.id}')" 
+          title="Insertar como Titular #${selectedSimSlotIndex + 1}"
+          style="font-size: 10.5px; font-weight: 700; padding: 5px 9px; background: linear-gradient(135deg, rgba(0,240,255,0.18), rgba(0,114,255,0.18)); border: 1px solid #00f0ff; color: #00f0ff; border-radius: 7px; cursor: pointer; transition: all 0.2s;"
+          onmouseover="this.style.background='#00f0ff'; this.style.color='#000';"
+          onmouseout="this.style.background='linear-gradient(135deg, rgba(0,240,255,0.18), rgba(0,114,255,0.18))'; this.style.color='#00f0ff';"
+        >
           + Titular (${selectedSimSlotIndex + 1})
         </button>
-        <button onclick="insertGlobalPlayerToSimBench('${p.id}')" style="font-size: 10.5px; font-weight: 700; padding: 4px 8px; background: rgba(255,190,16,0.15); border: 1px solid #ffbe10; color: #ffbe10; border-radius: 6px; cursor: pointer;">
+        <button 
+          onclick="insertGlobalPlayerToSimBench('${p.id}')" 
+          title="Agregar a la banca de suplentes"
+          style="font-size: 10.5px; font-weight: 700; padding: 5px 9px; background: rgba(255,190,16,0.12); border: 1px solid #ffbe10; color: #ffbe10; border-radius: 7px; cursor: pointer; transition: all 0.2s;"
+          onmouseover="this.style.background='#ffbe10'; this.style.color='#000';"
+          onmouseout="this.style.background='rgba(255,190,16,0.12)'; this.style.color='#ffbe10';"
+        >
           + Suplente
         </button>
       </div>
@@ -10681,8 +10912,14 @@ window.filterSimModalGlobalPlayers = function(pos) {
   document.querySelectorAll('.sim-pos-chip').forEach(btn => {
     if (btn.dataset.pos === pos) {
       btn.classList.add('active');
+      btn.style.background = 'rgba(0, 240, 255, 0.2)';
+      btn.style.borderColor = '#00f0ff';
+      btn.style.color = '#00f0ff';
     } else {
       btn.classList.remove('active');
+      btn.style.background = 'rgba(255, 255, 255, 0.04)';
+      btn.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+      btn.style.color = 'rgba(255, 255, 255, 0.7)';
     }
   });
   const input = document.getElementById('sim-modal-search-input');
@@ -10735,6 +10972,20 @@ window.saveSimLineupChanges = async function() {
     ratingEl.textContent = `VALOR ${formatContractValue(homeValue)}`;
   }
 
+  // Recalculate Away team rating if selected, to reflect any transferred players
+  const selectAway = document.getElementById('arena-away-select');
+  if (selectAway && selectAway.value) {
+    const oppName = selectAway.value;
+    const simAway = await getSimulationAwayRoster(oppName, myClubName);
+    let awayValue = calculateTeamRosterValue(simAway.startingXI.length > 0 ? simAway.startingXI : simAway.totalRoster);
+    if (!awayValue || awayValue === 0) {
+      const awayOvr = calculateTeamAverageRating(simAway.availableAwayPlayers);
+      awayValue = awayOvr * 10000000;
+    }
+    const awayRatingEl = document.getElementById('arena-away-rating');
+    if (awayRatingEl) awayRatingEl.textContent = `VALOR ${formatContractValue(awayValue)}`;
+  }
+
   closeSimLineupModal();
 
   if (typeof showToast === 'function') {
@@ -10753,8 +11004,9 @@ window.resetSimLineupToReal = async function() {
 
   const realPlayers = await fetchTeamPlayers(myClubName);
   if (realPlayers && realPlayers.length > 0) {
-    currentSimStartingXI = realPlayers.slice(0, 11);
-    currentSimBench = realPlayers.slice(11, 18);
+    const topLineup = selectTop11CoherentLineup(realPlayers);
+    currentSimStartingXI = topLineup.startingXI;
+    currentSimBench = topLineup.bench;
   } else {
     currentSimStartingXI = getUserClubStartingXI(myClubName, user);
     currentSimBench = [];
@@ -10771,9 +11023,70 @@ window.resetSimLineupToReal = async function() {
   }
 
   if (typeof showToast === 'function') {
-    showToast('🔄 Alineación restablecida a la plantilla real del club', 'info');
+    showToast('Alineación restablecida a la plantilla real del club', 'info');
   }
 };
+
+function selectTop11CoherentLineup(clubPlayers) {
+  if (!clubPlayers || !Array.isArray(clubPlayers) || clubPlayers.length === 0) {
+    return { startingXI: [], bench: [] };
+  }
+
+  // Sort all club players by market value descending (highest value first)
+  const sorted = [...clubPlayers].sort((a, b) => {
+    const valB = parseMarketValueNumber(b.marketValue || b.valorMercado);
+    const valA = parseMarketValueNumber(a.marketValue || a.valorMercado);
+    if (valB !== valA) return valB - valA;
+    return Number(b.overallRating || b.overall || 70) - Number(a.overallRating || a.overall || 70);
+  });
+
+  const gks = sorted.filter(p => isPositionMatch(p.position || p.positionEs, 'GK'));
+  const defs = sorted.filter(p => isPositionMatch(p.position || p.positionEs, 'DEF'));
+  const meds = sorted.filter(p => isPositionMatch(p.position || p.positionEs, 'MED'));
+  const dels = sorted.filter(p => isPositionMatch(p.position || p.positionEs, 'DEL'));
+
+  const startingSet = new Set();
+  const startingXI = [];
+
+  // 1. Mandatory 1 Goalkeeper (Highest Value GK)
+  if (gks.length > 0) {
+    startingXI.push(gks[0]);
+    startingSet.add(gks[0].id || gks[0].name);
+  }
+
+  // 2. Select Top 4 Defenders (Highest Value DEFs)
+  defs.filter(p => !startingSet.has(p.id || p.name)).slice(0, 4).forEach(p => {
+    startingXI.push(p);
+    startingSet.add(p.id || p.name);
+  });
+
+  // 3. Select Top 3 Midfielders (Highest Value MEDs)
+  meds.filter(p => !startingSet.has(p.id || p.name)).slice(0, 3).forEach(p => {
+    startingXI.push(p);
+    startingSet.add(p.id || p.name);
+  });
+
+  // 4. Select Top 3 Forwards (Highest Value DELs)
+  dels.filter(p => !startingSet.has(p.id || p.name)).slice(0, 3).forEach(p => {
+    startingXI.push(p);
+    startingSet.add(p.id || p.name);
+  });
+
+  // 5. If we still have fewer than 11 starting players, fill remaining spots with highest market value outfield players
+  if (startingXI.length < 11) {
+    const remaining = sorted.filter(p => !startingSet.has(p.id || p.name));
+    for (const p of remaining) {
+      if (startingXI.length >= 11) break;
+      startingXI.push(p);
+      startingSet.add(p.id || p.name);
+    }
+  }
+
+  // Bench: All remaining players in the club, also sorted by market value descending
+  const bench = sorted.filter(p => !startingSet.has(p.id || p.name));
+
+  return { startingXI, bench };
+}
 
 function resetAwayArena() {
   document.getElementById('arena-away-name').textContent = 'Visitante';
@@ -10877,8 +11190,14 @@ async function showSimulationResults(homeName, awayName, homeOvr, awayOvr) {
   const awaySquadTitle = document.getElementById('result-away-squad-title');
   if (awaySquadTitle) awaySquadTitle.textContent = currentLang === 'es' ? `📋 Alineación de ${awayName}` : `📋 Lineup of ${awayName}`;
 
-  // Render XI for both teams
-  const userStartingXI = getUserClubStartingXI(homeName, user);
+  // Render XI for both teams using custom simulation lineup if defined
+  const simRoster = getSimulationHomeRoster(homeName);
+  let userStartingXI = [];
+  if (simRoster.startingXI && simRoster.startingXI.length > 0) {
+    userStartingXI = simRoster.startingXI;
+  } else {
+    userStartingXI = getUserClubStartingXI(homeName, user);
+  }
   renderStartingXi(userStartingXI, 'result-home-xi', true);
   renderStartingXi(awayPlayers, 'result-away-xi', false);
   
@@ -10987,7 +11306,9 @@ async function showSimulationResults(homeName, awayName, homeOvr, awayOvr) {
     const sortFn = (a, b) => (parseFloat(b.overallRating) || 0) - (parseFloat(a.overallRating) || 0);
     
     // Categorize home team players using active customized starting XI
-    let homePlayersForMatchups = userStartingXI.filter(item => item.player && !item.isVirtual).map(item => item.player);
+    let homePlayersForMatchups = userStartingXI
+      .map(item => item ? (item.player || item) : null)
+      .filter(p => p && p.name && !p.isVirtual);
     if (homePlayersForMatchups.length === 0) {
       homePlayersForMatchups = homePlayers;
     }
@@ -20028,14 +20349,23 @@ async function preGenerateMatchState(homeName, awayName, homeOvr, awayOvr) {
   simAwayOvr = awayOvr;
   
   const currentUser = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
-  const userStartingXI = getUserClubStartingXI(homeName, currentUser);
+  const simRoster = getSimulationHomeRoster(homeName);
   
-  let homePlayersList = userStartingXI.filter(item => item.player && !item.isVirtual).map(item => item.player);
-  if (homePlayersList.length === 0) {
-    homePlayersList = await fetchTeamPlayers(homeName);
+  let homePlayersList = [];
+  if (simRoster.startingXI && simRoster.startingXI.length > 0) {
+    homePlayersList = simRoster.startingXI;
+  } else {
+    const realPlayers = await fetchTeamPlayers(homeName);
+    if (realPlayers && realPlayers.length > 0) {
+      const topLineup = selectTop11CoherentLineup(realPlayers);
+      homePlayersList = topLineup.startingXI;
+    } else {
+      const userStartingXI = getUserClubStartingXI(homeName, currentUser);
+      homePlayersList = userStartingXI.filter(item => item.player && !item.isVirtual).map(item => item.player);
+    }
   }
-  simHomePlayers = homePlayersList;
-  simAwayPlayers = await fetchTeamPlayers(awayName);
+  const simAwayData = await getSimulationAwayRoster(awayName, homeName);
+  simAwayPlayers = simAwayData.startingXI && simAwayData.startingXI.length > 0 ? simAwayData.startingXI : simAwayData.availableAwayPlayers;
   
   const diff = homeOvr - awayOvr;
   let homeWinProb = Math.min(Math.max(50 + diff * 3, 10), 90);

@@ -1,0 +1,7310 @@
+[
+  {
+    "id": 1,
+    "name": "CR Flamengo",
+    "league": "Brasileirão Série A",
+    "country": "Brazil"
+  },
+  {
+    "id": 2,
+    "name": "Palmeiras",
+    "league": "Brasileirão Série A",
+    "country": "Brazil"
+  },
+  {
+    "id": 3,
+    "name": "Cruzeiro",
+    "league": "Brasileirão Série A",
+    "country": "Brazil"
+  },
+  {
+    "id": 4,
+    "name": "Mirassol",
+    "league": "Brasileirão Série A",
+    "country": "Brazil"
+  },
+  {
+    "id": 5,
+    "name": "Fluminense",
+    "league": "Brasileirão Série A",
+    "country": "Brazil"
+  },
+  {
+    "id": 6,
+    "name": "Botafogo",
+    "league": "Brasileirão Série A",
+    "country": "Brazil"
+  },
+  {
+    "id": 7,
+    "name": "Bahia",
+    "league": "Brasileirão Série A",
+    "country": "Brazil"
+  },
+  {
+    "id": 8,
+    "name": "São Paulo FC",
+    "league": "Brasileirão Série A",
+    "country": "Brazil"
+  },
+  {
+    "id": 9,
+    "name": "Grêmio",
+    "league": "Brasileirão Série A",
+    "country": "Brazil"
+  },
+  {
+    "id": 10,
+    "name": "RB Bragantino",
+    "league": "Brasileirão Série A",
+    "country": "Brazil"
+  },
+  {
+    "id": 11,
+    "name": "Atlético Mineiro",
+    "league": "Brasileirão Série A",
+    "country": "Brazil"
+  },
+  {
+    "id": 12,
+    "name": "Santos FC",
+    "league": "Brasileirão Série A",
+    "country": "Brazil"
+  },
+  {
+    "id": 13,
+    "name": "Corinthians",
+    "league": "Brasileirão Série A",
+    "country": "Brazil"
+  },
+  {
+    "id": 14,
+    "name": "Vasco da Gama",
+    "league": "Brasileirão Série A",
+    "country": "Brazil"
+  },
+  {
+    "id": 15,
+    "name": "Vitória",
+    "league": "Brasileirão Série A",
+    "country": "Brazil"
+  },
+  {
+    "id": 16,
+    "name": "Internacional",
+    "league": "Brasileirão Série A",
+    "country": "Brazil"
+  },
+  {
+    "id": 17,
+    "name": "Ceará",
+    "league": "Brasileirão Série A",
+    "country": "Brazil"
+  },
+  {
+    "id": 18,
+    "name": "Fortaleza",
+    "league": "Brasileirão Série A",
+    "country": "Brazil"
+  },
+  {
+    "id": 19,
+    "name": "Juventude",
+    "league": "Brasileirão Série A",
+    "country": "Brazil"
+  },
+  {
+    "id": 20,
+    "name": "Sport Recife",
+    "league": "Brasileirão Série A",
+    "country": "Brazil"
+  },
+  {
+    "id": 21,
+    "name": "Rosario Central",
+    "league": "Liga Profesional",
+    "country": "Argentina"
+  },
+  {
+    "id": 22,
+    "name": "Boca Juniors",
+    "league": "Liga Profesional",
+    "country": "Argentina"
+  },
+  {
+    "id": 23,
+    "name": "Argentinos Juniors",
+    "league": "Liga Profesional",
+    "country": "Argentina"
+  },
+  {
+    "id": 24,
+    "name": "River Plate",
+    "league": "Liga Profesional",
+    "country": "Argentina"
+  },
+  {
+    "id": 25,
+    "name": "Racing Club",
+    "league": "Liga Profesional",
+    "country": "Argentina"
+  },
+  {
+    "id": 26,
+    "name": "Deportivo Riestra",
+    "league": "Liga Profesional",
+    "country": "Argentina"
+  },
+  {
+    "id": 27,
+    "name": "San Lorenzo",
+    "league": "Liga Profesional",
+    "country": "Argentina"
+  },
+  {
+    "id": 28,
+    "name": "Lanús",
+    "league": "Liga Profesional",
+    "country": "Argentina"
+  },
+  {
+    "id": 29,
+    "name": "Tigre",
+    "league": "Liga Profesional",
+    "country": "Argentina"
+  },
+  {
+    "id": 30,
+    "name": "Barracas Central",
+    "league": "Liga Profesional",
+    "country": "Argentina"
+  },
+  {
+    "id": 31,
+    "name": "Independiente",
+    "league": "Liga Profesional",
+    "country": "Argentina"
+  },
+  {
+    "id": 32,
+    "name": "Huracán",
+    "league": "Liga Profesional",
+    "country": "Argentina"
+  },
+  {
+    "id": 33,
+    "name": "Independiente Rivadavia",
+    "league": "Liga Profesional",
+    "country": "Argentina"
+  },
+  {
+    "id": 34,
+    "name": "Central Córdoba (SdE)",
+    "league": "Liga Profesional",
+    "country": "Argentina"
+  },
+  {
+    "id": 35,
+    "name": "Estudiantes (LP)",
+    "league": "Liga Profesional",
+    "country": "Argentina"
+  },
+  {
+    "id": 36,
+    "name": "Vélez Sarsfield",
+    "league": "Liga Profesional",
+    "country": "Argentina"
+  },
+  {
+    "id": 37,
+    "name": "Unión",
+    "league": "Liga Profesional",
+    "country": "Argentina"
+  },
+  {
+    "id": 38,
+    "name": "Defensa y Justicia",
+    "league": "Liga Profesional",
+    "country": "Argentina"
+  },
+  {
+    "id": 39,
+    "name": "Gimnasia y Esgrima (LP)",
+    "league": "Liga Profesional",
+    "country": "Argentina"
+  },
+  {
+    "id": 40,
+    "name": "Belgrano",
+    "league": "Liga Profesional",
+    "country": "Argentina"
+  },
+  {
+    "id": 41,
+    "name": "Banfield",
+    "league": "Liga Profesional",
+    "country": "Argentina"
+  },
+  {
+    "id": 42,
+    "name": "Platense",
+    "league": "Liga Profesional",
+    "country": "Argentina"
+  },
+  {
+    "id": 43,
+    "name": "Sarmiento (J)",
+    "league": "Liga Profesional",
+    "country": "Argentina"
+  },
+  {
+    "id": 44,
+    "name": "Talleres (C)",
+    "league": "Liga Profesional",
+    "country": "Argentina"
+  },
+  {
+    "id": 45,
+    "name": "Atlético Tucumán",
+    "league": "Liga Profesional",
+    "country": "Argentina"
+  },
+  {
+    "id": 46,
+    "name": "Instituto",
+    "league": "Liga Profesional",
+    "country": "Argentina"
+  },
+  {
+    "id": 47,
+    "name": "Newell's Old Boys",
+    "league": "Liga Profesional",
+    "country": "Argentina"
+  },
+  {
+    "id": 48,
+    "name": "Aldosivi",
+    "league": "Liga Profesional",
+    "country": "Argentina"
+  },
+  {
+    "id": 49,
+    "name": "Godoy Cruz",
+    "league": "Liga Profesional",
+    "country": "Argentina"
+  },
+  {
+    "id": 50,
+    "name": "San Martín (SJ)",
+    "league": "Liga Profesional",
+    "country": "Argentina"
+  },
+  {
+    "id": 51,
+    "name": "Deportes Tolima",
+    "league": "Liga BetPlay Dimayor",
+    "country": "Colombia"
+  },
+  {
+    "id": 52,
+    "name": "Independiente Medellín",
+    "league": "Liga BetPlay Dimayor",
+    "country": "Colombia"
+  },
+  {
+    "id": 53,
+    "name": "Junior de Barranquilla",
+    "league": "Liga BetPlay Dimayor",
+    "country": "Colombia"
+  },
+  {
+    "id": 54,
+    "name": "Atlético Nacional",
+    "league": "Liga BetPlay Dimayor",
+    "country": "Colombia"
+  },
+  {
+    "id": 55,
+    "name": "Independiente Santa Fe",
+    "league": "Liga BetPlay Dimayor",
+    "country": "Colombia"
+  },
+  {
+    "id": 56,
+    "name": "América de Cali",
+    "league": "Liga BetPlay Dimayor",
+    "country": "Colombia"
+  },
+  {
+    "id": 57,
+    "name": "Atlético Bucaramanga",
+    "league": "Liga BetPlay Dimayor",
+    "country": "Colombia"
+  },
+  {
+    "id": 58,
+    "name": "Millonarios FC",
+    "league": "Liga BetPlay Dimayor",
+    "country": "Colombia"
+  },
+  {
+    "id": 59,
+    "name": "Once Caldas",
+    "league": "Liga BetPlay Dimayor",
+    "country": "Colombia"
+  },
+  {
+    "id": 60,
+    "name": "Alianza FC",
+    "league": "Liga BetPlay Dimayor",
+    "country": "Colombia"
+  },
+  {
+    "id": 61,
+    "name": "Fortaleza",
+    "league": "Liga BetPlay Dimayor",
+    "country": "Colombia"
+  },
+  {
+    "id": 62,
+    "name": "Águilas Doradas",
+    "league": "Liga BetPlay Dimayor",
+    "country": "Colombia"
+  },
+  {
+    "id": 63,
+    "name": "Deportivo Pasto",
+    "league": "Liga BetPlay Dimayor",
+    "country": "Colombia"
+  },
+  {
+    "id": 64,
+    "name": "Deportivo Pereira",
+    "league": "Liga BetPlay Dimayor",
+    "country": "Colombia"
+  },
+  {
+    "id": 65,
+    "name": "Deportivo Cali",
+    "league": "Liga BetPlay Dimayor",
+    "country": "Colombia"
+  },
+  {
+    "id": 66,
+    "name": "Llaneros",
+    "league": "Liga BetPlay Dimayor",
+    "country": "Colombia"
+  },
+  {
+    "id": 67,
+    "name": "Envigado",
+    "league": "Liga BetPlay Dimayor",
+    "country": "Colombia"
+  },
+  {
+    "id": 68,
+    "name": "Boyacá Chicó",
+    "league": "Liga BetPlay Dimayor",
+    "country": "Colombia"
+  },
+  {
+    "id": 69,
+    "name": "Unión Magdalena",
+    "league": "Liga BetPlay Dimayor",
+    "country": "Colombia"
+  },
+  {
+    "id": 70,
+    "name": "La Equidad",
+    "league": "Liga BetPlay Dimayor",
+    "country": "Colombia"
+  },
+  {
+    "id": 71,
+    "name": "Deportivo La Guaira",
+    "league": "Liga FUTVE",
+    "country": "Venezuela"
+  },
+  {
+    "id": 72,
+    "name": "Carabobo FC",
+    "league": "Liga FUTVE",
+    "country": "Venezuela"
+  },
+  {
+    "id": 73,
+    "name": "Deportivo Táchira",
+    "league": "Liga FUTVE",
+    "country": "Venezuela"
+  },
+  {
+    "id": 74,
+    "name": "Universidad Central",
+    "league": "Liga FUTVE",
+    "country": "Venezuela"
+  },
+  {
+    "id": 75,
+    "name": "Academia Puerto Cabello",
+    "league": "Liga FUTVE",
+    "country": "Venezuela"
+  },
+  {
+    "id": 76,
+    "name": "Monagas SC",
+    "league": "Liga FUTVE",
+    "country": "Venezuela"
+  },
+  {
+    "id": 77,
+    "name": "Caracas FC",
+    "league": "Liga FUTVE",
+    "country": "Venezuela"
+  },
+  {
+    "id": 78,
+    "name": "Metropolitanos FC",
+    "league": "Liga FUTVE",
+    "country": "Venezuela"
+  },
+  {
+    "id": 79,
+    "name": "Anzoátegui",
+    "league": "Liga FUTVE",
+    "country": "Venezuela"
+  },
+  {
+    "id": 80,
+    "name": "Zamora FC",
+    "league": "Liga FUTVE",
+    "country": "Venezuela"
+  },
+  {
+    "id": 81,
+    "name": "Rayo Zuliano",
+    "league": "Liga FUTVE",
+    "country": "Venezuela"
+  },
+  {
+    "id": 82,
+    "name": "Estudiantes de Mérida",
+    "league": "Liga FUTVE",
+    "country": "Venezuela"
+  },
+  {
+    "id": 83,
+    "name": "Portuguesa FC",
+    "league": "Liga FUTVE",
+    "country": "Venezuela"
+  },
+  {
+    "id": 84,
+    "name": "Yaracuyanos FC",
+    "league": "Liga FUTVE",
+    "country": "Venezuela"
+  },
+  {
+    "id": 85,
+    "name": "Independiente del Valle",
+    "league": "LigaPro Serie A",
+    "country": "Ecuador"
+  },
+  {
+    "id": 86,
+    "name": "LDU Quito",
+    "league": "LigaPro Serie A",
+    "country": "Ecuador"
+  },
+  {
+    "id": 87,
+    "name": "Barcelona SC",
+    "league": "LigaPro Serie A",
+    "country": "Ecuador"
+  },
+  {
+    "id": 88,
+    "name": "Universidad Católica",
+    "league": "LigaPro Serie A",
+    "country": "Ecuador"
+  },
+  {
+    "id": 89,
+    "name": "Orense SC",
+    "league": "LigaPro Serie A",
+    "country": "Ecuador"
+  },
+  {
+    "id": 90,
+    "name": "Libertad FC",
+    "league": "LigaPro Serie A",
+    "country": "Ecuador"
+  },
+  {
+    "id": 91,
+    "name": "Macará",
+    "league": "LigaPro Serie A",
+    "country": "Ecuador"
+  },
+  {
+    "id": 92,
+    "name": "Deportivo Cuenca",
+    "league": "LigaPro Serie A",
+    "country": "Ecuador"
+  },
+  {
+    "id": 93,
+    "name": "Aucas",
+    "league": "LigaPro Serie A",
+    "country": "Ecuador"
+  },
+  {
+    "id": 94,
+    "name": "CS Emelec",
+    "league": "LigaPro Serie A",
+    "country": "Ecuador"
+  },
+  {
+    "id": 95,
+    "name": "Delfín SC",
+    "league": "LigaPro Serie A",
+    "country": "Ecuador"
+  },
+  {
+    "id": 96,
+    "name": "El Nacional",
+    "league": "LigaPro Serie A",
+    "country": "Ecuador"
+  },
+  {
+    "id": 97,
+    "name": "Manta FC",
+    "league": "LigaPro Serie A",
+    "country": "Ecuador"
+  },
+  {
+    "id": 98,
+    "name": "Mushuc Runa",
+    "league": "LigaPro Serie A",
+    "country": "Ecuador"
+  },
+  {
+    "id": 99,
+    "name": "Técnico Universitario",
+    "league": "LigaPro Serie A",
+    "country": "Ecuador"
+  },
+  {
+    "id": 100,
+    "name": "Vinotinto FC",
+    "league": "LigaPro Serie A",
+    "country": "Ecuador"
+  },
+  {
+    "id": 101,
+    "name": "Universitario de Deportes",
+    "league": "Liga 1",
+    "country": "Peru"
+  },
+  {
+    "id": 102,
+    "name": "Cusco FC",
+    "league": "Liga 1",
+    "country": "Peru"
+  },
+  {
+    "id": 103,
+    "name": "Alianza Lima",
+    "league": "Liga 1",
+    "country": "Peru"
+  },
+  {
+    "id": 104,
+    "name": "Sporting Cristal",
+    "league": "Liga 1",
+    "country": "Peru"
+  },
+  {
+    "id": 105,
+    "name": "Alianza Atlético",
+    "league": "Liga 1",
+    "country": "Peru"
+  },
+  {
+    "id": 106,
+    "name": "FBC Melgar",
+    "league": "Liga 1",
+    "country": "Peru"
+  },
+  {
+    "id": 107,
+    "name": "Deportivo Garcilaso",
+    "league": "Liga 1",
+    "country": "Peru"
+  },
+  {
+    "id": 108,
+    "name": "Cienciano",
+    "league": "Liga 1",
+    "country": "Peru"
+  },
+  {
+    "id": 109,
+    "name": "Los Chankas CYC",
+    "league": "Liga 1",
+    "country": "Peru"
+  },
+  {
+    "id": 110,
+    "name": "ADT Tarma",
+    "league": "Liga 1",
+    "country": "Peru"
+  },
+  {
+    "id": 111,
+    "name": "Sport Huancayo",
+    "league": "Liga 1",
+    "country": "Peru"
+  },
+  {
+    "id": 112,
+    "name": "Atlético Grau",
+    "league": "Liga 1",
+    "country": "Peru"
+  },
+  {
+    "id": 113,
+    "name": "Comerciantes Unidos",
+    "league": "Liga 1",
+    "country": "Peru"
+  },
+  {
+    "id": 114,
+    "name": "Sport Boys",
+    "league": "Liga 1",
+    "country": "Peru"
+  },
+  {
+    "id": 115,
+    "name": "Juan Pablo II",
+    "league": "Liga 1",
+    "country": "Peru"
+  },
+  {
+    "id": 116,
+    "name": "UTC Cajamarca",
+    "league": "Liga 1",
+    "country": "Peru"
+  },
+  {
+    "id": 117,
+    "name": "Ayacucho FC",
+    "league": "Liga 1",
+    "country": "Peru"
+  },
+  {
+    "id": 118,
+    "name": "Alianza Universidad",
+    "league": "Liga 1",
+    "country": "Peru"
+  },
+  {
+    "id": 119,
+    "name": "Deportivo Binacional",
+    "league": "Liga 1",
+    "country": "Peru"
+  },
+  {
+    "id": 120,
+    "name": "Always Ready",
+    "league": "División Profesional",
+    "country": "Bolivia"
+  },
+  {
+    "id": 121,
+    "name": "Club Bolívar",
+    "league": "División Profesional",
+    "country": "Bolivia"
+  },
+  {
+    "id": 122,
+    "name": "The Strongest",
+    "league": "División Profesional",
+    "country": "Bolivia"
+  },
+  {
+    "id": 123,
+    "name": "San Antonio Bulo Bulo",
+    "league": "División Profesional",
+    "country": "Bolivia"
+  },
+  {
+    "id": 124,
+    "name": "Blooming",
+    "league": "División Profesional",
+    "country": "Bolivia"
+  },
+  {
+    "id": 125,
+    "name": "Independiente Petrolero",
+    "league": "División Profesional",
+    "country": "Bolivia"
+  },
+  {
+    "id": 126,
+    "name": "Nacional Potosí",
+    "league": "División Profesional",
+    "country": "Bolivia"
+  },
+  {
+    "id": 127,
+    "name": "Guabirá",
+    "league": "División Profesional",
+    "country": "Bolivia"
+  },
+  {
+    "id": 128,
+    "name": "GV San José",
+    "league": "División Profesional",
+    "country": "Bolivia"
+  },
+  {
+    "id": 129,
+    "name": "Aurora",
+    "league": "División Profesional",
+    "country": "Bolivia"
+  },
+  {
+    "id": 130,
+    "name": "Real Tomayapo",
+    "league": "División Profesional",
+    "country": "Bolivia"
+  },
+  {
+    "id": 131,
+    "name": "Oriente Petrolero",
+    "league": "División Profesional",
+    "country": "Bolivia"
+  },
+  {
+    "id": 132,
+    "name": "Real Oruro (Totora)",
+    "league": "División Profesional",
+    "country": "Bolivia"
+  },
+  {
+    "id": 133,
+    "name": "Universitario de Vinto",
+    "league": "División Profesional",
+    "country": "Bolivia"
+  },
+  {
+    "id": 134,
+    "name": "ABB",
+    "league": "División Profesional",
+    "country": "Bolivia"
+  },
+  {
+    "id": 135,
+    "name": "Jorge Wilstermann",
+    "league": "División Profesional",
+    "country": "Bolivia"
+  },
+  {
+    "id": 136,
+    "name": "Cerro Porteño",
+    "league": "División de Honor",
+    "country": "Paraguay"
+  },
+  {
+    "id": 137,
+    "name": "Club Guaraní",
+    "league": "División de Honor",
+    "country": "Paraguay"
+  },
+  {
+    "id": 138,
+    "name": "Club Libertad",
+    "league": "División de Honor",
+    "country": "Paraguay"
+  },
+  {
+    "id": 139,
+    "name": "Sportivo Trinidense",
+    "league": "División de Honor",
+    "country": "Paraguay"
+  },
+  {
+    "id": 140,
+    "name": "Club Nacional",
+    "league": "División de Honor",
+    "country": "Paraguay"
+  },
+  {
+    "id": 141,
+    "name": "Recoleta FC",
+    "league": "División de Honor",
+    "country": "Paraguay"
+  },
+  {
+    "id": 142,
+    "name": "Club Olimpia",
+    "league": "División de Honor",
+    "country": "Paraguay"
+  },
+  {
+    "id": 143,
+    "name": "2 de Mayo",
+    "league": "División de Honor",
+    "country": "Paraguay"
+  },
+  {
+    "id": 144,
+    "name": "Sportivo Ameliano",
+    "league": "División de Honor",
+    "country": "Paraguay"
+  },
+  {
+    "id": 145,
+    "name": "Sportivo Luqueño",
+    "league": "División de Honor",
+    "country": "Paraguay"
+  },
+  {
+    "id": 146,
+    "name": "General Caballero (JLM)",
+    "league": "División de Honor",
+    "country": "Paraguay"
+  },
+  {
+    "id": 147,
+    "name": "Tembetary",
+    "league": "División de Honor",
+    "country": "Paraguay"
+  },
+  {
+    "id": 148,
+    "name": "Coquimbo Unido",
+    "league": "Liga de Primera",
+    "country": "Chile"
+  },
+  {
+    "id": 149,
+    "name": "Universidad Católica",
+    "league": "Liga de Primera",
+    "country": "Chile"
+  },
+  {
+    "id": 150,
+    "name": "O'Higgins",
+    "league": "Liga de Primera",
+    "country": "Chile"
+  },
+  {
+    "id": 151,
+    "name": "Universidad de Chile",
+    "league": "Liga de Primera",
+    "country": "Chile"
+  },
+  {
+    "id": 152,
+    "name": "Audax Italiano",
+    "league": "Liga de Primera",
+    "country": "Chile"
+  },
+  {
+    "id": 153,
+    "name": "Palestino",
+    "league": "Liga de Primera",
+    "country": "Chile"
+  },
+  {
+    "id": 154,
+    "name": "Cobresal",
+    "league": "Liga de Primera",
+    "country": "Chile"
+  },
+  {
+    "id": 155,
+    "name": "Colo-Colo",
+    "league": "Liga de Primera",
+    "country": "Chile"
+  },
+  {
+    "id": 156,
+    "name": "Huachipato",
+    "league": "Liga de Primera",
+    "country": "Chile"
+  },
+  {
+    "id": 157,
+    "name": "Ñublense",
+    "league": "Liga de Primera",
+    "country": "Chile"
+  },
+  {
+    "id": 158,
+    "name": "Deportes Limache",
+    "league": "Liga de Primera",
+    "country": "Chile"
+  },
+  {
+    "id": 159,
+    "name": "Unión La Calera",
+    "league": "Liga de Primera",
+    "country": "Chile"
+  },
+  {
+    "id": 160,
+    "name": "Deportes La Serena",
+    "league": "Liga de Primera",
+    "country": "Chile"
+  },
+  {
+    "id": 161,
+    "name": "Everton",
+    "league": "Liga de Primera",
+    "country": "Chile"
+  },
+  {
+    "id": 162,
+    "name": "Deportes Iquique",
+    "league": "Liga de Primera",
+    "country": "Chile"
+  },
+  {
+    "id": 163,
+    "name": "Unión Española",
+    "league": "Liga de Primera",
+    "country": "Chile"
+  },
+  {
+    "id": 164,
+    "name": "Nacional",
+    "league": "Primera División (Liga AUF Uruguaya)",
+    "country": "Uruguay"
+  },
+  {
+    "id": 165,
+    "name": "Peñarol",
+    "league": "Primera División (Liga AUF Uruguaya)",
+    "country": "Uruguay"
+  },
+  {
+    "id": 166,
+    "name": "Liverpool FC",
+    "league": "Primera División (Liga AUF Uruguaya)",
+    "country": "Uruguay"
+  },
+  {
+    "id": 167,
+    "name": "Juventud (Las Piedras)",
+    "league": "Primera División (Liga AUF Uruguaya)",
+    "country": "Uruguay"
+  },
+  {
+    "id": 168,
+    "name": "Defensor Sporting",
+    "league": "Primera División (Liga AUF Uruguaya)",
+    "country": "Uruguay"
+  },
+  {
+    "id": 169,
+    "name": "Boston River",
+    "league": "Primera División (Liga AUF Uruguaya)",
+    "country": "Uruguay"
+  },
+  {
+    "id": 170,
+    "name": "Racing",
+    "league": "Primera División (Liga AUF Uruguaya)",
+    "country": "Uruguay"
+  },
+  {
+    "id": 171,
+    "name": "Montevideo City Torque",
+    "league": "Primera División (Liga AUF Uruguaya)",
+    "country": "Uruguay"
+  },
+  {
+    "id": 172,
+    "name": "Cerro Largo",
+    "league": "Primera División (Liga AUF Uruguaya)",
+    "country": "Uruguay"
+  },
+  {
+    "id": 173,
+    "name": "Cerro",
+    "league": "Primera División (Liga AUF Uruguaya)",
+    "country": "Uruguay"
+  },
+  {
+    "id": 174,
+    "name": "Danubio",
+    "league": "Primera División (Liga AUF Uruguaya)",
+    "country": "Uruguay"
+  },
+  {
+    "id": 175,
+    "name": "Progreso",
+    "league": "Primera División (Liga AUF Uruguaya)",
+    "country": "Uruguay"
+  },
+  {
+    "id": 176,
+    "name": "Plaza Colonia",
+    "league": "Primera División (Liga AUF Uruguaya)",
+    "country": "Uruguay"
+  },
+  {
+    "id": 177,
+    "name": "Montevideo Wanderers",
+    "league": "Primera División (Liga AUF Uruguaya)",
+    "country": "Uruguay"
+  },
+  {
+    "id": 178,
+    "name": "River Plate",
+    "league": "Primera División (Liga AUF Uruguaya)",
+    "country": "Uruguay"
+  },
+  {
+    "id": 179,
+    "name": "Miramar Misiones",
+    "league": "Primera División (Liga AUF Uruguaya)",
+    "country": "Uruguay"
+  },
+  {
+    "id": 180,
+    "name": "Herediano",
+    "league": "Primera División",
+    "country": "Costa Rica"
+  },
+  {
+    "id": 181,
+    "name": "Saprissa",
+    "league": "Primera División",
+    "country": "Costa Rica"
+  },
+  {
+    "id": 182,
+    "name": "Municipal Liberia",
+    "league": "Primera División",
+    "country": "Costa Rica"
+  },
+  {
+    "id": 183,
+    "name": "Cartaginés",
+    "league": "Primera División",
+    "country": "Costa Rica"
+  },
+  {
+    "id": 184,
+    "name": "Alajuelense",
+    "league": "Primera División",
+    "country": "Costa Rica"
+  },
+  {
+    "id": 185,
+    "name": "Sporting FC (San José)",
+    "league": "Primera División",
+    "country": "Costa Rica"
+  },
+  {
+    "id": 186,
+    "name": "San Carlos",
+    "league": "Primera División",
+    "country": "Costa Rica"
+  },
+  {
+    "id": 187,
+    "name": "Puntarenas FC",
+    "league": "Primera División",
+    "country": "Costa Rica"
+  },
+  {
+    "id": 188,
+    "name": "Pérez Zeledón",
+    "league": "Primera División",
+    "country": "Costa Rica"
+  },
+  {
+    "id": 189,
+    "name": "Guadalupe FC",
+    "league": "Primera División",
+    "country": "Costa Rica"
+  },
+  {
+    "id": 190,
+    "name": "CD FAS",
+    "league": "Primera División (Liga Pepsi)",
+    "country": "El Salvador"
+  },
+  {
+    "id": 191,
+    "name": "LD Alianza (Luis Ángel Firpo)",
+    "league": "Primera División (Liga Pepsi)",
+    "country": "El Salvador"
+  },
+  {
+    "id": 192,
+    "name": "Alianza FC",
+    "league": "Primera División (Liga Pepsi)",
+    "country": "El Salvador"
+  },
+  {
+    "id": 193,
+    "name": "Inter FA",
+    "league": "Primera División (Liga Pepsi)",
+    "country": "El Salvador"
+  },
+  {
+    "id": 194,
+    "name": "CD Municipal Limeño",
+    "league": "Primera División (Liga Pepsi)",
+    "country": "El Salvador"
+  },
+  {
+    "id": 195,
+    "name": "CD Águila",
+    "league": "Primera División (Liga Pepsi)",
+    "country": "El Salvador"
+  },
+  {
+    "id": 196,
+    "name": "Isidro Metapán",
+    "league": "Primera División (Liga Pepsi)",
+    "country": "El Salvador"
+  },
+  {
+    "id": 197,
+    "name": "CD Cacahuatique",
+    "league": "Primera División (Liga Pepsi)",
+    "country": "El Salvador"
+  },
+  {
+    "id": 198,
+    "name": "CD Platense",
+    "league": "Primera División (Liga Pepsi)",
+    "country": "El Salvador"
+  },
+  {
+    "id": 199,
+    "name": "CD Hércules",
+    "league": "Primera División (Liga Pepsi)",
+    "country": "El Salvador"
+  },
+  {
+    "id": 200,
+    "name": "CD Fuerte San Francisco",
+    "league": "Primera División (Liga Pepsi)",
+    "country": "El Salvador"
+  },
+  {
+    "id": 201,
+    "name": "Zacatecoluca FC",
+    "league": "Primera División (Liga Pepsi)",
+    "country": "El Salvador"
+  },
+  {
+    "id": 202,
+    "name": "CD Olimpia",
+    "league": "Liga Nacional",
+    "country": "Honduras"
+  },
+  {
+    "id": 203,
+    "name": "CD Motagua",
+    "league": "Liga Nacional",
+    "country": "Honduras"
+  },
+  {
+    "id": 204,
+    "name": "CD Marathón",
+    "league": "Liga Nacional",
+    "country": "Honduras"
+  },
+  {
+    "id": 205,
+    "name": "Real España",
+    "league": "Liga Nacional",
+    "country": "Honduras"
+  },
+  {
+    "id": 206,
+    "name": "Olancho FC",
+    "league": "Liga Nacional",
+    "country": "Honduras"
+  },
+  {
+    "id": 207,
+    "name": "Platense FC",
+    "league": "Liga Nacional",
+    "country": "Honduras"
+  },
+  {
+    "id": 208,
+    "name": "Lobos UPNFM",
+    "league": "Liga Nacional",
+    "country": "Honduras"
+  },
+  {
+    "id": 209,
+    "name": "Génesis FC (Policía Nacional)",
+    "league": "Liga Nacional",
+    "country": "Honduras"
+  },
+  {
+    "id": 210,
+    "name": "Juticalpa FC",
+    "league": "Liga Nacional",
+    "country": "Honduras"
+  },
+  {
+    "id": 211,
+    "name": "Choloma",
+    "league": "Liga Nacional",
+    "country": "Honduras"
+  },
+  {
+    "id": 212,
+    "name": "CD Victoria",
+    "league": "Liga Nacional",
+    "country": "Honduras"
+  },
+  {
+    "id": 213,
+    "name": "Diriangén FC",
+    "league": "Liga Primera",
+    "country": "Nicaragua"
+  },
+  {
+    "id": 214,
+    "name": "Real Estelí FC",
+    "league": "Liga Primera",
+    "country": "Nicaragua"
+  },
+  {
+    "id": 215,
+    "name": "ART Municipal Jalapa",
+    "league": "Liga Primera",
+    "country": "Nicaragua"
+  },
+  {
+    "id": 216,
+    "name": "Managua FC",
+    "league": "Liga Primera",
+    "country": "Nicaragua"
+  },
+  {
+    "id": 217,
+    "name": "Matagalpa FC",
+    "league": "Liga Primera",
+    "country": "Nicaragua"
+  },
+  {
+    "id": 218,
+    "name": "CD Walter Ferretti",
+    "league": "Liga Primera",
+    "country": "Nicaragua"
+  },
+  {
+    "id": 219,
+    "name": "H&H Export Sébaco",
+    "league": "Liga Primera",
+    "country": "Nicaragua"
+  },
+  {
+    "id": 220,
+    "name": "UNAN Managua",
+    "league": "Liga Primera",
+    "country": "Nicaragua"
+  },
+  {
+    "id": 221,
+    "name": "Racing Santana",
+    "league": "Liga Primera",
+    "country": "Nicaragua"
+  },
+  {
+    "id": 222,
+    "name": "Real Madriz FC",
+    "league": "Liga Primera",
+    "country": "Nicaragua"
+  },
+  {
+    "id": 223,
+    "name": "FC La Habana",
+    "league": "Campeonato Nacional (Liga Nacional de Fútbol)",
+    "country": "Cuba"
+  },
+  {
+    "id": 224,
+    "name": "FC Artemisa",
+    "league": "Campeonato Nacional (Liga Nacional de Fútbol)",
+    "country": "Cuba"
+  },
+  {
+    "id": 225,
+    "name": "FC Isla de la Juventud",
+    "league": "Campeonato Nacional (Liga Nacional de Fútbol)",
+    "country": "Cuba"
+  },
+  {
+    "id": 226,
+    "name": "FC Pinar del Río",
+    "league": "Campeonato Nacional (Liga Nacional de Fútbol)",
+    "country": "Cuba"
+  },
+  {
+    "id": 227,
+    "name": "FC Cienfuegos",
+    "league": "Campeonato Nacional (Liga Nacional de Fútbol)",
+    "country": "Cuba"
+  },
+  {
+    "id": 228,
+    "name": "FC Villa Clara",
+    "league": "Campeonato Nacional (Liga Nacional de Fútbol)",
+    "country": "Cuba"
+  },
+  {
+    "id": 229,
+    "name": "FC Matanzas",
+    "league": "Campeonato Nacional (Liga Nacional de Fútbol)",
+    "country": "Cuba"
+  },
+  {
+    "id": 230,
+    "name": "FC Mayabeque",
+    "league": "Campeonato Nacional (Liga Nacional de Fútbol)",
+    "country": "Cuba"
+  },
+  {
+    "id": 231,
+    "name": "FC Las Tunas",
+    "league": "Campeonato Nacional (Liga Nacional de Fútbol)",
+    "country": "Cuba"
+  },
+  {
+    "id": 232,
+    "name": "FC Ciego de Ávila",
+    "league": "Campeonato Nacional (Liga Nacional de Fútbol)",
+    "country": "Cuba"
+  },
+  {
+    "id": 233,
+    "name": "FC Camagüey",
+    "league": "Campeonato Nacional (Liga Nacional de Fútbol)",
+    "country": "Cuba"
+  },
+  {
+    "id": 234,
+    "name": "FC Sancti Spíritus",
+    "league": "Campeonato Nacional (Liga Nacional de Fútbol)",
+    "country": "Cuba"
+  },
+  {
+    "id": 235,
+    "name": "FC Guantánamo",
+    "league": "Campeonato Nacional (Liga Nacional de Fútbol)",
+    "country": "Cuba"
+  },
+  {
+    "id": 236,
+    "name": "FC Santiago de Cuba",
+    "league": "Campeonato Nacional (Liga Nacional de Fútbol)",
+    "country": "Cuba"
+  },
+  {
+    "id": 237,
+    "name": "FC Holguín",
+    "league": "Campeonato Nacional (Liga Nacional de Fútbol)",
+    "country": "Cuba"
+  },
+  {
+    "id": 238,
+    "name": "FC Granma",
+    "league": "Campeonato Nacional (Liga Nacional de Fútbol)",
+    "country": "Cuba"
+  },
+  {
+    "id": 239,
+    "name": "Club Atlético Pantoja",
+    "league": "LDF (Liga Dominicana de Fútbol)",
+    "country": "Dominican Republic"
+  },
+  {
+    "id": 240,
+    "name": "Cibao FC",
+    "league": "LDF (Liga Dominicana de Fútbol)",
+    "country": "Dominican Republic"
+  },
+  {
+    "id": 241,
+    "name": "Salcedo FC",
+    "league": "LDF (Liga Dominicana de Fútbol)",
+    "country": "Dominican Republic"
+  },
+  {
+    "id": 242,
+    "name": "Delfines del Este",
+    "league": "LDF (Liga Dominicana de Fútbol)",
+    "country": "Dominican Republic"
+  },
+  {
+    "id": 243,
+    "name": "Moca FC",
+    "league": "LDF (Liga Dominicana de Fútbol)",
+    "country": "Dominican Republic"
+  },
+  {
+    "id": 244,
+    "name": "Universidad O&M FC",
+    "league": "LDF (Liga Dominicana de Fútbol)",
+    "country": "Dominican Republic"
+  },
+  {
+    "id": 245,
+    "name": "Atlántico FC",
+    "league": "LDF (Liga Dominicana de Fútbol)",
+    "country": "Dominican Republic"
+  },
+  {
+    "id": 246,
+    "name": "Atlético Vega Real",
+    "league": "LDF (Liga Dominicana de Fútbol)",
+    "country": "Dominican Republic"
+  },
+  {
+    "id": 247,
+    "name": "Jarabacoa FC",
+    "league": "LDF (Liga Dominicana de Fútbol)",
+    "country": "Dominican Republic"
+  },
+  {
+    "id": 248,
+    "name": "Atlético San Cristóbal",
+    "league": "LDF (Liga Dominicana de Fútbol)",
+    "country": "Dominican Republic"
+  },
+  {
+    "id": 249,
+    "name": "actual, para la que sigue sin encontrarse tabla pública). Los 12 equipos se dividieron en 4 grupos con calendarios",
+    "league": "Ligue Haïtienne",
+    "country": "Haiti"
+  },
+  {
+    "id": 250,
+    "name": "Esta temporada incluyó a FICA y Triomphe Liancourt FC, que no figuran en la lista de 2025-26 de arriba, y no",
+    "league": "Ligue Haïtienne",
+    "country": "Haiti"
+  },
+  {
+    "id": 251,
+    "name": "AS Capoise",
+    "league": "Ligue Haïtienne",
+    "country": "Haiti"
+  },
+  {
+    "id": 252,
+    "name": "FICA",
+    "league": "Ligue Haïtienne",
+    "country": "Haiti"
+  },
+  {
+    "id": 253,
+    "name": "Real Hope Academy",
+    "league": "Ligue Haïtienne",
+    "country": "Haiti"
+  },
+  {
+    "id": 254,
+    "name": "Ouanaminthe FC",
+    "league": "Ligue Haïtienne",
+    "country": "Haiti"
+  },
+  {
+    "id": 255,
+    "name": "Baltimore SC",
+    "league": "Ligue Haïtienne",
+    "country": "Haiti"
+  },
+  {
+    "id": 256,
+    "name": "Tempete FC",
+    "league": "Ligue Haïtienne",
+    "country": "Haiti"
+  },
+  {
+    "id": 257,
+    "name": "Triomphe Liancourt FC",
+    "league": "Ligue Haïtienne",
+    "country": "Haiti"
+  },
+  {
+    "id": 258,
+    "name": "Violette AC",
+    "league": "Ligue Haïtienne",
+    "country": "Haiti"
+  },
+  {
+    "id": 259,
+    "name": "Don Bosco FC",
+    "league": "Ligue Haïtienne",
+    "country": "Haiti"
+  },
+  {
+    "id": 260,
+    "name": "Defence Force",
+    "league": "TT Premier Football League (ex TT Pro League)",
+    "country": "Trinidad and Tobago"
+  },
+  {
+    "id": 261,
+    "name": "Club Sando",
+    "league": "TT Premier Football League (ex TT Pro League)",
+    "country": "Trinidad and Tobago"
+  },
+  {
+    "id": 262,
+    "name": "Prison Service FC",
+    "league": "TT Premier Football League (ex TT Pro League)",
+    "country": "Trinidad and Tobago"
+  },
+  {
+    "id": 263,
+    "name": "Miscellaneous Police FC",
+    "league": "TT Premier Football League (ex TT Pro League)",
+    "country": "Trinidad and Tobago"
+  },
+  {
+    "id": 264,
+    "name": "AC Port of Spain",
+    "league": "TT Premier Football League (ex TT Pro League)",
+    "country": "Trinidad and Tobago"
+  },
+  {
+    "id": 265,
+    "name": "San Juan Jabloteh",
+    "league": "TT Premier Football League (ex TT Pro League)",
+    "country": "Trinidad and Tobago"
+  },
+  {
+    "id": 266,
+    "name": "Central FC",
+    "league": "TT Premier Football League (ex TT Pro League)",
+    "country": "Trinidad and Tobago"
+  },
+  {
+    "id": 267,
+    "name": "La Horquetta Rangers",
+    "league": "TT Premier Football League (ex TT Pro League)",
+    "country": "Trinidad and Tobago"
+  },
+  {
+    "id": 268,
+    "name": "1976 FC Phoenix",
+    "league": "TT Premier Football League (ex TT Pro League)",
+    "country": "Trinidad and Tobago"
+  },
+  {
+    "id": 269,
+    "name": "Eagles FC",
+    "league": "TT Premier Football League (ex TT Pro League)",
+    "country": "Trinidad and Tobago"
+  },
+  {
+    "id": 270,
+    "name": "Point Fortin Civic",
+    "league": "TT Premier Football League (ex TT Pro League)",
+    "country": "Trinidad and Tobago"
+  },
+  {
+    "id": 271,
+    "name": "Caledonia AIA",
+    "league": "TT Premier Football League (ex TT Pro League)",
+    "country": "Trinidad and Tobago"
+  },
+  {
+    "id": 272,
+    "name": "Pumas UNAM",
+    "league": "Liga MX",
+    "country": "Mexico"
+  },
+  {
+    "id": 273,
+    "name": "CD Guadalajara",
+    "league": "Liga MX",
+    "country": "Mexico"
+  },
+  {
+    "id": 274,
+    "name": "Cruz Azul",
+    "league": "Liga MX",
+    "country": "Mexico"
+  },
+  {
+    "id": 275,
+    "name": "Club Pachuca",
+    "league": "Liga MX",
+    "country": "Mexico"
+  },
+  {
+    "id": 276,
+    "name": "Toluca",
+    "league": "Liga MX",
+    "country": "Mexico"
+  },
+  {
+    "id": 277,
+    "name": "Atlas FC",
+    "league": "Liga MX",
+    "country": "Mexico"
+  },
+  {
+    "id": 278,
+    "name": "Tigres UANL",
+    "league": "Liga MX",
+    "country": "Mexico"
+  },
+  {
+    "id": 279,
+    "name": "Club América",
+    "league": "Liga MX",
+    "country": "Mexico"
+  },
+  {
+    "id": 280,
+    "name": "Club Tijuana",
+    "league": "Liga MX",
+    "country": "Mexico"
+  },
+  {
+    "id": 281,
+    "name": "Club León",
+    "league": "Liga MX",
+    "country": "Mexico"
+  },
+  {
+    "id": 282,
+    "name": "Querétaro",
+    "league": "Liga MX",
+    "country": "Mexico"
+  },
+  {
+    "id": 283,
+    "name": "FC Juárez",
+    "league": "Liga MX",
+    "country": "Mexico"
+  },
+  {
+    "id": 284,
+    "name": "CF Monterrey",
+    "league": "Liga MX",
+    "country": "Mexico"
+  },
+  {
+    "id": 285,
+    "name": "Atlético San Luis",
+    "league": "Liga MX",
+    "country": "Mexico"
+  },
+  {
+    "id": 286,
+    "name": "Necaxa",
+    "league": "Liga MX",
+    "country": "Mexico"
+  },
+  {
+    "id": 287,
+    "name": "Mazatlán FC",
+    "league": "Liga MX",
+    "country": "Mexico"
+  },
+  {
+    "id": 288,
+    "name": "Puebla FC",
+    "league": "Liga MX",
+    "country": "Mexico"
+  },
+  {
+    "id": 289,
+    "name": "Santos Laguna",
+    "league": "Liga MX",
+    "country": "Mexico"
+  },
+  {
+    "id": 290,
+    "name": "Atlanta United",
+    "league": "MLS (Major League Soccer)",
+    "country": "United States of America"
+  },
+  {
+    "id": 291,
+    "name": "Nashville SC",
+    "league": "MLS (Major League Soccer)",
+    "country": "United States of America"
+  },
+  {
+    "id": 292,
+    "name": "Austin FC",
+    "league": "MLS (Major League Soccer)",
+    "country": "United States of America"
+  },
+  {
+    "id": 293,
+    "name": "New England Revolution",
+    "league": "MLS (Major League Soccer)",
+    "country": "United States of America"
+  },
+  {
+    "id": 294,
+    "name": "CF Montréal",
+    "league": "MLS (Major League Soccer)",
+    "country": "United States of America"
+  },
+  {
+    "id": 295,
+    "name": "New York City FC",
+    "league": "MLS (Major League Soccer)",
+    "country": "United States of America"
+  },
+  {
+    "id": 296,
+    "name": "Charlotte FC",
+    "league": "MLS (Major League Soccer)",
+    "country": "United States of America"
+  },
+  {
+    "id": 297,
+    "name": "New York Red Bulls",
+    "league": "MLS (Major League Soccer)",
+    "country": "United States of America"
+  },
+  {
+    "id": 298,
+    "name": "Chicago Fire",
+    "league": "MLS (Major League Soccer)",
+    "country": "United States of America"
+  },
+  {
+    "id": 299,
+    "name": "Orlando City SC",
+    "league": "MLS (Major League Soccer)",
+    "country": "United States of America"
+  },
+  {
+    "id": 300,
+    "name": "Colorado Rapids",
+    "league": "MLS (Major League Soccer)",
+    "country": "United States of America"
+  },
+  {
+    "id": 301,
+    "name": "Philadelphia Union",
+    "league": "MLS (Major League Soccer)",
+    "country": "United States of America"
+  },
+  {
+    "id": 302,
+    "name": "Columbus Crew",
+    "league": "MLS (Major League Soccer)",
+    "country": "United States of America"
+  },
+  {
+    "id": 303,
+    "name": "Portland Timbers",
+    "league": "MLS (Major League Soccer)",
+    "country": "United States of America"
+  },
+  {
+    "id": 304,
+    "name": "D.C. United",
+    "league": "MLS (Major League Soccer)",
+    "country": "United States of America"
+  },
+  {
+    "id": 305,
+    "name": "Real Salt Lake",
+    "league": "MLS (Major League Soccer)",
+    "country": "United States of America"
+  },
+  {
+    "id": 306,
+    "name": "FC Cincinnati",
+    "league": "MLS (Major League Soccer)",
+    "country": "United States of America"
+  },
+  {
+    "id": 307,
+    "name": "San Diego FC",
+    "league": "MLS (Major League Soccer)",
+    "country": "United States of America"
+  },
+  {
+    "id": 308,
+    "name": "FC Dallas",
+    "league": "MLS (Major League Soccer)",
+    "country": "United States of America"
+  },
+  {
+    "id": 309,
+    "name": "San Jose Earthquakes",
+    "league": "MLS (Major League Soccer)",
+    "country": "United States of America"
+  },
+  {
+    "id": 310,
+    "name": "Houston Dynamo",
+    "league": "MLS (Major League Soccer)",
+    "country": "United States of America"
+  },
+  {
+    "id": 311,
+    "name": "Seattle Sounders FC",
+    "league": "MLS (Major League Soccer)",
+    "country": "United States of America"
+  },
+  {
+    "id": 312,
+    "name": "Inter Miami CF",
+    "league": "MLS (Major League Soccer)",
+    "country": "United States of America"
+  },
+  {
+    "id": 313,
+    "name": "Sporting Kansas City",
+    "league": "MLS (Major League Soccer)",
+    "country": "United States of America"
+  },
+  {
+    "id": 314,
+    "name": "LA Galaxy",
+    "league": "MLS (Major League Soccer)",
+    "country": "United States of America"
+  },
+  {
+    "id": 315,
+    "name": "St. Louis CITY SC",
+    "league": "MLS (Major League Soccer)",
+    "country": "United States of America"
+  },
+  {
+    "id": 316,
+    "name": "LAFC",
+    "league": "MLS (Major League Soccer)",
+    "country": "United States of America"
+  },
+  {
+    "id": 317,
+    "name": "Toronto FC",
+    "league": "MLS (Major League Soccer)",
+    "country": "United States of America"
+  },
+  {
+    "id": 318,
+    "name": "Minnesota United",
+    "league": "MLS (Major League Soccer)",
+    "country": "United States of America"
+  },
+  {
+    "id": 319,
+    "name": "Vancouver Whitecaps",
+    "league": "MLS (Major League Soccer)",
+    "country": "United States of America"
+  },
+  {
+    "id": 320,
+    "name": "Al-Nassr FC",
+    "league": "Saudi Pro League (Roshn Saudi League)",
+    "country": "Saudi Arabia"
+  },
+  {
+    "id": 321,
+    "name": "Al-Hilal SFC",
+    "league": "Saudi Pro League (Roshn Saudi League)",
+    "country": "Saudi Arabia"
+  },
+  {
+    "id": 322,
+    "name": "Al-Ahli SFC",
+    "league": "Saudi Pro League (Roshn Saudi League)",
+    "country": "Saudi Arabia"
+  },
+  {
+    "id": 323,
+    "name": "Al-Qadsiah",
+    "league": "Saudi Pro League (Roshn Saudi League)",
+    "country": "Saudi Arabia"
+  },
+  {
+    "id": 324,
+    "name": "Al-Ittihad Club",
+    "league": "Saudi Pro League (Roshn Saudi League)",
+    "country": "Saudi Arabia"
+  },
+  {
+    "id": 325,
+    "name": "Al-Taawoun",
+    "league": "Saudi Pro League (Roshn Saudi League)",
+    "country": "Saudi Arabia"
+  },
+  {
+    "id": 326,
+    "name": "Al-Ettifaq",
+    "league": "Saudi Pro League (Roshn Saudi League)",
+    "country": "Saudi Arabia"
+  },
+  {
+    "id": 327,
+    "name": "NEOM SC",
+    "league": "Saudi Pro League (Roshn Saudi League)",
+    "country": "Saudi Arabia"
+  },
+  {
+    "id": 328,
+    "name": "Al-Hazem",
+    "league": "Saudi Pro League (Roshn Saudi League)",
+    "country": "Saudi Arabia"
+  },
+  {
+    "id": 329,
+    "name": "Al-Fayha (Al-Feiha)",
+    "league": "Saudi Pro League (Roshn Saudi League)",
+    "country": "Saudi Arabia"
+  },
+  {
+    "id": 330,
+    "name": "Al-Fateh SC",
+    "league": "Saudi Pro League (Roshn Saudi League)",
+    "country": "Saudi Arabia"
+  },
+  {
+    "id": 331,
+    "name": "Al-Khaleej",
+    "league": "Saudi Pro League (Roshn Saudi League)",
+    "country": "Saudi Arabia"
+  },
+  {
+    "id": 332,
+    "name": "Al-Shabab FC",
+    "league": "Saudi Pro League (Roshn Saudi League)",
+    "country": "Saudi Arabia"
+  },
+  {
+    "id": 333,
+    "name": "Al-Kholood",
+    "league": "Saudi Pro League (Roshn Saudi League)",
+    "country": "Saudi Arabia"
+  },
+  {
+    "id": 334,
+    "name": "Al-Riyadh",
+    "league": "Saudi Pro League (Roshn Saudi League)",
+    "country": "Saudi Arabia"
+  },
+  {
+    "id": 335,
+    "name": "Damac FC",
+    "league": "Saudi Pro League (Roshn Saudi League)",
+    "country": "Saudi Arabia"
+  },
+  {
+    "id": 336,
+    "name": "Al-Okhdood",
+    "league": "Saudi Pro League (Roshn Saudi League)",
+    "country": "Saudi Arabia"
+  },
+  {
+    "id": 337,
+    "name": "Al-Najma",
+    "league": "Saudi Pro League (Roshn Saudi League)",
+    "country": "Saudi Arabia"
+  },
+  {
+    "id": 338,
+    "name": "Kashima Antlers",
+    "league": "J1 League",
+    "country": "Japan"
+  },
+  {
+    "id": 339,
+    "name": "Kashiwa Reysol",
+    "league": "J1 League",
+    "country": "Japan"
+  },
+  {
+    "id": 340,
+    "name": "Kyoto Sanga",
+    "league": "J1 League",
+    "country": "Japan"
+  },
+  {
+    "id": 341,
+    "name": "Sanfrecce Hiroshima",
+    "league": "J1 League",
+    "country": "Japan"
+  },
+  {
+    "id": 342,
+    "name": "Vissel Kobe",
+    "league": "J1 League",
+    "country": "Japan"
+  },
+  {
+    "id": 343,
+    "name": "Machida Zelvia",
+    "league": "J1 League",
+    "country": "Japan"
+  },
+  {
+    "id": 344,
+    "name": "Urawa Red Diamonds",
+    "league": "J1 League",
+    "country": "Japan"
+  },
+  {
+    "id": 345,
+    "name": "Kawasaki Frontale",
+    "league": "J1 League",
+    "country": "Japan"
+  },
+  {
+    "id": 346,
+    "name": "Gamba Osaka",
+    "league": "J1 League",
+    "country": "Japan"
+  },
+  {
+    "id": 347,
+    "name": "Cerezo Osaka",
+    "league": "J1 League",
+    "country": "Japan"
+  },
+  {
+    "id": 348,
+    "name": "FC Tokyo",
+    "league": "J1 League",
+    "country": "Japan"
+  },
+  {
+    "id": 349,
+    "name": "Avispa Fukuoka",
+    "league": "J1 League",
+    "country": "Japan"
+  },
+  {
+    "id": 350,
+    "name": "Fagiano Okayama",
+    "league": "J1 League",
+    "country": "Japan"
+  },
+  {
+    "id": 351,
+    "name": "Shimizu S-Pulse",
+    "league": "J1 League",
+    "country": "Japan"
+  },
+  {
+    "id": 352,
+    "name": "Yokohama F. Marinos",
+    "league": "J1 League",
+    "country": "Japan"
+  },
+  {
+    "id": 353,
+    "name": "Nagoya Grampus",
+    "league": "J1 League",
+    "country": "Japan"
+  },
+  {
+    "id": 354,
+    "name": "Tokyo Verdy",
+    "league": "J1 League",
+    "country": "Japan"
+  },
+  {
+    "id": 355,
+    "name": "Yokohama FC",
+    "league": "J1 League",
+    "country": "Japan"
+  },
+  {
+    "id": 356,
+    "name": "Shonan Bellmare",
+    "league": "J1 League",
+    "country": "Japan"
+  },
+  {
+    "id": 357,
+    "name": "Albirex Niigata",
+    "league": "J1 League",
+    "country": "Japan"
+  },
+  {
+    "id": 358,
+    "name": "Jeonbuk Hyundai Motors",
+    "league": "K League 1",
+    "country": "South Korea"
+  },
+  {
+    "id": 359,
+    "name": "Daejeon Hana Citizen",
+    "league": "K League 1",
+    "country": "South Korea"
+  },
+  {
+    "id": 360,
+    "name": "Gimcheon Sangmu",
+    "league": "K League 1",
+    "country": "South Korea"
+  },
+  {
+    "id": 361,
+    "name": "Pohang Steelers",
+    "league": "K League 1",
+    "country": "South Korea"
+  },
+  {
+    "id": 362,
+    "name": "Gangwon FC",
+    "league": "K League 1",
+    "country": "South Korea"
+  },
+  {
+    "id": 363,
+    "name": "FC Seoul",
+    "league": "K League 1",
+    "country": "South Korea"
+  },
+  {
+    "id": 364,
+    "name": "Gwangju FC",
+    "league": "K League 1",
+    "country": "South Korea"
+  },
+  {
+    "id": 365,
+    "name": "FC Anyang",
+    "league": "K League 1",
+    "country": "South Korea"
+  },
+  {
+    "id": 366,
+    "name": "Ulsan HD",
+    "league": "K League 1",
+    "country": "South Korea"
+  },
+  {
+    "id": 367,
+    "name": "Suwon FC",
+    "league": "K League 1",
+    "country": "South Korea"
+  },
+  {
+    "id": 368,
+    "name": "Jeju United",
+    "league": "K League 1",
+    "country": "South Korea"
+  },
+  {
+    "id": 369,
+    "name": "Daegu FC",
+    "league": "K League 1",
+    "country": "South Korea"
+  },
+  {
+    "id": 370,
+    "name": "East Bengal",
+    "league": "Indian Super League (ISL)",
+    "country": "India"
+  },
+  {
+    "id": 371,
+    "name": "Mohun Bagan Super Giant",
+    "league": "Indian Super League (ISL)",
+    "country": "India"
+  },
+  {
+    "id": 372,
+    "name": "Mumbai City FC",
+    "league": "Indian Super League (ISL)",
+    "country": "India"
+  },
+  {
+    "id": 373,
+    "name": "Bengaluru FC",
+    "league": "Indian Super League (ISL)",
+    "country": "India"
+  },
+  {
+    "id": 374,
+    "name": "Jamshedpur FC",
+    "league": "Indian Super League (ISL)",
+    "country": "India"
+  },
+  {
+    "id": 375,
+    "name": "Punjab FC",
+    "league": "Indian Super League (ISL)",
+    "country": "India"
+  },
+  {
+    "id": 376,
+    "name": "FC Goa",
+    "league": "Indian Super League (ISL)",
+    "country": "India"
+  },
+  {
+    "id": 377,
+    "name": "Kerala Blasters",
+    "league": "Indian Super League (ISL)",
+    "country": "India"
+  },
+  {
+    "id": 378,
+    "name": "NorthEast United",
+    "league": "Indian Super League (ISL)",
+    "country": "India"
+  },
+  {
+    "id": 379,
+    "name": "Inter Kashi",
+    "league": "Indian Super League (ISL)",
+    "country": "India"
+  },
+  {
+    "id": 380,
+    "name": "Odisha FC",
+    "league": "Indian Super League (ISL)",
+    "country": "India"
+  },
+  {
+    "id": 381,
+    "name": "Hyderabad FC",
+    "league": "Indian Super League (ISL)",
+    "country": "India"
+  },
+  {
+    "id": 382,
+    "name": "Chennaiyin FC",
+    "league": "Indian Super League (ISL)",
+    "country": "India"
+  },
+  {
+    "id": 383,
+    "name": "Mohammedan SC",
+    "league": "Indian Super League (ISL)",
+    "country": "India"
+  },
+  {
+    "id": 384,
+    "name": "\"equipos\" (ver también Suiza y Grecia en el bloque de Europa de este mismo documento, ya corregidas). Se aislaron",
+    "league": "Superliga de China (Chinese Super League)",
+    "country": "China"
+  },
+  {
+    "id": 385,
+    "name": "Shanghai Port",
+    "league": "Superliga de China (Chinese Super League)",
+    "country": "China"
+  },
+  {
+    "id": 386,
+    "name": "Shanghai Shenhua",
+    "league": "Superliga de China (Chinese Super League)",
+    "country": "China"
+  },
+  {
+    "id": 387,
+    "name": "Chengdu Rongcheng",
+    "league": "Superliga de China (Chinese Super League)",
+    "country": "China"
+  },
+  {
+    "id": 388,
+    "name": "Beijing Guoan",
+    "league": "Superliga de China (Chinese Super League)",
+    "country": "China"
+  },
+  {
+    "id": 389,
+    "name": "Shandong Taishan",
+    "league": "Superliga de China (Chinese Super League)",
+    "country": "China"
+  },
+  {
+    "id": 390,
+    "name": "Tianjin Jinmen Tiger",
+    "league": "Superliga de China (Chinese Super League)",
+    "country": "China"
+  },
+  {
+    "id": 391,
+    "name": "Zhejiang FC",
+    "league": "Superliga de China (Chinese Super League)",
+    "country": "China"
+  },
+  {
+    "id": 392,
+    "name": "Yunnan Yukun",
+    "league": "Superliga de China (Chinese Super League)",
+    "country": "China"
+  },
+  {
+    "id": 393,
+    "name": "Qingdao West Coast",
+    "league": "Superliga de China (Chinese Super League)",
+    "country": "China"
+  },
+  {
+    "id": 394,
+    "name": "Henan FC",
+    "league": "Superliga de China (Chinese Super League)",
+    "country": "China"
+  },
+  {
+    "id": 395,
+    "name": "Dalian Yingbo",
+    "league": "Superliga de China (Chinese Super League)",
+    "country": "China"
+  },
+  {
+    "id": 396,
+    "name": "Shenzhen Peng City",
+    "league": "Superliga de China (Chinese Super League)",
+    "country": "China"
+  },
+  {
+    "id": 397,
+    "name": "Wuhan Three Towns",
+    "league": "Superliga de China (Chinese Super League)",
+    "country": "China"
+  },
+  {
+    "id": 398,
+    "name": "Qingdao Hainiu",
+    "league": "Superliga de China (Chinese Super League)",
+    "country": "China"
+  },
+  {
+    "id": 399,
+    "name": "Meizhou Hakka",
+    "league": "Superliga de China (Chinese Super League)",
+    "country": "China"
+  },
+  {
+    "id": 400,
+    "name": "Al-Hussein Irbid",
+    "league": "Jordanian Pro League",
+    "country": "Jordan"
+  },
+  {
+    "id": 401,
+    "name": "Al-Faisaly SC",
+    "league": "Jordanian Pro League",
+    "country": "Jordan"
+  },
+  {
+    "id": 402,
+    "name": "Al-Wehdat SC",
+    "league": "Jordanian Pro League",
+    "country": "Jordan"
+  },
+  {
+    "id": 403,
+    "name": "Al-Ramtha SC",
+    "league": "Jordanian Pro League",
+    "country": "Jordan"
+  },
+  {
+    "id": 404,
+    "name": "Salt SC",
+    "league": "Jordanian Pro League",
+    "country": "Jordan"
+  },
+  {
+    "id": 405,
+    "name": "Al-Jazeera",
+    "league": "Jordanian Pro League",
+    "country": "Jordan"
+  },
+  {
+    "id": 406,
+    "name": "Al-Baqa'a",
+    "league": "Jordanian Pro League",
+    "country": "Jordan"
+  },
+  {
+    "id": 407,
+    "name": "Shabab Al-Ordon",
+    "league": "Jordanian Pro League",
+    "country": "Jordan"
+  },
+  {
+    "id": 408,
+    "name": "Al-Ahli Amman",
+    "league": "Jordanian Pro League",
+    "country": "Jordan"
+  },
+  {
+    "id": 409,
+    "name": "Sama Al-Sarhan",
+    "league": "Jordanian Pro League",
+    "country": "Jordan"
+  },
+  {
+    "id": 410,
+    "name": "Al-Muharraq",
+    "league": "Bahraini Premier League",
+    "country": "Bahrain"
+  },
+  {
+    "id": 411,
+    "name": "Al-Khaldiya",
+    "league": "Bahraini Premier League",
+    "country": "Bahrain"
+  },
+  {
+    "id": 412,
+    "name": "Al-Riffa",
+    "league": "Bahraini Premier League",
+    "country": "Bahrain"
+  },
+  {
+    "id": 413,
+    "name": "Malkiya",
+    "league": "Bahraini Premier League",
+    "country": "Bahrain"
+  },
+  {
+    "id": 414,
+    "name": "A'Ali",
+    "league": "Bahraini Premier League",
+    "country": "Bahrain"
+  },
+  {
+    "id": 415,
+    "name": "Al-Hidd",
+    "league": "Bahraini Premier League",
+    "country": "Bahrain"
+  },
+  {
+    "id": 416,
+    "name": "Al-Ahli",
+    "league": "Bahraini Premier League",
+    "country": "Bahrain"
+  },
+  {
+    "id": 417,
+    "name": "Sitra",
+    "league": "Bahraini Premier League",
+    "country": "Bahrain"
+  },
+  {
+    "id": 418,
+    "name": "Budaiya",
+    "league": "Bahraini Premier League",
+    "country": "Bahrain"
+  },
+  {
+    "id": 419,
+    "name": "Al-Najma",
+    "league": "Bahraini Premier League",
+    "country": "Bahrain"
+  },
+  {
+    "id": 420,
+    "name": "Al-Shabab",
+    "league": "Bahraini Premier League",
+    "country": "Bahrain"
+  },
+  {
+    "id": 421,
+    "name": "Bahrain SC",
+    "league": "Bahraini Premier League",
+    "country": "Bahrain"
+  },
+  {
+    "id": 422,
+    "name": "Al-Kuwait SC",
+    "league": "Kuwaiti Premier League",
+    "country": "Kuwait"
+  },
+  {
+    "id": 423,
+    "name": "Al-Qadsia SC",
+    "league": "Kuwaiti Premier League",
+    "country": "Kuwait"
+  },
+  {
+    "id": 424,
+    "name": "Al-Arabi SC",
+    "league": "Kuwaiti Premier League",
+    "country": "Kuwait"
+  },
+  {
+    "id": 425,
+    "name": "Salmiya SC",
+    "league": "Kuwaiti Premier League",
+    "country": "Kuwait"
+  },
+  {
+    "id": 426,
+    "name": "Kazma SC",
+    "league": "Kuwaiti Premier League",
+    "country": "Kuwait"
+  },
+  {
+    "id": 427,
+    "name": "Al-Fahaheel",
+    "league": "Kuwaiti Premier League",
+    "country": "Kuwait"
+  },
+  {
+    "id": 428,
+    "name": "Al-Nasr SC",
+    "league": "Kuwaiti Premier League",
+    "country": "Kuwait"
+  },
+  {
+    "id": 429,
+    "name": "Al-Tadamon",
+    "league": "Kuwaiti Premier League",
+    "country": "Kuwait"
+  },
+  {
+    "id": 430,
+    "name": "Al-Jahra SC",
+    "league": "Kuwaiti Premier League",
+    "country": "Kuwait"
+  },
+  {
+    "id": 431,
+    "name": "Bashundhara Kings",
+    "league": "Bangladesh Football League (ex Bangladesh Premier League)",
+    "country": "Bangladesh"
+  },
+  {
+    "id": 432,
+    "name": "Dhaka Abahani",
+    "league": "Bangladesh Football League (ex Bangladesh Premier League)",
+    "country": "Bangladesh"
+  },
+  {
+    "id": 433,
+    "name": "Fortis FC",
+    "league": "Bangladesh Football League (ex Bangladesh Premier League)",
+    "country": "Bangladesh"
+  },
+  {
+    "id": 434,
+    "name": "Bangladesh Police FC",
+    "league": "Bangladesh Football League (ex Bangladesh Premier League)",
+    "country": "Bangladesh"
+  },
+  {
+    "id": 435,
+    "name": "Mohammedan SC",
+    "league": "Bangladesh Football League (ex Bangladesh Premier League)",
+    "country": "Bangladesh"
+  },
+  {
+    "id": 436,
+    "name": "Rahmatganj MFS",
+    "league": "Bangladesh Football League (ex Bangladesh Premier League)",
+    "country": "Bangladesh"
+  },
+  {
+    "id": 437,
+    "name": "Brothers Union",
+    "league": "Bangladesh Football League (ex Bangladesh Premier League)",
+    "country": "Bangladesh"
+  },
+  {
+    "id": 438,
+    "name": "Public Works Department SC",
+    "league": "Bangladesh Football League (ex Bangladesh Premier League)",
+    "country": "Bangladesh"
+  },
+  {
+    "id": 439,
+    "name": "Arambagh KS",
+    "league": "Bangladesh Football League (ex Bangladesh Premier League)",
+    "country": "Bangladesh"
+  },
+  {
+    "id": 440,
+    "name": "Fakirerpool",
+    "league": "Bangladesh Football League (ex Bangladesh Premier League)",
+    "country": "Bangladesh"
+  },
+  {
+    "id": 441,
+    "name": "Preah Khan Reach Svay Rieng FC",
+    "league": "Cambodian Premier League",
+    "country": "Cambodia"
+  },
+  {
+    "id": 442,
+    "name": "Phnom Penh Crown FC",
+    "league": "Cambodian Premier League",
+    "country": "Cambodia"
+  },
+  {
+    "id": 443,
+    "name": "Angkor Tiger FC",
+    "league": "Cambodian Premier League",
+    "country": "Cambodia"
+  },
+  {
+    "id": 444,
+    "name": "NagaWorld FC",
+    "league": "Cambodian Premier League",
+    "country": "Cambodia"
+  },
+  {
+    "id": 445,
+    "name": "Boeung Ket FC",
+    "league": "Cambodian Premier League",
+    "country": "Cambodia"
+  },
+  {
+    "id": 446,
+    "name": "Ministry of Interior FA (MoI Kampong Dewa)",
+    "league": "Cambodian Premier League",
+    "country": "Cambodia"
+  },
+  {
+    "id": 447,
+    "name": "Visakha FC",
+    "league": "Cambodian Premier League",
+    "country": "Cambodia"
+  },
+  {
+    "id": 448,
+    "name": "Royal Cambodian Armed Forces",
+    "league": "Cambodian Premier League",
+    "country": "Cambodia"
+  },
+  {
+    "id": 449,
+    "name": "Kirivong Sok Sen Chey FC",
+    "league": "Cambodian Premier League",
+    "country": "Cambodia"
+  },
+  {
+    "id": 450,
+    "name": "Life Sihanoukville",
+    "league": "Cambodian Premier League",
+    "country": "Cambodia"
+  },
+  {
+    "id": 451,
+    "name": "Kairat Almaty",
+    "league": "Kazakhstan Premier League",
+    "country": "Kazakhstan"
+  },
+  {
+    "id": 452,
+    "name": "Astana",
+    "league": "Kazakhstan Premier League",
+    "country": "Kazakhstan"
+  },
+  {
+    "id": 453,
+    "name": "Tobol Kostanay",
+    "league": "Kazakhstan Premier League",
+    "country": "Kazakhstan"
+  },
+  {
+    "id": 454,
+    "name": "Elimai",
+    "league": "Kazakhstan Premier League",
+    "country": "Kazakhstan"
+  },
+  {
+    "id": 455,
+    "name": "Aktobe",
+    "league": "Kazakhstan Premier League",
+    "country": "Kazakhstan"
+  },
+  {
+    "id": 456,
+    "name": "Jenis (Zhenis)",
+    "league": "Kazakhstan Premier League",
+    "country": "Kazakhstan"
+  },
+  {
+    "id": 457,
+    "name": "Ordabasy Shymkent",
+    "league": "Kazakhstan Premier League",
+    "country": "Kazakhstan"
+  },
+  {
+    "id": 458,
+    "name": "Okzhetpes",
+    "league": "Kazakhstan Premier League",
+    "country": "Kazakhstan"
+  },
+  {
+    "id": 459,
+    "name": "Kyzylzhar Petropavlovsk",
+    "league": "Kazakhstan Premier League",
+    "country": "Kazakhstan"
+  },
+  {
+    "id": 460,
+    "name": "Ulytau",
+    "league": "Kazakhstan Premier League",
+    "country": "Kazakhstan"
+  },
+  {
+    "id": 461,
+    "name": "Kaisar Kyzylorda",
+    "league": "Kazakhstan Premier League",
+    "country": "Kazakhstan"
+  },
+  {
+    "id": 462,
+    "name": "Zhetysu Taldykorgan",
+    "league": "Kazakhstan Premier League",
+    "country": "Kazakhstan"
+  },
+  {
+    "id": 463,
+    "name": "Atyrau",
+    "league": "Kazakhstan Premier League",
+    "country": "Kazakhstan"
+  },
+  {
+    "id": 464,
+    "name": "Altai N/D N/D N/D N/D N/D N/D",
+    "league": "Kazakhstan Premier League",
+    "country": "Kazakhstan"
+  },
+  {
+    "id": 465,
+    "name": "Irtysh Pavlodar N/D N/D N/D N/D N/D N/D",
+    "league": "Kazakhstan Premier League",
+    "country": "Kazakhstan"
+  },
+  {
+    "id": 466,
+    "name": "Kaspiy (Caspiy) N/D N/D N/D N/D N/D N/D",
+    "league": "Kazakhstan Premier League",
+    "country": "Kazakhstan"
+  },
+  {
+    "id": 467,
+    "name": "|   Equipos correctos: 12",
+    "league": "Lebanese Premier League",
+    "country": "Lebanon"
+  },
+  {
+    "id": 468,
+    "name": "Al-Abbasieh (Reyady Abaseya)",
+    "league": "Lebanese Premier League",
+    "country": "Lebanon"
+  },
+  {
+    "id": 469,
+    "name": "Nejmeh SC",
+    "league": "Lebanese Premier League",
+    "country": "Lebanon"
+  },
+  {
+    "id": 470,
+    "name": "Al-Ahed FC",
+    "league": "Lebanese Premier League",
+    "country": "Lebanon"
+  },
+  {
+    "id": 471,
+    "name": "Racing Beirut",
+    "league": "Lebanese Premier League",
+    "country": "Lebanon"
+  },
+  {
+    "id": 472,
+    "name": "Al-Ansar FC",
+    "league": "Lebanese Premier League",
+    "country": "Lebanon"
+  },
+  {
+    "id": 473,
+    "name": "Safa SC",
+    "league": "Lebanese Premier League",
+    "country": "Lebanon"
+  },
+  {
+    "id": 474,
+    "name": "Al-Bourj",
+    "league": "Lebanese Premier League",
+    "country": "Lebanon"
+  },
+  {
+    "id": 475,
+    "name": "Shabab Al-Sahel",
+    "league": "Lebanese Premier League",
+    "country": "Lebanon"
+  },
+  {
+    "id": 476,
+    "name": "Al-Hikma",
+    "league": "Lebanese Premier League",
+    "country": "Lebanon"
+  },
+  {
+    "id": 477,
+    "name": "Shabab Baalbek",
+    "league": "Lebanese Premier League",
+    "country": "Lebanon"
+  },
+  {
+    "id": 478,
+    "name": "Chabab Ghazieh",
+    "league": "Lebanese Premier League",
+    "country": "Lebanon"
+  },
+  {
+    "id": 479,
+    "name": "SP Falcons",
+    "league": "Mongolian Premier League",
+    "country": "Mongolia"
+  },
+  {
+    "id": 480,
+    "name": "Khangarid FC",
+    "league": "Mongolian Premier League",
+    "country": "Mongolia"
+  },
+  {
+    "id": 481,
+    "name": "FC Ulaanbaatar",
+    "league": "Mongolian Premier League",
+    "country": "Mongolia"
+  },
+  {
+    "id": 482,
+    "name": "Deren FC",
+    "league": "Mongolian Premier League",
+    "country": "Mongolia"
+  },
+  {
+    "id": 483,
+    "name": "Khoromkhon FC",
+    "league": "Mongolian Premier League",
+    "country": "Mongolia"
+  },
+  {
+    "id": 484,
+    "name": "Hunters FC",
+    "league": "Mongolian Premier League",
+    "country": "Mongolia"
+  },
+  {
+    "id": 485,
+    "name": "Khaan Khuns-Erchim FC",
+    "league": "Mongolian Premier League",
+    "country": "Mongolia"
+  },
+  {
+    "id": 486,
+    "name": "Tuv Azarganuud FC (ex Tuv Buganuud)",
+    "league": "Mongolian Premier League",
+    "country": "Mongolia"
+  },
+  {
+    "id": 487,
+    "name": "Khovd Western FC N/D N/D N/D N/D N/D N/D",
+    "league": "Mongolian Premier League",
+    "country": "Mongolia"
+  },
+  {
+    "id": 488,
+    "name": "Shan United FC",
+    "league": "Myanmar National League",
+    "country": "Myanmar"
+  },
+  {
+    "id": 489,
+    "name": "Yangon United FC",
+    "league": "Myanmar National League",
+    "country": "Myanmar"
+  },
+  {
+    "id": 490,
+    "name": "Dagon Star United",
+    "league": "Myanmar National League",
+    "country": "Myanmar"
+  },
+  {
+    "id": 491,
+    "name": "ISPE FC",
+    "league": "Myanmar National League",
+    "country": "Myanmar"
+  },
+  {
+    "id": 492,
+    "name": "Hantharwady United",
+    "league": "Myanmar National League",
+    "country": "Myanmar"
+  },
+  {
+    "id": 493,
+    "name": "Mahar United",
+    "league": "Myanmar National League",
+    "country": "Myanmar"
+  },
+  {
+    "id": 494,
+    "name": "Yadanarbon FC",
+    "league": "Myanmar National League",
+    "country": "Myanmar"
+  },
+  {
+    "id": 495,
+    "name": "Ayeyawady United",
+    "league": "Myanmar National League",
+    "country": "Myanmar"
+  },
+  {
+    "id": 496,
+    "name": "ThitSar Arman",
+    "league": "Myanmar National League",
+    "country": "Myanmar"
+  },
+  {
+    "id": 497,
+    "name": "Dagon Port",
+    "league": "Myanmar National League",
+    "country": "Myanmar"
+  },
+  {
+    "id": 498,
+    "name": "Rakhine United",
+    "league": "Myanmar National League",
+    "country": "Myanmar"
+  },
+  {
+    "id": 499,
+    "name": "Chinland FC N/D N/D N/D N/D N/D N/D",
+    "league": "Myanmar National League",
+    "country": "Myanmar"
+  },
+  {
+    "id": 500,
+    "name": "Al-Seeb Club",
+    "league": "Oman Professional League",
+    "country": "Oman"
+  },
+  {
+    "id": 501,
+    "name": "Al-Nahda Club",
+    "league": "Oman Professional League",
+    "country": "Oman"
+  },
+  {
+    "id": 502,
+    "name": "Al-Khaburah SC",
+    "league": "Oman Professional League",
+    "country": "Oman"
+  },
+  {
+    "id": 503,
+    "name": "Saham Club",
+    "league": "Oman Professional League",
+    "country": "Oman"
+  },
+  {
+    "id": 504,
+    "name": "Al-Shabab",
+    "league": "Oman Professional League",
+    "country": "Oman"
+  },
+  {
+    "id": 505,
+    "name": "Bahla Club",
+    "league": "Oman Professional League",
+    "country": "Oman"
+  },
+  {
+    "id": 506,
+    "name": "Al-Nasr Salalah",
+    "league": "Oman Professional League",
+    "country": "Oman"
+  },
+  {
+    "id": 507,
+    "name": "Sohar SC",
+    "league": "Oman Professional League",
+    "country": "Oman"
+  },
+  {
+    "id": 508,
+    "name": "Al-Rustaq",
+    "league": "Oman Professional League",
+    "country": "Oman"
+  },
+  {
+    "id": 509,
+    "name": "Ibri Club",
+    "league": "Oman Professional League",
+    "country": "Oman"
+  },
+  {
+    "id": 510,
+    "name": "Sur SC",
+    "league": "Oman Professional League",
+    "country": "Oman"
+  },
+  {
+    "id": 511,
+    "name": "Al-Wahda N/D N/D N/D N/D N/D N/D",
+    "league": "Oman Professional League",
+    "country": "Oman"
+  },
+  {
+    "id": 512,
+    "name": "Dhofar Club N/D N/D N/D N/D N/D N/D",
+    "league": "Oman Professional League",
+    "country": "Oman"
+  },
+  {
+    "id": 513,
+    "name": "Kaya FC-Iloilo",
+    "league": "Philippines Football League",
+    "country": "Philippines"
+  },
+  {
+    "id": 514,
+    "name": "Manila Digger",
+    "league": "Philippines Football League",
+    "country": "Philippines"
+  },
+  {
+    "id": 515,
+    "name": "One Taguig",
+    "league": "Philippines Football League",
+    "country": "Philippines"
+  },
+  {
+    "id": 516,
+    "name": "Dynamic Herb Cebu FC",
+    "league": "Philippines Football League",
+    "country": "Philippines"
+  },
+  {
+    "id": 517,
+    "name": "Stallion Laguna FC",
+    "league": "Philippines Football League",
+    "country": "Philippines"
+  },
+  {
+    "id": 518,
+    "name": "Aguilas-UMak",
+    "league": "Philippines Football League",
+    "country": "Philippines"
+  },
+  {
+    "id": 519,
+    "name": "Maharlika Manila FC",
+    "league": "Philippines Football League",
+    "country": "Philippines"
+  },
+  {
+    "id": 520,
+    "name": "Valenzuela PB-Mendiola (ex Mendiola 1991)",
+    "league": "Philippines Football League",
+    "country": "Philippines"
+  },
+  {
+    "id": 521,
+    "name": "Don Bosco Garelli United N/D N/D N/D N/D N/D N/D",
+    "league": "Philippines Football League",
+    "country": "Philippines"
+  },
+  {
+    "id": 522,
+    "name": "Philippine Army FC N/D N/D N/D N/D N/D N/D",
+    "league": "Philippines Football League",
+    "country": "Philippines"
+  },
+  {
+    "id": 523,
+    "name": "Tuloy FC N/D N/D N/D N/D N/D N/D",
+    "league": "Philippines Football League",
+    "country": "Philippines"
+  },
+  {
+    "id": 524,
+    "name": "Al-Karamah SC",
+    "league": "Prime Premier League (ex Syrian Premier League)",
+    "country": "Syria"
+  },
+  {
+    "id": 525,
+    "name": "Al-Ittihad Ahli Aleppo",
+    "league": "Prime Premier League (ex Syrian Premier League)",
+    "country": "Syria"
+  },
+  {
+    "id": 526,
+    "name": "Al-Wahda SC",
+    "league": "Prime Premier League (ex Syrian Premier League)",
+    "country": "Syria"
+  },
+  {
+    "id": 527,
+    "name": "Hutteen",
+    "league": "Prime Premier League (ex Syrian Premier League)",
+    "country": "Syria"
+  },
+  {
+    "id": 528,
+    "name": "Al-Taliya SC",
+    "league": "Prime Premier League (ex Syrian Premier League)",
+    "country": "Syria"
+  },
+  {
+    "id": 529,
+    "name": "Al-Fotuwa SC",
+    "league": "Prime Premier League (ex Syrian Premier League)",
+    "country": "Syria"
+  },
+  {
+    "id": 530,
+    "name": "Tishreen SC",
+    "league": "Prime Premier League (ex Syrian Premier League)",
+    "country": "Syria"
+  },
+  {
+    "id": 531,
+    "name": "Al-Jaish SC",
+    "league": "Prime Premier League (ex Syrian Premier League)",
+    "country": "Syria"
+  },
+  {
+    "id": 532,
+    "name": "Al Shouleh",
+    "league": "Prime Premier League (ex Syrian Premier League)",
+    "country": "Syria"
+  },
+  {
+    "id": 533,
+    "name": "Jableh SC",
+    "league": "Prime Premier League (ex Syrian Premier League)",
+    "country": "Syria"
+  },
+  {
+    "id": 534,
+    "name": "Al-Shorta",
+    "league": "Prime Premier League (ex Syrian Premier League)",
+    "country": "Syria"
+  },
+  {
+    "id": 535,
+    "name": "Damascus Al Ahli N/D N/D N/D N/D N/D N/D",
+    "league": "Prime Premier League (ex Syrian Premier League)",
+    "country": "Syria"
+  },
+  {
+    "id": 536,
+    "name": "Homs Al Fidaa N/D N/D N/D N/D N/D N/D",
+    "league": "Prime Premier League (ex Syrian Premier League)",
+    "country": "Syria"
+  },
+  {
+    "id": 537,
+    "name": "Khan Sheikhoun N/D N/D N/D N/D N/D N/D",
+    "league": "Prime Premier League (ex Syrian Premier League)",
+    "country": "Syria"
+  },
+  {
+    "id": 538,
+    "name": "Umayya N/D N/D N/D N/D N/D N/D",
+    "league": "Prime Premier League (ex Syrian Premier League)",
+    "country": "Syria"
+  },
+  {
+    "id": 539,
+    "name": "Al-Horiya N/D N/D N/D N/D N/D N/D",
+    "league": "Prime Premier League (ex Syrian Premier League)",
+    "country": "Syria"
+  },
+  {
+    "id": 540,
+    "name": "Neftchi Fergana",
+    "league": "Uzbekistan Super League",
+    "country": "Uzbekistan"
+  },
+  {
+    "id": 541,
+    "name": "Pakhtakor Tashkent",
+    "league": "Uzbekistan Super League",
+    "country": "Uzbekistan"
+  },
+  {
+    "id": 542,
+    "name": "Nasaf Qarshi",
+    "league": "Uzbekistan Super League",
+    "country": "Uzbekistan"
+  },
+  {
+    "id": 543,
+    "name": "Dinamo Samarqand",
+    "league": "Uzbekistan Super League",
+    "country": "Uzbekistan"
+  },
+  {
+    "id": 544,
+    "name": "FC Bunyodkor",
+    "league": "Uzbekistan Super League",
+    "country": "Uzbekistan"
+  },
+  {
+    "id": 545,
+    "name": "AGMK Olmaliq",
+    "league": "Uzbekistan Super League",
+    "country": "Uzbekistan"
+  },
+  {
+    "id": 546,
+    "name": "Navbahor Namangan",
+    "league": "Uzbekistan Super League",
+    "country": "Uzbekistan"
+  },
+  {
+    "id": 547,
+    "name": "Sogdiana Jizzakh",
+    "league": "Uzbekistan Super League",
+    "country": "Uzbekistan"
+  },
+  {
+    "id": 548,
+    "name": "Qizilqum Zarafshon",
+    "league": "Uzbekistan Super League",
+    "country": "Uzbekistan"
+  },
+  {
+    "id": 549,
+    "name": "Surkhon Termez",
+    "league": "Uzbekistan Super League",
+    "country": "Uzbekistan"
+  },
+  {
+    "id": 550,
+    "name": "FC Andijan",
+    "league": "Uzbekistan Super League",
+    "country": "Uzbekistan"
+  },
+  {
+    "id": 551,
+    "name": "Kokand 1912",
+    "league": "Uzbekistan Super League",
+    "country": "Uzbekistan"
+  },
+  {
+    "id": 552,
+    "name": "Mash'al Mubarek",
+    "league": "Uzbekistan Super League",
+    "country": "Uzbekistan"
+  },
+  {
+    "id": 553,
+    "name": "Khorazm",
+    "league": "Uzbekistan Super League",
+    "country": "Uzbekistan"
+  },
+  {
+    "id": 554,
+    "name": "Buxoro FC",
+    "league": "Uzbekistan Super League",
+    "country": "Uzbekistan"
+  },
+  {
+    "id": 555,
+    "name": "Shurtan",
+    "league": "Uzbekistan Super League",
+    "country": "Uzbekistan"
+  },
+  {
+    "id": 556,
+    "name": "Al-Ahli San'a",
+    "league": "Yemeni League",
+    "country": "Yemen"
+  },
+  {
+    "id": 557,
+    "name": "Al-Tadamun Hadramaut",
+    "league": "Yemeni League",
+    "country": "Yemen"
+  },
+  {
+    "id": 558,
+    "name": "Al-Oruba Zabid",
+    "league": "Yemeni League",
+    "country": "Yemen"
+  },
+  {
+    "id": 559,
+    "name": "Al-Ittihad Ibb",
+    "league": "Yemeni League",
+    "country": "Yemen"
+  },
+  {
+    "id": 560,
+    "name": "Al-Hilal Al-Hudaydah",
+    "league": "Yemeni League",
+    "country": "Yemen"
+  },
+  {
+    "id": 561,
+    "name": "Samaon (Samarra SC)",
+    "league": "Yemeni League",
+    "country": "Yemen"
+  },
+  {
+    "id": 562,
+    "name": "Al-Saqr Ta'izz",
+    "league": "Yemeni League",
+    "country": "Yemen"
+  },
+  {
+    "id": 563,
+    "name": "Al-Wahda San'a",
+    "league": "Yemeni League",
+    "country": "Yemen"
+  },
+  {
+    "id": 564,
+    "name": "Shaab Hadramaut",
+    "league": "Yemeni League",
+    "country": "Yemen"
+  },
+  {
+    "id": 565,
+    "name": "Fahman SCC",
+    "league": "Yemeni League",
+    "country": "Yemen"
+  },
+  {
+    "id": 566,
+    "name": "Salam Al-Garfa",
+    "league": "Yemeni League",
+    "country": "Yemen"
+  },
+  {
+    "id": 567,
+    "name": "Al-Yarmuk Al-Rawda",
+    "league": "Yemeni League",
+    "country": "Yemen"
+  },
+  {
+    "id": 568,
+    "name": "Shaab Ibb",
+    "league": "Yemeni League",
+    "country": "Yemen"
+  },
+  {
+    "id": 569,
+    "name": "Al-Tali'aa Taizz",
+    "league": "Yemeni League",
+    "country": "Yemen"
+  },
+  {
+    "id": 570,
+    "name": "Newcastle Jets",
+    "league": "A-League Men",
+    "country": "Australia"
+  },
+  {
+    "id": 571,
+    "name": "Adelaide United",
+    "league": "A-League Men",
+    "country": "Australia"
+  },
+  {
+    "id": 572,
+    "name": "Auckland FC",
+    "league": "A-League Men",
+    "country": "Australia"
+  },
+  {
+    "id": 573,
+    "name": "Melbourne Victory",
+    "league": "A-League Men",
+    "country": "Australia"
+  },
+  {
+    "id": 574,
+    "name": "Sydney FC",
+    "league": "A-League Men",
+    "country": "Australia"
+  },
+  {
+    "id": 575,
+    "name": "Melbourne City",
+    "league": "A-League Men",
+    "country": "Australia"
+  },
+  {
+    "id": 576,
+    "name": "Macarthur FC",
+    "league": "A-League Men",
+    "country": "Australia"
+  },
+  {
+    "id": 577,
+    "name": "Wellington Phoenix",
+    "league": "A-League Men",
+    "country": "Australia"
+  },
+  {
+    "id": 578,
+    "name": "Central Coast Mariners",
+    "league": "A-League Men",
+    "country": "Australia"
+  },
+  {
+    "id": 579,
+    "name": "Perth Glory",
+    "league": "A-League Men",
+    "country": "Australia"
+  },
+  {
+    "id": 580,
+    "name": "Brisbane Roar",
+    "league": "A-League Men",
+    "country": "Australia"
+  },
+  {
+    "id": 581,
+    "name": "Western Sydney Wanderers",
+    "league": "A-League Men",
+    "country": "Australia"
+  },
+  {
+    "id": 582,
+    "name": "Maghreb Fez (MAS)",
+    "league": "Botola Pro",
+    "country": "Morocco"
+  },
+  {
+    "id": 583,
+    "name": "RS Berkane",
+    "league": "Botola Pro",
+    "country": "Morocco"
+  },
+  {
+    "id": 584,
+    "name": "Raja Casablanca",
+    "league": "Botola Pro",
+    "country": "Morocco"
+  },
+  {
+    "id": 585,
+    "name": "AS FAR Rabat",
+    "league": "Botola Pro",
+    "country": "Morocco"
+  },
+  {
+    "id": 586,
+    "name": "Wydad Casablanca",
+    "league": "Botola Pro",
+    "country": "Morocco"
+  },
+  {
+    "id": 587,
+    "name": "Difaa El Jadida",
+    "league": "Botola Pro",
+    "country": "Morocco"
+  },
+  {
+    "id": 588,
+    "name": "Ittihad Tanger",
+    "league": "Botola Pro",
+    "country": "Morocco"
+  },
+  {
+    "id": 589,
+    "name": "FUS Rabat",
+    "league": "Botola Pro",
+    "country": "Morocco"
+  },
+  {
+    "id": 590,
+    "name": "KAC Marrakech",
+    "league": "Botola Pro",
+    "country": "Morocco"
+  },
+  {
+    "id": 591,
+    "name": "CODM Meknes",
+    "league": "Botola Pro",
+    "country": "Morocco"
+  },
+  {
+    "id": 592,
+    "name": "Renaissance Zemamra",
+    "league": "Botola Pro",
+    "country": "Morocco"
+  },
+  {
+    "id": 593,
+    "name": "Hassania Agadir",
+    "league": "Botola Pro",
+    "country": "Morocco"
+  },
+  {
+    "id": 594,
+    "name": "Union Touarga",
+    "league": "Botola Pro",
+    "country": "Morocco"
+  },
+  {
+    "id": 595,
+    "name": "US Yacoub El Mansour",
+    "league": "Botola Pro",
+    "country": "Morocco"
+  },
+  {
+    "id": 596,
+    "name": "Olympique Dcheira",
+    "league": "Botola Pro",
+    "country": "Morocco"
+  },
+  {
+    "id": 597,
+    "name": "Olympic Club de Safi",
+    "league": "Botola Pro",
+    "country": "Morocco"
+  },
+  {
+    "id": 598,
+    "name": "Zamalek",
+    "league": "Egyptian Premier League",
+    "country": "Egypt"
+  },
+  {
+    "id": 599,
+    "name": "Pyramids",
+    "league": "Egyptian Premier League",
+    "country": "Egypt"
+  },
+  {
+    "id": 600,
+    "name": "Al Ahly",
+    "league": "Egyptian Premier League",
+    "country": "Egypt"
+  },
+  {
+    "id": 601,
+    "name": "Ceramica Cleopatra",
+    "league": "Egyptian Premier League",
+    "country": "Egypt"
+  },
+  {
+    "id": 602,
+    "name": "Al Masry",
+    "league": "Egyptian Premier League",
+    "country": "Egypt"
+  },
+  {
+    "id": 603,
+    "name": "Smouha",
+    "league": "Egyptian Premier League",
+    "country": "Egypt"
+  },
+  {
+    "id": 604,
+    "name": "ENPPI",
+    "league": "Egyptian Premier League",
+    "country": "Egypt"
+  },
+  {
+    "id": 605,
+    "name": "ZED FC",
+    "league": "Egyptian Premier League",
+    "country": "Egypt"
+  },
+  {
+    "id": 606,
+    "name": "Wadi Degla",
+    "league": "Egyptian Premier League",
+    "country": "Egypt"
+  },
+  {
+    "id": 607,
+    "name": "El Gouna",
+    "league": "Egyptian Premier League",
+    "country": "Egypt"
+  },
+  {
+    "id": 608,
+    "name": "National Bank of Egypt",
+    "league": "Egyptian Premier League",
+    "country": "Egypt"
+  },
+  {
+    "id": 609,
+    "name": "Petrojet",
+    "league": "Egyptian Premier League",
+    "country": "Egypt"
+  },
+  {
+    "id": 610,
+    "name": "Modern Sport",
+    "league": "Egyptian Premier League",
+    "country": "Egypt"
+  },
+  {
+    "id": 611,
+    "name": "Tala'ea El Gaish",
+    "league": "Egyptian Premier League",
+    "country": "Egypt"
+  },
+  {
+    "id": 612,
+    "name": "Al Ittihad (Alejandría)",
+    "league": "Egyptian Premier League",
+    "country": "Egypt"
+  },
+  {
+    "id": 613,
+    "name": "Ghazl El Mahalla",
+    "league": "Egyptian Premier League",
+    "country": "Egypt"
+  },
+  {
+    "id": 614,
+    "name": "Al Mokawloon Al Arab",
+    "league": "Egyptian Premier League",
+    "country": "Egypt"
+  },
+  {
+    "id": 615,
+    "name": "Haras El Hodoud",
+    "league": "Egyptian Premier League",
+    "country": "Egypt"
+  },
+  {
+    "id": 616,
+    "name": "Kahrabaa Ismailia",
+    "league": "Egyptian Premier League",
+    "country": "Egypt"
+  },
+  {
+    "id": 617,
+    "name": "Pharco",
+    "league": "Egyptian Premier League",
+    "country": "Egypt"
+  },
+  {
+    "id": 618,
+    "name": "Ismaily",
+    "league": "Egyptian Premier League",
+    "country": "Egypt"
+  },
+  {
+    "id": 619,
+    "name": "Sidama Coffee",
+    "league": "Ethiopian Premier League",
+    "country": "Ethiopia"
+  },
+  {
+    "id": 620,
+    "name": "Negelle Arsi FC",
+    "league": "Ethiopian Premier League",
+    "country": "Ethiopia"
+  },
+  {
+    "id": 621,
+    "name": "Defense Force",
+    "league": "Ethiopian Premier League",
+    "country": "Ethiopia"
+  },
+  {
+    "id": 622,
+    "name": "Saint George",
+    "league": "Ethiopian Premier League",
+    "country": "Ethiopia"
+  },
+  {
+    "id": 623,
+    "name": "Fasil Kenema",
+    "league": "Ethiopian Premier League",
+    "country": "Ethiopia"
+  },
+  {
+    "id": 624,
+    "name": "Hawassa City",
+    "league": "Ethiopian Premier League",
+    "country": "Ethiopia"
+  },
+  {
+    "id": 625,
+    "name": "Wolaitta Dicha",
+    "league": "Ethiopian Premier League",
+    "country": "Ethiopia"
+  },
+  {
+    "id": 626,
+    "name": "Ethio Electric",
+    "league": "Ethiopian Premier League",
+    "country": "Ethiopia"
+  },
+  {
+    "id": 627,
+    "name": "Ethiopian Insurance",
+    "league": "Ethiopian Premier League",
+    "country": "Ethiopia"
+  },
+  {
+    "id": 628,
+    "name": "Bahir Dar Kenema",
+    "league": "Ethiopian Premier League",
+    "country": "Ethiopia"
+  },
+  {
+    "id": 629,
+    "name": "Ethiopian Coffee",
+    "league": "Ethiopian Premier League",
+    "country": "Ethiopia"
+  },
+  {
+    "id": 630,
+    "name": "CBE",
+    "league": "Ethiopian Premier League",
+    "country": "Ethiopia"
+  },
+  {
+    "id": 631,
+    "name": "Sheger City",
+    "league": "Ethiopian Premier League",
+    "country": "Ethiopia"
+  },
+  {
+    "id": 632,
+    "name": "Hadiya Hossana",
+    "league": "Ethiopian Premier League",
+    "country": "Ethiopia"
+  },
+  {
+    "id": 633,
+    "name": "Adama City",
+    "league": "Ethiopian Premier League",
+    "country": "Ethiopia"
+  },
+  {
+    "id": 634,
+    "name": "Welwalo Adigrat University",
+    "league": "Ethiopian Premier League",
+    "country": "Ethiopia"
+  },
+  {
+    "id": 635,
+    "name": "Shire Endaselassie",
+    "league": "Ethiopian Premier League",
+    "country": "Ethiopia"
+  },
+  {
+    "id": 636,
+    "name": "Mekelle 70 Enderta",
+    "league": "Ethiopian Premier League",
+    "country": "Ethiopia"
+  },
+  {
+    "id": 637,
+    "name": "Arba Minch City",
+    "league": "Ethiopian Premier League",
+    "country": "Ethiopia"
+  },
+  {
+    "id": 638,
+    "name": "Dire Dawa City",
+    "league": "Ethiopian Premier League",
+    "country": "Ethiopia"
+  },
+  {
+    "id": 639,
+    "name": "Petro de Luanda",
+    "league": "Girabola",
+    "country": "Angola"
+  },
+  {
+    "id": 640,
+    "name": "Wiliete",
+    "league": "Girabola",
+    "country": "Angola"
+  },
+  {
+    "id": 641,
+    "name": "Primeiro de Agosto",
+    "league": "Girabola",
+    "country": "Angola"
+  },
+  {
+    "id": 642,
+    "name": "Desportivo da Huila",
+    "league": "Girabola",
+    "country": "Angola"
+  },
+  {
+    "id": 643,
+    "name": "Kabuscorp",
+    "league": "Girabola",
+    "country": "Angola"
+  },
+  {
+    "id": 644,
+    "name": "Bravos do Maquis",
+    "league": "Girabola",
+    "country": "Angola"
+  },
+  {
+    "id": 645,
+    "name": "Interclube",
+    "league": "Girabola",
+    "country": "Angola"
+  },
+  {
+    "id": 646,
+    "name": "1º de Maio",
+    "league": "Girabola",
+    "country": "Angola"
+  },
+  {
+    "id": 647,
+    "name": "Lunda Sul",
+    "league": "Girabola",
+    "country": "Angola"
+  },
+  {
+    "id": 648,
+    "name": "Sao Salvador",
+    "league": "Girabola",
+    "country": "Angola"
+  },
+  {
+    "id": 649,
+    "name": "Academica do Lobito",
+    "league": "Girabola",
+    "country": "Angola"
+  },
+  {
+    "id": 650,
+    "name": "Sagrada Esperanca",
+    "league": "Girabola",
+    "country": "Angola"
+  },
+  {
+    "id": 651,
+    "name": "Recreativo do Libolo",
+    "league": "Girabola",
+    "country": "Angola"
+  },
+  {
+    "id": 652,
+    "name": "Luanda City",
+    "league": "Girabola",
+    "country": "Angola"
+  },
+  {
+    "id": 653,
+    "name": "Guelson FC",
+    "league": "Girabola",
+    "country": "Angola"
+  },
+  {
+    "id": 654,
+    "name": "Redonda FC",
+    "league": "Girabola",
+    "country": "Angola"
+  },
+  {
+    "id": 655,
+    "name": "Al-Nasr (Grupo 1)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 656,
+    "name": "Al-Akhdar (Grupo 1)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 657,
+    "name": "Al-Tahaddy (Grupo 1)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 658,
+    "name": "Al-Anwar (Grupo 1)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 659,
+    "name": "Al-Suqoor (Grupo 1)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 660,
+    "name": "Al-Borouq (Grupo 1)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 661,
+    "name": "Khaleej Sirte (Grupo 1)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 662,
+    "name": "Al-Ansar (Grupo 1)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 663,
+    "name": "Al-Wefaq Ajdabiya (Grupo 1, descendido)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 664,
+    "name": "Al-Hilal SCSC (Grupo 2)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 665,
+    "name": "Al-Ahli Benghazi (Grupo 2)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 666,
+    "name": "Al-Sadaqa (Grupo 2)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 667,
+    "name": "Al-Ta'awon (Grupo 2)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 668,
+    "name": "Al-Andalus (Grupo 2)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 669,
+    "name": "Al-Murooj (Grupo 2)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 670,
+    "name": "Al-Branes (Grupo 2)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 671,
+    "name": "Al-Mahdia (Grupo 2, descendido)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 672,
+    "name": "Asswehly (Grupo 3)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 673,
+    "name": "Olympic Azzaweya (Grupo 3)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 674,
+    "name": "Al-Ittihad Tripoli (Grupo 3)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 675,
+    "name": "Al-Majd (Grupo 3)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 676,
+    "name": "Abu Salim (Grupo 3)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 677,
+    "name": "Al-Bashaer (Grupo 3)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 678,
+    "name": "Shabab Al-Ghar (Grupo 3)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 679,
+    "name": "Al-Tarsana (Grupo 3)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 680,
+    "name": "Al-Nahda Sabha (Grupo 3, descendido)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 681,
+    "name": "Al-Ahli Tripoli (Grupo 4)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 682,
+    "name": "Al-Madina (Grupo 4)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 683,
+    "name": "Al-Ittihad Misurata (Grupo 4)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 684,
+    "name": "Al-Watan (Grupo 4)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 685,
+    "name": "Al-Malaab El-Libby (Grupo 4)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 686,
+    "name": "Al-Khums (Grupo 4)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 687,
+    "name": "Abi Al-Ashar (Grupo 4)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 688,
+    "name": "Al-Dhahra (Grupo 4)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 689,
+    "name": "Asaria (Grupo 4, descendido)",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 690,
+    "name": "Al-Ahli Tripoli",
+    "league": "Libyan Premier League",
+    "country": "Libya"
+  },
+  {
+    "id": 691,
+    "name": "TP Mazembe (Grupo A)",
+    "league": "Linafoot",
+    "country": "Democratic Republic of the Congo"
+  },
+  {
+    "id": 692,
+    "name": "FC Saint-Éloi Lupopo (Grupo A)",
+    "league": "Linafoot",
+    "country": "Democratic Republic of the Congo"
+  },
+  {
+    "id": 693,
+    "name": "CS Don Bosco (Grupo A)",
+    "league": "Linafoot",
+    "country": "Democratic Republic of the Congo"
+  },
+  {
+    "id": 694,
+    "name": "FC Simba (Grupo A)",
+    "league": "Linafoot",
+    "country": "Democratic Republic of the Congo"
+  },
+  {
+    "id": 695,
+    "name": "Blessing FC (Grupo A)",
+    "league": "Linafoot",
+    "country": "Democratic Republic of the Congo"
+  },
+  {
+    "id": 696,
+    "name": "Lubumbashi Sport (Grupo A)",
+    "league": "Linafoot",
+    "country": "Democratic Republic of the Congo"
+  },
+  {
+    "id": 697,
+    "name": "AS Manika (Grupo A)",
+    "league": "Linafoot",
+    "country": "Democratic Republic of the Congo"
+  },
+  {
+    "id": 698,
+    "name": "Saint-Luc (Grupo A)",
+    "league": "Linafoot",
+    "country": "Democratic Republic of the Congo"
+  },
+  {
+    "id": 699,
+    "name": "AS Tanganyika (Grupo A)",
+    "league": "Linafoot",
+    "country": "Democratic Republic of the Congo"
+  },
+  {
+    "id": 700,
+    "name": "SM Sanga Balende (Grupo A)",
+    "league": "Linafoot",
+    "country": "Democratic Republic of the Congo"
+  },
+  {
+    "id": 701,
+    "name": "US Tshinkunku (Grupo A)",
+    "league": "Linafoot",
+    "country": "Democratic Republic of the Congo"
+  },
+  {
+    "id": 702,
+    "name": "New Soger (Grupo A)",
+    "league": "Linafoot",
+    "country": "Democratic Republic of the Congo"
+  },
+  {
+    "id": 703,
+    "name": "AS Malole (Grupo A)",
+    "league": "Linafoot",
+    "country": "Democratic Republic of the Congo"
+  },
+  {
+    "id": 704,
+    "name": "JS Groupe Bazano (Grupo A)",
+    "league": "Linafoot",
+    "country": "Democratic Republic of the Congo"
+  },
+  {
+    "id": 705,
+    "name": "Tshikas (Grupo A)",
+    "league": "Linafoot",
+    "country": "Democratic Republic of the Congo"
+  },
+  {
+    "id": 706,
+    "name": "US Panda (Grupo A)",
+    "league": "Linafoot",
+    "country": "Democratic Republic of the Congo"
+  },
+  {
+    "id": 707,
+    "name": "AS Vita Club (Grupo B)",
+    "league": "Linafoot",
+    "country": "Democratic Republic of the Congo"
+  },
+  {
+    "id": 708,
+    "name": "Aigles du Congo (Grupo B)",
+    "league": "Linafoot",
+    "country": "Democratic Republic of the Congo"
+  },
+  {
+    "id": 709,
+    "name": "AS Maniema Union (Grupo B)",
+    "league": "Linafoot",
+    "country": "Democratic Republic of the Congo"
+  },
+  {
+    "id": 710,
+    "name": "AS Dauphins Noirs (Grupo B)",
+    "league": "Linafoot",
+    "country": "Democratic Republic of the Congo"
+  },
+  {
+    "id": 711,
+    "name": "Céleste (Grupo B)",
+    "league": "Linafoot",
+    "country": "Democratic Republic of the Congo"
+  },
+  {
+    "id": 712,
+    "name": "AS Rangers (Grupo B)",
+    "league": "Linafoot",
+    "country": "Democratic Republic of the Congo"
+  },
+  {
+    "id": 713,
+    "name": "DC Motema Pembe (Grupo B)",
+    "league": "Linafoot",
+    "country": "Democratic Republic of the Congo"
+  },
+  {
+    "id": 714,
+    "name": "Étoile de Kivu (Grupo B)",
+    "league": "Linafoot",
+    "country": "Democratic Republic of the Congo"
+  },
+  {
+    "id": 715,
+    "name": "New Jack (Grupo B)",
+    "league": "Linafoot",
+    "country": "Democratic Republic of the Congo"
+  },
+  {
+    "id": 716,
+    "name": "Étanchéité (Grupo B)",
+    "league": "Linafoot",
+    "country": "Democratic Republic of the Congo"
+  },
+  {
+    "id": 717,
+    "name": "Anges Verts (Grupo B)",
+    "league": "Linafoot",
+    "country": "Democratic Republic of the Congo"
+  },
+  {
+    "id": 718,
+    "name": "Olympique Renaissance (Grupo B)",
+    "league": "Linafoot",
+    "country": "Democratic Republic of the Congo"
+  },
+  {
+    "id": 719,
+    "name": "FC Renaissance du Congo (Grupo B)",
+    "league": "Linafoot",
+    "country": "Democratic Republic of the Congo"
+  },
+  {
+    "id": 720,
+    "name": "Bukavu Dawa (Grupo B)",
+    "league": "Linafoot",
+    "country": "Democratic Republic of the Congo"
+  },
+  {
+    "id": 721,
+    "name": "União Desportiva do Songo",
+    "league": "Moçambola",
+    "country": "Mozambique"
+  },
+  {
+    "id": 722,
+    "name": "Associação Black Bulls",
+    "league": "Moçambola",
+    "country": "Mozambique"
+  },
+  {
+    "id": 723,
+    "name": "Ferroviário da Beira",
+    "league": "Moçambola",
+    "country": "Mozambique"
+  },
+  {
+    "id": 724,
+    "name": "Ferroviário de Lichinga",
+    "league": "Moçambola",
+    "country": "Mozambique"
+  },
+  {
+    "id": 725,
+    "name": "Ferroviário de Maputo",
+    "league": "Moçambola",
+    "country": "Mozambique"
+  },
+  {
+    "id": 726,
+    "name": "Baía de Pemba FC",
+    "league": "Moçambola",
+    "country": "Mozambique"
+  },
+  {
+    "id": 727,
+    "name": "AD Vilankulo",
+    "league": "Moçambola",
+    "country": "Mozambique"
+  },
+  {
+    "id": 728,
+    "name": "Costa do Sol",
+    "league": "Moçambola",
+    "country": "Mozambique"
+  },
+  {
+    "id": 729,
+    "name": "Ferroviário de Nacala",
+    "league": "Moçambola",
+    "country": "Mozambique"
+  },
+  {
+    "id": 730,
+    "name": "Chingale de Tete",
+    "league": "Moçambola",
+    "country": "Mozambique"
+  },
+  {
+    "id": 731,
+    "name": "Ferroviário de Nampula",
+    "league": "Moçambola",
+    "country": "Mozambique"
+  },
+  {
+    "id": 732,
+    "name": "Textáfrica de Chimoio",
+    "league": "Moçambola",
+    "country": "Mozambique"
+  },
+  {
+    "id": 733,
+    "name": "Desportivo de Nacala",
+    "league": "Moçambola",
+    "country": "Mozambique"
+  },
+  {
+    "id": 734,
+    "name": "Desportivo da Matola",
+    "league": "Moçambola",
+    "country": "Mozambique"
+  },
+  {
+    "id": 735,
+    "name": "Orlando Pirates",
+    "league": "South African Premiership",
+    "country": "South Africa"
+  },
+  {
+    "id": 736,
+    "name": "Mamelodi Sundowns",
+    "league": "South African Premiership",
+    "country": "South Africa"
+  },
+  {
+    "id": 737,
+    "name": "Kaizer Chiefs",
+    "league": "South African Premiership",
+    "country": "South Africa"
+  },
+  {
+    "id": 738,
+    "name": "AmaZulu",
+    "league": "South African Premiership",
+    "country": "South Africa"
+  },
+  {
+    "id": 739,
+    "name": "Sekhukhune United",
+    "league": "South African Premiership",
+    "country": "South Africa"
+  },
+  {
+    "id": 740,
+    "name": "Golden Arrows",
+    "league": "South African Premiership",
+    "country": "South Africa"
+  },
+  {
+    "id": 741,
+    "name": "Polokwane City",
+    "league": "South African Premiership",
+    "country": "South Africa"
+  },
+  {
+    "id": 742,
+    "name": "Durban City",
+    "league": "South African Premiership",
+    "country": "South Africa"
+  },
+  {
+    "id": 743,
+    "name": "Stellenbosch FC",
+    "league": "South African Premiership",
+    "country": "South Africa"
+  },
+  {
+    "id": 744,
+    "name": "Siwelele",
+    "league": "South African Premiership",
+    "country": "South Africa"
+  },
+  {
+    "id": 745,
+    "name": "Richards Bay",
+    "league": "South African Premiership",
+    "country": "South Africa"
+  },
+  {
+    "id": 746,
+    "name": "TS Galaxy",
+    "league": "South African Premiership",
+    "country": "South Africa"
+  },
+  {
+    "id": 747,
+    "name": "Chippa United",
+    "league": "South African Premiership",
+    "country": "South Africa"
+  },
+  {
+    "id": 748,
+    "name": "Tshakhuma Madzivhadila (ex Marumo Gallants)",
+    "league": "South African Premiership",
+    "country": "South Africa"
+  },
+  {
+    "id": 749,
+    "name": "Magesi",
+    "league": "South African Premiership",
+    "country": "South Africa"
+  },
+  {
+    "id": 750,
+    "name": "Orbit College",
+    "league": "South African Premiership",
+    "country": "South Africa"
+  },
+  {
+    "id": 751,
+    "name": "incorporaciones reales: Al-Zamala Umm Ruwaba, Al-Merrikh Nyala, Al-Merrikh El Obeid, Al-Merghani Kassala, Al-",
+    "league": "Sudan Premier League",
+    "country": "Sudan"
+  },
+  {
+    "id": 752,
+    "name": "Al-Hilal Omdurman",
+    "league": "Sudan Premier League",
+    "country": "Sudan"
+  },
+  {
+    "id": 753,
+    "name": "Al-Merrikh (Omdurman)",
+    "league": "Sudan Premier League",
+    "country": "Sudan"
+  },
+  {
+    "id": 754,
+    "name": "Al-Ahli Wad Medani",
+    "league": "Sudan Premier League",
+    "country": "Sudan"
+  },
+  {
+    "id": 755,
+    "name": "Al-Zamala (Umm Rawaba)",
+    "league": "Sudan Premier League",
+    "country": "Sudan"
+  },
+  {
+    "id": 756,
+    "name": "Al-Amal (Atbara)",
+    "league": "Sudan Premier League",
+    "country": "Sudan"
+  },
+  {
+    "id": 757,
+    "name": "Hay Al-Wadi (Nyala)",
+    "league": "Sudan Premier League",
+    "country": "Sudan"
+  },
+  {
+    "id": 758,
+    "name": "Al-Merghani (Kassala)",
+    "league": "Sudan Premier League",
+    "country": "Sudan"
+  },
+  {
+    "id": 759,
+    "name": "Power Dynamos",
+    "league": "Zambia Super League",
+    "country": "Zambia"
+  },
+  {
+    "id": 760,
+    "name": "ZESCO United",
+    "league": "Zambia Super League",
+    "country": "Zambia"
+  },
+  {
+    "id": 761,
+    "name": "Nkana",
+    "league": "Zambia Super League",
+    "country": "Zambia"
+  },
+  {
+    "id": 762,
+    "name": "Red Arrows",
+    "league": "Zambia Super League",
+    "country": "Zambia"
+  },
+  {
+    "id": 763,
+    "name": "Kabwe Warriors",
+    "league": "Zambia Super League",
+    "country": "Zambia"
+  },
+  {
+    "id": 764,
+    "name": "Nkwazi",
+    "league": "Zambia Super League",
+    "country": "Zambia"
+  },
+  {
+    "id": 765,
+    "name": "Green Buffaloes",
+    "league": "Zambia Super League",
+    "country": "Zambia"
+  },
+  {
+    "id": 766,
+    "name": "Mufulira Wanderers",
+    "league": "Zambia Super League",
+    "country": "Zambia"
+  },
+  {
+    "id": 767,
+    "name": "Napsa Stars",
+    "league": "Zambia Super League",
+    "country": "Zambia"
+  },
+  {
+    "id": 768,
+    "name": "MUZA",
+    "league": "Zambia Super League",
+    "country": "Zambia"
+  },
+  {
+    "id": 769,
+    "name": "Nchanga Rangers",
+    "league": "Zambia Super League",
+    "country": "Zambia"
+  },
+  {
+    "id": 770,
+    "name": "Green Eagles",
+    "league": "Zambia Super League",
+    "country": "Zambia"
+  },
+  {
+    "id": 771,
+    "name": "Mutondo Stars",
+    "league": "Zambia Super League",
+    "country": "Zambia"
+  },
+  {
+    "id": 772,
+    "name": "Zanaco",
+    "league": "Zambia Super League",
+    "country": "Zambia"
+  },
+  {
+    "id": 773,
+    "name": "Atletico Lusaka",
+    "league": "Zambia Super League",
+    "country": "Zambia"
+  },
+  {
+    "id": 774,
+    "name": "Forest Rangers",
+    "league": "Zambia Super League",
+    "country": "Zambia"
+  },
+  {
+    "id": 775,
+    "name": "Lumwana Radiants",
+    "league": "Zambia Super League",
+    "country": "Zambia"
+  },
+  {
+    "id": 776,
+    "name": "Indeni",
+    "league": "Zambia Super League",
+    "country": "Zambia"
+  },
+  {
+    "id": 777,
+    "name": "Scottland FC",
+    "league": "Castle Lager Premier Soccer League",
+    "country": "Zimbabwe"
+  },
+  {
+    "id": 778,
+    "name": "MWOS FC",
+    "league": "Castle Lager Premier Soccer League",
+    "country": "Zimbabwe"
+  },
+  {
+    "id": 779,
+    "name": "Simba Bhora",
+    "league": "Castle Lager Premier Soccer League",
+    "country": "Zimbabwe"
+  },
+  {
+    "id": 780,
+    "name": "Ngezi Platinum Stars",
+    "league": "Castle Lager Premier Soccer League",
+    "country": "Zimbabwe"
+  },
+  {
+    "id": 781,
+    "name": "TelOne",
+    "league": "Castle Lager Premier Soccer League",
+    "country": "Zimbabwe"
+  },
+  {
+    "id": 782,
+    "name": "Platinum",
+    "league": "Castle Lager Premier Soccer League",
+    "country": "Zimbabwe"
+  },
+  {
+    "id": 783,
+    "name": "Herentals",
+    "league": "Castle Lager Premier Soccer League",
+    "country": "Zimbabwe"
+  },
+  {
+    "id": 784,
+    "name": "ZPC Kariba",
+    "league": "Castle Lager Premier Soccer League",
+    "country": "Zimbabwe"
+  },
+  {
+    "id": 785,
+    "name": "CAPS United",
+    "league": "Castle Lager Premier Soccer League",
+    "country": "Zimbabwe"
+  },
+  {
+    "id": 786,
+    "name": "Manica Diamonds",
+    "league": "Castle Lager Premier Soccer League",
+    "country": "Zimbabwe"
+  },
+  {
+    "id": 787,
+    "name": "Highlanders",
+    "league": "Castle Lager Premier Soccer League",
+    "country": "Zimbabwe"
+  },
+  {
+    "id": 788,
+    "name": "Chicken Inn",
+    "league": "Castle Lager Premier Soccer League",
+    "country": "Zimbabwe"
+  },
+  {
+    "id": 789,
+    "name": "Dynamos",
+    "league": "Castle Lager Premier Soccer League",
+    "country": "Zimbabwe"
+  },
+  {
+    "id": 790,
+    "name": "Triangle United",
+    "league": "Castle Lager Premier Soccer League",
+    "country": "Zimbabwe"
+  },
+  {
+    "id": 791,
+    "name": "Green Fuel",
+    "league": "Castle Lager Premier Soccer League",
+    "country": "Zimbabwe"
+  },
+  {
+    "id": 792,
+    "name": "Bikita Minerals",
+    "league": "Castle Lager Premier Soccer League",
+    "country": "Zimbabwe"
+  },
+  {
+    "id": 793,
+    "name": "Yadah",
+    "league": "Castle Lager Premier Soccer League",
+    "country": "Zimbabwe"
+  },
+  {
+    "id": 794,
+    "name": "Kwekwe United",
+    "league": "Castle Lager Premier Soccer League",
+    "country": "Zimbabwe"
+  },
+  {
+    "id": 795,
+    "name": "Bayern Múnich",
+    "league": "Bundesliga",
+    "country": "Germany"
+  },
+  {
+    "id": 796,
+    "name": "Borussia Dortmund",
+    "league": "Bundesliga",
+    "country": "Germany"
+  },
+  {
+    "id": 797,
+    "name": "RB Leipzig",
+    "league": "Bundesliga",
+    "country": "Germany"
+  },
+  {
+    "id": 798,
+    "name": "VfB Stuttgart",
+    "league": "Bundesliga",
+    "country": "Germany"
+  },
+  {
+    "id": 799,
+    "name": "TSG Hoffenheim",
+    "league": "Bundesliga",
+    "country": "Germany"
+  },
+  {
+    "id": 800,
+    "name": "Bayer Leverkusen",
+    "league": "Bundesliga",
+    "country": "Germany"
+  },
+  {
+    "id": 801,
+    "name": "SC Freiburg",
+    "league": "Bundesliga",
+    "country": "Germany"
+  },
+  {
+    "id": 802,
+    "name": "Eintracht Frankfurt",
+    "league": "Bundesliga",
+    "country": "Germany"
+  },
+  {
+    "id": 803,
+    "name": "FC Augsburg",
+    "league": "Bundesliga",
+    "country": "Germany"
+  },
+  {
+    "id": 804,
+    "name": "Mainz 05",
+    "league": "Bundesliga",
+    "country": "Germany"
+  },
+  {
+    "id": 805,
+    "name": "Union Berlin",
+    "league": "Bundesliga",
+    "country": "Germany"
+  },
+  {
+    "id": 806,
+    "name": "Borussia Mönchengladbach",
+    "league": "Bundesliga",
+    "country": "Germany"
+  },
+  {
+    "id": 807,
+    "name": "Hamburger SV",
+    "league": "Bundesliga",
+    "country": "Germany"
+  },
+  {
+    "id": 808,
+    "name": "1. FC Köln",
+    "league": "Bundesliga",
+    "country": "Germany"
+  },
+  {
+    "id": 809,
+    "name": "Werder Bremen",
+    "league": "Bundesliga",
+    "country": "Germany"
+  },
+  {
+    "id": 810,
+    "name": "VfL Wolfsburg",
+    "league": "Bundesliga",
+    "country": "Germany"
+  },
+  {
+    "id": 811,
+    "name": "1. FC Heidenheim",
+    "league": "Bundesliga",
+    "country": "Germany"
+  },
+  {
+    "id": 812,
+    "name": "FC St. Pauli",
+    "league": "Bundesliga",
+    "country": "Germany"
+  },
+  {
+    "id": 813,
+    "name": "Sturm Graz",
+    "league": "Bundesliga",
+    "country": "Austria"
+  },
+  {
+    "id": 814,
+    "name": "Red Bull Salzburg",
+    "league": "Bundesliga",
+    "country": "Austria"
+  },
+  {
+    "id": 815,
+    "name": "LASK",
+    "league": "Bundesliga",
+    "country": "Austria"
+  },
+  {
+    "id": 816,
+    "name": "Austria Wien",
+    "league": "Bundesliga",
+    "country": "Austria"
+  },
+  {
+    "id": 817,
+    "name": "SK Rapid",
+    "league": "Bundesliga",
+    "country": "Austria"
+  },
+  {
+    "id": 818,
+    "name": "TSV Hartberg",
+    "league": "Bundesliga",
+    "country": "Austria"
+  },
+  {
+    "id": 819,
+    "name": "WSG Tirol",
+    "league": "Bundesliga",
+    "country": "Austria"
+  },
+  {
+    "id": 820,
+    "name": "SCR Altach",
+    "league": "Bundesliga",
+    "country": "Austria"
+  },
+  {
+    "id": 821,
+    "name": "SV Ried",
+    "league": "Bundesliga",
+    "country": "Austria"
+  },
+  {
+    "id": 822,
+    "name": "Wolfsberger AC",
+    "league": "Bundesliga",
+    "country": "Austria"
+  },
+  {
+    "id": 823,
+    "name": "Grazer AK",
+    "league": "Bundesliga",
+    "country": "Austria"
+  },
+  {
+    "id": 824,
+    "name": "FC Barcelona",
+    "league": "La Liga",
+    "country": "Spain"
+  },
+  {
+    "id": 825,
+    "name": "Real Madrid",
+    "league": "La Liga",
+    "country": "Spain"
+  },
+  {
+    "id": 826,
+    "name": "Villarreal",
+    "league": "La Liga",
+    "country": "Spain"
+  },
+  {
+    "id": 827,
+    "name": "Atletico Madrid",
+    "league": "La Liga",
+    "country": "Spain"
+  },
+  {
+    "id": 828,
+    "name": "Real Betis",
+    "league": "La Liga",
+    "country": "Spain"
+  },
+  {
+    "id": 829,
+    "name": "Celta de Vigo",
+    "league": "La Liga",
+    "country": "Spain"
+  },
+  {
+    "id": 830,
+    "name": "Getafe",
+    "league": "La Liga",
+    "country": "Spain"
+  },
+  {
+    "id": 831,
+    "name": "Rayo Vallecano",
+    "league": "La Liga",
+    "country": "Spain"
+  },
+  {
+    "id": 832,
+    "name": "Valencia",
+    "league": "La Liga",
+    "country": "Spain"
+  },
+  {
+    "id": 833,
+    "name": "Real Sociedad",
+    "league": "La Liga",
+    "country": "Spain"
+  },
+  {
+    "id": 834,
+    "name": "Espanyol",
+    "league": "La Liga",
+    "country": "Spain"
+  },
+  {
+    "id": 835,
+    "name": "Athletic Club",
+    "league": "La Liga",
+    "country": "Spain"
+  },
+  {
+    "id": 836,
+    "name": "Sevilla",
+    "league": "La Liga",
+    "country": "Spain"
+  },
+  {
+    "id": 837,
+    "name": "Alaves",
+    "league": "La Liga",
+    "country": "Spain"
+  },
+  {
+    "id": 838,
+    "name": "Elche",
+    "league": "La Liga",
+    "country": "Spain"
+  },
+  {
+    "id": 839,
+    "name": "Levante",
+    "league": "La Liga",
+    "country": "Spain"
+  },
+  {
+    "id": 840,
+    "name": "Osasuna",
+    "league": "La Liga",
+    "country": "Spain"
+  },
+  {
+    "id": 841,
+    "name": "Mallorca",
+    "league": "La Liga",
+    "country": "Spain"
+  },
+  {
+    "id": 842,
+    "name": "Girona",
+    "league": "La Liga",
+    "country": "Spain"
+  },
+  {
+    "id": 843,
+    "name": "Real Oviedo",
+    "league": "La Liga",
+    "country": "Spain"
+  },
+  {
+    "id": 844,
+    "name": "Arsenal",
+    "league": "Premier League / EFL Championship",
+    "country": "United Kingdom"
+  },
+  {
+    "id": 845,
+    "name": "Manchester City",
+    "league": "Premier League / EFL Championship",
+    "country": "United Kingdom"
+  },
+  {
+    "id": 846,
+    "name": "Manchester United",
+    "league": "Premier League / EFL Championship",
+    "country": "United Kingdom"
+  },
+  {
+    "id": 847,
+    "name": "Aston Villa",
+    "league": "Premier League / EFL Championship",
+    "country": "United Kingdom"
+  },
+  {
+    "id": 848,
+    "name": "Liverpool",
+    "league": "Premier League / EFL Championship",
+    "country": "United Kingdom"
+  },
+  {
+    "id": 849,
+    "name": "AFC Bournemouth",
+    "league": "Premier League / EFL Championship",
+    "country": "United Kingdom"
+  },
+  {
+    "id": 850,
+    "name": "Sunderland",
+    "league": "Premier League / EFL Championship",
+    "country": "United Kingdom"
+  },
+  {
+    "id": 851,
+    "name": "Brighton & Hove Albion",
+    "league": "Premier League / EFL Championship",
+    "country": "United Kingdom"
+  },
+  {
+    "id": 852,
+    "name": "Brentford",
+    "league": "Premier League / EFL Championship",
+    "country": "United Kingdom"
+  },
+  {
+    "id": 853,
+    "name": "Chelsea",
+    "league": "Premier League / EFL Championship",
+    "country": "United Kingdom"
+  },
+  {
+    "id": 854,
+    "name": "Fulham",
+    "league": "Premier League / EFL Championship",
+    "country": "United Kingdom"
+  },
+  {
+    "id": 855,
+    "name": "Newcastle United",
+    "league": "Premier League / EFL Championship",
+    "country": "United Kingdom"
+  },
+  {
+    "id": 856,
+    "name": "Everton",
+    "league": "Premier League / EFL Championship",
+    "country": "United Kingdom"
+  },
+  {
+    "id": 857,
+    "name": "Leeds United",
+    "league": "Premier League / EFL Championship",
+    "country": "United Kingdom"
+  },
+  {
+    "id": 858,
+    "name": "Crystal Palace",
+    "league": "Premier League / EFL Championship",
+    "country": "United Kingdom"
+  },
+  {
+    "id": 859,
+    "name": "Nottingham Forest",
+    "league": "Premier League / EFL Championship",
+    "country": "United Kingdom"
+  },
+  {
+    "id": 860,
+    "name": "Tottenham Hotspur",
+    "league": "Premier League / EFL Championship",
+    "country": "United Kingdom"
+  },
+  {
+    "id": 861,
+    "name": "West Ham United",
+    "league": "Premier League / EFL Championship",
+    "country": "United Kingdom"
+  },
+  {
+    "id": 862,
+    "name": "Burnley",
+    "league": "Premier League / EFL Championship",
+    "country": "United Kingdom"
+  },
+  {
+    "id": 863,
+    "name": "Wolverhampton Wanderers",
+    "league": "Premier League / EFL Championship",
+    "country": "United Kingdom"
+  },
+  {
+    "id": 864,
+    "name": "Inter de Milán",
+    "league": "Serie A",
+    "country": "Italy"
+  },
+  {
+    "id": 865,
+    "name": "Napoli",
+    "league": "Serie A",
+    "country": "Italy"
+  },
+  {
+    "id": 866,
+    "name": "AS Roma",
+    "league": "Serie A",
+    "country": "Italy"
+  },
+  {
+    "id": 867,
+    "name": "Como 1907",
+    "league": "Serie A",
+    "country": "Italy"
+  },
+  {
+    "id": 868,
+    "name": "AC Milan",
+    "league": "Serie A",
+    "country": "Italy"
+  },
+  {
+    "id": 869,
+    "name": "Juventus",
+    "league": "Serie A",
+    "country": "Italy"
+  },
+  {
+    "id": 870,
+    "name": "Atalanta",
+    "league": "Serie A",
+    "country": "Italy"
+  },
+  {
+    "id": 871,
+    "name": "Bologna",
+    "league": "Serie A",
+    "country": "Italy"
+  },
+  {
+    "id": 872,
+    "name": "Lazio",
+    "league": "Serie A",
+    "country": "Italy"
+  },
+  {
+    "id": 873,
+    "name": "Udinese",
+    "league": "Serie A",
+    "country": "Italy"
+  },
+  {
+    "id": 874,
+    "name": "Sassuolo",
+    "league": "Serie A",
+    "country": "Italy"
+  },
+  {
+    "id": 875,
+    "name": "Torino",
+    "league": "Serie A",
+    "country": "Italy"
+  },
+  {
+    "id": 876,
+    "name": "Parma",
+    "league": "Serie A",
+    "country": "Italy"
+  },
+  {
+    "id": 877,
+    "name": "Cagliari",
+    "league": "Serie A",
+    "country": "Italy"
+  },
+  {
+    "id": 878,
+    "name": "Fiorentina",
+    "league": "Serie A",
+    "country": "Italy"
+  },
+  {
+    "id": 879,
+    "name": "Genoa",
+    "league": "Serie A",
+    "country": "Italy"
+  },
+  {
+    "id": 880,
+    "name": "Lecce",
+    "league": "Serie A",
+    "country": "Italy"
+  },
+  {
+    "id": 881,
+    "name": "Cremonese",
+    "league": "Serie A",
+    "country": "Italy"
+  },
+  {
+    "id": 882,
+    "name": "Hellas Verona",
+    "league": "Serie A",
+    "country": "Italy"
+  },
+  {
+    "id": 883,
+    "name": "Pisa",
+    "league": "Serie A",
+    "country": "Italy"
+  },
+  {
+    "id": 884,
+    "name": "Paris Saint-Germain",
+    "league": "Ligue 1",
+    "country": "France"
+  },
+  {
+    "id": 885,
+    "name": "RC Lens",
+    "league": "Ligue 1",
+    "country": "France"
+  },
+  {
+    "id": 886,
+    "name": "Lille OSC",
+    "league": "Ligue 1",
+    "country": "France"
+  },
+  {
+    "id": 887,
+    "name": "Olympique Lyonnais",
+    "league": "Ligue 1",
+    "country": "France"
+  },
+  {
+    "id": 888,
+    "name": "Olympique Marseille",
+    "league": "Ligue 1",
+    "country": "France"
+  },
+  {
+    "id": 889,
+    "name": "Stade Rennais",
+    "league": "Ligue 1",
+    "country": "France"
+  },
+  {
+    "id": 890,
+    "name": "AS Monaco",
+    "league": "Ligue 1",
+    "country": "France"
+  },
+  {
+    "id": 891,
+    "name": "Racing Strasbourg",
+    "league": "Ligue 1",
+    "country": "France"
+  },
+  {
+    "id": 892,
+    "name": "Toulouse FC",
+    "league": "Ligue 1",
+    "country": "France"
+  },
+  {
+    "id": 893,
+    "name": "FC Lorient",
+    "league": "Ligue 1",
+    "country": "France"
+  },
+  {
+    "id": 894,
+    "name": "Paris FC",
+    "league": "Ligue 1",
+    "country": "France"
+  },
+  {
+    "id": 895,
+    "name": "Stade Brestois",
+    "league": "Ligue 1",
+    "country": "France"
+  },
+  {
+    "id": 896,
+    "name": "Angers SCO",
+    "league": "Ligue 1",
+    "country": "France"
+  },
+  {
+    "id": 897,
+    "name": "Le Havre AC",
+    "league": "Ligue 1",
+    "country": "France"
+  },
+  {
+    "id": 898,
+    "name": "AJ Auxerre",
+    "league": "Ligue 1",
+    "country": "France"
+  },
+  {
+    "id": 899,
+    "name": "OGC Nice",
+    "league": "Ligue 1",
+    "country": "France"
+  },
+  {
+    "id": 900,
+    "name": "FC Nantes",
+    "league": "Ligue 1",
+    "country": "France"
+  },
+  {
+    "id": 901,
+    "name": "FC Metz",
+    "league": "Ligue 1",
+    "country": "France"
+  },
+  {
+    "id": 902,
+    "name": "PSV Eindhoven",
+    "league": "Eredivisie",
+    "country": "Netherlands"
+  },
+  {
+    "id": 903,
+    "name": "Feyenoord",
+    "league": "Eredivisie",
+    "country": "Netherlands"
+  },
+  {
+    "id": 904,
+    "name": "NEC Nijmegen",
+    "league": "Eredivisie",
+    "country": "Netherlands"
+  },
+  {
+    "id": 905,
+    "name": "FC Twente",
+    "league": "Eredivisie",
+    "country": "Netherlands"
+  },
+  {
+    "id": 906,
+    "name": "Ajax",
+    "league": "Eredivisie",
+    "country": "Netherlands"
+  },
+  {
+    "id": 907,
+    "name": "FC Utrecht",
+    "league": "Eredivisie",
+    "country": "Netherlands"
+  },
+  {
+    "id": 908,
+    "name": "AZ Alkmaar",
+    "league": "Eredivisie",
+    "country": "Netherlands"
+  },
+  {
+    "id": 909,
+    "name": "SC Heerenveen",
+    "league": "Eredivisie",
+    "country": "Netherlands"
+  },
+  {
+    "id": 910,
+    "name": "FC Groningen",
+    "league": "Eredivisie",
+    "country": "Netherlands"
+  },
+  {
+    "id": 911,
+    "name": "Sparta Rotterdam",
+    "league": "Eredivisie",
+    "country": "Netherlands"
+  },
+  {
+    "id": 912,
+    "name": "Fortuna Sittard",
+    "league": "Eredivisie",
+    "country": "Netherlands"
+  },
+  {
+    "id": 913,
+    "name": "Go Ahead Eagles",
+    "league": "Eredivisie",
+    "country": "Netherlands"
+  },
+  {
+    "id": 914,
+    "name": "Excelsior",
+    "league": "Eredivisie",
+    "country": "Netherlands"
+  },
+  {
+    "id": 915,
+    "name": "Telstar",
+    "league": "Eredivisie",
+    "country": "Netherlands"
+  },
+  {
+    "id": 916,
+    "name": "PEC Zwolle",
+    "league": "Eredivisie",
+    "country": "Netherlands"
+  },
+  {
+    "id": 917,
+    "name": "FC Volendam",
+    "league": "Eredivisie",
+    "country": "Netherlands"
+  },
+  {
+    "id": 918,
+    "name": "NAC Breda",
+    "league": "Eredivisie",
+    "country": "Netherlands"
+  },
+  {
+    "id": 919,
+    "name": "Heracles Almelo",
+    "league": "Eredivisie",
+    "country": "Netherlands"
+  },
+  {
+    "id": 920,
+    "name": "Union Saint-Gilloise",
+    "league": "Belgian Pro League (First Division A)",
+    "country": "Belgium"
+  },
+  {
+    "id": 921,
+    "name": "Club Brugge",
+    "league": "Belgian Pro League (First Division A)",
+    "country": "Belgium"
+  },
+  {
+    "id": 922,
+    "name": "Sint-Truiden",
+    "league": "Belgian Pro League (First Division A)",
+    "country": "Belgium"
+  },
+  {
+    "id": 923,
+    "name": "Gent",
+    "league": "Belgian Pro League (First Division A)",
+    "country": "Belgium"
+  },
+  {
+    "id": 924,
+    "name": "KV Mechelen",
+    "league": "Belgian Pro League (First Division A)",
+    "country": "Belgium"
+  },
+  {
+    "id": 925,
+    "name": "Anderlecht",
+    "league": "Belgian Pro League (First Division A)",
+    "country": "Belgium"
+  },
+  {
+    "id": 926,
+    "name": "Genk",
+    "league": "Belgian Pro League (First Division A)",
+    "country": "Belgium"
+  },
+  {
+    "id": 927,
+    "name": "Standard Liege",
+    "league": "Belgian Pro League (First Division A)",
+    "country": "Belgium"
+  },
+  {
+    "id": 928,
+    "name": "Westerlo",
+    "league": "Belgian Pro League (First Division A)",
+    "country": "Belgium"
+  },
+  {
+    "id": 929,
+    "name": "Royal Antwerp",
+    "league": "Belgian Pro League (First Division A)",
+    "country": "Belgium"
+  },
+  {
+    "id": 930,
+    "name": "Charleroi",
+    "league": "Belgian Pro League (First Division A)",
+    "country": "Belgium"
+  },
+  {
+    "id": 931,
+    "name": "OH Leuven",
+    "league": "Belgian Pro League (First Division A)",
+    "country": "Belgium"
+  },
+  {
+    "id": 932,
+    "name": "Zulte Waregem",
+    "league": "Belgian Pro League (First Division A)",
+    "country": "Belgium"
+  },
+  {
+    "id": 933,
+    "name": "Cercle Brugge",
+    "league": "Belgian Pro League (First Division A)",
+    "country": "Belgium"
+  },
+  {
+    "id": 934,
+    "name": "RAAL La Louviere",
+    "league": "Belgian Pro League (First Division A)",
+    "country": "Belgium"
+  },
+  {
+    "id": 935,
+    "name": "Dender EH",
+    "league": "Belgian Pro League (First Division A)",
+    "country": "Belgium"
+  },
+  {
+    "id": 936,
+    "name": "Mjallby AIF",
+    "league": "Allsvenskan",
+    "country": "Sweden"
+  },
+  {
+    "id": 937,
+    "name": "Hammarby IF",
+    "league": "Allsvenskan",
+    "country": "Sweden"
+  },
+  {
+    "id": 938,
+    "name": "GAIS",
+    "league": "Allsvenskan",
+    "country": "Sweden"
+  },
+  {
+    "id": 939,
+    "name": "IFK Goteborg",
+    "league": "Allsvenskan",
+    "country": "Sweden"
+  },
+  {
+    "id": 940,
+    "name": "Djurgardens IF",
+    "league": "Allsvenskan",
+    "country": "Sweden"
+  },
+  {
+    "id": 941,
+    "name": "Malmo FF",
+    "league": "Allsvenskan",
+    "country": "Sweden"
+  },
+  {
+    "id": 942,
+    "name": "AIK",
+    "league": "Allsvenskan",
+    "country": "Sweden"
+  },
+  {
+    "id": 943,
+    "name": "IF Elfsborg",
+    "league": "Allsvenskan",
+    "country": "Sweden"
+  },
+  {
+    "id": 944,
+    "name": "IK Sirius",
+    "league": "Allsvenskan",
+    "country": "Sweden"
+  },
+  {
+    "id": 945,
+    "name": "BK Hacken",
+    "league": "Allsvenskan",
+    "country": "Sweden"
+  },
+  {
+    "id": 946,
+    "name": "Halmstads BK",
+    "league": "Allsvenskan",
+    "country": "Sweden"
+  },
+  {
+    "id": 947,
+    "name": "IF Brommapojkarna",
+    "league": "Allsvenskan",
+    "country": "Sweden"
+  },
+  {
+    "id": 948,
+    "name": "Degerfors IF",
+    "league": "Allsvenskan",
+    "country": "Sweden"
+  },
+  {
+    "id": 949,
+    "name": "IFK Norrkoping",
+    "league": "Allsvenskan",
+    "country": "Sweden"
+  },
+  {
+    "id": 950,
+    "name": "Osters IF",
+    "league": "Allsvenskan",
+    "country": "Sweden"
+  },
+  {
+    "id": 951,
+    "name": "IFK Varnamo",
+    "league": "Allsvenskan",
+    "country": "Sweden"
+  },
+  {
+    "id": 952,
+    "name": "Viking FK",
+    "league": "Eliteserien",
+    "country": "Norway"
+  },
+  {
+    "id": 953,
+    "name": "FK Bodo/Glimt",
+    "league": "Eliteserien",
+    "country": "Norway"
+  },
+  {
+    "id": 954,
+    "name": "Tromso IL",
+    "league": "Eliteserien",
+    "country": "Norway"
+  },
+  {
+    "id": 955,
+    "name": "SK Brann",
+    "league": "Eliteserien",
+    "country": "Norway"
+  },
+  {
+    "id": 956,
+    "name": "Sandefjord Fotball",
+    "league": "Eliteserien",
+    "country": "Norway"
+  },
+  {
+    "id": 957,
+    "name": "Rosenborg BK",
+    "league": "Eliteserien",
+    "country": "Norway"
+  },
+  {
+    "id": 958,
+    "name": "Fredrikstad FK",
+    "league": "Eliteserien",
+    "country": "Norway"
+  },
+  {
+    "id": 959,
+    "name": "Sarpsborg 08",
+    "league": "Eliteserien",
+    "country": "Norway"
+  },
+  {
+    "id": 960,
+    "name": "Valerenga Fotball",
+    "league": "Eliteserien",
+    "country": "Norway"
+  },
+  {
+    "id": 961,
+    "name": "Molde FK",
+    "league": "Eliteserien",
+    "country": "Norway"
+  },
+  {
+    "id": 962,
+    "name": "Hamarkameratene (HamKam)",
+    "league": "Eliteserien",
+    "country": "Norway"
+  },
+  {
+    "id": 963,
+    "name": "KFUM Oslo",
+    "league": "Eliteserien",
+    "country": "Norway"
+  },
+  {
+    "id": 964,
+    "name": "Kristiansund BK",
+    "league": "Eliteserien",
+    "country": "Norway"
+  },
+  {
+    "id": 965,
+    "name": "Bryne FK",
+    "league": "Eliteserien",
+    "country": "Norway"
+  },
+  {
+    "id": 966,
+    "name": "Stromsgodset",
+    "league": "Eliteserien",
+    "country": "Norway"
+  },
+  {
+    "id": 967,
+    "name": "Lech Poznan",
+    "league": "Ekstraklasa",
+    "country": "Poland"
+  },
+  {
+    "id": 968,
+    "name": "Gornik Zabrze",
+    "league": "Ekstraklasa",
+    "country": "Poland"
+  },
+  {
+    "id": 969,
+    "name": "Jagiellonia Bialystok",
+    "league": "Ekstraklasa",
+    "country": "Poland"
+  },
+  {
+    "id": 970,
+    "name": "Rakow Czestochowa",
+    "league": "Ekstraklasa",
+    "country": "Poland"
+  },
+  {
+    "id": 971,
+    "name": "GKS Katowice",
+    "league": "Ekstraklasa",
+    "country": "Poland"
+  },
+  {
+    "id": 972,
+    "name": "Legia Warszawa",
+    "league": "Ekstraklasa",
+    "country": "Poland"
+  },
+  {
+    "id": 973,
+    "name": "Zaglebie Lubin",
+    "league": "Ekstraklasa",
+    "country": "Poland"
+  },
+  {
+    "id": 974,
+    "name": "Wisla Plock",
+    "league": "Ekstraklasa",
+    "country": "Poland"
+  },
+  {
+    "id": 975,
+    "name": "Pogon Szczecin",
+    "league": "Ekstraklasa",
+    "country": "Poland"
+  },
+  {
+    "id": 976,
+    "name": "Radomiak Radom",
+    "league": "Ekstraklasa",
+    "country": "Poland"
+  },
+  {
+    "id": 977,
+    "name": "Korona Kielce",
+    "league": "Ekstraklasa",
+    "country": "Poland"
+  },
+  {
+    "id": 978,
+    "name": "Motor Lublin",
+    "league": "Ekstraklasa",
+    "country": "Poland"
+  },
+  {
+    "id": 979,
+    "name": "Cracovia",
+    "league": "Ekstraklasa",
+    "country": "Poland"
+  },
+  {
+    "id": 980,
+    "name": "Widzew Lodz",
+    "league": "Ekstraklasa",
+    "country": "Poland"
+  },
+  {
+    "id": 981,
+    "name": "Piast Gliwice",
+    "league": "Ekstraklasa",
+    "country": "Poland"
+  },
+  {
+    "id": 982,
+    "name": "Lechia Gdansk",
+    "league": "Ekstraklasa",
+    "country": "Poland"
+  },
+  {
+    "id": 983,
+    "name": "Arka Gdynia",
+    "league": "Ekstraklasa",
+    "country": "Poland"
+  },
+  {
+    "id": 984,
+    "name": "Bruk-Bet Termalica Nieciecza",
+    "league": "Ekstraklasa",
+    "country": "Poland"
+  },
+  {
+    "id": 985,
+    "name": "equipos) de la HNL 2025-26, cerrada el 23 de mayo de 2026. Dinamo Zagreb se coronó campeón (26.º título) con una",
+    "league": "Croatian Football League (HNL)",
+    "country": "Croatia"
+  },
+  {
+    "id": 986,
+    "name": "Dinamo Zagreb",
+    "league": "Croatian Football League (HNL)",
+    "country": "Croatia"
+  },
+  {
+    "id": 987,
+    "name": "Hajduk Split",
+    "league": "Croatian Football League (HNL)",
+    "country": "Croatia"
+  },
+  {
+    "id": 988,
+    "name": "NK Varazdin",
+    "league": "Croatian Football League (HNL)",
+    "country": "Croatia"
+  },
+  {
+    "id": 989,
+    "name": "HNK Rijeka",
+    "league": "Croatian Football League (HNL)",
+    "country": "Croatia"
+  },
+  {
+    "id": 990,
+    "name": "NK Lokomotiva Zagreb",
+    "league": "Croatian Football League (HNL)",
+    "country": "Croatia"
+  },
+  {
+    "id": 991,
+    "name": "NK Istra 1961",
+    "league": "Croatian Football League (HNL)",
+    "country": "Croatia"
+  },
+  {
+    "id": 992,
+    "name": "HNK Gorica",
+    "league": "Croatian Football League (HNL)",
+    "country": "Croatia"
+  },
+  {
+    "id": 993,
+    "name": "NK Slaven Belupo",
+    "league": "Croatian Football League (HNL)",
+    "country": "Croatia"
+  },
+  {
+    "id": 994,
+    "name": "NK Osijek",
+    "league": "Croatian Football League (HNL)",
+    "country": "Croatia"
+  },
+  {
+    "id": 995,
+    "name": "FC Porto",
+    "league": "Primeira Liga",
+    "country": "Portugal"
+  },
+  {
+    "id": 996,
+    "name": "Sporting CP",
+    "league": "Primeira Liga",
+    "country": "Portugal"
+  },
+  {
+    "id": 997,
+    "name": "Benfica",
+    "league": "Primeira Liga",
+    "country": "Portugal"
+  },
+  {
+    "id": 998,
+    "name": "Sporting Braga",
+    "league": "Primeira Liga",
+    "country": "Portugal"
+  },
+  {
+    "id": 999,
+    "name": "Famalicao",
+    "league": "Primeira Liga",
+    "country": "Portugal"
+  },
+  {
+    "id": 1000,
+    "name": "Gil Vicente",
+    "league": "Primeira Liga",
+    "country": "Portugal"
+  },
+  {
+    "id": 1001,
+    "name": "Moreirense",
+    "league": "Primeira Liga",
+    "country": "Portugal"
+  },
+  {
+    "id": 1002,
+    "name": "Arouca",
+    "league": "Primeira Liga",
+    "country": "Portugal"
+  },
+  {
+    "id": 1003,
+    "name": "Vitoria SC",
+    "league": "Primeira Liga",
+    "country": "Portugal"
+  },
+  {
+    "id": 1004,
+    "name": "Estoril",
+    "league": "Primeira Liga",
+    "country": "Portugal"
+  },
+  {
+    "id": 1005,
+    "name": "Alverca",
+    "league": "Primeira Liga",
+    "country": "Portugal"
+  },
+  {
+    "id": 1006,
+    "name": "Rio Ave",
+    "league": "Primeira Liga",
+    "country": "Portugal"
+  },
+  {
+    "id": 1007,
+    "name": "Santa Clara",
+    "league": "Primeira Liga",
+    "country": "Portugal"
+  },
+  {
+    "id": 1008,
+    "name": "Nacional",
+    "league": "Primeira Liga",
+    "country": "Portugal"
+  },
+  {
+    "id": 1009,
+    "name": "Estrela da Amadora",
+    "league": "Primeira Liga",
+    "country": "Portugal"
+  },
+  {
+    "id": 1010,
+    "name": "Casa Pia",
+    "league": "Primeira Liga",
+    "country": "Portugal"
+  },
+  {
+    "id": 1011,
+    "name": "Tondela",
+    "league": "Primeira Liga",
+    "country": "Portugal"
+  },
+  {
+    "id": 1012,
+    "name": "AVS",
+    "league": "Primeira Liga",
+    "country": "Portugal"
+  },
+  {
+    "id": 1013,
+    "name": "Galatasaray",
+    "league": "Süper Lig",
+    "country": "Turkey"
+  },
+  {
+    "id": 1014,
+    "name": "Fenerbahce",
+    "league": "Süper Lig",
+    "country": "Turkey"
+  },
+  {
+    "id": 1015,
+    "name": "Trabzonspor",
+    "league": "Süper Lig",
+    "country": "Turkey"
+  },
+  {
+    "id": 1016,
+    "name": "Besiktas",
+    "league": "Süper Lig",
+    "country": "Turkey"
+  },
+  {
+    "id": 1017,
+    "name": "Istanbul Basaksehir",
+    "league": "Süper Lig",
+    "country": "Turkey"
+  },
+  {
+    "id": 1018,
+    "name": "Goztepe",
+    "league": "Süper Lig",
+    "country": "Turkey"
+  },
+  {
+    "id": 1019,
+    "name": "Samsunspor",
+    "league": "Süper Lig",
+    "country": "Turkey"
+  },
+  {
+    "id": 1020,
+    "name": "Caykur Rizespor",
+    "league": "Süper Lig",
+    "country": "Turkey"
+  },
+  {
+    "id": 1021,
+    "name": "Konyaspor",
+    "league": "Süper Lig",
+    "country": "Turkey"
+  },
+  {
+    "id": 1022,
+    "name": "Kocaelispor",
+    "league": "Süper Lig",
+    "country": "Turkey"
+  },
+  {
+    "id": 1023,
+    "name": "Alanyaspor",
+    "league": "Süper Lig",
+    "country": "Turkey"
+  },
+  {
+    "id": 1024,
+    "name": "Gazisehir Gaziantep",
+    "league": "Süper Lig",
+    "country": "Turkey"
+  },
+  {
+    "id": 1025,
+    "name": "Kasimpasa",
+    "league": "Süper Lig",
+    "country": "Turkey"
+  },
+  {
+    "id": 1026,
+    "name": "Genclerbirligi",
+    "league": "Süper Lig",
+    "country": "Turkey"
+  },
+  {
+    "id": 1027,
+    "name": "Eyupspor",
+    "league": "Süper Lig",
+    "country": "Turkey"
+  },
+  {
+    "id": 1028,
+    "name": "Antalyaspor",
+    "league": "Süper Lig",
+    "country": "Turkey"
+  },
+  {
+    "id": 1029,
+    "name": "Kayserispor",
+    "league": "Süper Lig",
+    "country": "Turkey"
+  },
+  {
+    "id": 1030,
+    "name": "Fatih Karagumruk",
+    "league": "Süper Lig",
+    "country": "Turkey"
+  },
+  {
+    "id": 1031,
+    "name": "FC Thun",
+    "league": "Swiss Super League",
+    "country": "Switzerland"
+  },
+  {
+    "id": 1032,
+    "name": "FC St. Gallen (grupo campeonato)",
+    "league": "Swiss Super League",
+    "country": "Switzerland"
+  },
+  {
+    "id": 1033,
+    "name": "FC Lugano (grupo campeonato)",
+    "league": "Swiss Super League",
+    "country": "Switzerland"
+  },
+  {
+    "id": 1034,
+    "name": "FC Sion (grupo campeonato)",
+    "league": "Swiss Super League",
+    "country": "Switzerland"
+  },
+  {
+    "id": 1035,
+    "name": "FC Basel (grupo campeonato)",
+    "league": "Swiss Super League",
+    "country": "Switzerland"
+  },
+  {
+    "id": 1036,
+    "name": "BSC Young Boys (grupo campeonato)",
+    "league": "Swiss Super League",
+    "country": "Switzerland"
+  },
+  {
+    "id": 1037,
+    "name": "FC Luzern (grupo descenso)",
+    "league": "Swiss Super League",
+    "country": "Switzerland"
+  },
+  {
+    "id": 1038,
+    "name": "Servette FC (grupo descenso)",
+    "league": "Swiss Super League",
+    "country": "Switzerland"
+  },
+  {
+    "id": 1039,
+    "name": "Lausanne-Sport (grupo descenso)",
+    "league": "Swiss Super League",
+    "country": "Switzerland"
+  },
+  {
+    "id": 1040,
+    "name": "FC Zurich (grupo descenso)",
+    "league": "Swiss Super League",
+    "country": "Switzerland"
+  },
+  {
+    "id": 1041,
+    "name": "Grasshopper Club (grupo descenso)",
+    "league": "Swiss Super League",
+    "country": "Switzerland"
+  },
+  {
+    "id": 1042,
+    "name": "FC Winterthur",
+    "league": "Swiss Super League",
+    "country": "Switzerland"
+  },
+  {
+    "id": 1043,
+    "name": "AEK Athens",
+    "league": "Super League Greece",
+    "country": "Greece"
+  },
+  {
+    "id": 1044,
+    "name": "Olympiacos",
+    "league": "Super League Greece",
+    "country": "Greece"
+  },
+  {
+    "id": 1045,
+    "name": "PAOK",
+    "league": "Super League Greece",
+    "country": "Greece"
+  },
+  {
+    "id": 1046,
+    "name": "Panathinaikos",
+    "league": "Super League Greece",
+    "country": "Greece"
+  },
+  {
+    "id": 1047,
+    "name": "Levadiakos",
+    "league": "Super League Greece",
+    "country": "Greece"
+  },
+  {
+    "id": 1048,
+    "name": "OFI Crete",
+    "league": "Super League Greece",
+    "country": "Greece"
+  },
+  {
+    "id": 1049,
+    "name": "Volos NFC",
+    "league": "Super League Greece",
+    "country": "Greece"
+  },
+  {
+    "id": 1050,
+    "name": "Aris",
+    "league": "Super League Greece",
+    "country": "Greece"
+  },
+  {
+    "id": 1051,
+    "name": "Atromitos",
+    "league": "Super League Greece",
+    "country": "Greece"
+  },
+  {
+    "id": 1052,
+    "name": "AE Kifisia",
+    "league": "Super League Greece",
+    "country": "Greece"
+  },
+  {
+    "id": 1053,
+    "name": "Panetolikos",
+    "league": "Super League Greece",
+    "country": "Greece"
+  },
+  {
+    "id": 1054,
+    "name": "AEL (Larissa)",
+    "league": "Super League Greece",
+    "country": "Greece"
+  },
+  {
+    "id": 1055,
+    "name": "Panserraikos",
+    "league": "Super League Greece",
+    "country": "Greece"
+  },
+  {
+    "id": 1056,
+    "name": "Asteras Tripolis",
+    "league": "Super League Greece",
+    "country": "Greece"
+  },
+  {
+    "id": 1057,
+    "name": "AGF",
+    "league": "Danish Superliga",
+    "country": "Denmark"
+  },
+  {
+    "id": 1058,
+    "name": "FC Midtjylland",
+    "league": "Danish Superliga",
+    "country": "Denmark"
+  },
+  {
+    "id": 1059,
+    "name": "FC Nordsjaelland",
+    "league": "Danish Superliga",
+    "country": "Denmark"
+  },
+  {
+    "id": 1060,
+    "name": "Brondby IF",
+    "league": "Danish Superliga",
+    "country": "Denmark"
+  },
+  {
+    "id": 1061,
+    "name": "Viborg FF",
+    "league": "Danish Superliga",
+    "country": "Denmark"
+  },
+  {
+    "id": 1062,
+    "name": "Sonderjyske",
+    "league": "Danish Superliga",
+    "country": "Denmark"
+  },
+  {
+    "id": 1063,
+    "name": "FC Copenhague",
+    "league": "Danish Superliga",
+    "country": "Denmark"
+  },
+  {
+    "id": 1064,
+    "name": "OB (Odense)",
+    "league": "Danish Superliga",
+    "country": "Denmark"
+  },
+  {
+    "id": 1065,
+    "name": "Silkeborg IF",
+    "league": "Danish Superliga",
+    "country": "Denmark"
+  },
+  {
+    "id": 1066,
+    "name": "Randers FC",
+    "league": "Danish Superliga",
+    "country": "Denmark"
+  },
+  {
+    "id": 1067,
+    "name": "FC Fredericia",
+    "league": "Danish Superliga",
+    "country": "Denmark"
+  },
+  {
+    "id": 1068,
+    "name": "Vejle Boldklub",
+    "league": "Danish Superliga",
+    "country": "Denmark"
+  },
+  {
+    "id": 1069,
+    "name": "Crvena Zvezda",
+    "league": "Serbian SuperLiga",
+    "country": "Serbia"
+  },
+  {
+    "id": 1070,
+    "name": "Vojvodina",
+    "league": "Serbian SuperLiga",
+    "country": "Serbia"
+  },
+  {
+    "id": 1071,
+    "name": "Partizan",
+    "league": "Serbian SuperLiga",
+    "country": "Serbia"
+  },
+  {
+    "id": 1072,
+    "name": "Zeleznicar Pancevo",
+    "league": "Serbian SuperLiga",
+    "country": "Serbia"
+  },
+  {
+    "id": 1073,
+    "name": "Novi Pazar",
+    "league": "Serbian SuperLiga",
+    "country": "Serbia"
+  },
+  {
+    "id": 1074,
+    "name": "OFK Beograd",
+    "league": "Serbian SuperLiga",
+    "country": "Serbia"
+  },
+  {
+    "id": 1075,
+    "name": "Cukaricki",
+    "league": "Serbian SuperLiga",
+    "country": "Serbia"
+  },
+  {
+    "id": 1076,
+    "name": "Radnik Surdulica",
+    "league": "Serbian SuperLiga",
+    "country": "Serbia"
+  },
+  {
+    "id": 1077,
+    "name": "IMT Beograd",
+    "league": "Serbian SuperLiga",
+    "country": "Serbia"
+  },
+  {
+    "id": 1078,
+    "name": "Radnicki 1923 Kragujevac",
+    "league": "Serbian SuperLiga",
+    "country": "Serbia"
+  },
+  {
+    "id": 1079,
+    "name": "TSC Backa Topola",
+    "league": "Serbian SuperLiga",
+    "country": "Serbia"
+  },
+  {
+    "id": 1080,
+    "name": "Javor-Matis",
+    "league": "Serbian SuperLiga",
+    "country": "Serbia"
+  },
+  {
+    "id": 1081,
+    "name": "Radnicki Nis",
+    "league": "Serbian SuperLiga",
+    "country": "Serbia"
+  },
+  {
+    "id": 1082,
+    "name": "Mladost Lucani",
+    "league": "Serbian SuperLiga",
+    "country": "Serbia"
+  },
+  {
+    "id": 1083,
+    "name": "Spartak Subotica",
+    "league": "Serbian SuperLiga",
+    "country": "Serbia"
+  },
+  {
+    "id": 1084,
+    "name": "Napredak Krusevac",
+    "league": "Serbian SuperLiga",
+    "country": "Serbia"
+  },
+  {
+    "id": 1085,
+    "name": "Slavia Praga",
+    "league": "Czech First League (Fortuna/Chance Liga)",
+    "country": "Czechia"
+  },
+  {
+    "id": 1086,
+    "name": "Sparta Praga",
+    "league": "Czech First League (Fortuna/Chance Liga)",
+    "country": "Czechia"
+  },
+  {
+    "id": 1087,
+    "name": "Viktoria Plzen",
+    "league": "Czech First League (Fortuna/Chance Liga)",
+    "country": "Czechia"
+  },
+  {
+    "id": 1088,
+    "name": "Jablonec",
+    "league": "Czech First League (Fortuna/Chance Liga)",
+    "country": "Czechia"
+  },
+  {
+    "id": 1089,
+    "name": "Hradec Kralove",
+    "league": "Czech First League (Fortuna/Chance Liga)",
+    "country": "Czechia"
+  },
+  {
+    "id": 1090,
+    "name": "Slovan Liberec",
+    "league": "Czech First League (Fortuna/Chance Liga)",
+    "country": "Czechia"
+  },
+  {
+    "id": 1091,
+    "name": "Sigma Olomouc",
+    "league": "Czech First League (Fortuna/Chance Liga)",
+    "country": "Czechia"
+  },
+  {
+    "id": 1092,
+    "name": "Pardubice",
+    "league": "Czech First League (Fortuna/Chance Liga)",
+    "country": "Czechia"
+  },
+  {
+    "id": 1093,
+    "name": "Karvina",
+    "league": "Czech First League (Fortuna/Chance Liga)",
+    "country": "Czechia"
+  },
+  {
+    "id": 1094,
+    "name": "Bohemians 1905",
+    "league": "Czech First League (Fortuna/Chance Liga)",
+    "country": "Czechia"
+  },
+  {
+    "id": 1095,
+    "name": "Zlin",
+    "league": "Czech First League (Fortuna/Chance Liga)",
+    "country": "Czechia"
+  },
+  {
+    "id": 1096,
+    "name": "Mlada Boleslav",
+    "league": "Czech First League (Fortuna/Chance Liga)",
+    "country": "Czechia"
+  },
+  {
+    "id": 1097,
+    "name": "Teplice",
+    "league": "Czech First League (Fortuna/Chance Liga)",
+    "country": "Czechia"
+  },
+  {
+    "id": 1098,
+    "name": "Slovacko",
+    "league": "Czech First League (Fortuna/Chance Liga)",
+    "country": "Czechia"
+  },
+  {
+    "id": 1099,
+    "name": "Banik Ostrava",
+    "league": "Czech First League (Fortuna/Chance Liga)",
+    "country": "Czechia"
+  },
+  {
+    "id": 1100,
+    "name": "Dukla Praga",
+    "league": "Czech First League (Fortuna/Chance Liga)",
+    "country": "Czechia"
+  },
+  {
+    "id": 1101,
+    "name": "Borac Banja Luka",
+    "league": "Premier League of Bosnia and Herzegovina",
+    "country": "Bosnia and Herzegovina"
+  },
+  {
+    "id": 1102,
+    "name": "Zrinjski Mostar",
+    "league": "Premier League of Bosnia and Herzegovina",
+    "country": "Bosnia and Herzegovina"
+  },
+  {
+    "id": 1103,
+    "name": "Sarajevo",
+    "league": "Premier League of Bosnia and Herzegovina",
+    "country": "Bosnia and Herzegovina"
+  },
+  {
+    "id": 1104,
+    "name": "Velez Mostar",
+    "league": "Premier League of Bosnia and Herzegovina",
+    "country": "Bosnia and Herzegovina"
+  },
+  {
+    "id": 1105,
+    "name": "Siroki Brijeg",
+    "league": "Premier League of Bosnia and Herzegovina",
+    "country": "Bosnia and Herzegovina"
+  },
+  {
+    "id": 1106,
+    "name": "Zeljeznicar",
+    "league": "Premier League of Bosnia and Herzegovina",
+    "country": "Bosnia and Herzegovina"
+  },
+  {
+    "id": 1107,
+    "name": "Radnik Bijeljina",
+    "league": "Premier League of Bosnia and Herzegovina",
+    "country": "Bosnia and Herzegovina"
+  },
+  {
+    "id": 1108,
+    "name": "Sloga Doboj",
+    "league": "Premier League of Bosnia and Herzegovina",
+    "country": "Bosnia and Herzegovina"
+  },
+  {
+    "id": 1109,
+    "name": "Posusje",
+    "league": "Premier League of Bosnia and Herzegovina",
+    "country": "Bosnia and Herzegovina"
+  },
+  {
+    "id": 1110,
+    "name": "Rudar Prijedor",
+    "league": "Premier League of Bosnia and Herzegovina",
+    "country": "Bosnia and Herzegovina"
+  },
+  {
+    "id": 1111,
+    "name": "Zenit San Petersburgo",
+    "league": "Russian Premier League",
+    "country": "Russia"
+  },
+  {
+    "id": 1112,
+    "name": "FK Krasnodar",
+    "league": "Russian Premier League",
+    "country": "Russia"
+  },
+  {
+    "id": 1113,
+    "name": "Lokomotiv Moscu",
+    "league": "Russian Premier League",
+    "country": "Russia"
+  },
+  {
+    "id": 1114,
+    "name": "CSKA Moscu",
+    "league": "Russian Premier League",
+    "country": "Russia"
+  },
+  {
+    "id": 1115,
+    "name": "Baltika Kaliningrado",
+    "league": "Russian Premier League",
+    "country": "Russia"
+  },
+  {
+    "id": 1116,
+    "name": "Spartak Moscu",
+    "league": "Russian Premier League",
+    "country": "Russia"
+  },
+  {
+    "id": 1117,
+    "name": "Akron Tolyatti",
+    "league": "Russian Premier League",
+    "country": "Russia"
+  },
+  {
+    "id": 1118,
+    "name": "Dynamo Moscu",
+    "league": "Russian Premier League",
+    "country": "Russia"
+  },
+  {
+    "id": 1119,
+    "name": "Krylia Sovetov",
+    "league": "Russian Premier League",
+    "country": "Russia"
+  },
+  {
+    "id": 1120,
+    "name": "Akhmat Grozny",
+    "league": "Russian Premier League",
+    "country": "Russia"
+  },
+  {
+    "id": 1121,
+    "name": "Rubin Kazan",
+    "league": "Russian Premier League",
+    "country": "Russia"
+  },
+  {
+    "id": 1122,
+    "name": "FK Orenburg",
+    "league": "Russian Premier League",
+    "country": "Russia"
+  },
+  {
+    "id": 1123,
+    "name": "Dinamo Majachkala",
+    "league": "Russian Premier League",
+    "country": "Russia"
+  },
+  {
+    "id": 1124,
+    "name": "FK Rostov",
+    "league": "Russian Premier League",
+    "country": "Russia"
+  },
+  {
+    "id": 1125,
+    "name": "FK Sochi",
+    "league": "Russian Premier League",
+    "country": "Russia"
+  },
+  {
+    "id": 1126,
+    "name": "Pari NN / Nizhny Novgorod",
+    "league": "Russian Premier League",
+    "country": "Russia"
+  },
+  {
+    "id": 1127,
+    "name": "Shakhtar Donetsk",
+    "league": "Ukrainian Premier League",
+    "country": "Ukraine"
+  },
+  {
+    "id": 1128,
+    "name": "LNZ Cherkasy",
+    "league": "Ukrainian Premier League",
+    "country": "Ukraine"
+  },
+  {
+    "id": 1129,
+    "name": "Polissya Zhytomyr",
+    "league": "Ukrainian Premier League",
+    "country": "Ukraine"
+  },
+  {
+    "id": 1130,
+    "name": "Dynamo Kiev",
+    "league": "Ukrainian Premier League",
+    "country": "Ukraine"
+  },
+  {
+    "id": 1131,
+    "name": "Metalist 1925 Kharkiv",
+    "league": "Ukrainian Premier League",
+    "country": "Ukraine"
+  },
+  {
+    "id": 1132,
+    "name": "Kolos Kovalivka",
+    "league": "Ukrainian Premier League",
+    "country": "Ukraine"
+  },
+  {
+    "id": 1133,
+    "name": "Kryvbas Kryvyi Rih",
+    "league": "Ukrainian Premier League",
+    "country": "Ukraine"
+  },
+  {
+    "id": 1134,
+    "name": "Zorya Luhansk",
+    "league": "Ukrainian Premier League",
+    "country": "Ukraine"
+  },
+  {
+    "id": 1135,
+    "name": "Karpaty Lviv",
+    "league": "Ukrainian Premier League",
+    "country": "Ukraine"
+  },
+  {
+    "id": 1136,
+    "name": "Epitsentr Dunayivtsi",
+    "league": "Ukrainian Premier League",
+    "country": "Ukraine"
+  },
+  {
+    "id": 1137,
+    "name": "Veres Rivne",
+    "league": "Ukrainian Premier League",
+    "country": "Ukraine"
+  },
+  {
+    "id": 1138,
+    "name": "FC Obolon Kiev",
+    "league": "Ukrainian Premier League",
+    "country": "Ukraine"
+  },
+  {
+    "id": 1139,
+    "name": "Kudrivka",
+    "league": "Ukrainian Premier League",
+    "country": "Ukraine"
+  },
+  {
+    "id": 1140,
+    "name": "Rukh Lviv",
+    "league": "Ukrainian Premier League",
+    "country": "Ukraine"
+  },
+  {
+    "id": 1141,
+    "name": "Oleksandriya",
+    "league": "Ukrainian Premier League",
+    "country": "Ukraine"
+  },
+  {
+    "id": 1142,
+    "name": "SC Poltava",
+    "league": "Ukrainian Premier League",
+    "country": "Ukraine"
+  },
+  {
+    "id": 1143,
+    "name": "KF Vllaznia",
+    "league": "Kategoria Superiore",
+    "country": "Albania"
+  },
+  {
+    "id": 1144,
+    "name": "AF Elbasani",
+    "league": "Kategoria Superiore",
+    "country": "Albania"
+  },
+  {
+    "id": 1145,
+    "name": "KF Egnatia",
+    "league": "Kategoria Superiore",
+    "country": "Albania"
+  },
+  {
+    "id": 1146,
+    "name": "FC Dinamo City",
+    "league": "Kategoria Superiore",
+    "country": "Albania"
+  },
+  {
+    "id": 1147,
+    "name": "KF Partizani",
+    "league": "Kategoria Superiore",
+    "country": "Albania"
+  },
+  {
+    "id": 1148,
+    "name": "KF Tirana",
+    "league": "Kategoria Superiore",
+    "country": "Albania"
+  },
+  {
+    "id": 1149,
+    "name": "KF Vora",
+    "league": "Kategoria Superiore",
+    "country": "Albania"
+  },
+  {
+    "id": 1150,
+    "name": "KF Teuta",
+    "league": "Kategoria Superiore",
+    "country": "Albania"
+  },
+  {
+    "id": 1151,
+    "name": "KF Bylis",
+    "league": "Kategoria Superiore",
+    "country": "Albania"
+  },
+  {
+    "id": 1152,
+    "name": "KF Flamurtari",
+    "league": "Kategoria Superiore",
+    "country": "Albania"
+  },
+  {
+    "id": 1153,
+    "name": "NK Celje",
+    "league": "Slovenian PrvaLiga",
+    "country": "Slovenia"
+  },
+  {
+    "id": 1154,
+    "name": "FC Koper",
+    "league": "Slovenian PrvaLiga",
+    "country": "Slovenia"
+  },
+  {
+    "id": 1155,
+    "name": "NK Bravo",
+    "league": "Slovenian PrvaLiga",
+    "country": "Slovenia"
+  },
+  {
+    "id": 1156,
+    "name": "NK Olimpija Ljubljana",
+    "league": "Slovenian PrvaLiga",
+    "country": "Slovenia"
+  },
+  {
+    "id": 1157,
+    "name": "NK Maribor",
+    "league": "Slovenian PrvaLiga",
+    "country": "Slovenia"
+  },
+  {
+    "id": 1158,
+    "name": "NK Radomlje",
+    "league": "Slovenian PrvaLiga",
+    "country": "Slovenia"
+  },
+  {
+    "id": 1159,
+    "name": "NK Aluminij",
+    "league": "Slovenian PrvaLiga",
+    "country": "Slovenia"
+  },
+  {
+    "id": 1160,
+    "name": "NS Mura",
+    "league": "Slovenian PrvaLiga",
+    "country": "Slovenia"
+  },
+  {
+    "id": 1161,
+    "name": "ND Primorje",
+    "league": "Slovenian PrvaLiga",
+    "country": "Slovenia"
+  },
+  {
+    "id": 1162,
+    "name": "NK Domzale (disuelto, descendido)",
+    "league": "Slovenian PrvaLiga",
+    "country": "Slovenia"
+  },
+  {
+    "id": 1163,
+    "name": "Vardar",
+    "league": "Macedonian First Football League",
+    "country": "North Macedonia"
+  },
+  {
+    "id": 1164,
+    "name": "Shkendija",
+    "league": "Macedonian First Football League",
+    "country": "North Macedonia"
+  },
+  {
+    "id": 1165,
+    "name": "Struga",
+    "league": "Macedonian First Football League",
+    "country": "North Macedonia"
+  },
+  {
+    "id": 1166,
+    "name": "Sileks",
+    "league": "Macedonian First Football League",
+    "country": "North Macedonia"
+  },
+  {
+    "id": 1167,
+    "name": "Tikvesh",
+    "league": "Macedonian First Football League",
+    "country": "North Macedonia"
+  },
+  {
+    "id": 1168,
+    "name": "Arsimi",
+    "league": "Macedonian First Football League",
+    "country": "North Macedonia"
+  },
+  {
+    "id": 1169,
+    "name": "Bashkimi",
+    "league": "Macedonian First Football League",
+    "country": "North Macedonia"
+  },
+  {
+    "id": 1170,
+    "name": "Pelister",
+    "league": "Macedonian First Football League",
+    "country": "North Macedonia"
+  },
+  {
+    "id": 1171,
+    "name": "Brera Strumica / Akademija Pandev",
+    "league": "Macedonian First Football League",
+    "country": "North Macedonia"
+  },
+  {
+    "id": 1172,
+    "name": "Makedonija Gjorce Petrov",
+    "league": "Macedonian First Football League",
+    "country": "North Macedonia"
+  },
+  {
+    "id": 1173,
+    "name": "Rabotnicki",
+    "league": "Macedonian First Football League",
+    "country": "North Macedonia"
+  },
+  {
+    "id": 1174,
+    "name": "Maxline Vitebsk",
+    "league": "Belarusian Premier League",
+    "country": "Belarus"
+  },
+  {
+    "id": 1175,
+    "name": "Dinamo Minsk",
+    "league": "Belarusian Premier League",
+    "country": "Belarus"
+  },
+  {
+    "id": 1176,
+    "name": "Slavia Mozyr",
+    "league": "Belarusian Premier League",
+    "country": "Belarus"
+  },
+  {
+    "id": 1177,
+    "name": "Dynamo Brest",
+    "league": "Belarusian Premier League",
+    "country": "Belarus"
+  },
+  {
+    "id": 1178,
+    "name": "FC Minsk",
+    "league": "Belarusian Premier League",
+    "country": "Belarus"
+  },
+  {
+    "id": 1179,
+    "name": "Torpedo-BelAZ Zhodino",
+    "league": "Belarusian Premier League",
+    "country": "Belarus"
+  },
+  {
+    "id": 1180,
+    "name": "Isloch Minsk Raion",
+    "league": "Belarusian Premier League",
+    "country": "Belarus"
+  },
+  {
+    "id": 1181,
+    "name": "Neman Grodno",
+    "league": "Belarusian Premier League",
+    "country": "Belarus"
+  },
+  {
+    "id": 1182,
+    "name": "Gomel",
+    "league": "Belarusian Premier League",
+    "country": "Belarus"
+  },
+  {
+    "id": 1183,
+    "name": "BATE Borisov",
+    "league": "Belarusian Premier League",
+    "country": "Belarus"
+  },
+  {
+    "id": 1184,
+    "name": "Arsenal Dzerzhinsk",
+    "league": "Belarusian Premier League",
+    "country": "Belarus"
+  },
+  {
+    "id": 1185,
+    "name": "Vitebsk",
+    "league": "Belarusian Premier League",
+    "country": "Belarus"
+  },
+  {
+    "id": 1186,
+    "name": "Naftan Novopolotsk",
+    "league": "Belarusian Premier League",
+    "country": "Belarus"
+  },
+  {
+    "id": 1187,
+    "name": "Smorgon",
+    "league": "Belarusian Premier League",
+    "country": "Belarus"
+  },
+  {
+    "id": 1188,
+    "name": "Slutsk",
+    "league": "Belarusian Premier League",
+    "country": "Belarus"
+  },
+  {
+    "id": 1189,
+    "name": "Molodechno",
+    "league": "Belarusian Premier League",
+    "country": "Belarus"
+  },
+  {
+    "id": 1190,
+    "name": "Universitatea Craiova",
+    "league": "Liga I",
+    "country": "Romania"
+  },
+  {
+    "id": 1191,
+    "name": "Rapid Bucuresti",
+    "league": "Liga I",
+    "country": "Romania"
+  },
+  {
+    "id": 1192,
+    "name": "Universitatea Cluj",
+    "league": "Liga I",
+    "country": "Romania"
+  },
+  {
+    "id": 1193,
+    "name": "CFR Cluj",
+    "league": "Liga I",
+    "country": "Romania"
+  },
+  {
+    "id": 1194,
+    "name": "Dinamo Bucuresti",
+    "league": "Liga I",
+    "country": "Romania"
+  },
+  {
+    "id": 1195,
+    "name": "FC Arges Pitesti",
+    "league": "Liga I",
+    "country": "Romania"
+  },
+  {
+    "id": 1196,
+    "name": "FCSB",
+    "league": "Liga I",
+    "country": "Romania"
+  },
+  {
+    "id": 1197,
+    "name": "UTA Arad",
+    "league": "Liga I",
+    "country": "Romania"
+  },
+  {
+    "id": 1198,
+    "name": "FC Botosani",
+    "league": "Liga I",
+    "country": "Romania"
+  },
+  {
+    "id": 1199,
+    "name": "Otelul Galati",
+    "league": "Liga I",
+    "country": "Romania"
+  },
+  {
+    "id": 1200,
+    "name": "Farul Constanta",
+    "league": "Liga I",
+    "country": "Romania"
+  },
+  {
+    "id": 1201,
+    "name": "Petrolul Ploiesti",
+    "league": "Liga I",
+    "country": "Romania"
+  },
+  {
+    "id": 1202,
+    "name": "Csikszereda Miercurea Ciuc",
+    "league": "Liga I",
+    "country": "Romania"
+  },
+  {
+    "id": 1203,
+    "name": "Unirea Slobozia",
+    "league": "Liga I",
+    "country": "Romania"
+  },
+  {
+    "id": 1204,
+    "name": "Hermannstadt",
+    "league": "Liga I",
+    "country": "Romania"
+  },
+  {
+    "id": 1205,
+    "name": "Metaloglobus Bucuresti",
+    "league": "Liga I",
+    "country": "Romania"
+  },
+  {
+    "id": 1206,
+    "name": "Villarreal CF",
+    "league": "Primera División",
+    "country": "Internacional"
+  },
+  {
+    "id": 1207,
+    "name": "Atlético de Madrid",
+    "league": "Primera División",
+    "country": "Internacional"
+  },
+  {
+    "id": 1208,
+    "name": "Valencia CF",
+    "league": "Primera División",
+    "country": "Internacional"
+  },
+  {
+    "id": 1209,
+    "name": "Sevilla FC",
+    "league": "Primera División",
+    "country": "Internacional"
+  },
+  {
+    "id": 1210,
+    "name": "Alavés",
+    "league": "Primera División",
+    "country": "Internacional"
+  },
+  {
+    "id": 1211,
+    "name": "Girona FC",
+    "league": "Primera División",
+    "country": "Internacional"
+  },
+  {
+    "id": 1212,
+    "name": "Bournemouth",
+    "league": "Primera División",
+    "country": "Internacional"
+  },
+  {
+    "id": 1213,
+    "name": "Brighton",
+    "league": "Primera División",
+    "country": "Internacional"
+  },
+  {
+    "id": 1214,
+    "name": "Tottenham",
+    "league": "Primera División",
+    "country": "Internacional"
+  },
+  {
+    "id": 1215,
+    "name": "Inter",
+    "league": "Primera División",
+    "country": "Internacional"
+  },
+  {
+    "id": 1216,
+    "name": "SS Lazio",
+    "league": "Primera División",
+    "country": "Internacional"
+  },
+  {
+    "id": 1217,
+    "name": "Bayern München",
+    "league": "Primera División",
+    "country": "Internacional"
+  },
+  {
+    "id": 1218,
+    "name": "Flamengo",
+    "league": "Primera División",
+    "country": "Internacional"
+  }
+]
