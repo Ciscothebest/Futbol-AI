@@ -1239,37 +1239,60 @@ body {
 }
 
 .player-avatar-tactical {
-  width: 120px;
-  height: 120px;
+  width: 124px;
+  height: 124px;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: 5px;
+  border-radius: 50%;
 }
 
 .neon-ring {
   position: absolute;
-  inset: -5px;
-  border: 2px solid var(--team-color, var(--cyan));
+  inset: -3px;
+  border: 2px solid var(--neon-color, var(--team-color, #00f0ff));
   border-radius: 50%;
-  box-shadow: 0 0 15px var(--team-color, var(--cyan));
-  opacity: 0.6;
-  transition: all 0.4s ease;
+  box-shadow: 0 0 14px var(--neon-glow, var(--team-color, #00f0ff)), inset 0 0 6px rgba(0, 0, 0, 0.5);
+  opacity: 0.9;
+  transition: all 0.3s ease;
+  z-index: 2;
+  pointer-events: none;
+  display: block !important;
 }
 
 .player-card:hover .neon-ring {
   opacity: 1;
-  box-shadow: 0 0 25px var(--team-color, var(--cyan));
+  box-shadow: 0 0 22px var(--neon-glow, var(--team-color, #00f0ff)), inset 0 0 10px rgba(0, 0, 0, 0.6);
+  display: block !important;
+}
+
+.avatar-black-bg {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+  box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.9);
 }
 
 .player-photo {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
-  border-radius: 50%;
-  background: #000;
+  max-width: 94%;
+  max-height: 94%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  object-position: center center;
+  background: transparent;
   display: block;
-  z-index: 1;
+  border-radius: 50%;
+  margin: auto;
 }
 
 .tactical-info-wrap {
@@ -1382,21 +1405,28 @@ body {
 
 .tactical-corners {
   position: absolute;
-  top: -12px; left: -12px; right: -12px; bottom: -12px;
+  top: -14px; left: -14px; right: -14px; bottom: -14px;
   pointer-events: none;
+  z-index: 3;
 }
 
 .tactical-corners::before, .tactical-corners::after {
   content: '';
   position: absolute;
-  width: 20px; height: 20px;
-  border-color: var(--team-color, var(--cyan));
+  width: 14px; height: 14px;
+  border-color: var(--neon-color, var(--team-color, rgba(255,255,255,0.4)));
   border-style: solid;
-  opacity: 0.8;
+  opacity: 0.75;
+  transition: opacity 0.3s ease;
 }
 
 .tactical-corners::before { top: 0; left: 0; border-width: 2px 0 0 2px; }
 .tactical-corners::after { top: 0; right: 0; border-width: 2px 2px 0 0; }
+
+.player-card:hover .tactical-corners::before,
+.player-card:hover .tactical-corners::after {
+  opacity: 1;
+}
 
 .t-badge.contract { border-color: #ffc107; color: #ffc107; }
 
@@ -3141,7 +3171,7 @@ body {
   height: 90px;
   border-radius: 50%;
   border: 2px solid var(--cyan);
-  box-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3151,9 +3181,12 @@ body {
 }
 
 .modal-player-photo {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  max-width: 94%;
+  max-height: 94%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  object-position: center center;
 }
 
 .modal-flag-name {

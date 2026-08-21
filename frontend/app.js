@@ -281,14 +281,34 @@ const TEAM_COLORS = {
   'Ajax': '#D2122E'
 };
 
+function getSilhouetteNoImageSvg() {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+    <rect width="128" height="128" rx="64" fill="#0d1117" />
+    <ellipse cx="64" cy="56" rx="38" ry="46" fill="#1b2a4a" stroke="rgba(0,240,255,0.4)" stroke-width="1.5" />
+    <path d="M64 26 C 54 26, 46 34, 46 45 C 46 56, 54 64, 64 64 C 74 64, 82 56, 82 45 C 82 34, 74 26, 64 26 Z" fill="#ffffff" opacity="0.92" />
+    <path d="M38 92 C 38 74, 48 68, 64 68 C 80 68, 90 74, 90 92 Z" fill="#ffffff" opacity="0.92" />
+    <rect x="16" y="94" width="96" height="22" rx="11" fill="#0d1117" stroke="#00f0ff" stroke-width="1.2" />
+    <text x="64" y="109" fill="#00f0ff" font-size="10" font-weight="800" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" text-anchor="middle" letter-spacing="0.5">SIN IMAGEN</text>
+  </svg>`;
+  return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+}
+
+function isDefaultPlaceholderPhoto(url) {
+  if (!url || typeof url !== 'string' || url.trim() === '' || url === 'null' || url === 'undefined') return true;
+  const lower = url.toLowerCase();
+  return lower.includes('default') || 
+         lower.includes('placeholder') || 
+         lower.includes('ui-avatars') || 
+         lower.includes('dicebear') || 
+         lower.includes('portrait_small') ||
+         lower.includes('via.placeholder');
+}
+
 // Smart onerror fallback chain: Real Photo -> DiceBear
 function onAvatarError(img, p) {
-  const id = p && p.id ? p.id : '';
-  const name = p && p.name ? p.name : id;
-  
   if (!img._fallback1) {
     img._fallback1 = true;
-    img.src = `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(name)}&backgroundColor=0d1117&textColor=ffffff&radius=50`;
+    img.src = getSilhouetteNoImageSvg();
     return;
   }
   img.onerror = null;
@@ -296,6 +316,43 @@ function onAvatarError(img, p) {
 
 function getTeamColor(team) {
   return TEAM_COLORS[team] || '#00e5ff'; // Default to cyan
+}
+
+function getPositionEs(pos) {
+  if (!pos) return 'Mediocampista';
+  const posUpper = String(pos).toUpperCase().trim();
+  const map = {
+    'GK': 'Portero (PO)',
+    'PO': 'Portero (PO)',
+    'POR': 'Portero (PO)',
+    'CB': 'Defensa Central (DFC)',
+    'DFC': 'Defensa Central (DFC)',
+    'LB': 'Lateral Izquierdo (LI)',
+    'LI': 'Lateral Izquierdo (LI)',
+    'RB': 'Lateral Derecho (LD)',
+    'LD': 'Lateral Derecho (LD)',
+    'LWB': 'Carrilero Izquierdo (CAD)',
+    'RWB': 'Carrilero Derecho (CAR)',
+    'DM': 'Pivote Defensivo (MCD)',
+    'MCD': 'Pivote Defensivo (MCD)',
+    'CM': 'Mediocentro (MC)',
+    'MC': 'Mediocentro (MC)',
+    'AM': 'Mediapunta (MCO)',
+    'MCO': 'Mediapunta (MCO)',
+    'LM': 'Interior Izquierdo (MI)',
+    'MI': 'Interior Izquierdo (MI)',
+    'RM': 'Interior Derecho (MD)',
+    'MD': 'Interior Derecho (MD)',
+    'LW': 'Extremo Izquierdo (EI)',
+    'EI': 'Extremo Izquierdo (EI)',
+    'RW': 'Extremo Derecho (ED)',
+    'ED': 'Extremo Derecho (ED)',
+    'CF': 'Segundo Delantero (SD)',
+    'SD': 'Segundo Delantero (SD)',
+    'ST': 'Delantero Centro (DC)',
+    'DC': 'Delantero Centro (DC)'
+  };
+  return map[posUpper] || pos;
 }
 
 function getInitials(name) {
@@ -378,6 +435,62 @@ function buildChatWelcome(el) {
     btn.onclick = () => sendQuick(t(`prompt${n}`));
   });
 }
+
+async function checkBackendStatus() {
+  try {
+    const res = await fetch(`${API}/health`).catch(() => null);
+    const isOk = res && res.ok;
+    const badge = document.getElementById('backend-status-badge');
+    if (badge) {
+      badge.textContent = isOk ? 'ONLINE' : 'OFFLINE';
+      badge.className = `status-badge ${isOk ? 'online' : 'offline'}`;
+    }
+  } catch (e) {
+    const badge = document.getElementById('backend-status-badge');
+    if (badge) {
+      badge.textContent = 'OFFLINE';
+      badge.className = 'status-badge offline';
+    }
+  }
+}
+window.checkBackendStatus = checkBackendStatus;
+
+function setupMobileMenu() {
+  const toggleBtn = document.getElementById('btn-mobile-menu') || document.getElementById('mobile-toggle') || document.querySelector('.hamburger-btn');
+  const menu = document.getElementById('mobile-menu') || document.querySelector('.mobile-menu-drawer');
+  const overlay = document.getElementById('mobile-menu-overlay') || document.querySelector('.mobile-menu-overlay');
+
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (menu) menu.classList.toggle('active');
+      if (overlay) overlay.classList.toggle('active');
+    });
+  }
+
+  if (overlay) {
+    overlay.addEventListener('click', () => {
+      closeMobileMenu();
+    });
+  }
+
+  const mobileNavButtons = document.querySelectorAll('.mobile-nav-links .nav-item');
+  mobileNavButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      closeMobileMenu();
+    });
+  });
+}
+
+function closeMobileMenu() {
+  const menu = document.getElementById('mobile-menu') || document.querySelector('.mobile-menu-drawer');
+  const overlay = document.getElementById('mobile-menu-overlay') || document.querySelector('.mobile-menu-overlay');
+  if (menu) menu.classList.remove('active');
+  if (overlay) overlay.classList.remove('active');
+}
+
+window.setupMobileMenu = setupMobileMenu;
+window.closeMobileMenu = closeMobileMenu;
 
 function setupLanguageToggle() {
   document.querySelectorAll('.lang-btn').forEach(btn => {
@@ -8646,7 +8759,6 @@ window.filterLocalPlayersMain = () => {
             <div class="local-player-name">${escapeHtml(p.name)}</div>
             <div class="local-player-nickname">${p.nickname ? `"${escapeHtml(p.nickname)}"` : `${p.age} años · Dorsal #${p.jerseyNumber || '-'}`}</div>
           </div>
-          <div class="local-player-rating-pill ${ratingClass}" title="Overall Rating">${ratingVal}</div>
         </div>
 
         <div class="local-player-badges">
@@ -8749,7 +8861,6 @@ window.filterLocalPlayers = () => {
             <div class="local-player-name">${escapeHtml(p.name)}</div>
             <div class="local-player-nickname">${p.nickname ? `"${escapeHtml(p.nickname)}"` : `${p.age} años · Dorsal #${p.jerseyNumber || '-'}`}</div>
           </div>
-          <div class="local-player-rating-pill ${ratingClass}" title="Overall Rating">${ratingVal}</div>
         </div>
 
         <div class="local-player-badges">
@@ -10279,85 +10390,6 @@ window.saveLocalPlayer = async (event) => {
     console.error('Error saving local player:', err);
     if (typeof showToast === 'function') showToast('❌ Error de red al guardar el jugador.', 'error');
   }
-};
-
-function getPositionEs(code) {
-  if (!code) return '—';
-  const cleanCode = String(code).trim().toUpperCase();
-  const map = {
-    'ST': 'ST - Delantero Centro',
-    'CF': 'CF - Segundo Delantero',
-    'LW': 'LW - Extremo Izquierdo',
-    'RW': 'RW - Extremo Derecho',
-    'CAM': 'CAM - Mediapunta',
-    'CM': 'CM - Mediocampista',
-    'CDM': 'CDM - Volante de Contención',
-    'LB': 'LB - Lateral Izquierdo',
-    'RB': 'RB - Lateral Derecho',
-    'CB': 'CB - Defensa Central',
-    'GK': 'GK - Portero'
-  };
-  return map[cleanCode] || map[code] || code;
-}
-
-window.deleteLocalPlayer = async (playerId) => {
-  const players = window.getLocalPlayersList();
-  const player = players.find(p => p.id === playerId);
-  if (!player) return;
-
-  if (!confirm(`¿Estás seguro de que deseas eliminar a "${player.name}" de tu plantilla local?`)) {
-    return;
-  }
-
-  const token = localStorage.getItem('scout_ai_token');
-  if (!token) return;
-
-  try {
-    const res = await fetch(`/api/my-players/${playerId}`, {
-      method: 'DELETE',
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-    const data = await res.json();
-    if (data.success) {
-      if (typeof showToast === 'function') showToast(`🗑️ Jugador "${player.name}" eliminado.`, 'info');
-      await window.loadLocalPlayers();
-      window.renderMyPlayersModule(true);
-    }
-  } catch (err) {
-    console.error('Error deleting player:', err);
-  }
-};
-
-window.viewLocalPlayerExpediente = async (playerOrId) => {
-  if (!playerOrId) return;
-
-  if (typeof playerOrId === 'object' && playerOrId.id) {
-    openPlayerModal(playerOrId);
-    return;
-  }
-
-  const playerId = playerOrId;
-  const localList = window.getLocalPlayersList();
-  let player = localList.find(p => p.id === playerId);
-
-  if (!player && window.prospectsCached) {
-    player = window.prospectsCached.find(p => p.id === playerId);
-  }
-
-  if (!player) {
-    try {
-      const token = localStorage.getItem('scout_ai_token');
-      const res = await fetch(`/api/players/${playerId}`, {
-        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-      });
-      const data = await res.json();
-      if (data && (data.id || data.player)) {
-        player = data.player || data;
-      }
-    } catch (e) {
-      console.warn('Error fetching player expediente:', e);
-    }
-  }
 
   if (player && typeof openPlayerModal === 'function') {
     openPlayerModal(player);
@@ -10465,286 +10497,51 @@ window.loadProfilePaymentHistory = async () => {
     tbody.innerHTML = '';
     if (table) table.style.display = 'none';
     if (emptyState) emptyState.style.display = 'block';
-  } else {
-    if (emptyState) emptyState.style.display = 'none';
-    if (table) table.style.display = 'table';
-    
-    tbody.innerHTML = payments.map(p => {
-      const dateObj = new Date(p.createdAt || Date.now());
-      const formattedDate = dateObj.toLocaleString('es-ES', { 
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-      
-      const concept = `Suscripción Plan ${p.tier}`;
-      const formattedAmount = `$${parseFloat(p.amount || 0).toFixed(2)} USD`;
-      
-      return `
-        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.2s;">
-          <td style="padding: 12px 10px; color: rgba(255,255,255,0.85);">${formattedDate}</td>
-          <td style="padding: 12px 10px; color: rgba(255,255,255,0.85); font-weight: 500;">
-            <span style="display: inline-flex; align-items: center; gap: 6px;">
-              <span style="color: #00f0ff;">✨</span> ${concept}
-            </span>
-          </td>
-          <td style="padding: 12px 10px; color: #10b981; font-weight: 600; text-align: right;">${formattedAmount}</td>
-        </tr>
-      `;
-    }).join('');
+    return;
   }
+
+  if (table) table.style.display = 'table';
+  if (emptyState) emptyState.style.display = 'none';
+
+  tbody.innerHTML = payments.map(pm => `
+    <tr>
+      <td>${pm.date || '—'}</td>
+      <td>${pm.description || pm.planName || 'Suscripción'}</td>
+      <td>${pm.amount || '—'}</td>
+      <td><span class="status-badge ${pm.status === 'Completado' ? 'completed' : 'pending'}">${pm.status || 'Completado'}</span></td>
+    </tr>
+  `).join('');
 };
 
-window.openEditProfileModal = () => {
-  const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
-  const nombresInput = document.getElementById('edit-profile-nombres');
-  const apellidosInput = document.getElementById('edit-profile-apellidos');
-  const emailInput = document.getElementById('edit-profile-email');
-  const telefonoInput = document.getElementById('edit-profile-telefono');
-  const roleSelect = document.getElementById('edit-profile-role');
-  
-  if (nombresInput) nombresInput.value = user.nombres || '';
-  if (apellidosInput) apellidosInput.value = user.apellidos || '';
-  if (emailInput) emailInput.value = user.email || '';
-  if (telefonoInput) telefonoInput.value = user.telefono || '';
-  if (roleSelect) roleSelect.value = user.role || 'Usuario';
-  
-  const modal = document.getElementById('edit-profile-modal');
-  if (modal) {
-    modal.style.display = 'flex';
-    setTimeout(() => modal.classList.add('active'), 10);
-  }
-};
-
-window.closeEditProfileModal = () => {
-  const modal = document.getElementById('edit-profile-modal');
-  if (modal) {
-    modal.classList.remove('active');
-    setTimeout(() => modal.style.display = 'none', 300);
-  }
-};
-
-window.saveProfileEdits = async (e) => {
-  if (e) e.preventDefault();
-  
-  const nombres = document.getElementById('edit-profile-nombres')?.value || '';
-  const apellidos = document.getElementById('edit-profile-apellidos')?.value || '';
-  const email = document.getElementById('edit-profile-email')?.value || '';
-  const telefono = document.getElementById('edit-profile-telefono')?.value || '';
-  const role = document.getElementById('edit-profile-role')?.value || '';
-  
-  const token = localStorage.getItem('scout_ai_token');
-  
-  try {
-    showToast('Guardando cambios…', 'info');
-    const res = await fetch(`${API}/auth/update-profile`, {
-      method: 'PUT',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({ nombres, apellidos, telefono, email, role })
-    });
-    
-    const data = await res.json();
-    if (res.ok && data.success) {
-      localStorage.setItem('scout_ai_user', JSON.stringify(data.user));
-      
-      // Update topbar and profile UI elements
-      updateProfileUI(data.user);
-      await renderProfile();
-      
-      showToast('✅ Perfil actualizado correctamente', 'success');
-      window.closeEditProfileModal();
-    } else {
-      showToast(data.error || 'Error al guardar cambios', 'error');
-    }
-  } catch (err) {
-    console.error('Error saving profile edits:', err);
-    showToast('Error de conexión al guardar cambios', 'error');
-  }
-};
-
-window.togglePreference = (type) => {
-  if (type === 'notif') {
-    const el = document.getElementById('toggle-notif-ai');
-    if (el) {
-      el.classList.toggle('on');
-      const isOn = el.classList.contains('on');
-      localStorage.setItem('scout_ai_pref_notif', isOn ? 'true' : 'false');
-      showToast(isOn ? 'Notificaciones de IA activadas 🔔' : 'Notificaciones de IA desactivadas 🔕', 'success');
-    }
-  } else if (type === 'dark_mode') {
-    const el = document.getElementById('toggle-dark-mode');
-    if (el) {
-      el.classList.toggle('on');
-      const isOn = el.classList.contains('on');
-      localStorage.setItem('scout_ai_pref_dark_mode', isOn ? 'true' : 'false');
-      window.applyTheme();
-      showToast(isOn ? 'Modo Oscuro activado 🌙' : 'Modo Oscuro desactivado ☀️', 'success');
-    }
-  }
-};
-
-async function checkBackendStatus() {
-  try {
-    const res = await fetch(`${API}/health`);
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Error from server');
-    setStatus(data.demoMode ? 'demo' : 'online', data.demoMode ? 'Demo Mode' : `Gemini AI Online`);
-    document.getElementById('stat-players').textContent = data.players;
-    const agentStatusEl = document.getElementById('agent-status-text');
-    if (agentStatusEl) {
-      agentStatusEl.textContent = data.demoMode
-        ? 'Demo Mode — Connect API key for full AI'
-        : `🟢 Online — ${data.model}`;
-    }
-  } catch {
-    setStatus('offline', 'Backend offline');
-    showToast('⚠️ Backend no disponible. Inicia el servidor Node.js.', 'error');
-  }
-}
-
-function setStatus(type, text) {
-  const dot = document.getElementById('status-dot');
-  if (dot) {
-    const dotEl = dot.querySelector('.dot');
-    if (dotEl) dotEl.className = `dot ${type}`;
-  }
-  const textEl = document.getElementById('status-text');
-  if (textEl) textEl.textContent = text || (type === 'online' ? t('status_online') : type === 'demo' ? t('status_demo') : t('status_offline'));
-  
-  const topbarStatus = document.getElementById('topbar-status');
-  if (topbarStatus) topbarStatus.textContent = type === 'online' ? '🟢' : type === 'demo' ? '🟡' : '🔴';
-}
-
 // ──────────────────────────────────────────
-// NAVIGATION
-// ──────────────────────────────────────────
-function setupNavigation() {
-  document.querySelectorAll('.nav-item').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const section = btn.dataset.section;
-      goToSection(section);
-      closeMobileMenu();
-    });
-  });
-}
-
-function goToSection(name) {
-  const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
-  const isLocal = (user.selectedTier || '').toLowerCase() === 'local' || (user.role || '').toLowerCase() === 'local' || (user.role || '').toLowerCase() === 'entrenador local';
-  const restricted = ['players', 'my-club', 'compare', 'predictions', 'simulations', 'prospects'];
-
-  if (isLocal && (restricted.includes(name) || name === 'home')) {
-    name = 'chat';
-  } else if (!isLocal && name === 'my-players') {
-    name = 'prospects';
-  }
-
-  // Label map for section transitions
-  const sectionLabels = {
-    'home':        'Cargando Inicio...',
-    'players':     'Cargando Jugadores...',
-    'prospects':   'Cargando Prospectos...',
-    'my-club':     'Cargando Mi Club...',
-    'compare':     'Cargando Comparador...',
-    'predictions': 'Cargando Predicciones...',
-    'simulations': 'Cargando Simulaciones...',
-    'chat':        'Cargando Consultor IA...',
-    'profile':     'Cargando Perfil...',
-    'my-players':  'Cargando Mis Jugadores...',
-  };
-
-  // Show section loader briefly during render
-  if (window.SectionLoader) window.SectionLoader.show(sectionLabels[name] || 'Cargando...');
-
-  // Double rAF ensures loader paints BEFORE section switches
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      document.querySelectorAll('.nav-item').forEach(b => {
-        b.classList.toggle('active', b.dataset.section === name);
-      });
-      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-      document.getElementById(`section-${name}`)?.classList.add('active');
-
-      if (name === 'my-club') renderMyClubDashboard();
-      if (name === 'players') renderPlayers();
-      if (name === 'prospects' && window.renderProspectsModule) window.renderProspectsModule();
-      if (name === 'predictions' && !predictionsLoaded) loadPredictions();
-      if (name === 'profile') renderProfile();
-      if (name === 'simulations') initSimulationsSection();
-      if (name === 'my-players' && window.renderMyPlayersModule) window.renderMyPlayersModule();
-      if (name === 'my-chats') renderMyChatsSection();
-      if (name === 'chat') {
-        const currentSession = chatSessions.find(s => s.id === activeSessionId);
-        if (currentSession && currentSession.messages && currentSession.messages.length > 0) {
-          createNewChatSession();
-        }
-      }
-
-      // Minimum visible time = 250ms for good UX
-      setTimeout(() => {
-        if (window.SectionLoader) window.SectionLoader.hide();
-      }, 250);
-    });
-  });
-}
-
-// ──────────────────────────────────────────
-// MOBILE MENU
-// ──────────────────────────────────────────
-function setupMobileMenu() {
-  const toggle = document.getElementById('menu-toggle');
-  const overlay = document.getElementById('sidebar-overlay');
-  if (toggle) {
-    toggle.addEventListener('click', () => {
-      const sidebar = document.getElementById('sidebar');
-      if (sidebar) sidebar.classList.toggle('open');
-      if (overlay) overlay.classList.toggle('open');
-    });
-  }
-  if (overlay) {
-    overlay.addEventListener('click', closeMobileMenu);
-  }
-}
-
-function closeMobileMenu() {
-  const sidebar = document.getElementById('sidebar');
-  const overlay = document.getElementById('sidebar-overlay');
-  if (sidebar) sidebar.classList.remove('open');
-  if (overlay) overlay.classList.remove('open');
-}
-
-// ──────────────────────────────────────────
-// PLAYERS
+// PLAYERS & FEATURED MODULE FUNCTIONS
 // ──────────────────────────────────────────
 async function loadPlayers() {
   try {
     const res = await fetchWithAuth(`${API}/players?t=${Date.now()}`);
     if (!res.ok) throw new Error('API failed');
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Error from server');
     if (Array.isArray(data?.players)) {
       allPlayers = data.players;
       window.allPlayers = allPlayers;
       localStorage.setItem('scout_ai_cached_players', JSON.stringify(allPlayers));
     }
-    populateLeagueFilter(); // Populate dropdowns
+    if (typeof populateLeagueFilter === 'function') populateLeagueFilter();
   } catch (err) {
-    console.error('loadPlayers error:', err);
-    // Keep existing cached players if they are already populated
+    console.warn('loadPlayers fetch fallback error:', err);
   }
 }
 
 function renderFeaturedPlayers() {
-  const top = [...allPlayers].slice(0, 8);
+  const top = (allPlayers || []).slice(0, 8);
   const grid = document.getElementById('featured-grid');
   if (grid) {
     grid.innerHTML = '';
-    top.forEach(p => grid.appendChild(createPlayerCard(p)));
+    top.forEach(p => {
+      if (typeof createPlayerCard === 'function') {
+        grid.appendChild(createPlayerCard(p));
+      }
+    });
     if (typeof loadAllLogos === 'function') loadAllLogos();
   }
 }
@@ -10783,7 +10580,9 @@ function renderPlayers(playersToRender) {
   const pagePlayers = list.slice(start, end);
 
   pagePlayers.forEach(p => {
-    grid.appendChild(createPlayerCard(p));
+    if (typeof createPlayerCard === 'function') {
+      grid.appendChild(createPlayerCard(p));
+    }
   });
 
   if (paginationControls) {
@@ -10856,14 +10655,13 @@ function createPlayerCard(p) {
   card.className = 'player-card';
 
   let avatarUrl = p.avatarUrl || p.photoUrl;
-  if (!avatarUrl || avatarUrl.trim() === '') {
-    if (p.photoId && p.photoId.trim() !== '') {
+  if (isDefaultPlaceholderPhoto(avatarUrl)) {
+    if (p.photoId && p.photoId.trim() !== '' && !isDefaultPlaceholderPhoto(p.photoId)) {
       avatarUrl = (p.photoId.startsWith('http://') || p.photoId.startsWith('https://'))
         ? p.photoId
         : getAbsoluteUrl('/api/player-photo/' + p.photoId);
     } else {
-      const pInitials = (p.name || 'J').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-      avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(pInitials)}&background=00f0ff&color=0d1117&size=128`;
+      avatarUrl = getSilhouetteNoImageSvg();
     }
   }
 
@@ -10882,7 +10680,7 @@ function createPlayerCard(p) {
     <div class="player-avatar-tactical">
       <div class="neon-ring"></div>
       <div class="tactical-corners"></div>
-      <img src="${avatarUrl}" class="player-photo" alt="${p.name}">
+      <img src="${avatarUrl}" class="player-photo" alt="${p.name}" referrerpolicy="no-referrer">
       <div class="card-team-logo" data-team-name="${p.currentTeam}" style="position: absolute; bottom: -5px; right: -5px; width: 28px; height: 28px; background: rgba(13, 17, 23, 0.95); border: 1.5px solid var(--team-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.5); z-index: 10;">
         <span style="font-size: 10px;">⚽</span>
       </div>
@@ -11009,7 +10807,10 @@ function setupFilters() {
         matchPos = p.position === pos;
       }
       
-      const matchLeague = !leagueFilter || p.league === leagueFilter;
+      const matchLeague = !leagueFilter || 
+        p.league === leagueFilter || 
+        (p.league && normalizeString(p.league) === normalizeString(leagueFilter)) ||
+        (p.league && (p.league.toLowerCase().includes('ldf') || p.league.toLowerCase().includes('dominicana')) && (leagueFilter.toLowerCase().includes('ldf') || leagueFilter.toLowerCase().includes('dominicana')));
       const matchTeam = !teamFilter || p.currentTeam === teamFilter;
       return matchSearch && matchPos && matchLeague && matchTeam;
     });
@@ -11116,14 +10917,26 @@ function closeAllCustomDropdowns() {
 function filterDropdownOptions(id, query) {
   const optionsContainer = document.getElementById(`dropdown-options-${id}`);
   if (!optionsContainer) return;
-  const normalizedQuery = normalizeString(query.toLowerCase());
+  const normalizedQuery = normalizeString(query.toLowerCase()).trim();
   const options = optionsContainer.querySelectorAll('.dropdown-option');
+
   options.forEach(opt => {
-    const text = normalizeString(opt.textContent.toLowerCase());
-    if (text.includes(normalizedQuery)) {
+    if (opt.dataset.value === '') {
       opt.style.display = 'block';
+      return;
+    }
+
+    const text = normalizeString(opt.textContent.toLowerCase());
+    const isTop = opt.dataset.isTop !== 'false';
+
+    if (!normalizedQuery) {
+      opt.style.display = isTop ? 'block' : 'none';
     } else {
-      opt.style.display = 'none';
+      if (text.includes(normalizedQuery)) {
+        opt.style.display = 'block';
+      } else {
+        opt.style.display = 'none';
+      }
     }
   });
 }
@@ -11154,7 +10967,13 @@ function renderCustomDropdownOptions(id, items, placeholderText, activeValue) {
     const opt = document.createElement('div');
     opt.className = 'dropdown-option';
     opt.dataset.value = item.value;
+    opt.dataset.isTop = item.isTop !== undefined ? String(item.isTop) : 'true';
     opt.textContent = item.text;
+    
+    if (item.isTop === false) {
+      opt.style.display = 'none';
+    }
+
     if (activeValue === item.value) {
       opt.classList.add('active');
       if (triggerText) triggerText.textContent = item.text;
@@ -11209,18 +11028,40 @@ function populateLeagueFilter() {
 
   const flags = {
     'Premier League': '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
+    'Championship': '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
     'La Liga': '🇪🇸',
     'Bundesliga': '🇩🇪',
+    '2. Bundesliga': '🇩🇪',
     'Serie A': '🇮🇹',
+    'Serie B': '🇮🇹',
     'Ligue 1': '🇫🇷',
+    'Ligue 2': '🇫🇷',
+    'Eredivisie': '🇳🇱',
+    'Keuken Kampioen Divisie (Eerste Divisie)': '🇳🇱',
+    'LDF (Liga Dominicana de Fútbol)': '🇩🇴',
     'MLS': '🇺🇸',
     'Saudi Pro League': '🇸🇦'
   };
 
-  const leagues = [...new Set(allPlayers.map(p => p.league).filter(Boolean))].sort();
+  const leagueCounts = {};
+  allPlayers.forEach(p => {
+    if (p.league) {
+      leagueCounts[p.league] = (leagueCounts[p.league] || 0) + 1;
+    }
+  });
+
+  const leaguesByPlayerCount = Object.keys(leagueCounts).sort((a, b) => leagueCounts[b] - leagueCounts[a]);
+  const top7Leagues = new Set(leaguesByPlayerCount.slice(0, 7));
+  for (const l of leaguesByPlayerCount) {
+    if (l.includes('LDF') || l.includes('Dominicana')) {
+      top7Leagues.add(l);
+    }
+  }
+
+  const allLeaguesAlphabetical = [...leaguesByPlayerCount].sort();
   
   leagueSelect.innerHTML = `<option value="">🌐 ${t('all_leagues')}</option>`;
-  leagues.forEach(l => {
+  allLeaguesAlphabetical.forEach(l => {
     const opt = document.createElement('option');
     opt.value = l;
     const flag = flags[l] || '⚽';
@@ -11229,13 +11070,13 @@ function populateLeagueFilter() {
   });
 
   const selectedLeague = leagueSelect.value;
-  const items = leagues.map(l => {
+  const items = allLeaguesAlphabetical.map(l => {
     const flag = flags[l] || '⚽';
-    return { value: l, text: `${flag} ${l}` };
+    return { value: l, text: `${flag} ${l}`, isTop: top7Leagues.has(l) };
   });
   renderCustomDropdownOptions('league', items, `🌐 ${t('all_leagues')}`, selectedLeague);
 
-  updateTeamDropdown(selectedLeague); // Populate all teams initially
+  updateTeamDropdown(selectedLeague);
 }
 
 function updateTeamDropdown(leagueFilter) {
@@ -11243,7 +11084,13 @@ function updateTeamDropdown(leagueFilter) {
   if (!teamSelect) return;
 
   const teams = [...new Set(allPlayers
-    .filter(p => !leagueFilter || p.league === leagueFilter)
+    .filter(p => {
+      if (!leagueFilter) return true;
+      if (p.league === leagueFilter) return true;
+      if (p.league && normalizeString(p.league) === normalizeString(leagueFilter)) return true;
+      if (p.league && (p.league.toLowerCase().includes('ldf') || p.league.toLowerCase().includes('dominicana')) && (leagueFilter.toLowerCase().includes('ldf') || leagueFilter.toLowerCase().includes('dominicana'))) return true;
+      return false;
+    })
     .map(p => p.currentTeam)
     .filter(Boolean))].sort();
 
@@ -11451,11 +11298,43 @@ function formatDurationHumanReadable(fromDateStr, untilDateStr, rawDaysStr, lang
   return `${parts.slice(0, -1).join(', ')} ${lang === 'es' ? 'y' : 'and'} ${parts[parts.length - 1]}`;
 }
 
-function openPlayerModal(p) {
+window.viewLocalPlayerExpediente = function(id) {
+  const p = (window.allPlayers || []).find(x => x.id === id) || (window.localProspects || []).find(x => x.id === id);
+  if (p) {
+    openPlayerModal(p);
+  } else {
+    fetchWithAuth(`${API}/players/${id}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data) openPlayerModal(data.player || data);
+      })
+      .catch(err => console.error('Error fetching player expediente:', err));
+  }
+};
+
+function openPlayerModal(playerOrId) {
+  let p = playerOrId;
+  if (typeof playerOrId === 'string') {
+    p = (window.allPlayers || []).find(x => x.id === playerOrId) || { id: playerOrId, name: playerOrId };
+  }
+  if (!p) return;
+
   const body = document.getElementById('modal-body');
   const mv = p.marketValue ? `€${(p.marketValue / 1000000).toFixed(0)}M` : '—';
-  const bio = currentLang === 'es' ? p.bioEs : p.bio;
-  const avatarUrl = getAbsoluteUrl(p.avatarUrl);
+  const bio = currentLang === 'es' ? (p.bioEs || p.bio) : (p.bio || p.bioEs);
+  
+  let avatarUrl = p.avatarUrl || p.photoUrl;
+  if (isDefaultPlaceholderPhoto(avatarUrl)) {
+    if (p.photoId && p.photoId.trim() !== '' && !isDefaultPlaceholderPhoto(p.photoId)) {
+      avatarUrl = (p.photoId.startsWith('http://') || p.photoId.startsWith('https://'))
+        ? p.photoId
+        : getAbsoluteUrl('/api/player-photo/' + p.photoId);
+    } else {
+      avatarUrl = getSilhouetteNoImageSvg();
+    }
+  } else {
+    avatarUrl = getAbsoluteUrl(avatarUrl);
+  }
 
   const playerSeed = p.id ? p.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) : 100;
   
@@ -11770,7 +11649,7 @@ function openPlayerModal(p) {
   body.innerHTML = `
     <div class="modal-header">
       <div class="modal-avatar-wrap">
-        <img src="${avatarUrl}" class="modal-player-photo" alt="${p.name}" data-player-id="${p.id}">
+        <img src="${avatarUrl}" class="modal-player-photo" alt="${p.name}" data-player-id="${p.id}" referrerpolicy="no-referrer">
       </div>
       <div class="modal-title-group">
         <div class="modal-flag-name">
@@ -11828,9 +11707,9 @@ function openPlayerModal(p) {
             <span class="modal-stat-label">${t('matches_full')}</span>
           </div>
           <div class="modal-stat">
-            <span style="font-size:16px; margin-bottom:8px">⭐</span>
-            <span class="modal-stat-num">${Number(initialStats.rating ?? p.overallRating ?? 0).toFixed(1)}</span>
-            <span class="modal-stat-label">RATING</span>
+            <span style="font-size:16px; margin-bottom:8px">💶</span>
+            <span class="modal-stat-num">${formatContractValue(p.marketValue)}</span>
+            <span class="modal-stat-label">${currentLang === 'es' ? 'VALOR' : 'VALUE'}</span>
           </div>
           <div class="modal-stat">
             <span style="font-size:16px; margin-bottom:8px">🔄</span>
@@ -11927,8 +11806,8 @@ function openPlayerModal(p) {
              <span class="modal-stat-label">${t('matches_full')}</span>
            </div>
            <div class="modal-stat">
-             <span class="modal-stat-num">${globalRating}</span>
-             <span class="modal-stat-label">RATING</span>
+             <span class="modal-stat-num">${formatContractValue(p.marketValue)}</span>
+             <span class="modal-stat-label">${currentLang === 'es' ? 'VALOR' : 'VALUE'}</span>
            </div>
            <div class="modal-stat">
              <span class="modal-stat-num">${globalDribbles}</span>

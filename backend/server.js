@@ -157,7 +157,7 @@ app.get('/api/players', authenticate, async (req, res) => {
       let avatarUrl = '';
       
       if (photoId) {
-        avatarUrl = (photoId.startsWith('http://') || photoId.startsWith('https://')) ? photoId : `${apiHost}/api/player-photo/${photoId}?v=2`;
+        avatarUrl = `${apiHost}/api/player-photo/${encodeURIComponent(photoId)}?v=2`;
       } else if (fs.existsSync(localImgPath)) {
         avatarUrl = `/assets/players/${data.id}.png`;
       } else {
@@ -278,7 +278,7 @@ app.get('/api/players/:id', async (req, res) => {
     
     data.photoId = photoId || null;
     if (photoId) {
-      data.avatarUrl = (photoId.startsWith('http://') || photoId.startsWith('https://')) ? photoId : `${apiHost}/api/player-photo/${photoId}?v=2`;
+      data.avatarUrl = `${apiHost}/api/player-photo/${encodeURIComponent(photoId)}?v=2`;
     } else if (fs.existsSync(localImgPath)) {
       data.avatarUrl = `/assets/players/${data.id}.png`;
     } else {
@@ -299,7 +299,28 @@ app.get(['/api/player-photo/:id', '/api/player-photo/*'], (req, res) => {
   const decodedId = decodeURIComponent(rawId);
 
   if (decodedId.startsWith('http://') || decodedId.startsWith('https://')) {
-    return res.redirect(decodedId);
+    const targetUrl = decodedId;
+    const client = targetUrl.startsWith('https://') ? https : http;
+    const options = {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Referer': 'https://www.transfermarkt.com/',
+        'Accept': 'image/png,image/webp,image/jpeg,*/*;q=0.8'
+      }
+    };
+    return client.get(targetUrl, options, (proxyRes) => {
+      if (proxyRes.statusCode !== 200) {
+        proxyRes.resume();
+        const fallbackName = targetUrl.split('text=')[1] ? decodeURIComponent(targetUrl.split('text=')[1]) : 'Futbol AI';
+        return res.redirect(`https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(fallbackName)}&backgroundColor=000000&textColor=00f0ff&radius=50`);
+      }
+      res.setHeader('Content-Type', proxyRes.headers['content-type'] || 'image/jpeg');
+      res.setHeader('Cache-Control', 'public, max-age=86400');
+      proxyRes.pipe(res);
+    }).on('error', () => {
+      const fallbackName = targetUrl.split('text=')[1] ? decodeURIComponent(targetUrl.split('text=')[1]) : 'Futbol AI';
+      res.redirect(`https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(fallbackName)}&backgroundColor=000000&textColor=00f0ff&radius=50`);
+    });
   }
 
   const cleanNumericId = decodedId.replace(/[^0-9]/g, '');
@@ -1688,7 +1709,8 @@ function startServer(retries = 2) {
       await seedDemoUsers();
 
       const userCount = await User.count();
-      console.log(`📊 Database connected: ${count} players | ${userCount} users`);
+      const realPlayerCount = await Player.count();
+      console.log(`📊 Database connected: ${realPlayerCount} players | ${userCount} users`);
     } catch (err) {
       console.error('❌ Database connection failed:', err);
     }
