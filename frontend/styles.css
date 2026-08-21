@@ -7059,3 +7059,127 @@ select {
   }
 }
 
+/* ════════════════════════════════════════════
+   UPCOMING FIXTURES / SIMULACIONES MATCH CARDS
+   ════════════════════════════════════════════ */
+#sim-fixtures-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.fixture-item {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto;
+  align-items: center;
+  gap: 16px;
+  background: rgba(13, 17, 23, 0.75);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  border-radius: 12px;
+  padding: 14px 20px;
+  transition: all 0.25s ease-in-out;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.fixture-item:hover {
+  border-color: rgba(0, 240, 255, 0.5);
+  background: rgba(13, 25, 45, 0.85);
+  box-shadow: 0 6px 20px rgba(0, 240, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.fixture-club {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.fixture-club.home-club {
+  justify-content: flex-start;
+}
+
+.fixture-club.away-club {
+  justify-content: flex-end;
+}
+
+.fixture-shield {
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: #ffffff;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+}
+
+.fixture-club-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.fixture-center-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 140px;
+  text-align: center;
+}
+
+.fixture-vs-badge {
+  font-size: 11px;
+  font-weight: 900;
+  color: #00f0ff;
+  background: rgba(0, 240, 255, 0.1);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  padding: 2px 10px;
+  border-radius: 20px;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.fixture-date-text {
+  font-size: 12px;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.fixture-comp-tag {
+  font-size: 11px;
+  color: rgba(0, 240, 255, 0.8);
+  font-weight: 500;
+}
+
+.btn-fixture-sim {
+  padding: 8px 18px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  border-radius: 8px !important;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .fixture-item {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+    gap: 12px;
+    padding: 16px;
+  }
+  .fixture-club.home-club,
+  .fixture-club.away-club {
+    justify-content: center;
+  }
+}
+
+

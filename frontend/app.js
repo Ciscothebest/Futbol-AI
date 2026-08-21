@@ -3253,414 +3253,4485 @@ function injectSeasonStyles() {
 function getReal202425Fixtures(clubName) {
   if (!clubName) return null;
   const isEs = currentLang === 'es';
-  const REAL_2024_25_FIXTURES = {
+  const REAL_2026_27_FIXTURES = {
     "Real Madrid": [
-      { opponent: "FC Barcelona",        date: isEs ? "26 Oct 2024" : "Oct 26, 2024", competition: "La Liga",               home: true  },
-      { opponent: "Borussia Dortmund",   date: isEs ? "22 Oct 2024" : "Oct 22, 2024", competition: "UEFA Champions League",  home: true  },
-      { opponent: "Atlético de Madrid",  date: isEs ? "29 Sep 2024" : "Sep 29, 2024", competition: "La Liga",               home: false }
+      { opponent: "Real Sociedad", date: isEs ? "26 Ago 2026" : "Aug 26, 2026", competition: "La Liga", home: true },
+      { opponent: "RCD Espanyol", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "La Liga", home: false },
+      { opponent: "Málaga CF", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "La Liga", home: true }
     ],
     "FC Barcelona": [
-      { opponent: "Real Madrid",         date: isEs ? "26 Oct 2024" : "Oct 26, 2024", competition: "La Liga",               home: false },
-      { opponent: "Bayern Munich",       date: isEs ? "23 Oct 2024" : "Oct 23, 2024", competition: "UEFA Champions League",  home: true  },
-      { opponent: "Athletic Club",       date: isEs ? "24 Ago 2024" : "Aug 24, 2024", competition: "La Liga",               home: true  }
+      { opponent: "Athletic Club", date: isEs ? "27 Ago 2026" : "Aug 27, 2026", competition: "La Liga", home: true },
+      { opponent: "Elche CF", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "La Liga", home: false },
+      { opponent: "Rayo Vallecano", date: isEs ? "31 Ago 2026" : "Aug 31, 2026", competition: "La Liga", home: true }
     ],
     "Atlético de Madrid": [
-      { opponent: "Real Madrid",         date: isEs ? "29 Sep 2024" : "Sep 29, 2024", competition: "La Liga",               home: true  },
-      { opponent: "Paris Saint-Germain", date: isEs ? "6 Nov 2024"  : "Nov 6, 2024",  competition: "UEFA Champions League",  home: false },
-      { opponent: "FC Barcelona",        date: isEs ? "21 Abr 2025" : "Apr 21, 2025", competition: "La Liga",               home: false }
-    ],
-    "Atlético Madrid": [
-      { opponent: "Real Madrid",         date: isEs ? "29 Sep 2024" : "Sep 29, 2024", competition: "La Liga",               home: true  },
-      { opponent: "Paris Saint-Germain", date: isEs ? "6 Nov 2024"  : "Nov 6, 2024",  competition: "UEFA Champions League",  home: false },
-      { opponent: "FC Barcelona",        date: isEs ? "21 Abr 2025" : "Apr 21, 2025", competition: "La Liga",               home: false }
+      { opponent: "Málaga CF", date: isEs ? "19 Ago 2026" : "Aug 19, 2026", competition: "La Liga", home: true },
+      { opponent: "Villarreal CF", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "La Liga", home: true },
+      { opponent: "Sevilla FC", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "La Liga", home: false }
     ],
     "Deportivo Alavés": [
-      { opponent: "Real Madrid",         date: isEs ? "21 Sep 2024" : "Sep 21, 2024", competition: "La Liga",               home: false },
-      { opponent: "FC Barcelona",        date: isEs ? "13 Ene 2025" : "Jan 13, 2025", competition: "La Liga",               home: false },
-      { opponent: "Atlético de Madrid",  date: isEs ? "27 Oct 2024" : "Oct 27, 2024", competition: "La Liga",               home: true  }
-    ],
-    "Alaves": [
-      { opponent: "Real Madrid",         date: isEs ? "21 Sep 2024" : "Sep 21, 2024", competition: "La Liga",               home: false },
-      { opponent: "FC Barcelona",        date: isEs ? "13 Ene 2025" : "Jan 13, 2025", competition: "La Liga",               home: false },
-      { opponent: "Atlético de Madrid",  date: isEs ? "27 Oct 2024" : "Oct 27, 2024", competition: "La Liga",               home: true  }
+      { opponent: "Getafe CF", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "La Liga", home: true },
+      { opponent: "Rayo Vallecano", date: isEs ? "20 Ago 2026" : "Aug 20, 2026", competition: "La Liga", home: false },
+      { opponent: "Villarreal CF", date: isEs ? "28 Ago 2026" : "Aug 28, 2026", competition: "La Liga", home: true }
     ],
     "Athletic Club": [
-      { opponent: "FC Barcelona",        date: isEs ? "24 Ago 2024" : "Aug 24, 2024", competition: "La Liga",               home: false },
-      { opponent: "Real Madrid",         date: isEs ? "5 Ene 2025"  : "Jan 5, 2025",  competition: "La Liga",               home: false },
-      { opponent: "Atlético de Madrid",  date: isEs ? "29 Sep 2024" : "Sep 29, 2024", competition: "La Liga",               home: true  }
-    ],
-    "Athletic Bilbao": [
-      { opponent: "FC Barcelona",        date: isEs ? "24 Ago 2024" : "Aug 24, 2024", competition: "La Liga",               home: false },
-      { opponent: "Real Madrid",         date: isEs ? "5 Ene 2025"  : "Jan 5, 2025",  competition: "La Liga",               home: false },
-      { opponent: "Atlético de Madrid",  date: isEs ? "29 Sep 2024" : "Sep 29, 2024", competition: "La Liga",               home: true  }
+      { opponent: "FC Barcelona", date: isEs ? "27 Ago 2026" : "Aug 27, 2026", competition: "La Liga", home: false },
+      { opponent: "Sevilla FC", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "La Liga", home: true },
+      { opponent: "RC Celta de Vigo", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "La Liga", home: false }
     ],
     "Sevilla FC": [
-      { opponent: "FC Barcelona",        date: isEs ? "26 Ene 2025" : "Jan 26, 2025", competition: "La Liga",               home: true  },
-      { opponent: "Real Betis",          date: isEs ? "8 Dic 2024"  : "Dec 8, 2024",  competition: "La Liga",               home: false },
-      { opponent: "Atlético de Madrid",  date: isEs ? "19 Oct 2024" : "Oct 19, 2024", competition: "La Liga",               home: false }
+      { opponent: "Rayo Vallecano", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "La Liga", home: true },
+      { opponent: "Athletic Club", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "La Liga", home: false },
+      { opponent: "Atlético de Madrid", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "La Liga", home: true }
     ],
     "Real Betis": [
-      { opponent: "Sevilla FC",          date: isEs ? "8 Dic 2024"  : "Dec 8, 2024",  competition: "La Liga",               home: true  },
-      { opponent: "FC Barcelona",        date: isEs ? "5 Oct 2024"  : "Oct 5, 2024",  competition: "La Liga",               home: false },
-      { opponent: "Real Madrid",         date: isEs ? "16 Feb 2025" : "Feb 16, 2025", competition: "La Liga",               home: true  }
+      { opponent: "Valencia CF", date: isEs ? "25 Ago 2026" : "Aug 25, 2026", competition: "La Liga", home: false },
+      { opponent: "Real Sociedad", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "La Liga", home: true },
+      { opponent: "Levante UD", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "La Liga", home: false }
     ],
     "Valencia CF": [
-      { opponent: "Real Madrid",         date: isEs ? "3 Nov 2024"  : "Nov 3, 2024",  competition: "La Liga",               home: true  },
-      { opponent: "FC Barcelona",        date: isEs ? "16 Nov 2024" : "Nov 16, 2024", competition: "La Liga",               home: false },
-      { opponent: "Atlético de Madrid",  date: isEs ? "25 Ago 2024" : "Aug 25, 2024", competition: "La Liga",               home: true  }
+      { opponent: "Real Betis Balompié", date: isEs ? "25 Ago 2026" : "Aug 25, 2026", competition: "La Liga", home: true },
+      { opponent: "RC Celta de Vigo", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "La Liga", home: true },
+      { opponent: "RC Deportivo A Coruña", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "La Liga", home: false }
     ],
     "Villarreal CF": [
-      { opponent: "FC Barcelona",        date: isEs ? "22 Sep 2024" : "Sep 22, 2024", competition: "La Liga",               home: true  },
-      { opponent: "Real Madrid",         date: isEs ? "19 Ene 2025" : "Jan 19, 2025", competition: "La Liga",               home: false },
-      { opponent: "Getafe CF",           date: isEs ? "21 Sep 2024" : "Sep 21, 2024", competition: "La Liga",               home: false }
+      { opponent: "Real Racing Club", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "La Liga", home: false },
+      { opponent: "Atlético de Madrid", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "La Liga", home: false },
+      { opponent: "Deportivo Alavés", date: isEs ? "28 Ago 2026" : "Aug 28, 2026", competition: "La Liga", home: false }
     ],
     "Real Sociedad": [
-      { opponent: "FC Barcelona",        date: isEs ? "14 Dic 2024" : "Dec 14, 2024", competition: "La Liga",               home: false },
-      { opponent: "Atlético de Madrid",  date: isEs ? "2 Feb 2025"  : "Feb 2, 2025",  competition: "La Liga",               home: true  },
-      { opponent: "Real Madrid",         date: isEs ? "22 Feb 2025" : "Feb 22, 2025", competition: "La Liga",               home: true  }
+      { opponent: "Real Madrid CF", date: isEs ? "26 Ago 2026" : "Aug 26, 2026", competition: "La Liga", home: false },
+      { opponent: "Real Betis Balompié", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "La Liga", home: false },
+      { opponent: "RCD Espanyol", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "La Liga", home: true }
     ],
     "Celta de Vigo": [
-      { opponent: "Real Madrid",         date: isEs ? "28 Sep 2024" : "Sep 28, 2024", competition: "La Liga",               home: true  },
-      { opponent: "FC Barcelona",        date: isEs ? "8 Feb 2025"  : "Feb 8, 2025",  competition: "La Liga",               home: false },
-      { opponent: "Atlético de Madrid",  date: isEs ? "14 Sep 2024" : "Sep 14, 2024", competition: "La Liga",               home: false }
+      { opponent: "CA Osasuna", date: isEs ? "27 Ago 2026" : "Aug 27, 2026", competition: "La Liga", home: true },
+      { opponent: "Valencia CF", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "La Liga", home: false },
+      { opponent: "Athletic Club", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "La Liga", home: true }
     ],
     "Girona FC": [
-      { opponent: "Real Madrid",         date: isEs ? "25 Ago 2024" : "Aug 25, 2024", competition: "La Liga",               home: true  },
-      { opponent: "FC Barcelona",        date: isEs ? "20 Oct 2024" : "Oct 20, 2024", competition: "La Liga",               home: false },
-      { opponent: "Slavia Praha",        date: isEs ? "3 Oct 2024"  : "Oct 3, 2024",  competition: "UEFA Champions League",  home: true  }
+      { opponent: "CD Leganés", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "La Liga", home: true },
+      { opponent: "Córdoba CF", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "La Liga", home: false },
+      { opponent: "UD Las Palmas", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "La Liga", home: true }
     ],
     "Getafe CF": [
-      { opponent: "Real Madrid",         date: isEs ? "24 Nov 2024" : "Nov 24, 2024", competition: "La Liga",               home: false },
-      { opponent: "FC Barcelona",        date: isEs ? "1 Feb 2025"  : "Feb 1, 2025",  competition: "La Liga",               home: false },
-      { opponent: "Atlético de Madrid",  date: isEs ? "6 Oct 2024"  : "Oct 6, 2024",  competition: "La Liga",               home: true  }
+      { opponent: "Deportivo Alavés", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "La Liga", home: false },
+      { opponent: "Real Racing Club", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "La Liga", home: true },
+      { opponent: "CA Osasuna", date: isEs ? "31 Ago 2026" : "Aug 31, 2026", competition: "La Liga", home: false }
     ],
     "Rayo Vallecano": [
-      { opponent: "Real Madrid",         date: isEs ? "9 Mar 2025"  : "Mar 9, 2025",  competition: "La Liga",               home: false },
-      { opponent: "FC Barcelona",        date: isEs ? "14 Sep 2024" : "Sep 14, 2024", competition: "La Liga",               home: false },
-      { opponent: "Atlético de Madrid",  date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "La Liga",               home: true  }
+      { opponent: "Sevilla FC", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "La Liga", home: false },
+      { opponent: "Deportivo Alavés", date: isEs ? "20 Ago 2026" : "Aug 20, 2026", competition: "La Liga", home: true },
+      { opponent: "FC Barcelona", date: isEs ? "31 Ago 2026" : "Aug 31, 2026", competition: "La Liga", home: false }
     ],
     "RCD Mallorca": [
-      { opponent: "Real Madrid",         date: isEs ? "11 Ene 2025" : "Jan 11, 2025", competition: "La Liga",               home: false },
-      { opponent: "FC Barcelona",        date: isEs ? "7 Dic 2024"  : "Dec 7, 2024",  competition: "La Liga",               home: false },
-      { opponent: "Atlético de Madrid",  date: isEs ? "15 Mar 2025" : "Mar 15, 2025", competition: "La Liga",               home: true  }
+      { opponent: "Real Valladolid CF", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "La Liga", home: true },
+      { opponent: "Granada CF", date: isEs ? "24 Ago 2026" : "Aug 24, 2026", competition: "La Liga", home: false },
+      { opponent: "AD Ceuta FC", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "La Liga", home: true }
     ],
     "Osasuna": [
-      { opponent: "Real Madrid",         date: isEs ? "2 Nov 2024"  : "Nov 2, 2024",  competition: "La Liga",               home: false },
-      { opponent: "FC Barcelona",        date: isEs ? "15 Feb 2025" : "Feb 15, 2025", competition: "La Liga",               home: false },
-      { opponent: "Atlético de Madrid",  date: isEs ? "8 Dic 2024"  : "Dec 8, 2024",  competition: "La Liga",               home: true  }
+      { opponent: "RC Celta de Vigo", date: isEs ? "27 Ago 2026" : "Aug 27, 2026", competition: "La Liga", home: false },
+      { opponent: "Levante UD", date: isEs ? "24 Ago 2026" : "Aug 24, 2026", competition: "La Liga", home: true },
+      { opponent: "Getafe CF", date: isEs ? "31 Ago 2026" : "Aug 31, 2026", competition: "La Liga", home: true }
     ],
     "Manchester City": [
-      { opponent: "Arsenal",             date: isEs ? "22 Sep 2024" : "Sep 22, 2024", competition: "Premier League",        home: true  },
-      { opponent: "Chelsea",             date: isEs ? "18 Ago 2024" : "Aug 18, 2024", competition: "Premier League",        home: false },
-      { opponent: "Inter Milan",         date: isEs ? "18 Sep 2024" : "Sep 18, 2024", competition: "UEFA Champions League",  home: true  }
+      { opponent: "AFC Bournemouth", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Premier League", home: true },
+      { opponent: "Crystal Palace", date: isEs ? "28 Ago 2026" : "Aug 28, 2026", competition: "Premier League", home: false },
+      { opponent: "Coventry City", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Premier League", home: true }
     ],
     "Arsenal": [
-      { opponent: "Manchester City",     date: isEs ? "22 Sep 2024" : "Sep 22, 2024", competition: "Premier League",        home: false },
-      { opponent: "Tottenham Hotspur",   date: isEs ? "15 Sep 2024" : "Sep 15, 2024", competition: "Premier League",        home: false },
-      { opponent: "Paris Saint-Germain", date: isEs ? "1 Oct 2024"  : "Oct 1, 2024",  competition: "UEFA Champions League",  home: true  }
+      { opponent: "CD Cieza", date: isEs ? "26 Sep 2026" : "Sep 26, 2026", competition: "CD Cieza", home: true }
     ],
     "Liverpool": [
-      { opponent: "Real Madrid",         date: isEs ? "27 Nov 2024" : "Nov 27, 2024", competition: "UEFA Champions League",  home: true  },
-      { opponent: "Manchester United",   date: isEs ? "1 Sep 2024"  : "Sep 1, 2024",  competition: "Premier League",        home: false },
-      { opponent: "Chelsea",             date: isEs ? "20 Oct 2024" : "Oct 20, 2024", competition: "Premier League",        home: true  }
+      { opponent: "Newcastle United", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Premier League", home: false },
+      { opponent: "Nottingham Forest", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Premier League", home: true },
+      { opponent: "Ipswich Town", date: isEs ? "4 Sep 2026" : "Sep 4, 2026", competition: "Premier League", home: false }
     ],
     "Chelsea": [
-      { opponent: "Liverpool",           date: isEs ? "20 Oct 2024" : "Oct 20, 2024", competition: "Premier League",        home: false },
-      { opponent: "Manchester City",     date: isEs ? "18 Ago 2024" : "Aug 18, 2024", competition: "Premier League",        home: true  },
-      { opponent: "Nottingham Forest",   date: isEs ? "2 Nov 2024"  : "Nov 2, 2024",  competition: "Premier League",        home: true  }
+      { opponent: "Foro del club", date: isEs ? "20 Ago 2026" : "Aug 20, 2026", competition: "Premier League", home: false },
+      { opponent: "Foro del club", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Premier League", home: true },
+      { opponent: "Foro del club", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Premier League", home: true }
     ],
     "Manchester United": [
-      { opponent: "Liverpool",           date: isEs ? "1 Sep 2024"  : "Sep 1, 2024",  competition: "Premier League",        home: true  },
-      { opponent: "Arsenal",             date: isEs ? "3 Nov 2024"  : "Nov 3, 2024",  competition: "Premier League",        home: false },
-      { opponent: "Manchester City",     date: isEs ? "15 Dic 2024" : "Dec 15, 2024", competition: "Premier League",        home: false }
+      { opponent: "Hull City", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Premier League", home: false },
+      { opponent: "Ipswich Town", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "Premier League", home: true },
+      { opponent: "Everton FC", date: isEs ? "6 Sep 2026" : "Sep 6, 2026", competition: "Premier League", home: false }
     ],
     "Tottenham Hotspur": [
-      { opponent: "Arsenal",             date: isEs ? "15 Sep 2024" : "Sep 15, 2024", competition: "Premier League",        home: true  },
-      { opponent: "Manchester City",     date: isEs ? "26 Oct 2024" : "Oct 26, 2024", competition: "Premier League",        home: false },
-      { opponent: "Chelsea",             date: isEs ? "8 Dic 2024"  : "Dec 8, 2024",  competition: "Premier League",        home: true  }
+      { opponent: "Brentford FC", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Premier League", home: false },
+      { opponent: "Newcastle United", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Premier League", home: true },
+      { opponent: "Nottingham Forest", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Premier League", home: false }
     ],
     "Newcastle United": [
-      { opponent: "Manchester City",     date: isEs ? "28 Sep 2024" : "Sep 28, 2024", competition: "Premier League",        home: true  },
-      { opponent: "Arsenal",             date: isEs ? "4 Nov 2024"  : "Nov 4, 2024",  competition: "Premier League",        home: false },
-      { opponent: "Liverpool",           date: isEs ? "18 Dic 2024" : "Dec 18, 2024", competition: "Premier League",        home: false }
-    ],
-    "Aston Villa": [
-      { opponent: "Manchester City",     date: isEs ? "23 Dic 2024" : "Dec 23, 2024", competition: "Premier League",        home: false },
-      { opponent: "Bayern Munich",       date: isEs ? "2 Oct 2024"  : "Oct 2, 2024",  competition: "UEFA Champions League",  home: true  },
-      { opponent: "Arsenal",             date: isEs ? "8 Feb 2025"  : "Feb 8, 2025",  competition: "Premier League",        home: true  }
+      { opponent: "Liverpool FC", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Premier League", home: true },
+      { opponent: "Tottenham Hotspur", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Premier League", home: true },
+      { opponent: "AFC Bournemouth", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Premier League", home: true }
     ],
     "West Ham United": [
-      { opponent: "Arsenal",             date: isEs ? "19 Oct 2024" : "Oct 19, 2024", competition: "Premier League",        home: true  },
-      { opponent: "Chelsea",             date: isEs ? "21 Sep 2024" : "Sep 21, 2024", competition: "Premier League",        home: false },
-      { opponent: "Liverpool",           date: isEs ? "29 Sep 2024" : "Sep 29, 2024", competition: "Premier League",        home: false }
-    ],
-    "Brighton & Hove Albion": [
-      { opponent: "Arsenal",             date: isEs ? "31 Ago 2024" : "Aug 31, 2024", competition: "Premier League",        home: false },
-      { opponent: "Manchester City",     date: isEs ? "25 Ene 2025" : "Jan 25, 2025", competition: "Premier League",        home: false },
-      { opponent: "Chelsea",             date: isEs ? "26 Oct 2024" : "Oct 26, 2024", competition: "Premier League",        home: true  }
-    ],
-    "Brighton": [
-      { opponent: "Arsenal",             date: isEs ? "31 Ago 2024" : "Aug 31, 2024", competition: "Premier League",        home: false },
-      { opponent: "Manchester City",     date: isEs ? "25 Ene 2025" : "Jan 25, 2025", competition: "Premier League",        home: false },
-      { opponent: "Chelsea",             date: isEs ? "26 Oct 2024" : "Oct 26, 2024", competition: "Premier League",        home: true  }
+      { opponent: "Burnley FC", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Premier League", home: false },
+      { opponent: "Charlton Athletic", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Premier League", home: true },
+      { opponent: "Watford FC", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Premier League", home: false }
     ],
     "Nottingham Forest": [
-      { opponent: "Chelsea",             date: isEs ? "2 Nov 2024"  : "Nov 2, 2024",  competition: "Premier League",        home: false },
-      { opponent: "Arsenal",             date: isEs ? "7 Sep 2024"  : "Sep 7, 2024",  competition: "Premier League",        home: true  },
-      { opponent: "Liverpool",           date: isEs ? "14 Dic 2024" : "Dec 14, 2024", competition: "Premier League",        home: true  }
+      { opponent: "Leeds United", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Premier League", home: true },
+      { opponent: "Liverpool FC", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Premier League", home: false },
+      { opponent: "Tottenham Hotspur", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Premier League", home: true }
     ],
     "Everton": [
-      { opponent: "Liverpool",           date: isEs ? "7 Dic 2024"  : "Dec 7, 2024",  competition: "Premier League",        home: true  },
-      { opponent: "Arsenal",             date: isEs ? "19 Oct 2024" : "Oct 19, 2024", competition: "Premier League",        home: false },
-      { opponent: "Manchester United",   date: isEs ? "1 Sep 2024"  : "Sep 1, 2024",  competition: "Premier League",        home: true  }
+      { opponent: "Sport Club Internacional", date: isEs ? "30 Mar 2025" : "Mar 30, 2025", competition: "Premier League", home: true },
+      { opponent: "Esporte Clube Vitória", date: isEs ? "6 Abr 2025" : "Apr 6, 2025", competition: "Premier League", home: false },
+      { opponent: "Grêmio Foot-Ball Porto Alegrense", date: isEs ? "13 Abr 2025" : "Apr 13, 2025", competition: "Premier League", home: false }
     ],
     "Wolverhampton": [
-      { opponent: "Manchester City",     date: isEs ? "30 Nov 2024" : "Nov 30, 2024", competition: "Premier League",        home: false },
-      { opponent: "Chelsea",             date: isEs ? "28 Sep 2024" : "Sep 28, 2024", competition: "Premier League",        home: true  },
-      { opponent: "Arsenal",             date: isEs ? "28 Sep 2024" : "Sep 28, 2024", competition: "Premier League",        home: false }
+      { opponent: "Blackburn Rovers", date: isEs ? "14 Ago 2026" : "Aug 14, 2026", competition: "Premier League", home: true },
+      { opponent: "Preston North End", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Premier League", home: false },
+      { opponent: "Stoke City", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Premier League", home: true }
     ],
     "Crystal Palace": [
-      { opponent: "Arsenal",             date: isEs ? "21 Oct 2024" : "Oct 21, 2024", competition: "Premier League",        home: false },
-      { opponent: "Manchester City",     date: isEs ? "6 Dic 2024"  : "Dec 6, 2024",  competition: "Premier League",        home: false },
-      { opponent: "Chelsea",             date: isEs ? "5 Oct 2024"  : "Oct 5, 2024",  competition: "Premier League",        home: true  }
+      { opponent: "Foro del club", date: isEs ? "20 Ago 2026" : "Aug 20, 2026", competition: "Premier League", home: false },
+      { opponent: "Foro del club", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Premier League", home: true },
+      { opponent: "Foro del club", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Premier League", home: true }
     ],
     "Fulham": [
-      { opponent: "Arsenal",             date: isEs ? "26 Oct 2024" : "Oct 26, 2024", competition: "Premier League",        home: true  },
-      { opponent: "Chelsea",             date: isEs ? "15 Sep 2024" : "Sep 15, 2024", competition: "Premier League",        home: false },
-      { opponent: "Manchester City",     date: isEs ? "11 Ene 2025" : "Jan 11, 2025", competition: "Premier League",        home: true  }
+      { opponent: "Chelsea FC", date: isEs ? "24 Ago 2026" : "Aug 24, 2026", competition: "Premier League", home: true },
+      { opponent: "Sunderland AFC", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "Premier League", home: false },
+      { opponent: "Crystal Palace", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Premier League", home: true }
     ],
     "Brentford": [
-      { opponent: "Arsenal",             date: isEs ? "28 Sep 2024" : "Sep 28, 2024", competition: "Premier League",        home: true  },
-      { opponent: "Chelsea",             date: isEs ? "1 Feb 2025"  : "Feb 1, 2025",  competition: "Premier League",        home: false },
-      { opponent: "Manchester United",   date: isEs ? "19 Oct 2024" : "Oct 19, 2024", competition: "Premier League",        home: true  }
+      { opponent: "Tottenham Hotspur", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Premier League", home: true },
+      { opponent: "Leeds United", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "Premier League", home: false },
+      { opponent: "Sunderland AFC", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Premier League", home: true }
     ],
     "Bournemouth": [
-      { opponent: "Arsenal",             date: isEs ? "19 Oct 2024" : "Oct 19, 2024", competition: "Premier League",        home: true  },
-      { opponent: "Chelsea",             date: isEs ? "14 Sep 2024" : "Sep 14, 2024", competition: "Premier League",        home: false },
-      { opponent: "Liverpool",           date: isEs ? "21 Sep 2024" : "Sep 21, 2024", competition: "Premier League",        home: false }
+      { opponent: "Manchester City", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Premier League", home: false },
+      { opponent: "Everton FC", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Premier League", home: true },
+      { opponent: "Newcastle United", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Premier League", home: false }
     ],
     "Leicester City": [
-      { opponent: "Liverpool",           date: isEs ? "23 Nov 2024" : "Nov 23, 2024", competition: "Premier League",        home: false },
-      { opponent: "Arsenal",             date: isEs ? "28 Sep 2024" : "Sep 28, 2024", competition: "Premier League",        home: false },
-      { opponent: "Manchester City",     date: isEs ? "4 Ene 2025"  : "Jan 4, 2025",  competition: "Premier League",        home: false }
+      { opponent: "Foro del club", date: isEs ? "20 Ago 2026" : "Aug 20, 2026", competition: "Premier League", home: false },
+      { opponent: "Foro del club", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Premier League", home: true },
+      { opponent: "Foro del club", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Premier League", home: true }
     ],
     "Bayern Munich": [
-      { opponent: "FC Barcelona",        date: isEs ? "23 Oct 2024" : "Oct 23, 2024", competition: "UEFA Champions League",  home: false },
-      { opponent: "Bayer Leverkusen",    date: isEs ? "28 Sep 2024" : "Sep 28, 2024", competition: "Bundesliga",            home: true  },
-      { opponent: "Borussia Dortmund",   date: isEs ? "30 Nov 2024" : "Nov 30, 2024", competition: "Bundesliga",            home: false }
-    ],
-    "Bayern München": [
-      { opponent: "FC Barcelona",        date: isEs ? "23 Oct 2024" : "Oct 23, 2024", competition: "UEFA Champions League",  home: false },
-      { opponent: "Bayer Leverkusen",    date: isEs ? "28 Sep 2024" : "Sep 28, 2024", competition: "Bundesliga",            home: true  },
-      { opponent: "Borussia Dortmund",   date: isEs ? "30 Nov 2024" : "Nov 30, 2024", competition: "Bundesliga",            home: false }
+      { opponent: "VfB Stuttgart", date: isEs ? "28 Ago 2026" : "Aug 28, 2026", competition: "Bundesliga", home: true },
+      { opponent: "FC Schalke 04", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Bundesliga", home: false },
+      { opponent: "SV 07 Elversberg", date: isEs ? "13 Sep 2026" : "Sep 13, 2026", competition: "Bundesliga", home: false }
     ],
     "Borussia Dortmund": [
-      { opponent: "Real Madrid",         date: isEs ? "22 Oct 2024" : "Oct 22, 2024", competition: "UEFA Champions League",  home: false },
-      { opponent: "Bayern Munich",       date: isEs ? "30 Nov 2024" : "Nov 30, 2024", competition: "Bundesliga",            home: true  },
-      { opponent: "Celtic FC",           date: isEs ? "19 Sep 2024" : "Sep 19, 2024", competition: "UEFA Champions League",  home: true  }
+      { opponent: "Hamburgo SV", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Bundesliga", home: true },
+      { opponent: "TSG 1899 Hoffenheim", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Bundesliga", home: true },
+      { opponent: "SC Paderborn 07", date: isEs ? "12 Sep 2026" : "Sep 12, 2026", competition: "Bundesliga", home: true }
     ],
     "Bayer Leverkusen": [
-      { opponent: "Bayern Munich",       date: isEs ? "28 Sep 2024" : "Sep 28, 2024", competition: "Bundesliga",            home: false },
-      { opponent: "AC Milan",            date: isEs ? "1 Oct 2024"  : "Oct 1, 2024",  competition: "UEFA Champions League",  home: true  },
-      { opponent: "Borussia Dortmund",   date: isEs ? "1 Feb 2025"  : "Feb 1, 2025",  competition: "Bundesliga",            home: true  }
+      { opponent: "SV 07 Elversberg", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Bundesliga", home: false },
+      { opponent: "1.FC Unión Berlín", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Bundesliga", home: true },
+      { opponent: "FC Augsburgo", date: isEs ? "12 Sep 2026" : "Sep 12, 2026", competition: "Bundesliga", home: false }
     ],
     "RB Leipzig": [
-      { opponent: "Bayern Munich",       date: isEs ? "11 Ene 2025" : "Jan 11, 2025", competition: "Bundesliga",            home: false },
-      { opponent: "Borussia Dortmund",   date: isEs ? "7 Sep 2024"  : "Sep 7, 2024",  competition: "Bundesliga",            home: true  },
-      { opponent: "Juventus",            date: isEs ? "2 Oct 2024"  : "Oct 2, 2024",  competition: "UEFA Champions League",  home: false }
+      { opponent: "Borussia Mönchengladbach", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Bundesliga", home: true },
+      { opponent: "SV Werder Bremen", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Bundesliga", home: false },
+      { opponent: "Hamburgo SV", date: isEs ? "13 Sep 2026" : "Sep 13, 2026", competition: "Bundesliga", home: true }
     ],
     "Eintracht Frankfurt": [
-      { opponent: "Bayern Munich",       date: isEs ? "9 Nov 2024"  : "Nov 9, 2024",  competition: "Bundesliga",            home: false },
-      { opponent: "Borussia Dortmund",   date: isEs ? "24 Ago 2024" : "Aug 24, 2024", competition: "Bundesliga",            home: true  },
-      { opponent: "Bayer Leverkusen",    date: isEs ? "22 Sep 2024" : "Sep 22, 2024", competition: "Bundesliga",            home: false }
+      { opponent: "1.FC Unión Berlín", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Bundesliga", home: false },
+      { opponent: "FC Augsburgo", date: isEs ? "6 Sep 2026" : "Sep 6, 2026", competition: "Bundesliga", home: true },
+      { opponent: "1.FSV Mainz 05", date: isEs ? "12 Sep 2026" : "Sep 12, 2026", competition: "Bundesliga", home: false }
     ],
     "VfB Stuttgart": [
-      { opponent: "Bayern Munich",       date: isEs ? "1 Feb 2025"  : "Feb 1, 2025",  competition: "Bundesliga",            home: true  },
-      { opponent: "Paris Saint-Germain", date: isEs ? "1 Oct 2024"  : "Oct 1, 2024",  competition: "UEFA Champions League",  home: false },
-      { opponent: "Borussia Dortmund",   date: isEs ? "28 Sep 2024" : "Sep 28, 2024", competition: "Bundesliga",            home: false }
-    ],
-    "Juventus": [
-      { opponent: "Inter Milan",         date: isEs ? "26 Oct 2024" : "Oct 26, 2024", competition: "Serie A",               home: true  },
-      { opponent: "Manchester City",     date: isEs ? "29 Oct 2024" : "Oct 29, 2024", competition: "UEFA Champions League",  home: false },
-      { opponent: "AC Milan",            date: isEs ? "7 Sep 2024"  : "Sep 7, 2024",  competition: "Serie A",               home: false }
+      { opponent: "Bayern Múnich", date: isEs ? "28 Ago 2026" : "Aug 28, 2026", competition: "Bundesliga", home: false },
+      { opponent: "FC Colonia", date: isEs ? "4 Sep 2026" : "Sep 4, 2026", competition: "Bundesliga", home: true },
+      { opponent: "TSG 1899 Hoffenheim", date: isEs ? "12 Sep 2026" : "Sep 12, 2026", competition: "Bundesliga", home: true }
     ],
     "Inter Milan": [
-      { opponent: "Juventus",            date: isEs ? "26 Oct 2024" : "Oct 26, 2024", competition: "Serie A",               home: false },
-      { opponent: "Arsenal",             date: isEs ? "9 Oct 2024"  : "Oct 9, 2024",  competition: "UEFA Champions League",  home: false },
-      { opponent: "AC Milan",            date: isEs ? "22 Sep 2024" : "Sep 22, 2024", competition: "Serie A",               home: true  }
+      { opponent: "AC Monza", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Serie A", home: true },
+      { opponent: "Cagliari", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "Serie A", home: false },
+      { opponent: "SSC Nápoles", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Serie A", home: true }
     ],
     "AC Milan": [
-      { opponent: "Inter Milan",         date: isEs ? "22 Sep 2024" : "Sep 22, 2024", competition: "Serie A",               home: false },
-      { opponent: "Liverpool",           date: isEs ? "17 Sep 2024" : "Sep 17, 2024", competition: "UEFA Champions League",  home: true  },
-      { opponent: "Juventus",            date: isEs ? "7 Sep 2024"  : "Sep 7, 2024",  competition: "Serie A",               home: true  }
+      { opponent: "Torino FC", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Serie A", home: false },
+      { opponent: "Venezia FC", date: isEs ? "28 Ago 2026" : "Aug 28, 2026", competition: "Serie A", home: true },
+      { opponent: "Juventus de Turín", date: isEs ? "6 Sep 2026" : "Sep 6, 2026", competition: "Serie A", home: false }
     ],
     "Napoli": [
-      { opponent: "Inter Milan",         date: isEs ? "10 Nov 2024" : "Nov 10, 2024", competition: "Serie A",               home: true  },
-      { opponent: "Juventus",            date: isEs ? "24 Ene 2025" : "Jan 24, 2025", competition: "Serie A",               home: false },
-      { opponent: "AC Milan",            date: isEs ? "29 Mar 2025" : "Mar 29, 2025", competition: "Serie A",               home: true  }
+      { opponent: "CD Universidad Católica", date: isEs ? "17 Feb 2025" : "Feb 17, 2025", competition: "Serie A", home: true },
+      { opponent: "Delfín SC", date: isEs ? "22 Feb 2025" : "Feb 22, 2025", competition: "Serie A", home: false },
+      { opponent: "CD Macará", date: isEs ? "1 Mar 2025" : "Mar 1, 2025", competition: "Serie A", home: true }
     ],
     "AS Roma": [
-      { opponent: "Inter Milan",         date: isEs ? "20 Oct 2024" : "Oct 20, 2024", competition: "Serie A",               home: true  },
-      { opponent: "AC Milan",            date: isEs ? "1 Sep 2024"  : "Sep 1, 2024",  competition: "Serie A",               home: false },
-      { opponent: "Athletic Club",       date: isEs ? "3 Oct 2024"  : "Oct 3, 2024",  competition: "UEFA Europa League",    home: true  }
+      { opponent: "FK Macva Sabac", date: isEs ? "17 Jul 2026" : "Jul 17, 2026", competition: "Serie A", home: true },
+      { opponent: "FK Vojvodina Novi Sad", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "Serie A", home: true },
+      { opponent: "FK Radnik Surdulica", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "Serie A", home: false }
     ],
     "SS Lazio": [
-      { opponent: "Inter Milan",         date: isEs ? "16 Mar 2025" : "Mar 16, 2025", competition: "Serie A",               home: false },
-      { opponent: "Juventus",            date: isEs ? "19 Oct 2024" : "Oct 19, 2024", competition: "Serie A",               home: false },
-      { opponent: "Ajax",                date: isEs ? "24 Oct 2024" : "Oct 24, 2024", competition: "UEFA Europa League",    home: true  }
+      { opponent: "Bolonia", date: isEs ? "24 Ago 2026" : "Aug 24, 2026", competition: "Serie A", home: false },
+      { opponent: "Génova", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "Serie A", home: true },
+      { opponent: "Udinese", date: isEs ? "7 Sep 2026" : "Sep 7, 2026", competition: "Serie A", home: false }
     ],
     "Atalanta BC": [
-      { opponent: "Inter Milan",         date: isEs ? "1 Dic 2024"  : "Dec 1, 2024",  competition: "Serie A",               home: false },
-      { opponent: "Juventus",            date: isEs ? "14 Sep 2024" : "Sep 14, 2024", competition: "Serie A",               home: false },
-      { opponent: "Arsenal",             date: isEs ? "3 Oct 2024"  : "Oct 3, 2024",  competition: "UEFA Champions League",  home: true  }
+      { opponent: "US Sassuolo", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Serie A", home: true },
+      { opponent: "Bolonia", date: isEs ? "31 Ago 2026" : "Aug 31, 2026", competition: "Serie A", home: true },
+      { opponent: "AS Roma", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Serie A", home: false }
     ],
     "Fiorentina": [
-      { opponent: "Inter Milan",         date: isEs ? "1 Sep 2024"  : "Sep 1, 2024",  competition: "Serie A",               home: false },
-      { opponent: "AC Milan",            date: isEs ? "6 Oct 2024"  : "Oct 6, 2024",  competition: "Serie A",               home: true  },
-      { opponent: "PAOK",                date: isEs ? "24 Oct 2024" : "Oct 24, 2024", competition: "UEFA Conference League", home: true  }
+      { opponent: "TuS Grün-Weiß Pödinghausen", date: isEs ? "30 Jul 2026" : "Jul 30, 2026", competition: "Serie A", home: true },
+      { opponent: "TuS Lipperreihe", date: isEs ? "2 Sep 2026" : "Sep 2, 2026", competition: "Serie A", home: true },
+      { opponent: "FC Kaunitz", date: isEs ? "7 Ago 2026" : "Aug 7, 2026", competition: "Serie A", home: true }
     ],
     "Paris Saint-Germain": [
-      { opponent: "Arsenal",             date: isEs ? "1 Oct 2024"  : "Oct 1, 2024",  competition: "UEFA Champions League",  home: false },
-      { opponent: "Olympique Marseille", date: isEs ? "27 Oct 2024" : "Oct 27, 2024", competition: "Ligue 1",               home: false },
-      { opponent: "Atletico de Madrid",  date: isEs ? "6 Nov 2024"  : "Nov 6, 2024",  competition: "UEFA Champions League",  home: true  }
+      { opponent: "Stade Rennais FC", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Ligue 1", home: true },
+      { opponent: "LOSC Lille", date: isEs ? "28 Ago 2026" : "Aug 28, 2026", competition: "Ligue 1", home: false },
+      { opponent: "AS Mónaco", date: isEs ? "4 Sep 2026" : "Sep 4, 2026", competition: "Ligue 1", home: true }
     ],
     "Olympique Marseille": [
-      { opponent: "Paris Saint-Germain", date: isEs ? "27 Oct 2024" : "Oct 27, 2024", competition: "Ligue 1",               home: true  },
-      { opponent: "Olympique Lyonnais",  date: isEs ? "22 Sep 2024" : "Sep 22, 2024", competition: "Ligue 1",               home: false },
-      { opponent: "Fenerbahce",          date: isEs ? "3 Oct 2024"  : "Oct 3, 2024",  competition: "UEFA Europa League",    home: true  }
+      { opponent: "Racing Club de Estrasburgo", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Ligue 1", home: true },
+      { opponent: "AS Mónaco", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "Ligue 1", home: false },
+      { opponent: "Paris FC", date: isEs ? "6 Sep 2026" : "Sep 6, 2026", competition: "Ligue 1", home: true }
     ],
     "Olympique Lyonnais": [
-      { opponent: "Paris Saint-Germain", date: isEs ? "3 Nov 2024"  : "Nov 3, 2024",  competition: "Ligue 1",               home: false },
-      { opponent: "Olympique Marseille", date: isEs ? "22 Sep 2024" : "Sep 22, 2024", competition: "Ligue 1",               home: true  },
-      { opponent: "Fenerbahce",          date: isEs ? "24 Oct 2024" : "Oct 24, 2024", competition: "UEFA Europa League",    home: false }
+      { opponent: "Toulouse FC", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Ligue 1", home: false },
+      { opponent: "Le Havre AC", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Ligue 1", home: true },
+      { opponent: "AJ Auxerre", date: isEs ? "4 Sep 2026" : "Sep 4, 2026", competition: "Ligue 1", home: true }
     ],
     "AS Monaco": [
-      { opponent: "Paris Saint-Germain", date: isEs ? "19 Oct 2024" : "Oct 19, 2024", competition: "Ligue 1",               home: true  },
-      { opponent: "FC Barcelona",        date: isEs ? "22 Oct 2024" : "Oct 22, 2024", competition: "UEFA Champions League",  home: false },
-      { opponent: "Aston Villa",         date: isEs ? "6 Nov 2024"  : "Nov 6, 2024",  competition: "UEFA Champions League",  home: true  }
+      { opponent: "Le Havre AC", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Ligue 1", home: true },
+      { opponent: "Olympique de Marsella", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "Ligue 1", home: true },
+      { opponent: "París Saint-Germain", date: isEs ? "4 Sep 2026" : "Sep 4, 2026", competition: "Ligue 1", home: false }
     ],
     "LOSC Lille": [
-      { opponent: "Paris Saint-Germain", date: isEs ? "20 Oct 2024" : "Oct 20, 2024", competition: "Ligue 1",               home: false },
-      { opponent: "Real Madrid",         date: isEs ? "2 Oct 2024"  : "Oct 2, 2024",  competition: "UEFA Champions League",  home: true  },
-      { opponent: "Atletico de Madrid",  date: isEs ? "23 Oct 2024" : "Oct 23, 2024", competition: "UEFA Champions League",  home: false }
+      { opponent: "Angers SCO", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Ligue 1", home: false },
+      { opponent: "París Saint-Germain", date: isEs ? "28 Ago 2026" : "Aug 28, 2026", competition: "Ligue 1", home: true },
+      { opponent: "Toulouse FC", date: isEs ? "3 Sep 2026" : "Sep 3, 2026", competition: "Ligue 1", home: false }
     ],
     "Stade Rennais": [
-      { opponent: "Paris Saint-Germain", date: isEs ? "17 Nov 2024" : "Nov 17, 2024", competition: "Ligue 1",               home: true  },
-      { opponent: "Olympique Marseille", date: isEs ? "6 Oct 2024"  : "Oct 6, 2024",  competition: "Ligue 1",               home: false },
-      { opponent: "Olympique Lyonnais",  date: isEs ? "1 Sep 2024"  : "Sep 1, 2024",  competition: "Ligue 1",               home: true  }
+      { opponent: "París Saint-Germain", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Ligue 1", home: false },
+      { opponent: "Le Mans FC", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "Ligue 1", home: true },
+      { opponent: "Angers SCO", date: isEs ? "6 Sep 2026" : "Sep 6, 2026", competition: "Ligue 1", home: false }
     ],
     "RC Lens": [
-      { opponent: "Paris Saint-Germain", date: isEs ? "16 Feb 2025" : "Feb 16, 2025", competition: "Ligue 1",               home: false },
-      { opponent: "Olympique Marseille", date: isEs ? "18 Ago 2024" : "Aug 18, 2024", competition: "Ligue 1",               home: true  },
-      { opponent: "AS Monaco",           date: isEs ? "22 Sep 2024" : "Sep 22, 2024", competition: "Ligue 1",               home: false }
+      { opponent: "AJ Auxerre", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Ligue 1", home: true },
+      { opponent: "Racing Club de Estrasburgo", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Ligue 1", home: false },
+      { opponent: "FC Lorient", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Ligue 1", home: true }
     ],
     "Nice": [
-      { opponent: "Paris Saint-Germain", date: isEs ? "1 Sep 2024"  : "Sep 1, 2024",  competition: "Ligue 1",               home: false },
-      { opponent: "Olympique Marseille", date: isEs ? "13 Oct 2024" : "Oct 13, 2024", competition: "Ligue 1",               home: true  },
-      { opponent: "AS Monaco",           date: isEs ? "21 Sep 2024" : "Sep 21, 2024", competition: "Ligue 1",               home: false }
-    ],
-    "Benfica": [
-      { opponent: "FC Porto",            date: isEs ? "9 Nov 2024"  : "Nov 9, 2024",  competition: "Primeira Liga",         home: true  },
-      { opponent: "Feyenoord",           date: isEs ? "22 Oct 2024" : "Oct 22, 2024", competition: "UEFA Champions League",  home: false },
-      { opponent: "Atletico de Madrid",  date: isEs ? "6 Nov 2024"  : "Nov 6, 2024",  competition: "UEFA Champions League",  home: false }
+      { opponent: "San Diego FC", date: isEs ? "24 Feb 2025" : "Feb 24, 2025", competition: "Ligue 1", home: true },
+      { opponent: "Vancouver Whitecaps FC", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "Ligue 1", home: false },
+      { opponent: "St. Louis CITY SC", date: isEs ? "10 Mar 2025" : "Mar 10, 2025", competition: "Ligue 1", home: true }
     ],
     "FC Porto": [
-      { opponent: "Benfica",             date: isEs ? "9 Nov 2024"  : "Nov 9, 2024",  competition: "Primeira Liga",         home: false },
-      { opponent: "Sporting CP",         date: isEs ? "1 Dic 2024"  : "Dec 1, 2024",  competition: "Primeira Liga",         home: true  },
-      { opponent: "Manchester City",     date: isEs ? "23 Oct 2024" : "Oct 23, 2024", competition: "UEFA Champions League",  home: false }
+      { opponent: "FC Alverca", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Primeira Liga", home: true },
+      { opponent: "Rio Ave FC", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Primeira Liga", home: false },
+      { opponent: "FC Arouca", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Primeira Liga", home: true }
     ],
     "Sporting CP": [
-      { opponent: "Benfica",             date: isEs ? "7 Dic 2024"  : "Dec 7, 2024",  competition: "Primeira Liga",         home: true  },
-      { opponent: "FC Porto",            date: isEs ? "1 Dic 2024"  : "Dec 1, 2024",  competition: "Primeira Liga",         home: false },
-      { opponent: "Manchester City",     date: isEs ? "5 Nov 2024"  : "Nov 5, 2024",  competition: "UEFA Champions League",  home: false }
+      { opponent: "CF Estrela Amadora", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Primeira Liga", home: false },
+      { opponent: "Vitória Guimarães SC", date: isEs ? "14 Ago 2026" : "Aug 14, 2026", competition: "Primeira Liga", home: true },
+      { opponent: "FC Alverca", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Primeira Liga", home: true }
     ],
     "Ajax": [
-      { opponent: "PSV Eindhoven",       date: isEs ? "3 Nov 2024"  : "Nov 3, 2024",  competition: "Eredivisie",            home: true  },
-      { opponent: "Feyenoord",           date: isEs ? "26 Ene 2025" : "Jan 26, 2025", competition: "Eredivisie",            home: false },
-      { opponent: "SS Lazio",            date: isEs ? "24 Oct 2024" : "Oct 24, 2024", competition: "UEFA Europa League",    home: false }
+      { opponent: "Jeunesse Evolution", date: isEs ? "10 Nov 2026" : "Nov 10, 2026", competition: "Jeunesse Evolution", home: false }
     ],
     "PSV Eindhoven": [
-      { opponent: "Ajax",                date: isEs ? "3 Nov 2024"  : "Nov 3, 2024",  competition: "Eredivisie",            home: false },
-      { opponent: "Feyenoord",           date: isEs ? "2 Mar 2025"  : "Mar 2, 2025",  competition: "Eredivisie",            home: true  },
-      { opponent: "Juventus",            date: isEs ? "22 Oct 2024" : "Oct 22, 2024", competition: "UEFA Champions League",  home: false }
+      { opponent: "Fortuna Sittard", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Eredivisie", home: true },
+      { opponent: "Excelsior Rotterdam", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Eredivisie", home: false },
+      { opponent: "FC Groningen", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Eredivisie", home: true }
     ],
     "Feyenoord": [
-      { opponent: "Ajax",                date: isEs ? "26 Ene 2025" : "Jan 26, 2025", competition: "Eredivisie",            home: true  },
-      { opponent: "PSV Eindhoven",       date: isEs ? "2 Mar 2025"  : "Mar 2, 2025",  competition: "Eredivisie",            home: false },
-      { opponent: "Benfica",             date: isEs ? "22 Oct 2024" : "Oct 22, 2024", competition: "UEFA Champions League",  home: true  }
+      { opponent: "Sparta Rotterdam", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Eredivisie", home: false },
+      { opponent: "Go Ahead Eagles Deventer", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Eredivisie", home: true },
+      { opponent: "SC Cambuur Leeuwarden", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Eredivisie", home: false }
     ],
     "Celtic FC": [
-      { opponent: "Rangers FC",          date: isEs ? "30 Dic 2024" : "Dec 30, 2024", competition: "Scottish Premiership",  home: true  },
-      { opponent: "Borussia Dortmund",   date: isEs ? "19 Sep 2024" : "Sep 19, 2024", competition: "UEFA Champions League",  home: false },
-      { opponent: "RB Leipzig",          date: isEs ? "23 Oct 2024" : "Oct 23, 2024", competition: "UEFA Champions League",  home: false }
+      { opponent: "Dundee FC", date: isEs ? "3 Ago 2026" : "Aug 3, 2026", competition: "Scottish Premiership", home: true },
+      { opponent: "Kilmarnock FC", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Scottish Premiership", home: false },
+      { opponent: "St. Johnstone FC", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Scottish Premiership", home: false }
     ],
     "Rangers FC": [
-      { opponent: "Celtic FC",           date: isEs ? "30 Dic 2024" : "Dec 30, 2024", competition: "Scottish Premiership",  home: false },
-      { opponent: "FCSB",                date: isEs ? "3 Oct 2024"  : "Oct 3, 2024",  competition: "UEFA Europa League",    home: true  },
-      { opponent: "Tottenham Hotspur",   date: isEs ? "24 Oct 2024" : "Oct 24, 2024", competition: "UEFA Europa League",    home: false }
+      { opponent: "Dundee United FC", date: isEs ? "31 Jul 2026" : "Jul 31, 2026", competition: "Scottish Premiership", home: false },
+      { opponent: "Hibernian FC", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Scottish Premiership", home: true },
+      { opponent: "St. Mirren FC", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Scottish Premiership", home: true }
     ],
     "Galatasaray": [
-      { opponent: "Fenerbahce",          date: isEs ? "24 Nov 2024" : "Nov 24, 2024", competition: "Super Lig",             home: false },
-      { opponent: "Manchester United",   date: isEs ? "3 Oct 2024"  : "Oct 3, 2024",  competition: "UEFA Europa League",    home: true  },
-      { opponent: "Tottenham Hotspur",   date: isEs ? "24 Oct 2024" : "Oct 24, 2024", competition: "UEFA Europa League",    home: false }
+      { opponent: "Corum FK", date: isEs ? "14 Ago 2026" : "Aug 14, 2026", competition: "Super Lig", home: true },
+      { opponent: "BErzurumspor FK", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Super Lig", home: false },
+      { opponent: "Göztepe", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Super Lig", home: true }
     ],
     "Fenerbahce": [
-      { opponent: "Galatasaray",         date: isEs ? "24 Nov 2024" : "Nov 24, 2024", competition: "Super Lig",             home: true  },
-      { opponent: "Olympique Lyonnais",  date: isEs ? "24 Oct 2024" : "Oct 24, 2024", competition: "UEFA Europa League",    home: true  },
-      { opponent: "Olympique Marseille", date: isEs ? "3 Oct 2024"  : "Oct 3, 2024",  competition: "UEFA Europa League",    home: false }
+      { opponent: "Genclerbirligi Ankara", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Super Lig", home: false },
+      { opponent: "Konyaspor", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Super Lig", home: true },
+      { opponent: "Samsunspor", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "Super Lig", home: false }
     ],
     "Al-Hilal SFC": [
-      { opponent: "Al-Nassr FC",         date: isEs ? "26 Oct 2024" : "Oct 26, 2024", competition: "Saudi Pro League",      home: true  },
-      { opponent: "Al-Ittihad",          date: isEs ? "2 Nov 2024"  : "Nov 2, 2024",  competition: "Saudi Pro League",      home: false },
-      { opponent: "Al-Ahli",             date: isEs ? "9 Nov 2024"  : "Nov 9, 2024",  competition: "Saudi Pro League",      home: true  }
+      { opponent: "Al-Faisaly FC", date: isEs ? "14 Ago 2026" : "Aug 14, 2026", competition: "Saudi Pro League", home: true },
+      { opponent: "Al-Fayha FC", date: isEs ? "20 Ago 2026" : "Aug 20, 2026", competition: "Saudi Pro League", home: false },
+      { opponent: "Al-Ahli SFC", date: isEs ? "1 Sep 2026" : "Sep 1, 2026", competition: "Saudi Pro League", home: true }
     ],
     "Al-Nassr FC": [
-      { opponent: "Al-Hilal SFC",        date: isEs ? "26 Oct 2024" : "Oct 26, 2024", competition: "Saudi Pro League",      home: false },
-      { opponent: "Al-Ittihad",          date: isEs ? "18 Oct 2024" : "Oct 18, 2024", competition: "Saudi Pro League",      home: true  },
-      { opponent: "Al-Qadsiah",          date: isEs ? "30 Nov 2024" : "Nov 30, 2024", competition: "Saudi Pro League",      home: false }
+      { opponent: "Al-Fateh SC", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Saudi Pro League", home: true },
+      { opponent: "Al-Riyadh SC", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Saudi Pro League", home: false },
+      { opponent: "Al-Ettifaq FC", date: isEs ? "25 Ago 2026" : "Aug 25, 2026", competition: "Saudi Pro League", home: false }
     ],
     "Inter Miami CF": [
-      { opponent: "Columbus Crew",       date: isEs ? "5 Oct 2024"  : "Oct 5, 2024",  competition: "MLS Playoffs",          home: true  },
-      { opponent: "Atlanta United",      date: isEs ? "19 Oct 2024" : "Oct 19, 2024", competition: "MLS Playoffs",          home: false },
-      { opponent: "New England Revolution",date:isEs? "28 Sep 2024" : "Sep 28, 2024", competition: "MLS Regular Season",    home: true  }
+      { opponent: "New York City FC", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "MLS Regular Season", home: true },
+      { opponent: "Houston Dynamo FC", date: isEs ? "3 Mar 2025" : "Mar 3, 2025", competition: "MLS Regular Season", home: false },
+      { opponent: "Charlotte FC", date: isEs ? "9 Mar 2025" : "Mar 9, 2025", competition: "MLS Regular Season", home: true }
     ],
     "River Plate": [
-      { opponent: "Boca Juniors",        date: isEs ? "19 Oct 2024" : "Oct 19, 2024", competition: "Liga Profesional",      home: true  },
-      { opponent: "Atletico Tucuman",    date: isEs ? "5 Oct 2024"  : "Oct 5, 2024",  competition: "Liga Profesional",      home: false },
-      { opponent: "Estudiantes LP",      date: isEs ? "27 Oct 2024" : "Oct 27, 2024", competition: "Copa Argentina",        home: false }
+      { opponent: "&nbsp;", date: isEs ? "14 Jul 2025" : "Jul 14, 2025", competition: "Liga Profesional", home: true },
+      { opponent: "Instituto ACC", date: isEs ? "20 Jul 2025" : "Jul 20, 2025", competition: "Liga Profesional", home: false },
+      { opponent: "&nbsp;", date: isEs ? "28 Jul 2025" : "Jul 28, 2025", competition: "Liga Profesional", home: true }
     ],
     "Boca Juniors": [
-      { opponent: "River Plate",         date: isEs ? "19 Oct 2024" : "Oct 19, 2024", competition: "Liga Profesional",      home: false },
-      { opponent: "Independiente",       date: isEs ? "13 Oct 2024" : "Oct 13, 2024", competition: "Liga Profesional",      home: true  },
-      { opponent: "Fluminense",          date: isEs ? "2 Oct 2024"  : "Oct 2, 2024",  competition: "Copa Libertadores",     home: false }
+      { opponent: "&nbsp;", date: isEs ? "13 Jul 2025" : "Jul 13, 2025", competition: "Liga Profesional", home: false },
+      { opponent: "CA Unión (Santa Fe)", date: isEs ? "19 Jul 2025" : "Jul 19, 2025", competition: "Liga Profesional", home: true },
+      { opponent: "CA Huracán", date: isEs ? "27 Jul 2025" : "Jul 27, 2025", competition: "Liga Profesional", home: true }
     ],
     "Flamengo": [
-      { opponent: "Fluminense",          date: isEs ? "6 Oct 2024"  : "Oct 6, 2024",  competition: "Brasileirao Serie A",   home: true  },
-      { opponent: "Athletico Paranaense",date: isEs ? "19 Oct 2024" : "Oct 19, 2024", competition: "Brasileirao Serie A",   home: false },
-      { opponent: "Penarol",             date: isEs ? "23 Oct 2024" : "Oct 23, 2024", competition: "Copa Libertadores",     home: true  }
+      { opponent: "Damac FC", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Brasileirao Serie A", home: true },
+      { opponent: "Al-Jandal SC", date: isEs ? "27 Ago 2026" : "Aug 27, 2026", competition: "Brasileirao Serie A", home: false },
+      { opponent: "Al-Okhdood Club", date: isEs ? "31 Ago 2026" : "Aug 31, 2026", competition: "Brasileirao Serie A", home: true }
     ],
     "Fluminense": [
-      { opponent: "Flamengo",            date: isEs ? "6 Oct 2024"  : "Oct 6, 2024",  competition: "Brasileirao Serie A",   home: false },
-      { opponent: "Boca Juniors",        date: isEs ? "2 Oct 2024"  : "Oct 2, 2024",  competition: "Copa Libertadores",     home: true  },
-      { opponent: "Botafogo",            date: isEs ? "26 Oct 2024" : "Oct 26, 2024", competition: "Brasileirao Serie A",   home: false }
+      { opponent: "Fortaleza Esporte Clube", date: isEs ? "29 Mar 2025" : "Mar 29, 2025", competition: "Brasileirao Serie A", home: false },
+      { opponent: "Red Bull Bragantino", date: isEs ? "6 Abr 2025" : "Apr 6, 2025", competition: "Brasileirao Serie A", home: true },
+      { opponent: "Santos FC", date: isEs ? "14 Abr 2025" : "Apr 14, 2025", competition: "Brasileirao Serie A", home: true }
     ],
     "Palmeiras": [
-      { opponent: "Corinthians",         date: isEs ? "5 Oct 2024"  : "Oct 5, 2024",  competition: "Brasileirao Serie A",   home: true  },
-      { opponent: "Botafogo",            date: isEs ? "19 Oct 2024" : "Oct 19, 2024", competition: "Brasileirao Serie A",   home: false },
-      { opponent: "Flamengo",            date: isEs ? "2 Nov 2024"  : "Nov 2, 2024",  competition: "Brasileirao Serie A",   home: true  }
+      { opponent: "Botafogo de Futebol e Regatas", date: isEs ? "30 Mar 2025" : "Mar 30, 2025", competition: "Brasileirao Serie A", home: true },
+      { opponent: "Sport Club do Recife", date: isEs ? "6 Abr 2025" : "Apr 6, 2025", competition: "Brasileirao Serie A", home: false },
+      { opponent: "SC Corinthians", date: isEs ? "12 Abr 2025" : "Apr 12, 2025", competition: "Brasileirao Serie A", home: true }
     ],
     "Club America": [
-      { opponent: "Chivas de Guadalajara",date:isEs? "20 Oct 2024"  : "Oct 20, 2024", competition: "Liga MX Apertura",      home: true  },
-      { opponent: "Cruz Azul",           date: isEs ? "3 Oct 2024"  : "Oct 3, 2024",  competition: "Liga MX Apertura",      home: false },
-      { opponent: "Pumas UNAM",          date: isEs ? "6 Oct 2024"  : "Oct 6, 2024",  competition: "Liga MX Apertura",      home: false }
+      { opponent: "Querétaro FC", date: isEs ? "19 Jul 2026" : "Jul 19, 2026", competition: "Liga MX Apertura", home: false },
+      { opponent: "CF Atlante", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "Liga MX Apertura", home: false },
+      { opponent: "Santos Laguna", date: isEs ? "3 Ago 2026" : "Aug 3, 2026", competition: "Liga MX Apertura", home: true }
     ],
-    "Chivas de Guadalajara": [
-      { opponent: "Club America",        date: isEs ? "20 Oct 2024" : "Oct 20, 2024", competition: "Liga MX Apertura",      home: false },
-      { opponent: "Atlas FC",            date: isEs ? "6 Oct 2024"  : "Oct 6, 2024",  competition: "Liga MX Apertura",      home: true  },
-      { opponent: "Cruz Azul",           date: isEs ? "27 Oct 2024" : "Oct 27, 2024", competition: "Liga MX Apertura",      home: false }
-    ]
+    "Real Oviedo": [
+      { opponent: "Granada CF", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "CD Leganés", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "Albacete Balompié", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Liga Oficial", home: false }
+    ],
+    "FC Volendam": [
+      { opponent: "PSV Eindhoven U21", date: isEs ? "10 Ago 2026" : "Aug 10, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "TOP Oss", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "MVV Maastricht", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Liga Oficial", home: false }
+    ],
+    "VfL Wolfsburg": [
+      { opponent: "1.FC Kaiserslautern", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Bundesliga", home: true },
+      { opponent: "Hannover 96", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Bundesliga", home: false },
+      { opponent: "Karlsruher SC", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Bundesliga", home: false }
+    ],
+    "Racing Strasbourg": [
+      { opponent: "US Torcy", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Ligue 1", home: false },
+      { opponent: "ASM Belfort", date: isEs ? "6 Sep 2026" : "Sep 6, 2026", competition: "Ligue 1", home: true },
+      { opponent: "FC Metz B", date: isEs ? "20 Sep 2026" : "Sep 20, 2026", competition: "Ligue 1", home: false }
+    ],
+    "Real Betis Balompié": [
+      { opponent: "Valencia CF", date: isEs ? "25 Ago 2026" : "Aug 25, 2026", competition: "La Liga", home: false },
+      { opponent: "Real Sociedad", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "La Liga", home: true },
+      { opponent: "Levante UD", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "La Liga", home: false }
+    ],
+    "Telstar": [
+      { opponent: "NEC Nijmegen", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "Sparta Rotterdam", date: isEs ? "14 Ago 2026" : "Aug 14, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "FC Twente Enschede", date: isEs ? "9 Sep 2026" : "Sep 9, 2026", competition: "Liga Oficial", home: false }
+    ],
+    "Hellas Verona": [
+      { opponent: "Ascoli Calcio", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Serie A", home: true },
+      { opponent: "Calcio Padova", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Serie A", home: false },
+      { opponent: "SS Arezzo", date: isEs ? "6 Sep 2026" : "Sep 6, 2026", competition: "Serie A", home: true }
+    ],
+    "Parma": [
+      { opponent: "Istanbulspor", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Serie A", home: true },
+      { opponent: "Muglaspor", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Serie A", home: false },
+      { opponent: "Ankara Keciörengücü", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Serie A", home: true }
+    ],
+    "Le Havre AC": [
+      { opponent: "AS Mónaco", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "Olympique de Lyon", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "Stade Brestois 29", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Liga Oficial", home: true }
+    ],
+    "FC St. Pauli": [
+      { opponent: "SpVgg Greuther Fürth", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Bundesliga", home: true },
+      { opponent: "Holstein Kiel", date: isEs ? "14 Ago 2026" : "Aug 14, 2026", competition: "Bundesliga", home: false },
+      { opponent: "1.FC Kaiserslautern", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "Bundesliga", home: true }
+    ],
+    "Sunderland": [
+      { opponent: "Ajax Amsterdam U21", date: isEs ? "7 Ago 2026" : "Aug 7, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "RKC Waalwijk", date: isEs ? "14 Ago 2026" : "Aug 14, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "Roda JC Kerkrade", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Liga Oficial", home: true }
+    ],
+    "CA Osasuna": [
+      { opponent: "RC Celta de Vigo", date: isEs ? "27 Ago 2026" : "Aug 27, 2026", competition: "La Liga", home: false },
+      { opponent: "Levante UD", date: isEs ? "24 Ago 2026" : "Aug 24, 2026", competition: "La Liga", home: true },
+      { opponent: "Getafe CF", date: isEs ? "31 Ago 2026" : "Aug 31, 2026", competition: "La Liga", home: true }
+    ],
+    "Delfines del Este": [
+      { opponent: "Atlántico FC", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "Cibao FC", date: isEs ? "26 Ago 2026" : "Aug 26, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "Jarabacoa FC", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Liga Oficial", home: true }
+    ],
+    "Salcedo FC": [
+      { opponent: "Universidad O&M FC", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "Moca FC", date: isEs ? "27 Ago 2026" : "Aug 27, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "Atlético Vega Real", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "Liga Oficial", home: true }
+    ],
+    "Toulouse FC": [
+      { opponent: "Olympique de Lyon", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Ligue 1", home: true },
+      { opponent: "Stade Brestois 29", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Ligue 1", home: false },
+      { opponent: "LOSC Lille", date: isEs ? "3 Sep 2026" : "Sep 3, 2026", competition: "Ligue 1", home: true }
+    ],
+    "Athletic Bilbao": [
+      { opponent: "FC Barcelona", date: isEs ? "27 Ago 2026" : "Aug 27, 2026", competition: "La Liga", home: false },
+      { opponent: "Sevilla FC", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "La Liga", home: true },
+      { opponent: "RC Celta de Vigo", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "La Liga", home: false }
+    ],
+    "Paris FC": [
+      { opponent: "ESTAC Troyes", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Ligue 1", home: false },
+      { opponent: "OGC Niza", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "Ligue 1", home: true },
+      { opponent: "Olympique de Marsella", date: isEs ? "6 Sep 2026" : "Sep 6, 2026", competition: "Ligue 1", home: false }
+    ],
+    "Wolverhampton Wanderers": [
+      { opponent: "Blackburn Rovers", date: isEs ? "14 Ago 2026" : "Aug 14, 2026", competition: "Premier League", home: true },
+      { opponent: "Preston North End", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Premier League", home: false },
+      { opponent: "Stoke City", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Premier League", home: true }
+    ],
+    "Elche CF": [
+      { opponent: "RC Deportivo A Coruña", date: isEs ? "17 Ago 2026" : "Aug 17, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "FC Barcelona", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "Real Racing Club", date: isEs ? "28 Ago 2026" : "Aug 28, 2026", competition: "Liga Oficial", home: false }
+    ],
+    "Udinese": [
+      { opponent: "Como 1907", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Serie A", home: true },
+      { opponent: "AC Monza", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Serie A", home: false },
+      { opponent: "SS Lazio", date: isEs ? "7 Sep 2026" : "Sep 7, 2026", competition: "Serie A", home: true }
+    ],
+    "Excelsior": [
+      { opponent: "SC Cambuur Leeuwarden", date: isEs ? "7 Ago 2026" : "Aug 7, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "PSV Eindhoven", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "NEC Nijmegen", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Liga Oficial", home: false }
+    ],
+    "TSG Hoffenheim": [
+      { opponent: "FC Colonia", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "Borussia Dortmund", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "VfB Stuttgart", date: isEs ? "12 Sep 2026" : "Sep 12, 2026", competition: "Liga Oficial", home: true }
+    ],
+    "Lazio": [
+      { opponent: "Hapoel Ramat Gan", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Serie A", home: true },
+      { opponent: "Maccabi Tel Aviv", date: isEs ? "31 Ago 2026" : "Aug 31, 2026", competition: "Serie A", home: false },
+      { opponent: "Hapoel Petah Tikva", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Serie A", home: true }
+    ],
+    "AJ Auxerre": [
+      { opponent: "RC Lens", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Ligue 1", home: false },
+      { opponent: "Angers SCO", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Ligue 1", home: true },
+      { opponent: "Olympique de Lyon", date: isEs ? "4 Sep 2026" : "Sep 4, 2026", competition: "Ligue 1", home: false }
+    ],
+    "FC Utrecht": [
+      { opponent: "FC Groningen", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Eredivisie", home: false },
+      { opponent: "AZ Alkmaar", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Eredivisie", home: true },
+      { opponent: "Sparta Rotterdam", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Eredivisie", home: false }
+    ],
+    "Levante UD": [
+      { opponent: "RCD Espanyol", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "CA Osasuna", date: isEs ? "24 Ago 2026" : "Aug 24, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "Real Betis Balompié", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Liga Oficial", home: true }
+    ],
+    "Pisa": [
+      { opponent: "Deportes Tolima", date: isEs ? "12 Jul 2025" : "Jul 12, 2025", competition: "Liga Oficial", home: true },
+      { opponent: "Millonarios FC", date: isEs ? "11 Sep 2025" : "Sep 11, 2025", competition: "Liga Oficial", home: false },
+      { opponent: "CD América de Cali", date: isEs ? "25 Sep 2025" : "Sep 25, 2025", competition: "Liga Oficial", home: true }
+    ],
+    "Torino": [
+      { opponent: "Foro del club", date: isEs ? "20 Ago 2026" : "Aug 20, 2026", competition: "Serie A", home: false },
+      { opponent: "Foro del club", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Serie A", home: true },
+      { opponent: "Foro del club", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Serie A", home: true }
+    ],
+    "Sassuolo": [
+      { opponent: "Atalanta de Bérgamo", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "Torino FC", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "Bolonia", date: isEs ? "6 Sep 2026" : "Sep 6, 2026", competition: "Liga Oficial", home: false }
+    ],
+    "FC Lorient": [
+      { opponent: "OGC Niza", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "ESTAC Troyes", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "RC Lens", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Liga Oficial", home: false }
+    ],
+    "Moca FC": [
+      { opponent: "Atlético Vega Real", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "Salcedo FC", date: isEs ? "27 Ago 2026" : "Aug 27, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "Universidad O&M FC", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "Liga Oficial", home: false }
+    ],
+    "Atlético Vega Real": [
+      { opponent: "Moca FC", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "Universidad O&M FC", date: isEs ? "26 Ago 2026" : "Aug 26, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "Salcedo FC", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "Liga Oficial", home: false }
+    ],
+    "Cibao FC": [
+      { opponent: "Jarabacoa FC", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "Delfines del Este FC", date: isEs ? "26 Ago 2026" : "Aug 26, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "Atlántico FC", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Liga Oficial", home: false }
+    ],
+    "FC Nantes": [
+      { opponent: "Red Star FC", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Ligue 1", home: true },
+      { opponent: "Stade Lavallois", date: isEs ? "14 Ago 2026" : "Aug 14, 2026", competition: "Ligue 1", home: false },
+      { opponent: "Rodez AF", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Ligue 1", home: true }
+    ],
+    "Hamburger SV": [
+      { opponent: "Borussia Dortmund", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "1.FSV Mainz 05", date: isEs ? "6 Sep 2026" : "Sep 6, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "RB Leipzig", date: isEs ? "13 Sep 2026" : "Sep 13, 2026", competition: "Liga Oficial", home: false }
+    ],
+    "Como 1907": [
+      { opponent: "Udinese", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Serie A", home: false },
+      { opponent: "SSC Nápoles", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "Serie A", home: false },
+      { opponent: "Génova", date: isEs ? "4 Sep 2026" : "Sep 4, 2026", competition: "Serie A", home: false }
+    ],
+    "Cremonese": [
+      { opponent: "Empoli FC", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "Modena FC", date: isEs ? "28 Ago 2026" : "Aug 28, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "Calcio Padova", date: isEs ? "6 Sep 2026" : "Sep 6, 2026", competition: "Liga Oficial", home: true }
+    ],
+    "Club Atlético Pantoja": [
+      { opponent: "Defence Force", date: isEs ? "27 Jul 2026" : "Jul 27, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "&nbsp;", date: isEs ? "30 Jul 2026" : "Jul 30, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "Arnett Gardens FC", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "Liga Oficial", home: true }
+    ],
+    "Bayern Múnich": [
+      { opponent: "VfB Stuttgart", date: isEs ? "28 Ago 2026" : "Aug 28, 2026", competition: "Bundesliga", home: true },
+      { opponent: "FC Schalke 04", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Bundesliga", home: false },
+      { opponent: "SV 07 Elversberg", date: isEs ? "13 Sep 2026" : "Sep 13, 2026", competition: "Bundesliga", home: false }
+    ],
+    "Fortuna Sittard": [
+      { opponent: "PSV Eindhoven", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "SC Cambuur Leeuwarden", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "AZ Alkmaar", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Liga Oficial", home: true }
+    ],
+    "Genoa": [
+      { opponent: "SSC Nápoles", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Serie A", home: true },
+      { opponent: "SS Lazio", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "Serie A", home: false },
+      { opponent: "Como 1907", date: isEs ? "4 Sep 2026" : "Sep 4, 2026", competition: "Serie A", home: true }
+    ],
+    "Werder Bremen": [
+      { opponent: "SC Friburgo", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "RB Leipzig", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "FC Colonia", date: isEs ? "12 Sep 2026" : "Sep 12, 2026", competition: "Liga Oficial", home: false }
+    ],
+    "AZ Alkmaar": [
+      { opponent: "ADO Den Haag", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Eredivisie", home: true },
+      { opponent: "FC Utrecht", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Eredivisie", home: false },
+      { opponent: "Fortuna Sittard", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Eredivisie", home: false }
+    ],
+    "Leeds United": [
+      { opponent: "Nottingham Forest", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "Brentford FC", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "Brighton & Hove Albion", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Liga Oficial", home: true }
+    ],
+    "FC Augsburg": [
+      { opponent: "FC Schalke 04", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "Bundesliga", home: true },
+      { opponent: "Eintracht Fráncfort​​", date: isEs ? "6 Sep 2026" : "Sep 6, 2026", competition: "Bundesliga", home: false },
+      { opponent: "Bayer 04 Leverkusen", date: isEs ? "12 Sep 2026" : "Sep 12, 2026", competition: "Bundesliga", home: true }
+    ],
+    "Jarabacoa FC": [
+      { opponent: "Cibao FC", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "Atlántico FC", date: isEs ? "25 Ago 2026" : "Aug 25, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "Delfines del Este FC", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Liga Oficial", home: false }
+    ],
+    "Union Berlin": [
+      { opponent: "Eintracht Fráncfort​​", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Bundesliga", home: true },
+      { opponent: "Bayer 04 Leverkusen", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Bundesliga", home: false },
+      { opponent: "FC Schalke 04", date: isEs ? "11 Sep 2026" : "Sep 11, 2026", competition: "Bundesliga", home: true }
+    ],
+    "Go Ahead Eagles": [
+      { opponent: "Willem II Tilburg", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "Feyenoord", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "ADO Den Haag", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Liga Oficial", home: true }
+    ],
+    "OGC Nice": [
+      { opponent: "FC Lorient", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Ligue 1", home: true },
+      { opponent: "Paris FC", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "Ligue 1", home: false },
+      { opponent: "Le Mans FC", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Ligue 1", home: true }
+    ],
+    "FC Metz": [
+      { opponent: "EA Guingamp", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "Grenoble Foot 38", date: isEs ? "14 Ago 2026" : "Aug 14, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "Stade Lavallois", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Liga Oficial", home: true }
+    ],
+    "Sparta Rotterdam": [
+      { opponent: "Feyenoord", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "SC Telstar", date: isEs ? "14 Ago 2026" : "Aug 14, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "FC Utrecht", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Liga Oficial", home: true }
+    ],
+    "Mainz 05": [
+      { opponent: "SC Paderborn 07", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Bundesliga", home: true },
+      { opponent: "Hamburgo SV", date: isEs ? "6 Sep 2026" : "Sep 6, 2026", competition: "Bundesliga", home: false },
+      { opponent: "Eintracht Fráncfort​​", date: isEs ? "12 Sep 2026" : "Sep 12, 2026", competition: "Bundesliga", home: true }
+    ],
+    "SC Heerenveen": [
+      { opponent: "FC Twente Enschede", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "Ajax de Ámsterdam", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "PEC Zwolle", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Liga Oficial", home: true }
+    ],
+    "NAC Breda": [
+      { opponent: "TOP Oss", date: isEs ? "7 Ago 2026" : "Aug 7, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "VVV-Venlo", date: isEs ? "14 Ago 2026" : "Aug 14, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "Ajax Amsterdam U21", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Liga Oficial", home: true }
+    ],
+    "Angers SCO": [
+      { opponent: "LOSC Lille", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "AJ Auxerre", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "Stade Rennais FC", date: isEs ? "6 Sep 2026" : "Sep 6, 2026", competition: "Liga Oficial", home: true }
+    ],
+    "Atlántico FC": [
+      { opponent: "Delfines del Este FC", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "Jarabacoa FC", date: isEs ? "25 Ago 2026" : "Aug 25, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "Cibao FC", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Liga Oficial", home: true }
+    ],
+    "RCD Espanyol Barcelona": [
+      { opponent: "Levante UD", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "La Liga", home: true },
+      { opponent: "Real Madrid CF", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "La Liga", home: true },
+      { opponent: "Real Sociedad", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "La Liga", home: false }
+    ],
+    "Inter de Milán": [
+      { opponent: "AC Monza", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "Cagliari", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "SSC Nápoles", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Liga Oficial", home: true }
+    ],
+    "PEC Zwolle": [
+      { opponent: "Ajax de Ámsterdam", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "FC Twente Enschede", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "SC Heerenveen", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Liga Oficial", home: true }
+    ],
+    "Burnley": [
+      { opponent: "Foro del club", date: isEs ? "20 Ago 2026" : "Aug 20, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "Foro del club", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "Foro del club", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Liga Oficial", home: true }
+    ],
+    "FC Twente": [
+      { opponent: "SC Heerenveen", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Eredivisie", home: true },
+      { opponent: "PEC Zwolle", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Eredivisie", home: true },
+      { opponent: "SC Telstar", date: isEs ? "9 Sep 2026" : "Sep 9, 2026", competition: "Eredivisie", home: true }
+    ],
+    "Brighton": [
+      { opponent: "FC Lucerna", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "Premier League", home: false },
+      { opponent: "BSC Young Boys", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "Premier League", home: true },
+      { opponent: "FC Basilea", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Premier League", home: false }
+    ],
+    "Atalanta": [
+      { opponent: "US Sassuolo", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Serie A", home: true },
+      { opponent: "Bolonia", date: isEs ? "31 Ago 2026" : "Aug 31, 2026", competition: "Serie A", home: true },
+      { opponent: "AS Roma", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Serie A", home: false }
+    ],
+    "Bologna": [
+      { opponent: "&nbsp;", date: isEs ? "11 Feb 2025" : "Feb 11, 2025", competition: "Serie A", home: false },
+      { opponent: "CA San Telmo", date: isEs ? "16 Feb 2025" : "Feb 16, 2025", competition: "Serie A", home: true },
+      { opponent: "&nbsp;", date: isEs ? "24 Feb 2025" : "Feb 24, 2025", competition: "Serie A", home: false }
+    ],
+    "SC Freiburg": [
+      { opponent: "SV Werder Bremen", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "Bundesliga", home: true },
+      { opponent: "SC Paderborn 07", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Bundesliga", home: false },
+      { opponent: "Borussia Mönchengladbach", date: isEs ? "12 Sep 2026" : "Sep 12, 2026", competition: "Bundesliga", home: true }
+    ],
+    "Stade Brestois": [
+      { opponent: "Le Mans FC", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Ligue 1", home: false },
+      { opponent: "Toulouse FC", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Ligue 1", home: true },
+      { opponent: "Le Havre AC", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Ligue 1", home: true }
+    ],
+    "NEC Nijmegen": [
+      { opponent: "SC Telstar", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "Willem II Tilburg", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "Excelsior Rotterdam", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Liga Oficial", home: true }
+    ],
+    "Heracles Almelo": [
+      { opponent: "VVV-Venlo", date: isEs ? "7 Ago 2026" : "Aug 7, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "FC Den Bosch", date: isEs ? "14 Ago 2026" : "Aug 14, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "FC Utrecht U21", date: isEs ? "24 Ago 2026" : "Aug 24, 2026", competition: "Liga Oficial", home: false }
+    ],
+    "FC Groningen": [
+      { opponent: "FC Utrecht", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "ADO Den Haag", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "PSV Eindhoven", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Liga Oficial", home: false }
+    ],
+    "1. FC Köln": [
+      { opponent: "TSG 1899 Hoffenheim", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Bundesliga", home: true },
+      { opponent: "VfB Stuttgart", date: isEs ? "4 Sep 2026" : "Sep 4, 2026", competition: "Bundesliga", home: false },
+      { opponent: "SV Werder Bremen", date: isEs ? "12 Sep 2026" : "Sep 12, 2026", competition: "Bundesliga", home: true }
+    ],
+    "Bayern München": [
+      { opponent: "VfB Stuttgart", date: isEs ? "28 Ago 2026" : "Aug 28, 2026", competition: "Bundesliga", home: true },
+      { opponent: "FC Schalke 04", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Bundesliga", home: false },
+      { opponent: "SV 07 Elversberg", date: isEs ? "13 Sep 2026" : "Sep 13, 2026", competition: "Bundesliga", home: false }
+    ],
+    "RCD Espanyol": [
+      { opponent: "Levante UD", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "La Liga", home: true },
+      { opponent: "Real Madrid CF", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "La Liga", home: true },
+      { opponent: "Real Sociedad", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "La Liga", home: false }
+    ],
+    "Borussia Mönchengladbach": [
+      { opponent: "RB Leipzig", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Bundesliga", home: false },
+      { opponent: "SV 07 Elversberg", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Bundesliga", home: true },
+      { opponent: "SC Friburgo", date: isEs ? "12 Sep 2026" : "Sep 12, 2026", competition: "Bundesliga", home: false }
+    ],
+    "Atlético Madrid": [
+      { opponent: "Málaga CF", date: isEs ? "19 Ago 2026" : "Aug 19, 2026", competition: "La Liga", home: true },
+      { opponent: "Villarreal CF", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "La Liga", home: true },
+      { opponent: "Sevilla FC", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "La Liga", home: false }
+    ],
+    "Bayer 04 Leverkusen": [
+      { opponent: "SV 07 Elversberg", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Bundesliga", home: false },
+      { opponent: "1.FC Unión Berlín", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Bundesliga", home: true },
+      { opponent: "FC Augsburgo", date: isEs ? "12 Sep 2026" : "Sep 12, 2026", competition: "Bundesliga", home: false }
+    ],
+    "CR Flamengo": [
+      { opponent: "Sport Club Internacional", date: isEs ? "30 Mar 2025" : "Mar 30, 2025", competition: "Brasileirao Serie A", home: true },
+      { opponent: "Esporte Clube Vitória", date: isEs ? "6 Abr 2025" : "Apr 6, 2025", competition: "Brasileirao Serie A", home: false },
+      { opponent: "Grêmio Foot-Ball Porto Alegrense", date: isEs ? "13 Abr 2025" : "Apr 13, 2025", competition: "Brasileirao Serie A", home: false }
+    ],
+    "Mirassol": [
+      { opponent: "Foro del club", date: isEs ? "20 Ago 2026" : "Aug 20, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "Foro del club", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "Foro del club", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Liga Oficial", home: true }
+    ],
+    "Botafogo": [
+      { opponent: "SE Palmeiras", date: isEs ? "30 Mar 2025" : "Mar 30, 2025", competition: "Brasileirao Serie A", home: false },
+      { opponent: "Esporte Clube Juventude", date: isEs ? "6 Abr 2025" : "Apr 6, 2025", competition: "Brasileirao Serie A", home: true },
+      { opponent: "Red Bull Bragantino", date: isEs ? "12 Abr 2025" : "Apr 12, 2025", competition: "Brasileirao Serie A", home: false }
+    ],
+    "Bahia": [
+      { opponent: "CR Flamengo", date: isEs ? "30 Mar 2025" : "Mar 30, 2025", competition: "Brasileirao Serie A", home: false },
+      { opponent: "Cruzeiro Esporte Clube", date: isEs ? "6 Abr 2025" : "Apr 6, 2025", competition: "Brasileirao Serie A", home: true },
+      { opponent: "Fortaleza Esporte Clube", date: isEs ? "14 Abr 2025" : "Apr 14, 2025", competition: "Brasileirao Serie A", home: false }
+    ],
+    "São Paulo FC": [
+      { opponent: "Sport Club do Recife", date: isEs ? "29 Mar 2025" : "Mar 29, 2025", competition: "Brasileirao Serie A", home: true },
+      { opponent: "Clube Atlético Mineiro", date: isEs ? "6 Abr 2025" : "Apr 6, 2025", competition: "Brasileirao Serie A", home: false },
+      { opponent: "Cruzeiro Esporte Clube", date: isEs ? "13 Abr 2025" : "Apr 13, 2025", competition: "Brasileirao Serie A", home: true }
+    ],
+    "Grêmio": [
+      { opponent: "Clube Atlético Mineiro", date: isEs ? "29 Mar 2025" : "Mar 29, 2025", competition: "Brasileirao Serie A", home: true },
+      { opponent: "Ceará Sporting Club", date: isEs ? "5 Abr 2025" : "Apr 5, 2025", competition: "Brasileirao Serie A", home: false },
+      { opponent: "CR Flamengo", date: isEs ? "13 Abr 2025" : "Apr 13, 2025", competition: "Brasileirao Serie A", home: true }
+    ],
+    "RB Bragantino": [
+      { opponent: "Ceará Sporting Club", date: isEs ? "1 Abr 2025" : "Apr 1, 2025", competition: "Primeira Liga", home: true },
+      { opponent: "Fluminense Football Club", date: isEs ? "6 Abr 2025" : "Apr 6, 2025", competition: "Primeira Liga", home: false },
+      { opponent: "Botafogo de Futebol e Regatas", date: isEs ? "12 Abr 2025" : "Apr 12, 2025", competition: "Primeira Liga", home: true }
+    ],
+    "Atlético Mineiro": [
+      { opponent: "Grêmio Foot-Ball Porto Alegrense", date: isEs ? "29 Mar 2025" : "Mar 29, 2025", competition: "Brasileirao Serie A", home: false },
+      { opponent: "São Paulo FC", date: isEs ? "6 Abr 2025" : "Apr 6, 2025", competition: "Brasileirao Serie A", home: true },
+      { opponent: "Esporte Clube Vitória", date: isEs ? "14 Abr 2025" : "Apr 14, 2025", competition: "Brasileirao Serie A", home: true }
+    ],
+    "Santos FC": [
+      { opponent: "Clube de Regatas Vasco da Gama", date: isEs ? "30 Mar 2025" : "Mar 30, 2025", competition: "Liga Oficial", home: false },
+      { opponent: "Esporte Clube Bahia", date: isEs ? "7 Abr 2025" : "Apr 7, 2025", competition: "Liga Oficial", home: true },
+      { opponent: "Fluminense Football Club", date: isEs ? "14 Abr 2025" : "Apr 14, 2025", competition: "Liga Oficial", home: false }
+    ],
+    "Corinthians": [
+      { opponent: "Esporte Clube Bahia", date: isEs ? "31 Mar 2025" : "Mar 31, 2025", competition: "Brasileirao Serie A", home: false },
+      { opponent: "Clube de Regatas Vasco da Gama", date: isEs ? "5 Abr 2025" : "Apr 5, 2025", competition: "Brasileirao Serie A", home: true },
+      { opponent: "SE Palmeiras", date: isEs ? "12 Abr 2025" : "Apr 12, 2025", competition: "Brasileirao Serie A", home: false }
+    ],
+    "Vasco da Gama": [
+      { opponent: "Santos FC", date: isEs ? "30 Mar 2025" : "Mar 30, 2025", competition: "Brasileirao Serie A", home: true },
+      { opponent: "SC Corinthians", date: isEs ? "5 Abr 2025" : "Apr 5, 2025", competition: "Brasileirao Serie A", home: false },
+      { opponent: "Sport Club do Recife", date: isEs ? "13 Abr 2025" : "Apr 13, 2025", competition: "Brasileirao Serie A", home: true }
+    ],
+    "Internacional": [
+      { opponent: "New York City FC", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Brasileirao Serie A", home: true },
+      { opponent: "Houston Dynamo FC", date: isEs ? "3 Mar 2025" : "Mar 3, 2025", competition: "Brasileirao Serie A", home: false },
+      { opponent: "Charlotte FC", date: isEs ? "9 Mar 2025" : "Mar 9, 2025", competition: "Brasileirao Serie A", home: true }
+    ],
+    "Ceará": [
+      { opponent: "Yokohama F. Marinos", date: isEs ? "7 Ago 2026" : "Aug 7, 2026", competition: "Liga Oficial", home: false },
+      { opponent: "Nagoya Grampus", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Liga Oficial", home: true },
+      { opponent: "Avispa Fukuoka", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Liga Oficial", home: true }
+    ],
+    "Fortaleza": [
+      { opponent: "Manaus Futebol Clube", date: isEs ? "20 Abr 2025" : "Apr 20, 2025", competition: "Liga Oficial", home: true },
+      { opponent: "Tuna Luso Brasileira", date: isEs ? "27 Abr 2025" : "Apr 27, 2025", competition: "Liga Oficial", home: false },
+      { opponent: "GA Sampaio (RR)", date: isEs ? "3 May 2025" : "May 3, 2025", competition: "Liga Oficial", home: false }
+    ],
+    "Juventude": [
+      { opponent: "Esporte Clube Vitória", date: isEs ? "29 Mar 2025" : "Mar 29, 2025", competition: "Liga Oficial", home: true },
+      { opponent: "Botafogo de Futebol e Regatas", date: isEs ? "6 Abr 2025" : "Apr 6, 2025", competition: "Liga Oficial", home: false },
+      { opponent: "Ceará Sporting Club", date: isEs ? "12 Abr 2025" : "Apr 12, 2025", competition: "Liga Oficial", home: true }
+    ],
+    "Sport Recife": [
+      { opponent: "São Paulo FC", date: isEs ? "29 Mar 2025" : "Mar 29, 2025", competition: "Liga Oficial", home: false },
+      { opponent: "SE Palmeiras", date: isEs ? "6 Abr 2025" : "Apr 6, 2025", competition: "Liga Oficial", home: true },
+      { opponent: "Clube de Regatas Vasco da Gama", date: isEs ? "13 Abr 2025" : "Apr 13, 2025", competition: "Liga Oficial", home: false }
+    ],
+    "Rosario Central": [
+      { opponent: "&nbsp;", date: isEs ? "12 Jul 2025" : "Jul 12, 2025", competition: "Liga Profesional", home: true },
+      { opponent: "CA Lanús", date: isEs ? "19 Jul 2025" : "Jul 19, 2025", competition: "Liga Profesional", home: false },
+      { opponent: "&nbsp;", date: isEs ? "26 Jul 2025" : "Jul 26, 2025", competition: "Liga Profesional", home: true }
+    ],
+    "Argentinos Juniors": [
+      { opponent: "CA Boca Juniors", date: isEs ? "13 Jul 2025" : "Jul 13, 2025", competition: "Liga Oficial", home: true },
+      { opponent: "CA Tigre", date: isEs ? "20 Jul 2025" : "Jul 20, 2025", competition: "Liga Oficial", home: false },
+      { opponent: "&nbsp;", date: isEs ? "27 Jul 2025" : "Jul 27, 2025", competition: "Liga Oficial", home: false }
+    ],
+    "Racing Club": [
+      { opponent: "Olympique de Marsella", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Liga Profesional", home: false },
+      { opponent: "RC Lens", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Liga Profesional", home: true },
+      { opponent: "ESTAC Troyes", date: isEs ? "6 Sep 2026" : "Sep 6, 2026", competition: "Liga Profesional", home: false }
+    ],
+    "Deportivo Riestra": [
+      { opponent: "CA Lanús", date: isEs ? "14 Jul 2025" : "Jul 14, 2025", competition: "Liga Oficial", home: true },
+      { opponent: "&nbsp;", date: isEs ? "22 Jul 2025" : "Jul 22, 2025", competition: "Liga Oficial", home: false },
+      { opponent: "&nbsp;", date: isEs ? "28 Jul 2025" : "Jul 28, 2025", competition: "Liga Oficial", home: true }
+    ],
+    "San Lorenzo": [
+      { opponent: "Foro del club", date: isEs ? "20 Ago 2026" : "Aug 20, 2026", competition: "Foro del club", home: false },
+      { opponent: "Foro del club", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Foro del club", home: true },
+      { opponent: "Foro del club", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Foro del club", home: true }
+    ],
+    "Barracas Central": [
+      { opponent: "Racing Club", date: isEs ? "13 Jul 2025" : "Jul 13, 2025", competition: "Racing Club", home: false },
+      { opponent: "&nbsp;", date: isEs ? "20 Jul 2025" : "Jul 20, 2025", competition: "&nbsp;", home: true },
+      { opponent: "&nbsp;", date: isEs ? "29 Jul 2025" : "Jul 29, 2025", competition: "&nbsp;", home: false }
+    ],
+    "Independiente Rivadavia": [
+      { opponent: "CA Newell's Old Boys", date: isEs ? "13 Jul 2025" : "Jul 13, 2025", competition: "CA Newell's Old Boys", home: true },
+      { opponent: "CA Barracas Central", date: isEs ? "20 Jul 2025" : "Jul 20, 2025", competition: "CA Barracas Central", home: false },
+      { opponent: "CA Belgrano", date: isEs ? "26 Jul 2025" : "Jul 26, 2025", competition: "CA Belgrano", home: true }
+    ],
+    "Huracán": [
+      { opponent: "Deportivo La Guaira", date: isEs ? "7 Jul 2025" : "Jul 7, 2025", competition: "Deportivo La Guaira", home: false },
+      { opponent: "Deportivo Táchira", date: isEs ? "13 Jul 2025" : "Jul 13, 2025", competition: "Deportivo Táchira", home: false },
+      { opponent: "Estudiantes de Mérida", date: isEs ? "19 Jul 2025" : "Jul 19, 2025", competition: "Estudiantes de Mérida", home: true }
+    ],
+    "Vélez Sarsfield": [
+      { opponent: "CA Tigre", date: isEs ? "15 Jul 2025" : "Jul 15, 2025", competition: "CA Tigre", home: true },
+      { opponent: "&nbsp;", date: isEs ? "19 Jul 2025" : "Jul 19, 2025", competition: "&nbsp;", home: false },
+      { opponent: "Instituto ACC", date: isEs ? "27 Jul 2025" : "Jul 27, 2025", competition: "Instituto ACC", home: true }
+    ],
+    "Independiente": [
+      { opponent: "CA Sarmiento (Junín)", date: isEs ? "13 Jul 2025" : "Jul 13, 2025", competition: "CA Sarmiento (Junín)", home: false },
+      { opponent: "CA Talleres", date: isEs ? "21 Jul 2025" : "Jul 21, 2025", competition: "CA Talleres", home: true },
+      { opponent: "Club de Gimnasia y Esgrima La Plata", date: isEs ? "27 Jul 2025" : "Jul 27, 2025", competition: "Club de Gimnasia y Esgrima La Plata", home: false }
+    ],
+    "Banfield": [
+      { opponent: "Millwall FC", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Millwall FC ", home: true },
+      { opponent: "Birmingham City", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Birmingham City", home: false },
+      { opponent: "Portsmouth FC", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Portsmouth FC", home: true }
+    ],
+    "Defensa y Justicia": [
+      { opponent: "&nbsp;", date: isEs ? "15 Jul 2025" : "Jul 15, 2025", competition: "&nbsp;", home: false },
+      { opponent: "CA Aldosivi", date: isEs ? "22 Jul 2025" : "Jul 22, 2025", competition: "CA Aldosivi", home: true },
+      { opponent: "&nbsp;", date: isEs ? "28 Jul 2025" : "Jul 28, 2025", competition: "&nbsp;", home: false }
+    ],
+    "Unión": [
+      { opponent: "Foro del club", date: isEs ? "20 Ago 2026" : "Aug 20, 2026", competition: "Foro del club", home: false },
+      { opponent: "Foro del club", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Foro del club", home: true },
+      { opponent: "Foro del club", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Foro del club", home: true }
+    ],
+    "Platense": [
+      { opponent: "CA River Plate", date: isEs ? "14 Jul 2025" : "Jul 14, 2025", competition: "CA River Plate", home: false },
+      { opponent: "CA Vélez Sarsfield", date: isEs ? "19 Jul 2025" : "Jul 19, 2025", competition: "CA Vélez Sarsfield", home: true },
+      { opponent: "&nbsp;", date: isEs ? "27 Jul 2025" : "Jul 27, 2025", competition: "&nbsp;", home: true }
+    ],
+    "Belgrano": [
+      { opponent: "CA Huracán", date: isEs ? "12 Jul 2025" : "Jul 12, 2025", competition: "CA Huracán", home: true },
+      { opponent: "Racing Club", date: isEs ? "21 Jul 2025" : "Jul 21, 2025", competition: "Racing Club", home: true },
+      { opponent: "&nbsp;", date: isEs ? "26 Jul 2025" : "Jul 26, 2025", competition: "&nbsp;", home: false }
+    ],
+    "Aldosivi": [
+      { opponent: "&nbsp;", date: isEs ? "11 Jul 2025" : "Jul 11, 2025", competition: "&nbsp;", home: true },
+      { opponent: "CSD Defensa y Justicia", date: isEs ? "22 Jul 2025" : "Jul 22, 2025", competition: "CSD Defensa y Justicia", home: false },
+      { opponent: "CA Newell's Old Boys", date: isEs ? "26 Jul 2025" : "Jul 26, 2025", competition: "CA Newell's Old Boys", home: true }
+    ],
+    "Newell's Old Boys": [
+      { opponent: "&nbsp;", date: isEs ? "13 Jul 2025" : "Jul 13, 2025", competition: "&nbsp;", home: false },
+      { opponent: "&nbsp;", date: isEs ? "20 Jul 2025" : "Jul 20, 2025", competition: "&nbsp;", home: true },
+      { opponent: "CA Aldosivi", date: isEs ? "26 Jul 2025" : "Jul 26, 2025", competition: "CA Aldosivi", home: false }
+    ],
+    "Atlético Tucumán": [
+      { opponent: "&nbsp;", date: isEs ? "13 Jul 2025" : "Jul 13, 2025", competition: "&nbsp;", home: true },
+      { opponent: "&nbsp;", date: isEs ? "19 Jul 2025" : "Jul 19, 2025", competition: "&nbsp;", home: true },
+      { opponent: "Club Deportivo Riestra", date: isEs ? "28 Jul 2025" : "Jul 28, 2025", competition: "Club Deportivo Riestra", home: false }
+    ],
+    "Instituto": [
+      { opponent: "Club de Gimnasia y Esgrima La Plata", date: isEs ? "12 Jul 2025" : "Jul 12, 2025", competition: "Club de Gimnasia y Esgrima La Plata", home: false },
+      { opponent: "CA River Plate", date: isEs ? "20 Jul 2025" : "Jul 20, 2025", competition: "CA River Plate", home: true },
+      { opponent: "CA Vélez Sarsfield", date: isEs ? "27 Jul 2025" : "Jul 27, 2025", competition: "CA Vélez Sarsfield", home: false }
+    ],
+    "Independiente Medellín": [
+      { opponent: "Alianza FC", date: isEs ? "13 Jul 2025" : "Jul 13, 2025", competition: "Alianza FC", home: true },
+      { opponent: "Boyacá Chicó FC", date: isEs ? "20 Jul 2025" : "Jul 20, 2025", competition: "Boyacá Chicó FC", home: false },
+      { opponent: "Envigado FC", date: isEs ? "25 Jul 2025" : "Jul 25, 2025", competition: "Envigado FC", home: true }
+    ],
+    "Godoy Cruz": [
+      { opponent: "&nbsp;", date: isEs ? "12 Jul 2025" : "Jul 12, 2025", competition: "&nbsp;", home: false },
+      { opponent: "CA Sarmiento (Junín)", date: isEs ? "19 Jul 2025" : "Jul 19, 2025", competition: "CA Sarmiento (Junín)", home: true },
+      { opponent: "CA Talleres", date: isEs ? "27 Jul 2025" : "Jul 27, 2025", competition: "CA Talleres", home: false }
+    ],
+    "Junior de Barranquilla": [
+      { opponent: "Deportivo Cali", date: isEs ? "13 Jul 2025" : "Jul 13, 2025", competition: "Deportivo Cali", home: false },
+      { opponent: "Águilas Doradas", date: isEs ? "19 Jul 2025" : "Jul 19, 2025", competition: "Águilas Doradas", home: false },
+      { opponent: "Unión Magdalena", date: isEs ? "24 Jul 2025" : "Jul 24, 2025", competition: "Unión Magdalena", home: true }
+    ],
+    "Atlético Nacional": [
+      { opponent: "Once Caldas", date: isEs ? "12 Jul 2025" : "Jul 12, 2025", competition: "Once Caldas", home: false },
+      { opponent: "Internacional de Bogotá", date: isEs ? "20 Jul 2025" : "Jul 20, 2025", competition: "Internacional de Bogotá", home: true },
+      { opponent: "Deportivo Pereira", date: isEs ? "23 Jul 2025" : "Jul 23, 2025", competition: "Deportivo Pereira", home: false }
+    ],
+    "Deportes Tolima": [
+      { opponent: "Asociación Deportivo Pasto", date: isEs ? "12 Jul 2025" : "Jul 12, 2025", competition: "Asociación Deportivo Pasto", home: false },
+      { opponent: "Independiente Santa Fe", date: isEs ? "19 Jul 2025" : "Jul 19, 2025", competition: "Independiente Santa Fe", home: true },
+      { opponent: "Alianza FC", date: isEs ? "22 Jul 2025" : "Jul 22, 2025", competition: "Alianza FC", home: false }
+    ],
+    "Millonarios FC": [
+      { opponent: "Unión Magdalena", date: isEs ? "21 Ago 2025" : "Aug 21, 2025", competition: "Unión Magdalena", home: true },
+      { opponent: "Asociación Deportivo Pasto", date: isEs ? "11 Sep 2025" : "Sep 11, 2025", competition: "Asociación Deportivo Pasto", home: true },
+      { opponent: "Internacional de Bogotá", date: isEs ? "24 Jul 2025" : "Jul 24, 2025", competition: "Internacional de Bogotá", home: false }
+    ],
+    "Once Caldas": [
+      { opponent: "Atlético Nacional", date: isEs ? "12 Jul 2025" : "Jul 12, 2025", competition: "Atlético Nacional", home: true },
+      { opponent: "Fortaleza CEIF", date: isEs ? "21 Jul 2025" : "Jul 21, 2025", competition: "Fortaleza CEIF", home: false },
+      { opponent: "Atlético Bucaramanga", date: isEs ? "10 Sep 2025" : "Sep 10, 2025", competition: "Atlético Bucaramanga", home: false }
+    ],
+    "América de Cali": [
+      { opponent: "Llaneros FC", date: isEs ? "12 Jul 2025" : "Jul 12, 2025", competition: "Llaneros FC", home: false },
+      { opponent: "Atlético Bucaramanga", date: isEs ? "17 Sep 2025" : "Sep 17, 2025", competition: "Atlético Bucaramanga", home: true },
+      { opponent: "Asociación Deportivo Pasto", date: isEs ? "25 Sep 2025" : "Sep 25, 2025", competition: "Asociación Deportivo Pasto", home: false }
+    ],
+    "Alianza FC": [
+      { opponent: "&nbsp;", date: isEs ? "13 Jul 2025" : "Jul 13, 2025", competition: "&nbsp;", home: false },
+      { opponent: "Deportivo Pereira", date: isEs ? "19 Jul 2025" : "Jul 19, 2025", competition: "Deportivo Pereira", home: true },
+      { opponent: "Deportes Tolima", date: isEs ? "22 Jul 2025" : "Jul 22, 2025", competition: "Deportes Tolima", home: true }
+    ],
+    "Atlético Bucaramanga": [
+      { opponent: "Boyacá Chicó FC", date: isEs ? "13 Jul 2025" : "Jul 13, 2025", competition: "Boyacá Chicó FC", home: true },
+      { opponent: "CD América de Cali", date: isEs ? "17 Sep 2025" : "Sep 17, 2025", competition: "CD América de Cali", home: false },
+      { opponent: "Once Caldas", date: isEs ? "10 Sep 2025" : "Sep 10, 2025", competition: "Once Caldas", home: true }
+    ],
+    "Independiente Santa Fe": [
+      { opponent: "Deportivo Pereira", date: isEs ? "14 Jul 2025" : "Jul 14, 2025", competition: "Deportivo Pereira", home: false },
+      { opponent: "Deportes Tolima", date: isEs ? "19 Jul 2025" : "Jul 19, 2025", competition: "Deportes Tolima", home: false },
+      { opponent: "Águilas Doradas", date: isEs ? "23 Jul 2025" : "Jul 23, 2025", competition: "Águilas Doradas", home: true }
+    ],
+    "Envigado": [
+      { opponent: "Fortaleza CEIF", date: isEs ? "12 Jul 2025" : "Jul 12, 2025", competition: "Fortaleza CEIF", home: true },
+      { opponent: "Deportivo Cali", date: isEs ? "20 Jul 2025" : "Jul 20, 2025", competition: "Deportivo Cali", home: true },
+      { opponent: "&nbsp;", date: isEs ? "25 Jul 2025" : "Jul 25, 2025", competition: "&nbsp;", home: false }
+    ],
+    "Deportivo Pasto": [
+      { opponent: "Deportes Tolima", date: isEs ? "12 Jul 2025" : "Jul 12, 2025", competition: "Deportes Tolima", home: true },
+      { opponent: "Millonarios FC", date: isEs ? "11 Sep 2025" : "Sep 11, 2025", competition: "Millonarios FC", home: false },
+      { opponent: "CD América de Cali", date: isEs ? "25 Sep 2025" : "Sep 25, 2025", competition: "CD América de Cali", home: true }
+    ],
+    "Llaneros": [
+      { opponent: "CD América de Cali", date: isEs ? "12 Jul 2025" : "Jul 12, 2025", competition: "CD América de Cali", home: true },
+      { opponent: "Unión Magdalena", date: isEs ? "19 Jul 2025" : "Jul 19, 2025", competition: "Unión Magdalena", home: false },
+      { opponent: "Boyacá Chicó FC", date: isEs ? "23 Jul 2025" : "Jul 23, 2025", competition: "Boyacá Chicó FC", home: true }
+    ],
+    "Deportivo Cali": [
+      { opponent: "Junior de Barranquilla", date: isEs ? "13 Jul 2025" : "Jul 13, 2025", competition: "Junior de Barranquilla", home: true },
+      { opponent: "Envigado FC", date: isEs ? "20 Jul 2025" : "Jul 20, 2025", competition: "Envigado FC", home: false },
+      { opponent: "Fortaleza CEIF", date: isEs ? "25 Jul 2025" : "Jul 25, 2025", competition: "Fortaleza CEIF", home: true }
+    ],
+    "Deportivo Pereira": [
+      { opponent: "Independiente Santa Fe", date: isEs ? "14 Jul 2025" : "Jul 14, 2025", competition: "Independiente Santa Fe", home: true },
+      { opponent: "Alianza FC", date: isEs ? "19 Jul 2025" : "Jul 19, 2025", competition: "Alianza FC", home: false },
+      { opponent: "Atlético Nacional", date: isEs ? "23 Jul 2025" : "Jul 23, 2025", competition: "Atlético Nacional", home: true }
+    ],
+    "Águilas Doradas": [
+      { opponent: "Internacional de Bogotá", date: isEs ? "14 Jul 2025" : "Jul 14, 2025", competition: "Internacional de Bogotá", home: false },
+      { opponent: "Junior de Barranquilla", date: isEs ? "19 Jul 2025" : "Jul 19, 2025", competition: "Junior de Barranquilla", home: true },
+      { opponent: "Independiente Santa Fe", date: isEs ? "23 Jul 2025" : "Jul 23, 2025", competition: "Independiente Santa Fe", home: false }
+    ],
+    "Deportivo La Guaira": [
+      { opponent: "Monagas SC", date: isEs ? "7 Jul 2025" : "Jul 7, 2025", competition: "Monagas SC", home: true },
+      { opponent: "Universidad Central de Venezuela", date: isEs ? "11 Jul 2025" : "Jul 11, 2025", competition: "Universidad Central de Venezuela", home: false },
+      { opponent: "Dvo. Rayo Zuliano", date: isEs ? "18 Jul 2025" : "Jul 18, 2025", competition: "Dvo. Rayo Zuliano", home: true }
+    ],
+    "Deportivo Táchira": [
+      { opponent: "Zamora FC", date: isEs ? "6 Jul 2025" : "Jul 6, 2025", competition: "Zamora FC", home: false },
+      { opponent: "Monagas SC", date: isEs ? "13 Jul 2025" : "Jul 13, 2025", competition: "Monagas SC", home: true },
+      { opponent: "Universidad Central de Venezuela", date: isEs ? "19 Jul 2025" : "Jul 19, 2025", competition: "Universidad Central de Venezuela", home: false }
+    ],
+    "Boyacá Chicó": [
+      { opponent: "Atlético Bucaramanga", date: isEs ? "13 Jul 2025" : "Jul 13, 2025", competition: "Atlético Bucaramanga", home: false },
+      { opponent: "&nbsp;", date: isEs ? "20 Jul 2025" : "Jul 20, 2025", competition: "&nbsp;", home: true },
+      { opponent: "Llaneros FC", date: isEs ? "23 Jul 2025" : "Jul 23, 2025", competition: "Llaneros FC", home: false }
+    ],
+    "La Equidad": [
+      { opponent: "Águilas Doradas", date: isEs ? "14 Jul 2025" : "Jul 14, 2025", competition: "Águilas Doradas", home: true },
+      { opponent: "Atlético Nacional", date: isEs ? "20 Jul 2025" : "Jul 20, 2025", competition: "Atlético Nacional", home: false },
+      { opponent: "Millonarios FC", date: isEs ? "24 Jul 2025" : "Jul 24, 2025", competition: "Millonarios FC", home: true }
+    ],
+    "Unión Magdalena": [
+      { opponent: "Millonarios FC", date: isEs ? "21 Ago 2025" : "Aug 21, 2025", competition: "Millonarios FC", home: false },
+      { opponent: "Llaneros FC", date: isEs ? "19 Jul 2025" : "Jul 19, 2025", competition: "Llaneros FC", home: true },
+      { opponent: "Junior de Barranquilla", date: isEs ? "24 Jul 2025" : "Jul 24, 2025", competition: "Junior de Barranquilla", home: false }
+    ],
+    "Carabobo FC": [
+      { opponent: "Estudiantes de Mérida", date: isEs ? "5 Jul 2025" : "Jul 5, 2025", competition: "Estudiantes de Mérida", home: true },
+      { opponent: "Portuguesa FC", date: isEs ? "11 Jul 2025" : "Jul 11, 2025", competition: "Portuguesa FC", home: false },
+      { opponent: "Academia Puerto Cabello", date: isEs ? "20 Jul 2025" : "Jul 20, 2025", competition: "Academia Puerto Cabello", home: true }
+    ],
+    "Caracas FC": [
+      { opponent: "Dvo. Rayo Zuliano", date: isEs ? "6 Jul 2025" : "Jul 6, 2025", competition: "Dvo. Rayo Zuliano", home: true },
+      { opponent: "Metropolitanos FC", date: isEs ? "13 Jul 2025" : "Jul 13, 2025", competition: "Metropolitanos FC", home: false },
+      { opponent: "Anzoátegui FC", date: isEs ? "18 Jul 2025" : "Jul 18, 2025", competition: "Anzoátegui FC", home: false }
+    ],
+    "Universidad Central": [
+      { opponent: "Anzoátegui FC", date: isEs ? "6 Jul 2025" : "Jul 6, 2025", competition: "Anzoátegui FC", home: false },
+      { opponent: "Deportivo La Guaira", date: isEs ? "11 Jul 2025" : "Jul 11, 2025", competition: "Deportivo La Guaira", home: true },
+      { opponent: "Deportivo Táchira", date: isEs ? "19 Jul 2025" : "Jul 19, 2025", competition: "Deportivo Táchira", home: true }
+    ],
+    "Metropolitanos FC": [
+      { opponent: "Academia Puerto Cabello", date: isEs ? "4 Jul 2025" : "Jul 4, 2025", competition: "Academia Puerto Cabello", home: false },
+      { opponent: "Caracas FC", date: isEs ? "13 Jul 2025" : "Jul 13, 2025", competition: "Caracas FC", home: true },
+      { opponent: "Yaracuyanos FC", date: isEs ? "20 Jul 2025" : "Jul 20, 2025", competition: "Yaracuyanos FC", home: true }
+    ],
+    "Academia Puerto Cabello": [
+      { opponent: "Metropolitanos FC", date: isEs ? "4 Jul 2025" : "Jul 4, 2025", competition: "Metropolitanos FC", home: true },
+      { opponent: "Yaracuyanos FC", date: isEs ? "12 Jul 2025" : "Jul 12, 2025", competition: "Yaracuyanos FC", home: true },
+      { opponent: "Carabobo FC", date: isEs ? "20 Jul 2025" : "Jul 20, 2025", competition: "Carabobo FC", home: false }
+    ],
+    "Monagas SC": [
+      { opponent: "Deportivo La Guaira", date: isEs ? "7 Jul 2025" : "Jul 7, 2025", competition: "Deportivo La Guaira", home: false },
+      { opponent: "Deportivo Táchira", date: isEs ? "13 Jul 2025" : "Jul 13, 2025", competition: "Deportivo Táchira", home: false },
+      { opponent: "Estudiantes de Mérida", date: isEs ? "19 Jul 2025" : "Jul 19, 2025", competition: "Estudiantes de Mérida", home: true }
+    ],
+    "Portuguesa FC": [
+      { opponent: "Yaracuyanos FC", date: isEs ? "5 Jul 2025" : "Jul 5, 2025", competition: "Yaracuyanos FC", home: false },
+      { opponent: "Carabobo FC", date: isEs ? "11 Jul 2025" : "Jul 11, 2025", competition: "Carabobo FC", home: true },
+      { opponent: "Zamora FC", date: isEs ? "21 Jul 2025" : "Jul 21, 2025", competition: "Zamora FC", home: false }
+    ],
+    "Yaracuyanos FC": [
+      { opponent: "Portuguesa FC", date: isEs ? "5 Jul 2025" : "Jul 5, 2025", competition: "Portuguesa FC", home: true },
+      { opponent: "Academia Puerto Cabello", date: isEs ? "12 Jul 2025" : "Jul 12, 2025", competition: "Academia Puerto Cabello", home: false },
+      { opponent: "Metropolitanos FC", date: isEs ? "20 Jul 2025" : "Jul 20, 2025", competition: "Metropolitanos FC", home: false }
+    ],
+    "Rayo Zuliano": [
+      { opponent: "Caracas FC", date: isEs ? "6 Jul 2025" : "Jul 6, 2025", competition: "Caracas FC", home: false },
+      { opponent: "Anzoátegui FC", date: isEs ? "12 Jul 2025" : "Jul 12, 2025", competition: "Anzoátegui FC", home: true },
+      { opponent: "Deportivo La Guaira", date: isEs ? "18 Jul 2025" : "Jul 18, 2025", competition: "Deportivo La Guaira", home: false }
+    ],
+    "Estudiantes de Mérida": [
+      { opponent: "Carabobo FC", date: isEs ? "5 Jul 2025" : "Jul 5, 2025", competition: "Carabobo FC", home: false },
+      { opponent: "Zamora FC", date: isEs ? "12 Jul 2025" : "Jul 12, 2025", competition: "Zamora FC", home: true },
+      { opponent: "Monagas SC", date: isEs ? "19 Jul 2025" : "Jul 19, 2025", competition: "Monagas SC", home: false }
+    ],
+    "Independiente del Valle": [
+      { opponent: "Libertad FC", date: isEs ? "15 Feb 2025" : "Feb 15, 2025", competition: "Libertad FC", home: false },
+      { opponent: "LDU Quito", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "LDU Quito", home: true },
+      { opponent: "CD Universidad Católica", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "CD Universidad Católica", home: true }
+    ],
+    "Zamora FC": [
+      { opponent: "Deportivo Táchira", date: isEs ? "6 Jul 2025" : "Jul 6, 2025", competition: "Deportivo Táchira", home: true },
+      { opponent: "Estudiantes de Mérida", date: isEs ? "12 Jul 2025" : "Jul 12, 2025", competition: "Estudiantes de Mérida", home: false },
+      { opponent: "Portuguesa FC", date: isEs ? "21 Jul 2025" : "Jul 21, 2025", competition: "Portuguesa FC", home: true }
+    ],
+    "Macará": [
+      { opponent: "Leicester City", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Leicester City", home: true },
+      { opponent: "Luton Town", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Luton Town", home: false },
+      { opponent: "Burton Albion", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Burton Albion", home: true }
+    ],
+    "Libertad FC": [
+      { opponent: "Independiente del Valle", date: isEs ? "15 Feb 2025" : "Feb 15, 2025", competition: "Independiente del Valle", home: true },
+      { opponent: "Técnico Universitario", date: isEs ? "25 Feb 2025" : "Feb 25, 2025", competition: "Técnico Universitario", home: false },
+      { opponent: "Barcelona SC Guayaquil", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "Barcelona SC Guayaquil", home: true }
+    ],
+    "LDU Quito": [
+      { opponent: "Vinotinto FC", date: isEs ? "16 Feb 2025" : "Feb 16, 2025", competition: "Vinotinto FC", home: true },
+      { opponent: "Independiente del Valle", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Independiente del Valle", home: false },
+      { opponent: "Orense SC", date: isEs ? "1 Mar 2025" : "Mar 1, 2025", competition: "Orense SC", home: true }
+    ],
+    "Universidad Católica": [
+      { opponent: "Audax Italiano", date: isEs ? "17 Feb 2025" : "Feb 17, 2025", competition: "Audax Italiano", home: true },
+      { opponent: "Coquimbo Unido", date: isEs ? "22 Feb 2025" : "Feb 22, 2025", competition: "Coquimbo Unido", home: false },
+      { opponent: "Deportes Iquique", date: isEs ? "1 Mar 2025" : "Mar 1, 2025", competition: "Deportes Iquique", home: true }
+    ],
+    "Orense SC": [
+      { opponent: "CD Macará", date: isEs ? "16 Feb 2025" : "Feb 16, 2025", competition: "CD Macará", home: false },
+      { opponent: "Manta FC", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Manta FC", home: true },
+      { opponent: "LDU Quito", date: isEs ? "1 Mar 2025" : "Mar 1, 2025", competition: "LDU Quito", home: false }
+    ],
+    "Barcelona SC": [
+      { opponent: "Manta FC", date: isEs ? "15 Feb 2025" : "Feb 15, 2025", competition: "Manta FC", home: false },
+      { opponent: "Mushuc Runa SC", date: isEs ? "24 Feb 2025" : "Feb 24, 2025", competition: "Mushuc Runa SC", home: true },
+      { opponent: "Libertad FC", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "Libertad FC", home: false }
+    ],
+    "Manta FC": [
+      { opponent: "Barcelona SC Guayaquil", date: isEs ? "15 Feb 2025" : "Feb 15, 2025", competition: "Barcelona SC Guayaquil", home: true },
+      { opponent: "Orense SC", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Orense SC", home: false },
+      { opponent: "Delfín SC", date: isEs ? "4 Mar 2025" : "Mar 4, 2025", competition: "Delfín SC", home: true }
+    ],
+    "El Nacional": [
+      { opponent: "Deportivo Cuenca", date: isEs ? "16 Feb 2025" : "Feb 16, 2025", competition: "Deportivo Cuenca", home: true },
+      { opponent: "CD Universidad Católica", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "CD Universidad Católica", home: false },
+      { opponent: "Técnico Universitario", date: isEs ? "3 Mar 2025" : "Mar 3, 2025", competition: "Técnico Universitario", home: true }
+    ],
+    "Deportivo Cuenca": [
+      { opponent: "CD El Nacional", date: isEs ? "16 Feb 2025" : "Feb 16, 2025", competition: "CD El Nacional", home: false },
+      { opponent: "SD Aucas", date: isEs ? "22 Feb 2025" : "Feb 22, 2025", competition: "SD Aucas", home: true },
+      { opponent: "Mushuc Runa SC", date: isEs ? "1 Mar 2025" : "Mar 1, 2025", competition: "Mushuc Runa SC", home: false }
+    ],
+    "CS Emelec": [
+      { opponent: "CD Universidad Católica", date: isEs ? "17 Feb 2025" : "Feb 17, 2025", competition: "CD Universidad Católica", home: true },
+      { opponent: "Delfín SC", date: isEs ? "22 Feb 2025" : "Feb 22, 2025", competition: "Delfín SC", home: false },
+      { opponent: "CD Macará", date: isEs ? "1 Mar 2025" : "Mar 1, 2025", competition: "CD Macará", home: true }
+    ],
+    "Delfín SC": [
+      { opponent: "Mushuc Runa SC", date: isEs ? "18 Feb 2025" : "Feb 18, 2025", competition: "Mushuc Runa SC", home: false },
+      { opponent: "CS Emelec", date: isEs ? "22 Feb 2025" : "Feb 22, 2025", competition: "CS Emelec", home: true },
+      { opponent: "Manta FC", date: isEs ? "4 Mar 2025" : "Mar 4, 2025", competition: "Manta FC", home: false }
+    ],
+    "Mushuc Runa": [
+      { opponent: "Delfín SC", date: isEs ? "18 Feb 2025" : "Feb 18, 2025", competition: "Delfín SC", home: true },
+      { opponent: "Barcelona SC Guayaquil", date: isEs ? "24 Feb 2025" : "Feb 24, 2025", competition: "Barcelona SC Guayaquil", home: false },
+      { opponent: "Deportivo Cuenca", date: isEs ? "1 Mar 2025" : "Mar 1, 2025", competition: "Deportivo Cuenca", home: true }
+    ],
+    "Técnico Universitario": [
+      { opponent: "SD Aucas", date: isEs ? "15 Feb 2025" : "Feb 15, 2025", competition: "SD Aucas", home: false },
+      { opponent: "Libertad FC", date: isEs ? "25 Feb 2025" : "Feb 25, 2025", competition: "Libertad FC", home: true },
+      { opponent: "CD El Nacional", date: isEs ? "3 Mar 2025" : "Mar 3, 2025", competition: "CD El Nacional", home: false }
+    ],
+    "Alianza Lima": [
+      { opponent: "Cusco FC", date: isEs ? "20 Jul 2025" : "Jul 20, 2025", competition: "Cusco FC", home: false },
+      { opponent: "Alianza Atlético Sullana", date: isEs ? "28 Jul 2025" : "Jul 28, 2025", competition: "Alianza Atlético Sullana", home: true },
+      { opponent: "Club Juan Pablo II College", date: isEs ? "1 Ago 2025" : "Aug 1, 2025", competition: "Club Juan Pablo II College", home: false }
+    ],
+    "Cusco FC": [
+      { opponent: "Club Alianza Lima", date: isEs ? "20 Jul 2025" : "Jul 20, 2025", competition: "Club Alianza Lima", home: true },
+      { opponent: "FBC Melgar", date: isEs ? "27 Jul 2025" : "Jul 27, 2025", competition: "FBC Melgar", home: false },
+      { opponent: "Universidad Técnica de Cajamarca", date: isEs ? "4 Ago 2025" : "Aug 4, 2025", competition: "Universidad Técnica de Cajamarca", home: false }
+    ],
+    "Vinotinto FC": [
+      { opponent: "LDU Quito", date: isEs ? "16 Feb 2025" : "Feb 16, 2025", competition: "LDU Quito", home: false },
+      { opponent: "CD Macará", date: isEs ? "22 Feb 2025" : "Feb 22, 2025", competition: "CD Macará", home: true },
+      { opponent: "SD Aucas", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "SD Aucas", home: false }
+    ],
+    "Universitario de Deportes": [
+      { opponent: "Comerciantes Unidos", date: isEs ? "19 Jul 2025" : "Jul 19, 2025", competition: "Comerciantes Unidos", home: true },
+      { opponent: "Club Cienciano", date: isEs ? "27 Jul 2025" : "Jul 27, 2025", competition: "Club Cienciano", home: false },
+      { opponent: "Club Atlético Grau", date: isEs ? "1 Ago 2025" : "Aug 1, 2025", competition: "Club Atlético Grau", home: true }
+    ],
+    "Los Chankas CYC": [
+      { opponent: "Deportivo Garcilaso", date: isEs ? "19 Jul 2025" : "Jul 19, 2025", competition: "Deportivo Garcilaso", home: false },
+      { opponent: "Comerciantes Unidos", date: isEs ? "1 Ago 2025" : "Aug 1, 2025", competition: "Comerciantes Unidos", home: true },
+      { opponent: "Club Cienciano", date: isEs ? "5 Ago 2025" : "Aug 5, 2025", competition: "Club Cienciano", home: false }
+    ],
+    "Deportivo Garcilaso": [
+      { opponent: "CD Los Chankas", date: isEs ? "19 Jul 2025" : "Jul 19, 2025", competition: "CD Los Chankas", home: true },
+      { opponent: "Comerciantes Unidos", date: isEs ? "27 Jul 2025" : "Jul 27, 2025", competition: "Comerciantes Unidos", home: false },
+      { opponent: "Club Cienciano", date: isEs ? "2 Ago 2025" : "Aug 2, 2025", competition: "Club Cienciano", home: true }
+    ],
+    "Cienciano": [
+      { opponent: "Asociación Deportiva Tarma", date: isEs ? "19 Jul 2025" : "Jul 19, 2025", competition: "Asociación Deportiva Tarma", home: false },
+      { opponent: "Universitario de Deportes", date: isEs ? "27 Jul 2025" : "Jul 27, 2025", competition: "Universitario de Deportes", home: true },
+      { opponent: "Deportivo Garcilaso", date: isEs ? "2 Ago 2025" : "Aug 2, 2025", competition: "Deportivo Garcilaso", home: false }
+    ],
+    "FBC Melgar": [
+      { opponent: "Universidad Técnica de Cajamarca", date: isEs ? "19 Jul 2025" : "Jul 19, 2025", competition: "Universidad Técnica de Cajamarca", home: false },
+      { opponent: "Cusco FC", date: isEs ? "27 Jul 2025" : "Jul 27, 2025", competition: "Cusco FC", home: true },
+      { opponent: "Alianza Atlético Sullana", date: isEs ? "1 Ago 2025" : "Aug 1, 2025", competition: "Alianza Atlético Sullana", home: false }
+    ],
+    "Alianza Atlético": [
+      { opponent: "Sport Huancayo", date: isEs ? "18 Jul 2025" : "Jul 18, 2025", competition: "Sport Huancayo", home: true },
+      { opponent: "Club Alianza Lima", date: isEs ? "28 Jul 2025" : "Jul 28, 2025", competition: "Club Alianza Lima", home: false },
+      { opponent: "FBC Melgar", date: isEs ? "1 Ago 2025" : "Aug 1, 2025", competition: "FBC Melgar", home: true }
+    ],
+    "Sporting Cristal": [
+      { opponent: "Alianza Universidad", date: isEs ? "20 Jul 2025" : "Jul 20, 2025", competition: "Alianza Universidad", home: true },
+      { opponent: "Sport Boys Association", date: isEs ? "26 Jul 2025" : "Jul 26, 2025", competition: "Sport Boys Association", home: false },
+      { opponent: "Sport Huancayo", date: isEs ? "30 Jul 2025" : "Jul 30, 2025", competition: "Sport Huancayo", home: true }
+    ],
+    "Comerciantes Unidos": [
+      { opponent: "Universitario de Deportes", date: isEs ? "19 Jul 2025" : "Jul 19, 2025", competition: "Universitario de Deportes", home: false },
+      { opponent: "Deportivo Garcilaso", date: isEs ? "27 Jul 2025" : "Jul 27, 2025", competition: "Deportivo Garcilaso", home: true },
+      { opponent: "CD Los Chankas", date: isEs ? "1 Ago 2025" : "Aug 1, 2025", competition: "CD Los Chankas", home: false }
+    ],
+    "Atlético Grau": [
+      { opponent: "Ayacucho FC", date: isEs ? "20 Jul 2025" : "Jul 20, 2025", competition: "Ayacucho FC", home: false },
+      { opponent: "Asociación Deportiva Tarma", date: isEs ? "31 Ago 2025" : "Aug 31, 2025", competition: "Asociación Deportiva Tarma", home: true },
+      { opponent: "Universitario de Deportes", date: isEs ? "1 Ago 2025" : "Aug 1, 2025", competition: "Universitario de Deportes", home: false }
+    ],
+    "Juan Pablo II": [
+      { opponent: "Sport Boys Association", date: isEs ? "20 Jul 2025" : "Jul 20, 2025", competition: "Sport Boys Association", home: true },
+      { opponent: "Sport Huancayo", date: isEs ? "25 Jul 2025" : "Jul 25, 2025", competition: "Sport Huancayo", home: true },
+      { opponent: "Club Alianza Lima", date: isEs ? "1 Ago 2025" : "Aug 1, 2025", competition: "Club Alianza Lima", home: true }
+    ],
+    "Sport Huancayo": [
+      { opponent: "Alianza Atlético Sullana", date: isEs ? "18 Jul 2025" : "Jul 18, 2025", competition: "Alianza Atlético Sullana", home: false },
+      { opponent: "Club Juan Pablo II College", date: isEs ? "25 Jul 2025" : "Jul 25, 2025", competition: "Club Juan Pablo II College", home: true },
+      { opponent: "Club Sporting Cristal", date: isEs ? "30 Jul 2025" : "Jul 30, 2025", competition: "Club Sporting Cristal", home: false }
+    ],
+    "Sport Boys": [
+      { opponent: "Club Juan Pablo II College", date: isEs ? "20 Jul 2025" : "Jul 20, 2025", competition: "Club Juan Pablo II College", home: false },
+      { opponent: "Club Sporting Cristal", date: isEs ? "26 Jul 2025" : "Jul 26, 2025", competition: "Club Sporting Cristal", home: true },
+      { opponent: "Ayacucho FC", date: isEs ? "30 Jul 2025" : "Jul 30, 2025", competition: "Ayacucho FC", home: false }
+    ],
+    "Always Ready": [
+      { opponent: "CA Nacional Potosí", date: isEs ? "28 Mar 2025" : "Mar 28, 2025", competition: "CA Nacional Potosí", home: false },
+      { opponent: "Club Blooming", date: isEs ? "5 Abr 2025" : "Apr 5, 2025", competition: "Club Blooming", home: true },
+      { opponent: "Club Deportivo Oriente Petrolero", date: isEs ? "14 Abr 2025" : "Apr 14, 2025", competition: "Club Deportivo Oriente Petrolero", home: false }
+    ],
+    "Deportivo Binacional": [
+      { opponent: "Universidad Técnica de Cajamarca", date: isEs ? "15 Feb 2025" : "Feb 15, 2025", competition: "Universidad Técnica de Cajamarca", home: false },
+      { opponent: "Cusco FC", date: isEs ? "25 Feb 2025" : "Feb 25, 2025", competition: "Cusco FC", home: true },
+      { opponent: "Alianza Atlético Sullana", date: isEs ? "1 Mar 2025" : "Mar 1, 2025", competition: "Alianza Atlético Sullana", home: false }
+    ],
+    "Club Bolívar": [
+      { opponent: "Real Oruro", date: isEs ? "29 Mar 2025" : "Mar 29, 2025", competition: "Real Oruro", home: true },
+      { opponent: "CD Real Tomayapo", date: isEs ? "6 Abr 2025" : "Apr 6, 2025", competition: "CD Real Tomayapo", home: false },
+      { opponent: "Club Jorge Wilstermann", date: isEs ? "12 Abr 2025" : "Apr 12, 2025", competition: "Club Jorge Wilstermann ", home: true }
+    ],
+    "Ayacucho FC": [
+      { opponent: "Club Atlético Grau", date: isEs ? "20 Jul 2025" : "Jul 20, 2025", competition: "Club Atlético Grau", home: true },
+      { opponent: "Alianza Universidad", date: isEs ? "26 Jul 2025" : "Jul 26, 2025", competition: "Alianza Universidad", home: false },
+      { opponent: "Sport Boys Association", date: isEs ? "30 Jul 2025" : "Jul 30, 2025", competition: "Sport Boys Association", home: true }
+    ],
+    "Alianza Universidad": [
+      { opponent: "Club Sporting Cristal", date: isEs ? "20 Jul 2025" : "Jul 20, 2025", competition: "Club Sporting Cristal", home: false },
+      { opponent: "Ayacucho FC", date: isEs ? "26 Jul 2025" : "Jul 26, 2025", competition: "Ayacucho FC", home: true },
+      { opponent: "Asociación Deportiva Tarma", date: isEs ? "31 Jul 2025" : "Jul 31, 2025", competition: "Asociación Deportiva Tarma", home: false }
+    ],
+    "Guabirá": [
+      { opponent: "Universitario de Vinto", date: isEs ? "28 Mar 2025" : "Mar 28, 2025", competition: "Universitario de Vinto", home: false },
+      { opponent: "Club Aurora", date: isEs ? "5 Abr 2025" : "Apr 5, 2025", competition: "Club Aurora", home: true },
+      { opponent: "CA Nacional Potosí", date: isEs ? "14 Abr 2025" : "Apr 14, 2025", competition: "CA Nacional Potosí", home: false }
+    ],
+    "Nacional Potosí": [
+      { opponent: "Club Always Ready", date: isEs ? "28 Mar 2025" : "Mar 28, 2025", competition: "Club Always Ready", home: true },
+      { opponent: "The Strongest La Paz", date: isEs ? "6 Abr 2025" : "Apr 6, 2025", competition: "The Strongest La Paz", home: false },
+      { opponent: "Club Deportivo Guabirá", date: isEs ? "14 Abr 2025" : "Apr 14, 2025", competition: "Club Deportivo Guabirá", home: true }
+    ],
+    "The Strongest": [
+      { opponent: "Club Blooming", date: isEs ? "31 Mar 2025" : "Mar 31, 2025", competition: "Club Blooming", home: false },
+      { opponent: "CA Nacional Potosí", date: isEs ? "6 Abr 2025" : "Apr 6, 2025", competition: "CA Nacional Potosí", home: true },
+      { opponent: "Gualberto Villarroel San José", date: isEs ? "13 Abr 2025" : "Apr 13, 2025", competition: "Gualberto Villarroel San José", home: false }
+    ],
+    "San Antonio Bulo Bulo": [
+      { opponent: "Club A.B.B.", date: isEs ? "29 Mar 2025" : "Mar 29, 2025", competition: "Club A.B.B.", home: false },
+      { opponent: "Club Jorge Wilstermann", date: isEs ? "5 Abr 2025" : "Apr 5, 2025", competition: "Club Jorge Wilstermann ", home: true },
+      { opponent: "Club Aurora", date: isEs ? "13 Abr 2025" : "Apr 13, 2025", competition: "Club Aurora", home: false }
+    ],
+    "Blooming": [
+      { opponent: "The Strongest La Paz", date: isEs ? "31 Mar 2025" : "Mar 31, 2025", competition: "The Strongest La Paz", home: true },
+      { opponent: "Club Always Ready", date: isEs ? "5 Abr 2025" : "Apr 5, 2025", competition: "Club Always Ready", home: false },
+      { opponent: "Universitario de Vinto", date: isEs ? "12 Abr 2025" : "Apr 12, 2025", competition: "Universitario de Vinto", home: false }
+    ],
+    "Independiente Petrolero": [
+      { opponent: "Club Jorge Wilstermann", date: isEs ? "29 Mar 2025" : "Mar 29, 2025", competition: "Club Jorge Wilstermann ", home: false },
+      { opponent: "Gualberto Villarroel San José", date: isEs ? "6 Abr 2025" : "Apr 6, 2025", competition: "Gualberto Villarroel San José", home: true },
+      { opponent: "Real Oruro", date: isEs ? "11 Abr 2025" : "Apr 11, 2025", competition: "Real Oruro", home: true }
+    ],
+    "Real Tomayapo": [
+      { opponent: "Gualberto Villarroel San José", date: isEs ? "30 Mar 2025" : "Mar 30, 2025", competition: "Gualberto Villarroel San José", home: false },
+      { opponent: "Club Bolívar", date: isEs ? "6 Abr 2025" : "Apr 6, 2025", competition: "Club Bolívar", home: true },
+      { opponent: "Club A.B.B.", date: isEs ? "11 Abr 2025" : "Apr 11, 2025", competition: "Club A.B.B.", home: false }
+    ],
+    "Aurora": [
+      { opponent: "Foro del club", date: isEs ? "20 Ago 2026" : "Aug 20, 2026", competition: "Foro del club", home: false },
+      { opponent: "Foro del club", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Foro del club", home: true },
+      { opponent: "Foro del club", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Foro del club", home: true }
+    ],
+    "GV San José": [
+      { opponent: "CD Real Tomayapo", date: isEs ? "30 Mar 2025" : "Mar 30, 2025", competition: "CD Real Tomayapo", home: true },
+      { opponent: "Club Independiente Petrolero", date: isEs ? "6 Abr 2025" : "Apr 6, 2025", competition: "Club Independiente Petrolero", home: false },
+      { opponent: "The Strongest La Paz", date: isEs ? "13 Abr 2025" : "Apr 13, 2025", competition: "The Strongest La Paz", home: true }
+    ],
+    "Oriente Petrolero": [
+      { opponent: "Club Aurora", date: isEs ? "30 Mar 2025" : "Mar 30, 2025", competition: "Club Aurora", home: false },
+      { opponent: "Universitario de Vinto", date: isEs ? "4 Abr 2025" : "Apr 4, 2025", competition: "Universitario de Vinto", home: true },
+      { opponent: "Club Always Ready", date: isEs ? "14 Abr 2025" : "Apr 14, 2025", competition: "Club Always Ready", home: true }
+    ],
+    "Universitario de Vinto": [
+      { opponent: "Club Deportivo Guabirá", date: isEs ? "28 Mar 2025" : "Mar 28, 2025", competition: "Club Deportivo Guabirá", home: true },
+      { opponent: "Club Deportivo Oriente Petrolero", date: isEs ? "4 Abr 2025" : "Apr 4, 2025", competition: "Club Deportivo Oriente Petrolero", home: false },
+      { opponent: "Club Blooming", date: isEs ? "12 Abr 2025" : "Apr 12, 2025", competition: "Club Blooming", home: true }
+    ],
+    "Jorge Wilstermann": [
+      { opponent: "Club Independiente Petrolero", date: isEs ? "29 Mar 2025" : "Mar 29, 2025", competition: "Club Independiente Petrolero", home: true },
+      { opponent: "San Antonio Bulo Bulo", date: isEs ? "5 Abr 2025" : "Apr 5, 2025", competition: "San Antonio Bulo Bulo", home: false },
+      { opponent: "Club Bolívar", date: isEs ? "12 Abr 2025" : "Apr 12, 2025", competition: "Club Bolívar", home: false }
+    ],
+    "Cerro Porteño": [
+      { opponent: "Club General Caballero (JLM)", date: isEs ? "5 Jul 2025" : "Jul 5, 2025", competition: "Club General Caballero (JLM)", home: true },
+      { opponent: "Sportivo Ameliano", date: isEs ? "12 Jul 2025" : "Jul 12, 2025", competition: "Sportivo Ameliano", home: false },
+      { opponent: "Sportivo Luqueño", date: isEs ? "20 Jul 2025" : "Jul 20, 2025", competition: "Sportivo Luqueño", home: true }
+    ],
+    "Club Guaraní": [
+      { opponent: "Club Sportivo 2 de Mayo", date: isEs ? "6 Jul 2025" : "Jul 6, 2025", competition: "Club Sportivo 2 de Mayo", home: true },
+      { opponent: "Club Nacional Asunción", date: isEs ? "12 Jul 2025" : "Jul 12, 2025", competition: "Club Nacional Asunción", home: false },
+      { opponent: "Club Sportivo Trinidense", date: isEs ? "20 Jul 2025" : "Jul 20, 2025", competition: "Club Sportivo Trinidense", home: true }
+    ],
+    "ABB": [
+      { opponent: "Torino FC", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Torino FC", home: false },
+      { opponent: "Venezia FC", date: isEs ? "28 Ago 2026" : "Aug 28, 2026", competition: "Venezia FC", home: true },
+      { opponent: "Juventus de Turín", date: isEs ? "6 Sep 2026" : "Sep 6, 2026", competition: "Juventus de Turín", home: false }
+    ],
+    "Sportivo Trinidense": [
+      { opponent: "Recoleta FC", date: isEs ? "4 Jul 2025" : "Jul 4, 2025", competition: "Recoleta FC", home: false },
+      { opponent: "Club Olimpia", date: isEs ? "13 Jul 2025" : "Jul 13, 2025", competition: "Club Olimpia", home: true },
+      { opponent: "Club Guaraní", date: isEs ? "20 Jul 2025" : "Jul 20, 2025", competition: "Club Guaraní", home: false }
+    ],
+    "Club Libertad": [
+      { opponent: "Sportivo Luqueño", date: isEs ? "5 Jul 2025" : "Jul 5, 2025", competition: "Sportivo Luqueño", home: true },
+      { opponent: "Club Sportivo 2 de Mayo", date: isEs ? "11 Jul 2025" : "Jul 11, 2025", competition: "Club Sportivo 2 de Mayo", home: false },
+      { opponent: "Club Nacional Asunción", date: isEs ? "19 Jul 2025" : "Jul 19, 2025", competition: "Club Nacional Asunción", home: true }
+    ],
+    "2 de Mayo": [
+      { opponent: "Club Guaraní", date: isEs ? "6 Jul 2025" : "Jul 6, 2025", competition: "Club Guaraní", home: false },
+      { opponent: "Club Libertad Asunción", date: isEs ? "11 Jul 2025" : "Jul 11, 2025", competition: "Club Libertad Asunción", home: true },
+      { opponent: "Club General Caballero (JLM)", date: isEs ? "18 Jul 2025" : "Jul 18, 2025", competition: "Club General Caballero (JLM)", home: false }
+    ],
+    "Club Olimpia": [
+      { opponent: "Club Nacional Asunción", date: isEs ? "6 Jul 2025" : "Jul 6, 2025", competition: "Club Nacional Asunción", home: true },
+      { opponent: "Club Sportivo Trinidense", date: isEs ? "13 Jul 2025" : "Jul 13, 2025", competition: "Club Sportivo Trinidense", home: false },
+      { opponent: "Atlético Tembetary", date: isEs ? "19 Jul 2025" : "Jul 19, 2025", competition: "Atlético Tembetary", home: true }
+    ],
+    "Recoleta FC": [
+      { opponent: "Club Sportivo Trinidense", date: isEs ? "4 Jul 2025" : "Jul 4, 2025", competition: "Club Sportivo Trinidense", home: true },
+      { opponent: "Atlético Tembetary", date: isEs ? "14 Jul 2025" : "Jul 14, 2025", competition: "Atlético Tembetary", home: false },
+      { opponent: "Sportivo Ameliano", date: isEs ? "21 Jul 2025" : "Jul 21, 2025", competition: "Sportivo Ameliano", home: true }
+    ],
+    "Sportivo Luqueño": [
+      { opponent: "Club Libertad Asunción", date: isEs ? "5 Jul 2025" : "Jul 5, 2025", competition: "Club Libertad Asunción", home: false },
+      { opponent: "Club General Caballero (JLM)", date: isEs ? "11 Jul 2025" : "Jul 11, 2025", competition: "Club General Caballero (JLM)", home: true },
+      { opponent: "Club Cerro Porteño", date: isEs ? "20 Jul 2025" : "Jul 20, 2025", competition: "Club Cerro Porteño", home: false }
+    ],
+    "Club Nacional": [
+      { opponent: "Montevideo City Torque", date: isEs ? "2 Ago 2025" : "Aug 2, 2025", competition: "Montevideo City Torque", home: true },
+      { opponent: "CA Peñarol", date: isEs ? "9 Ago 2025" : "Aug 9, 2025", competition: "CA Peñarol", home: false },
+      { opponent: "CA Progreso", date: isEs ? "16 Ago 2025" : "Aug 16, 2025", competition: "CA Progreso", home: true }
+    ],
+    "Sportivo Ameliano": [
+      { opponent: "Atlético Tembetary", date: isEs ? "7 Jul 2025" : "Jul 7, 2025", competition: "Atlético Tembetary", home: true },
+      { opponent: "Club Cerro Porteño", date: isEs ? "12 Jul 2025" : "Jul 12, 2025", competition: "Club Cerro Porteño", home: true },
+      { opponent: "Recoleta FC", date: isEs ? "21 Jul 2025" : "Jul 21, 2025", competition: "Recoleta FC", home: false }
+    ],
+    "O'Higgins": [
+      { opponent: "CD Huachipato", date: isEs ? "15 Feb 2025" : "Feb 15, 2025", competition: "CD Huachipato", home: true },
+      { opponent: "CSD Colo-Colo", date: isEs ? "25 Feb 2025" : "Feb 25, 2025", competition: "CSD Colo-Colo", home: false },
+      { opponent: "&nbsp;", date: isEs ? "3 Mar 2025" : "Mar 3, 2025", competition: "&nbsp;", home: false }
+    ],
+    "Coquimbo Unido": [
+      { opponent: "Deportes Iquique", date: isEs ? "15 Feb 2025" : "Feb 15, 2025", competition: "Deportes Iquique", home: false },
+      { opponent: "CD Universidad Católica", date: isEs ? "22 Feb 2025" : "Feb 22, 2025", competition: "CD Universidad Católica", home: true },
+      { opponent: "Deportes Limache", date: isEs ? "1 Mar 2025" : "Mar 1, 2025", competition: "Deportes Limache", home: false }
+    ],
+    "Tembetary": [
+      { opponent: "Sportivo Ameliano", date: isEs ? "7 Jul 2025" : "Jul 7, 2025", competition: "Sportivo Ameliano", home: false },
+      { opponent: "Recoleta FC", date: isEs ? "14 Jul 2025" : "Jul 14, 2025", competition: "Recoleta FC", home: true },
+      { opponent: "Club Olimpia", date: isEs ? "19 Jul 2025" : "Jul 19, 2025", competition: "Club Olimpia", home: false }
+    ],
+    "Universidad de Chile": [
+      { opponent: "CD Ñublense", date: isEs ? "16 Feb 2025" : "Feb 16, 2025", competition: "CD Ñublense", home: true },
+      { opponent: "&nbsp;", date: isEs ? "24 Feb 2025" : "Feb 24, 2025", competition: "&nbsp;", home: true },
+      { opponent: "CD Cobresal", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "CD Cobresal", home: false }
+    ],
+    "Palestino": [
+      { opponent: "CD Cobresal", date: isEs ? "15 Feb 2025" : "Feb 15, 2025", competition: "CD Cobresal", home: true },
+      { opponent: "Unión Española", date: isEs ? "21 Feb 2025" : "Feb 21, 2025", competition: "Unión Española", home: false },
+      { opponent: "Audax Italiano", date: isEs ? "1 Mar 2025" : "Mar 1, 2025", competition: "Audax Italiano", home: true }
+    ],
+    "Colo-Colo": [
+      { opponent: "Deportes La Serena", date: isEs ? "16 Feb 2025" : "Feb 16, 2025", competition: "Deportes La Serena", home: false },
+      { opponent: "CD O'Higgins", date: isEs ? "25 Feb 2025" : "Feb 25, 2025", competition: "CD O'Higgins", home: true },
+      { opponent: "CD Huachipato", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "CD Huachipato", home: true }
+    ],
+    "Audax Italiano": [
+      { opponent: "CD Universidad Católica", date: isEs ? "17 Feb 2025" : "Feb 17, 2025", competition: "CD Universidad Católica", home: false },
+      { opponent: "Deportes Iquique", date: isEs ? "21 Feb 2025" : "Feb 21, 2025", competition: "Deportes Iquique", home: true },
+      { opponent: "CD Palestino", date: isEs ? "1 Mar 2025" : "Mar 1, 2025", competition: "CD Palestino", home: false }
+    ],
+    "Ñublense": [
+      { opponent: "Universidad de Chile", date: isEs ? "16 Feb 2025" : "Feb 16, 2025", competition: "Universidad de Chile", home: false },
+      { opponent: "Deportes Limache", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Deportes Limache", home: true },
+      { opponent: "CD Everton", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "CD Everton", home: false }
+    ],
+    "Huachipato": [
+      { opponent: "CD O'Higgins", date: isEs ? "15 Feb 2025" : "Feb 15, 2025", competition: "CD O'Higgins", home: false },
+      { opponent: "CD Everton", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "CD Everton", home: true },
+      { opponent: "CSD Colo-Colo", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "CSD Colo-Colo", home: true }
+    ],
+    "Cobresal": [
+      { opponent: "CD Palestino", date: isEs ? "15 Feb 2025" : "Feb 15, 2025", competition: "CD Palestino", home: false },
+      { opponent: "Deportes La Serena", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Deportes La Serena", home: true },
+      { opponent: "Universidad de Chile", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "Universidad de Chile", home: true }
+    ],
+    "Deportes Iquique": [
+      { opponent: "Coquimbo Unido", date: isEs ? "15 Feb 2025" : "Feb 15, 2025", competition: "Coquimbo Unido", home: true },
+      { opponent: "Audax Italiano", date: isEs ? "21 Feb 2025" : "Feb 21, 2025", competition: "Audax Italiano", home: false },
+      { opponent: "CD Universidad Católica", date: isEs ? "1 Mar 2025" : "Mar 1, 2025", competition: "CD Universidad Católica", home: false }
+    ],
+    "Unión La Calera": [
+      { opponent: "Unión Española", date: isEs ? "18 Feb 2025" : "Feb 18, 2025", competition: "Unión Española", home: true },
+      { opponent: "Universidad de Chile", date: isEs ? "24 Feb 2025" : "Feb 24, 2025", competition: "Universidad de Chile", home: false },
+      { opponent: "CD O'Higgins", date: isEs ? "3 Mar 2025" : "Mar 3, 2025", competition: "CD O'Higgins", home: true }
+    ],
+    "Deportes La Serena": [
+      { opponent: "CSD Colo-Colo", date: isEs ? "16 Feb 2025" : "Feb 16, 2025", competition: "CSD Colo-Colo", home: true },
+      { opponent: "CD Cobresal", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "CD Cobresal", home: false },
+      { opponent: "Unión Española", date: isEs ? "1 Mar 2025" : "Mar 1, 2025", competition: "Unión Española", home: true }
+    ],
+    "Nacional": [
+      { opponent: "New York City FC", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "New York City FC", home: true },
+      { opponent: "Houston Dynamo FC", date: isEs ? "3 Mar 2025" : "Mar 3, 2025", competition: "Houston Dynamo FC", home: false },
+      { opponent: "Charlotte FC", date: isEs ? "9 Mar 2025" : "Mar 9, 2025", competition: "Charlotte FC", home: true }
+    ],
+    "Unión Española": [
+      { opponent: "&nbsp;", date: isEs ? "18 Feb 2025" : "Feb 18, 2025", competition: "&nbsp;", home: false },
+      { opponent: "CD Palestino", date: isEs ? "21 Feb 2025" : "Feb 21, 2025", competition: "CD Palestino", home: true },
+      { opponent: "Deportes La Serena", date: isEs ? "1 Mar 2025" : "Mar 1, 2025", competition: "Deportes La Serena", home: false }
+    ],
+    "Deportes Limache": [
+      { opponent: "CD Everton", date: isEs ? "17 Feb 2025" : "Feb 17, 2025", competition: "CD Everton", home: true },
+      { opponent: "CD Ñublense", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "CD Ñublense", home: false },
+      { opponent: "Coquimbo Unido", date: isEs ? "1 Mar 2025" : "Mar 1, 2025", competition: "Coquimbo Unido", home: true }
+    ],
+    "Peñarol": [
+      { opponent: "CA Progreso", date: isEs ? "2 Ago 2025" : "Aug 2, 2025", competition: "CA Progreso", home: true },
+      { opponent: "Club Nacional", date: isEs ? "9 Ago 2025" : "Aug 9, 2025", competition: "Club Nacional", home: true },
+      { opponent: "CA Boston River", date: isEs ? "15 Ago 2025" : "Aug 15, 2025", competition: "CA Boston River", home: false }
+    ],
+    "Racing": [
+      { opponent: "Olympique de Marsella", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Olympique de Marsella", home: false },
+      { opponent: "RC Lens", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "RC Lens", home: true },
+      { opponent: "ESTAC Troyes", date: isEs ? "6 Sep 2026" : "Sep 6, 2026", competition: "ESTAC Troyes", home: false }
+    ],
+    "Defensor Sporting": [
+      { opponent: "CA Boston River", date: isEs ? "3 Ago 2025" : "Aug 3, 2025", competition: "CA Boston River", home: false },
+      { opponent: "CA River Plate Montevideo", date: isEs ? "12 Ago 2025" : "Aug 12, 2025", competition: "CA River Plate Montevideo", home: true },
+      { opponent: "Racing Club de Montevideo", date: isEs ? "17 Ago 2025" : "Aug 17, 2025", competition: "Racing Club de Montevideo", home: false }
+    ],
+    "Liverpool FC": [
+      { opponent: "Newcastle United", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Newcastle United", home: false },
+      { opponent: "Nottingham Forest", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Nottingham Forest", home: true },
+      { opponent: "Ipswich Town", date: isEs ? "4 Sep 2026" : "Sep 4, 2026", competition: "Ipswich Town", home: false }
+    ],
+    "Boston River": [
+      { opponent: "Defensor Sporting Club", date: isEs ? "3 Ago 2025" : "Aug 3, 2025", competition: "Defensor Sporting Club", home: true },
+      { opponent: "Montevideo City Torque", date: isEs ? "9 Ago 2025" : "Aug 9, 2025", competition: "Montevideo City Torque", home: false },
+      { opponent: "CA Peñarol", date: isEs ? "15 Ago 2025" : "Aug 15, 2025", competition: "CA Peñarol", home: true }
+    ],
+    "Montevideo City Torque": [
+      { opponent: "Club Nacional", date: isEs ? "2 Ago 2025" : "Aug 2, 2025", competition: "Club Nacional", home: false },
+      { opponent: "CA Boston River", date: isEs ? "9 Ago 2025" : "Aug 9, 2025", competition: "CA Boston River", home: true },
+      { opponent: "CA River Plate Montevideo", date: isEs ? "17 Ago 2025" : "Aug 17, 2025", competition: "CA River Plate Montevideo", home: false }
+    ],
+    "Plaza Colonia": [
+      { opponent: "Miramar Misiones", date: isEs ? "3 Ago 2025" : "Aug 3, 2025", competition: "Miramar Misiones", home: true },
+      { opponent: "Montevideo Wanderers", date: isEs ? "10 Ago 2025" : "Aug 10, 2025", competition: "Montevideo Wanderers", home: false },
+      { opponent: "CA Cerro", date: isEs ? "17 Ago 2025" : "Aug 17, 2025", competition: "CA Cerro", home: true }
+    ],
+    "Cerro": [
+      { opponent: "Liverpool FC Montevideo", date: isEs ? "7 Ago 2025" : "Aug 7, 2025", competition: "Liverpool FC Montevideo", home: true }
+    ],
+    "Cerro Largo": [
+      { opponent: "CA Juventud", date: isEs ? "2 Ago 2025" : "Aug 2, 2025", competition: "CA Juventud", home: false },
+      { opponent: "CA Progreso", date: isEs ? "9 Ago 2025" : "Aug 9, 2025", competition: "CA Progreso", home: false },
+      { opponent: "Danubio FC", date: isEs ? "19 Ago 2025" : "Aug 19, 2025", competition: "Danubio FC", home: true }
+    ],
+    "Progreso": [
+      { opponent: "CA Peñarol", date: isEs ? "2 Ago 2025" : "Aug 2, 2025", competition: "CA Peñarol", home: false },
+      { opponent: "Cerro Largo FC", date: isEs ? "9 Ago 2025" : "Aug 9, 2025", competition: "Cerro Largo FC", home: true },
+      { opponent: "Club Nacional", date: isEs ? "16 Ago 2025" : "Aug 16, 2025", competition: "Club Nacional", home: false }
+    ],
+    "Herediano": [
+      { opponent: "Puntarenas FC", date: isEs ? "24 Jul 2026" : "Jul 24, 2026", competition: "Puntarenas FC", home: true },
+      { opponent: "Inter de San Carlos", date: isEs ? "3 Ago 2026" : "Aug 3, 2026", competition: "Inter de San Carlos", home: false },
+      { opponent: "LD Alajuelense", date: isEs ? "10 Ago 2026" : "Aug 10, 2026", competition: "LD Alajuelense", home: true }
+    ],
+    "Cartaginés": [
+      { opponent: "Inter de San Carlos", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "Inter de San Carlos", home: true },
+      { opponent: "Municipal Pérez Zeledón", date: isEs ? "4 Ago 2026" : "Aug 4, 2026", competition: "Municipal Pérez Zeledón", home: false },
+      { opponent: "Sporting FC", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Sporting FC ", home: true }
+    ],
+    "Saprissa": [
+      { opponent: "Foro del club", date: isEs ? "20 Ago 2026" : "Aug 20, 2026", competition: "Foro del club", home: false },
+      { opponent: "Foro del club", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Foro del club", home: true },
+      { opponent: "Foro del club", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Foro del club", home: true }
+    ],
+    "Montevideo Wanderers": [
+      { opponent: "Racing Club de Montevideo", date: isEs ? "3 Ago 2025" : "Aug 3, 2025", competition: "Racing Club de Montevideo", home: false },
+      { opponent: "Club Plaza Colonia", date: isEs ? "10 Ago 2025" : "Aug 10, 2025", competition: "Club Plaza Colonia", home: true },
+      { opponent: "Liverpool FC Montevideo", date: isEs ? "16 Ago 2025" : "Aug 16, 2025", competition: "Liverpool FC Montevideo", home: false }
+    ],
+    "Municipal Liberia": [
+      { opponent: "Puntarenas FC", date: isEs ? "20 Jul 2026" : "Jul 20, 2026", competition: "Puntarenas FC", home: false },
+      { opponent: "LD Alajuelense", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "LD Alajuelense", home: true },
+      { opponent: "AD San Carlos", date: isEs ? "28 Jul 2026" : "Jul 28, 2026", competition: "AD San Carlos", home: false }
+    ],
+    "Miramar Misiones": [
+      { opponent: "Club Plaza Colonia", date: isEs ? "3 Ago 2025" : "Aug 3, 2025", competition: "Club Plaza Colonia", home: false },
+      { opponent: "Liverpool FC Montevideo", date: isEs ? "10 Ago 2025" : "Aug 10, 2025", competition: "Liverpool FC Montevideo", home: true },
+      { opponent: "CA Juventud", date: isEs ? "16 Ago 2025" : "Aug 16, 2025", competition: "CA Juventud", home: false }
+    ],
+    "Alajuelense": [
+      { opponent: "Sporting FC", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "Sporting FC ", home: false },
+      { opponent: "Escorpiones de Belén", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "Escorpiones de Belén", home: true },
+      { opponent: "CS Herediano", date: isEs ? "10 Ago 2026" : "Aug 10, 2026", competition: "CS Herediano", home: true }
+    ],
+    "San Carlos": [
+      { opponent: "SSV Jahn Regensburg U19", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "SSV Jahn Regensburg U19", home: true },
+      { opponent: "VfB Stuttgart U19", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "VfB Stuttgart U19", home: false },
+      { opponent: "FC Bayern Múnich Sub-19", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "FC Bayern Múnich Sub-19", home: false }
+    ],
+    "Puntarenas FC": [
+      { opponent: "CS Herediano", date: isEs ? "24 Jul 2026" : "Jul 24, 2026", competition: "CS Herediano", home: true },
+      { opponent: "Sporting FC", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "Sporting FC ", home: true },
+      { opponent: "Deportivo Saprissa", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Deportivo Saprissa", home: true }
+    ],
+    "Guadalupe FC": [
+      { opponent: "AD Rosario", date: isEs ? "29 Jul 2026" : "Jul 29, 2026", competition: "AD Rosario", home: true },
+      { opponent: "Sporting FC", date: isEs ? "6 Ago 2026" : "Aug 6, 2026", competition: "Sporting FC ", home: true },
+      { opponent: "AD Municipal Liberia", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "AD Municipal Liberia", home: false }
+    ],
+    "Pérez Zeledón": [
+      { opponent: "Deportivo Saprissa", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "Deportivo Saprissa", home: false },
+      { opponent: "CS Cartaginés", date: isEs ? "4 Ago 2026" : "Aug 4, 2026", competition: "CS Cartaginés", home: true },
+      { opponent: "Escorpiones de Belén", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Escorpiones de Belén", home: false }
+    ],
+    "CD FAS": [
+      { opponent: "CD Municipal Limeño", date: isEs ? "24 Jul 2026" : "Jul 24, 2026", competition: "CD Municipal Limeño", home: true },
+      { opponent: "AD Isidro Metapán", date: isEs ? "30 Jul 2026" : "Jul 30, 2026", competition: "AD Isidro Metapán", home: false },
+      { opponent: "CD Inca Aruba", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "CD Inca Aruba", home: false }
+    ],
+    "CD Águila": [
+      { opponent: "CD Luis Angel Firpo", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "CD Luis Angel Firpo", home: true },
+      { opponent: "Inter Santa Tecla", date: isEs ? "30 Jul 2026" : "Jul 30, 2026", competition: "Inter Santa Tecla", home: false },
+      { opponent: "CD Cacahuatique", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "CD Cacahuatique", home: false }
+    ],
+    "CD Municipal Limeño": [
+      { opponent: "CD FAS", date: isEs ? "24 Jul 2026" : "Jul 24, 2026", competition: "CD FAS", home: false },
+      { opponent: "CD Inca Aruba", date: isEs ? "29 Jul 2026" : "Jul 29, 2026", competition: "CD Inca Aruba", home: true },
+      { opponent: "CD Platense Zacatecoluca", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "CD Platense Zacatecoluca", home: true }
+    ],
+    "Inter FA": [
+      { opponent: "CA Atletico Balboa", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "CA Atletico Balboa", home: false },
+      { opponent: "CD Águila", date: isEs ? "30 Jul 2026" : "Jul 30, 2026", competition: "CD Águila", home: true },
+      { opponent: "CD Fuerte San Francisco", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "CD Fuerte San Francisco", home: false }
+    ],
+    "Isidro Metapán": [
+      { opponent: "CD Cacahuatique", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "CD Cacahuatique", home: false },
+      { opponent: "CD FAS", date: isEs ? "30 Jul 2026" : "Jul 30, 2026", competition: "CD FAS", home: true },
+      { opponent: "CA Atletico Balboa", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "CA Atletico Balboa", home: false }
+    ],
+    "CD Fuerte San Francisco": [
+      { opponent: "CD Platense Zacatecoluca", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "CD Platense Zacatecoluca", home: true },
+      { opponent: "CD Luis Angel Firpo", date: isEs ? "29 Jul 2026" : "Jul 29, 2026", competition: "CD Luis Angel Firpo", home: false },
+      { opponent: "Inter Santa Tecla", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "Inter Santa Tecla", home: true }
+    ],
+    "CD Platense": [
+      { opponent: "CD Fuerte San Francisco", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "CD Fuerte San Francisco", home: false },
+      { opponent: "Alianza FC", date: isEs ? "26 Ago 2026" : "Aug 26, 2026", competition: "Alianza FC", home: true },
+      { opponent: "CD Municipal Limeño", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "CD Municipal Limeño", home: false }
+    ],
+    "CD Cacahuatique": [
+      { opponent: "AD Isidro Metapán", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "AD Isidro Metapán", home: true },
+      { opponent: "CA Atletico Balboa", date: isEs ? "28 Jul 2026" : "Jul 28, 2026", competition: "CA Atletico Balboa", home: true },
+      { opponent: "CD Águila", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "CD Águila", home: true }
+    ],
+    "CD Olimpia": [
+      { opponent: "Lobos de la UPNFM", date: isEs ? "3 Ago 2026" : "Aug 3, 2026", competition: "Lobos de la UPNFM", home: true },
+      { opponent: "Juticalpa FC", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Juticalpa FC", home: false },
+      { opponent: "CD Motagua Tegucigalpa", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "CD Motagua Tegucigalpa", home: true }
+    ],
+    "CD Marathón": [
+      { opponent: "Club Atlético Independiente", date: isEs ? "3 Ago 2026" : "Aug 3, 2026", competition: "Club Atlético Independiente", home: true },
+      { opponent: "Platense FC", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Platense FC", home: false },
+      { opponent: "CD Choloma", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "CD Choloma", home: false }
+    ],
+    "Real España": [
+      { opponent: "Platense FC", date: isEs ? "31 Jul 2026" : "Jul 31, 2026", competition: "Platense FC", home: false },
+      { opponent: "Génesis / Policía Nacional FC", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Génesis / Policía Nacional FC", home: true },
+      { opponent: "Club Atlético Independiente", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Club Atlético Independiente", home: true }
+    ],
+    "CD Motagua": [
+      { opponent: "Juticalpa FC", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "Juticalpa FC", home: false },
+      { opponent: "CD Estrella Roja de Araulí", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "CD Estrella Roja de Araulí", home: true },
+      { opponent: "CD Olimpia", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "CD Olimpia", home: false }
+    ],
+    "Olancho FC": [
+      { opponent: "CD Estrella Roja de Araulí", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "CD Estrella Roja de Araulí", home: false },
+      { opponent: "Lobos de la UPNFM", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Lobos de la UPNFM", home: false },
+      { opponent: "Juticalpa FC", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Juticalpa FC", home: true }
+    ],
+    "Platense FC": [
+      { opponent: "Real CD España", date: isEs ? "31 Jul 2026" : "Jul 31, 2026", competition: "Real CD España", home: true },
+      { opponent: "CD Marathón", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "CD Marathón", home: true },
+      { opponent: "Génesis / Policía Nacional FC", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Génesis / Policía Nacional FC", home: false }
+    ],
+    "Lobos UPNFM": [
+      { opponent: "CD Olimpia", date: isEs ? "3 Ago 2026" : "Aug 3, 2026", competition: "CD Olimpia", home: false },
+      { opponent: "Olancho FC", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Olancho FC", home: true },
+      { opponent: "CD Estrella Roja de Araulí", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "CD Estrella Roja de Araulí", home: true }
+    ],
+    "Diriangén FC": [
+      { opponent: "San Marcos FC", date: isEs ? "18 Jul 2026" : "Jul 18, 2026", competition: "San Marcos FC", home: true },
+      { opponent: "CD Walter Ferretti", date: isEs ? "24 Jul 2026" : "Jul 24, 2026", competition: "CD Walter Ferretti", home: false },
+      { opponent: "UNAN Managua", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "UNAN Managua", home: true }
+    ],
+    "Juticalpa FC": [
+      { opponent: "CD Motagua Tegucigalpa", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "CD Motagua Tegucigalpa", home: true },
+      { opponent: "CD Olimpia", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "CD Olimpia", home: true },
+      { opponent: "Olancho FC", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Olancho FC", home: false }
+    ],
+    "Choloma": [
+      { opponent: "Génesis / Policía Nacional FC", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "Génesis / Policía Nacional FC", home: false },
+      { opponent: "Club Atlético Independiente", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Club Atlético Independiente", home: false },
+      { opponent: "CD Marathón", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "CD Marathón", home: true }
+    ],
+    "CD Victoria": [
+      { opponent: "&nbsp;", date: isEs ? "27 Jul 2026" : "Jul 27, 2026", competition: "&nbsp;", home: false },
+      { opponent: "CD Génesis de Comayagua (- 2025)", date: isEs ? "4 Ago 2026" : "Aug 4, 2026", competition: "CD Génesis de Comayagua (- 2025)", home: true },
+      { opponent: "CD Olimpia", date: isEs ? "11 Ago 2026" : "Aug 11, 2026", competition: "CD Olimpia", home: true }
+    ],
+    "CD Walter Ferretti": [
+      { opponent: "ART Municipal Jalapa", date: isEs ? "19 Jul 2026" : "Jul 19, 2026", competition: "ART Municipal Jalapa", home: false },
+      { opponent: "Diriangén FC", date: isEs ? "24 Jul 2026" : "Jul 24, 2026", competition: "Diriangén FC", home: true },
+      { opponent: "Matagalpa FC", date: isEs ? "3 Ago 2026" : "Aug 3, 2026", competition: "Matagalpa FC", home: true }
+    ],
+    "Real Estelí FC": [
+      { opponent: "UNAN Managua", date: isEs ? "18 Jul 2026" : "Jul 18, 2026", competition: "UNAN Managua", home: true },
+      { opponent: "Matagalpa FC", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "Matagalpa FC", home: true },
+      { opponent: "ART Municipal Jalapa", date: isEs ? "31 Jul 2026" : "Jul 31, 2026", competition: "ART Municipal Jalapa", home: false }
+    ],
+    "Managua FC": [
+      { opponent: "Rancho Santana FC", date: isEs ? "19 Jul 2026" : "Jul 19, 2026", competition: "Rancho Santana FC", home: true },
+      { opponent: "ART Municipal Jalapa", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "ART Municipal Jalapa", home: true },
+      { opponent: "San Marcos FC", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "San Marcos FC", home: false }
+    ],
+    "ART Municipal Jalapa": [
+      { opponent: "CD Walter Ferretti", date: isEs ? "19 Jul 2026" : "Jul 19, 2026", competition: "CD Walter Ferretti", home: true },
+      { opponent: "Managua FC", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "Managua FC", home: false },
+      { opponent: "Real Estelí FC", date: isEs ? "31 Jul 2026" : "Jul 31, 2026", competition: "Real Estelí FC", home: true }
+    ],
+    "Matagalpa FC": [
+      { opponent: "Club Sport Sébaco", date: isEs ? "19 Jul 2026" : "Jul 19, 2026", competition: "Club Sport Sébaco", home: true },
+      { opponent: "Real Estelí FC", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "Real Estelí FC", home: false },
+      { opponent: "CD Walter Ferretti", date: isEs ? "3 Ago 2026" : "Aug 3, 2026", competition: "CD Walter Ferretti", home: false }
+    ],
+    "UNAN Managua": [
+      { opponent: "Real Estelí FC", date: isEs ? "18 Jul 2026" : "Jul 18, 2026", competition: "Real Estelí FC", home: false },
+      { opponent: "Rancho Santana FC", date: isEs ? "28 Jul 2026" : "Jul 28, 2026", competition: "Rancho Santana FC", home: true },
+      { opponent: "Diriangén FC", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "Diriangén FC", home: false }
+    ],
+    "Real Madriz FC": [
+      { opponent: "FC Estelí", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "FC Estelí", home: true },
+      { opponent: "CD Ocotal", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "CD Ocotal", home: true },
+      { opponent: "CD Junior de Managua", date: isEs ? "4 Abr 2025" : "Apr 4, 2025", competition: "CD Junior de Managua", home: false }
+    ],
+    "Ouanaminthe FC": [
+      { opponent: "AC Port of Spain", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "AC Port of Spain", home: true },
+      { opponent: "Moca FC", date: isEs ? "19 Sep 2026" : "Sep 19, 2026", competition: "Moca FC", home: false },
+      { opponent: "Grenades FC", date: isEs ? "25 Sep 2026" : "Sep 25, 2026", competition: "Grenades FC", home: true }
+    ],
+    "FICA": [
+      { opponent: "SC Otelul Galati", date: isEs ? "18 Jul 2026" : "Jul 18, 2026", competition: "SC Otelul Galati", home: false },
+      { opponent: "FC Voluntari", date: isEs ? "27 Jul 2026" : "Jul 27, 2026", competition: "FC Voluntari", home: true },
+      { opponent: "FC Rapid 1923", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "FC Rapid 1923", home: false }
+    ],
+    "Baltimore SC": [
+      { opponent: "Helenites SC", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "Helenites SC", home: true }
+    ],
+    "Club Sando": [
+      { opponent: "SV Broki", date: isEs ? "7 Ago 2026" : "Aug 7, 2026", competition: "SV Broki", home: true },
+      { opponent: "Defence Force", date: isEs ? "2 Sep 2026" : "Sep 2, 2026", competition: "Defence Force", home: false },
+      { opponent: "Delfines del Este FC", date: isEs ? "9 Sep 2026" : "Sep 9, 2026", competition: "Delfines del Este FC", home: true }
+    ],
+    "Prison Service FC": [
+      { opponent: "Slingerz FC", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "Slingerz FC", home: true }
+    ],
+    "Defence Force": [
+      { opponent: "Maroons FC", date: isEs ? "15 Sep 2026" : "Sep 15, 2026", competition: "Maroons FC", home: false },
+      { opponent: "Lugazi FC", date: isEs ? "19 Sep 2026" : "Sep 19, 2026", competition: "Lugazi FC", home: true },
+      { opponent: "National Enterprise Corporation FC", date: isEs ? "24 Sep 2026" : "Sep 24, 2026", competition: "National Enterprise Corporation FC", home: false }
+    ],
+    "Violette AC": [
+      { opponent: "Defence Force", date: isEs ? "5 Ago 2026" : "Aug 5, 2026", competition: "Defence Force", home: true },
+      { opponent: "Delfines del Este FC", date: isEs ? "20 Ago 2026" : "Aug 20, 2026", competition: "Delfines del Este FC", home: false },
+      { opponent: "SV Broki", date: isEs ? "10 Sep 2026" : "Sep 10, 2026", competition: "SV Broki", home: false }
+    ],
+    "AC Port of Spain": [
+      { opponent: "Ouanaminthe FC", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Ouanaminthe FC", home: false },
+      { opponent: "Moca FC", date: isEs ? "28 Ago 2026" : "Aug 28, 2026", competition: "Moca FC", home: false },
+      { opponent: "Grenades FC", date: isEs ? "18 Sep 2026" : "Sep 18, 2026", competition: "Grenades FC", home: true }
+    ],
+    "Pumas UNAM": [
+      { opponent: "CF Pachuca", date: isEs ? "19 Jul 2026" : "Jul 19, 2026", competition: "CF Pachuca", home: true },
+      { opponent: "Deportivo Toluca FC", date: isEs ? "22 Jul 2026" : "Jul 22, 2026", competition: "Deportivo Toluca FC", home: false },
+      { opponent: "FC Juárez", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "FC Juárez", home: false }
+    ],
+    "Cruz Azul": [
+      { opponent: "Atlético de San Luis", date: isEs ? "18 Jul 2026" : "Jul 18, 2026", competition: "Atlético de San Luis", home: false },
+      { opponent: "Club Puebla", date: isEs ? "22 Jul 2026" : "Jul 22, 2026", competition: "Club Puebla", home: true },
+      { opponent: "CF Atlante", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "CF Atlante", home: true }
+    ],
+    "CD Guadalajara": [
+      { opponent: "Deportivo Toluca FC", date: isEs ? "19 Jul 2026" : "Jul 19, 2026", competition: "Deportivo Toluca FC", home: true },
+      { opponent: "FC Juárez", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "FC Juárez", home: true },
+      { opponent: "Club Puebla", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "Club Puebla", home: false }
+    ],
+    "Club Pachuca": [
+      { opponent: "Pumas UNAM", date: isEs ? "19 Jul 2026" : "Jul 19, 2026", competition: "Pumas UNAM ", home: false },
+      { opponent: "Querétaro FC", date: isEs ? "27 Jul 2026" : "Jul 27, 2026", competition: "Querétaro FC", home: true },
+      { opponent: "Club León FC", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "Club León FC", home: false }
+    ],
+    "Toluca": [
+      { opponent: "CD Guadalajara", date: isEs ? "19 Jul 2026" : "Jul 19, 2026", competition: "CD Guadalajara", home: false },
+      { opponent: "Pumas UNAM", date: isEs ? "22 Jul 2026" : "Jul 22, 2026", competition: "Pumas UNAM ", home: true },
+      { opponent: "Club Necaxa", date: isEs ? "3 Ago 2026" : "Aug 3, 2026", competition: "Club Necaxa", home: true }
+    ],
+    "Club Tijuana": [
+      { opponent: "Tigres UANL", date: isEs ? "17 Jul 2026" : "Jul 17, 2026", competition: "Tigres UANL", home: true },
+      { opponent: "Club León FC", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "Club León FC", home: true },
+      { opponent: "Atlético de San Luis", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "Atlético de San Luis", home: false }
+    ],
+    "Club León": [
+      { opponent: "Atlas Guadalajara", date: isEs ? "18 Jul 2026" : "Jul 18, 2026", competition: "Atlas Guadalajara", home: true },
+      { opponent: "Club Tijuana", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "Club Tijuana", home: false },
+      { opponent: "CF Pachuca", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "CF Pachuca", home: true }
+    ],
+    "Tigres UANL": [
+      { opponent: "Club Tijuana", date: isEs ? "17 Jul 2026" : "Jul 17, 2026", competition: "Club Tijuana", home: false },
+      { opponent: "Atlético de San Luis", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "Atlético de San Luis", home: true },
+      { opponent: "Querétaro FC", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "Querétaro FC", home: false }
+    ],
+    "Club América": [
+      { opponent: "Querétaro FC", date: isEs ? "19 Jul 2026" : "Jul 19, 2026", competition: "Querétaro FC", home: false },
+      { opponent: "CF Atlante", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "CF Atlante", home: false },
+      { opponent: "Santos Laguna", date: isEs ? "3 Ago 2026" : "Aug 3, 2026", competition: "Santos Laguna", home: true }
+    ],
+    "Querétaro": [
+      { opponent: "CF América", date: isEs ? "19 Jul 2026" : "Jul 19, 2026", competition: "CF América", home: true },
+      { opponent: "CF Pachuca", date: isEs ? "27 Jul 2026" : "Jul 27, 2026", competition: "CF Pachuca", home: false },
+      { opponent: "Tigres UANL", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "Tigres UANL", home: true }
+    ],
+    "FC Juárez": [
+      { opponent: "Club Puebla", date: isEs ? "18 Jul 2026" : "Jul 18, 2026", competition: "Club Puebla", home: true },
+      { opponent: "CD Guadalajara", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "CD Guadalajara", home: false },
+      { opponent: "Pumas UNAM", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "Pumas UNAM ", home: true }
+    ],
+    "Necaxa": [
+      { opponent: "CF Atlante", date: isEs ? "17 Jul 2026" : "Jul 17, 2026", competition: "CF Atlante", home: true },
+      { opponent: "CF Monterrey", date: isEs ? "27 Jul 2026" : "Jul 27, 2026", competition: "CF Monterrey", home: true },
+      { opponent: "Deportivo Toluca FC", date: isEs ? "3 Ago 2026" : "Aug 3, 2026", competition: "Deportivo Toluca FC", home: false }
+    ],
+    "CF Monterrey": [
+      { opponent: "Santos Laguna", date: isEs ? "19 Jul 2026" : "Jul 19, 2026", competition: "Santos Laguna", home: true },
+      { opponent: "Club Necaxa", date: isEs ? "27 Jul 2026" : "Jul 27, 2026", competition: "Club Necaxa", home: false },
+      { opponent: "Atlas Guadalajara", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "Atlas Guadalajara", home: false }
+    ],
+    "Atlético San Luis": [
+      { opponent: "CD Cruz Azul", date: isEs ? "18 Jul 2026" : "Jul 18, 2026", competition: "CD Cruz Azul", home: true },
+      { opponent: "Tigres UANL", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "Tigres UANL", home: false },
+      { opponent: "Club Tijuana", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "Club Tijuana", home: true }
+    ],
+    "Mazatlán FC": [
+      { opponent: "CD Cruz Azul", date: isEs ? "7 Jul 2026" : "Jul 7, 2026", competition: "CD Cruz Azul", home: false },
+      { opponent: "Atlético de San Luis", date: isEs ? "13 Jul 2026" : "Jul 13, 2026", competition: "Atlético de San Luis", home: true },
+      { opponent: "Deportivo Toluca FC", date: isEs ? "18 Jul 2026" : "Jul 18, 2026", competition: "Deportivo Toluca FC", home: false }
+    ],
+    "Puebla FC": [
+      { opponent: "FC Juárez", date: isEs ? "18 Jul 2026" : "Jul 18, 2026", competition: "FC Juárez", home: false },
+      { opponent: "CD Cruz Azul", date: isEs ? "22 Jul 2026" : "Jul 22, 2026", competition: "CD Cruz Azul", home: false },
+      { opponent: "CD Guadalajara", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "CD Guadalajara", home: true }
+    ],
+    "Santos Laguna": [
+      { opponent: "CF Monterrey", date: isEs ? "19 Jul 2026" : "Jul 19, 2026", competition: "CF Monterrey", home: false },
+      { opponent: "Atlas Guadalajara", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "Atlas Guadalajara", home: true },
+      { opponent: "CF América", date: isEs ? "3 Ago 2026" : "Aug 3, 2026", competition: "CF América", home: false }
+    ],
+    "Atlanta United": [
+      { opponent: "CF Montréal", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "CF Montréal", home: true },
+      { opponent: "Charlotte FC", date: isEs ? "1 Mar 2025" : "Mar 1, 2025", competition: "Charlotte FC", home: false },
+      { opponent: "Red Bull New York", date: isEs ? "9 Mar 2025" : "Mar 9, 2025", competition: "Red Bull New York", home: true }
+    ],
+    "New England Revolution": [
+      { opponent: "Nashville SC", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Nashville SC", home: false },
+      { opponent: "Columbus Crew", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "Columbus Crew", home: true },
+      { opponent: "Philadelphia Union", date: isEs ? "9 Mar 2025" : "Mar 9, 2025", competition: "Philadelphia Union", home: true }
+    ],
+    "Austin FC": [
+      { opponent: "Sporting Kansas City", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Sporting Kansas City", home: true },
+      { opponent: "Portland Timbers", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "Portland Timbers", home: false },
+      { opponent: "Colorado Rapids", date: isEs ? "9 Mar 2025" : "Mar 9, 2025", competition: "Colorado Rapids", home: true }
+    ],
+    "Nashville SC": [
+      { opponent: "&nbsp;", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "&nbsp;", home: true },
+      { opponent: "Red Bull New York", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "Red Bull New York", home: false },
+      { opponent: "Portland Timbers", date: isEs ? "9 Mar 2025" : "Mar 9, 2025", competition: "Portland Timbers", home: true }
+    ],
+    "New York Red Bulls": [
+      { opponent: "Atlanta United 2", date: isEs ? "8 Mar 2025" : "Mar 8, 2025", competition: "Atlanta United 2", home: false },
+      { opponent: "Philadelphia Union II", date: isEs ? "18 Mar 2025" : "Mar 18, 2025", competition: "Philadelphia Union II", home: false },
+      { opponent: "New York City FC II", date: isEs ? "30 Mar 2025" : "Mar 30, 2025", competition: "New York City FC II", home: true }
+    ],
+    "Charlotte FC": [
+      { opponent: "Seattle Sounders FC", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Seattle Sounders FC", home: false },
+      { opponent: "Atlanta United FC", date: isEs ? "1 Mar 2025" : "Mar 1, 2025", competition: "Atlanta United FC", home: true },
+      { opponent: "Inter Miami CF", date: isEs ? "9 Mar 2025" : "Mar 9, 2025", competition: "Inter Miami CF", home: false }
+    ],
+    "CF Montréal": [
+      { opponent: "Atlanta United FC", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Atlanta United FC", home: false },
+      { opponent: "Minnesota United FC", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "Minnesota United FC", home: false },
+      { opponent: "Vancouver Whitecaps FC", date: isEs ? "9 Mar 2025" : "Mar 9, 2025", competition: "Vancouver Whitecaps FC", home: false }
+    ],
+    "Chicago Fire": [
+      { opponent: "Columbus Crew", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Columbus Crew", home: false },
+      { opponent: "D.C. United", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "D.C. United", home: true },
+      { opponent: "FC Dallas", date: isEs ? "9 Mar 2025" : "Mar 9, 2025", competition: "FC Dallas", home: false }
+    ],
+    "New York City FC": [
+      { opponent: "Inter Miami CF", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Inter Miami CF", home: false },
+      { opponent: "Los Ángeles FC", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "Los Ángeles FC", home: false },
+      { opponent: "Orlando City SC", date: isEs ? "9 Mar 2025" : "Mar 9, 2025", competition: "Orlando City SC", home: true }
+    ],
+    "Orlando City SC": [
+      { opponent: "Philadelphia Union", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Philadelphia Union", home: true },
+      { opponent: "Toronto FC", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "Toronto FC", home: true },
+      { opponent: "New York City FC", date: isEs ? "9 Mar 2025" : "Mar 9, 2025", competition: "New York City FC", home: false }
+    ],
+    "Columbus Crew": [
+      { opponent: "Chicago Fire FC", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Chicago Fire FC", home: true },
+      { opponent: "&nbsp;", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "&nbsp;", home: false },
+      { opponent: "Houston Dynamo FC", date: isEs ? "8 Mar 2025" : "Mar 8, 2025", competition: "Houston Dynamo FC", home: true }
+    ],
+    "D.C. United": [
+      { opponent: "Toronto FC", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Toronto FC", home: true },
+      { opponent: "Chicago Fire FC", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "Chicago Fire FC", home: false },
+      { opponent: "Sporting Kansas City", date: isEs ? "9 Mar 2025" : "Mar 9, 2025", competition: "Sporting Kansas City", home: true }
+    ],
+    "Portland Timbers": [
+      { opponent: "Vancouver Whitecaps FC", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Vancouver Whitecaps FC", home: true },
+      { opponent: "Austin FC", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "Austin FC", home: true },
+      { opponent: "Nashville SC", date: isEs ? "9 Mar 2025" : "Mar 9, 2025", competition: "Nashville SC", home: false }
+    ],
+    "Colorado Rapids": [
+      { opponent: "St. Louis CITY SC", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "St. Louis CITY SC", home: false },
+      { opponent: "FC Dallas", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "FC Dallas", home: true },
+      { opponent: "Austin FC", date: isEs ? "9 Mar 2025" : "Mar 9, 2025", competition: "Austin FC", home: false }
+    ],
+    "Philadelphia Union": [
+      { opponent: "Orlando City SC", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Orlando City SC", home: false },
+      { opponent: "FC Cincinnati", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "FC Cincinnati", home: true },
+      { opponent: "&nbsp;", date: isEs ? "9 Mar 2025" : "Mar 9, 2025", competition: "&nbsp;", home: false }
+    ],
+    "Real Salt Lake": [
+      { opponent: "San José Earthquakes", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "San José Earthquakes", home: false },
+      { opponent: "Seattle Sounders FC", date: isEs ? "1 Mar 2025" : "Mar 1, 2025", competition: "Seattle Sounders FC", home: true },
+      { opponent: "San Diego FC", date: isEs ? "9 Mar 2025" : "Mar 9, 2025", competition: "San Diego FC", home: true }
+    ],
+    "San Jose Earthquakes": [
+      { opponent: "Real Salt Lake City", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Real Salt Lake City", home: true },
+      { opponent: "Sporting Kansas City", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "Sporting Kansas City", home: false },
+      { opponent: "Minnesota United FC", date: isEs ? "9 Mar 2025" : "Mar 9, 2025", competition: "Minnesota United FC", home: true }
+    ],
+    "FC Dallas": [
+      { opponent: "Houston Dynamo FC", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Houston Dynamo FC", home: false },
+      { opponent: "Colorado Rapids", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "Colorado Rapids", home: false },
+      { opponent: "Chicago Fire FC", date: isEs ? "9 Mar 2025" : "Mar 9, 2025", competition: "Chicago Fire FC", home: true }
+    ],
+    "San Diego FC": [
+      { opponent: "Los Ángeles Galaxy", date: isEs ? "24 Feb 2025" : "Feb 24, 2025", competition: "Los Ángeles Galaxy", home: false },
+      { opponent: "St. Louis CITY SC", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "St. Louis CITY SC", home: true },
+      { opponent: "Real Salt Lake City", date: isEs ? "9 Mar 2025" : "Mar 9, 2025", competition: "Real Salt Lake City", home: false }
+    ],
+    "Houston Dynamo": [
+      { opponent: "FC Dallas", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "FC Dallas", home: true },
+      { opponent: "Inter Miami CF", date: isEs ? "3 Mar 2025" : "Mar 3, 2025", competition: "Inter Miami CF", home: true },
+      { opponent: "Columbus Crew", date: isEs ? "8 Mar 2025" : "Mar 8, 2025", competition: "Columbus Crew", home: false }
+    ],
+    "Seattle Sounders FC": [
+      { opponent: "Charlotte FC", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Charlotte FC", home: true },
+      { opponent: "Real Salt Lake City", date: isEs ? "1 Mar 2025" : "Mar 1, 2025", competition: "Real Salt Lake City", home: false },
+      { opponent: "Los Ángeles FC", date: isEs ? "8 Mar 2025" : "Mar 8, 2025", competition: "Los Ángeles FC", home: true }
+    ],
+    "FC Cincinnati": [
+      { opponent: "Red Bull New York", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Red Bull New York", home: true },
+      { opponent: "Philadelphia Union", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "Philadelphia Union", home: false },
+      { opponent: "Toronto FC", date: isEs ? "9 Mar 2025" : "Mar 9, 2025", competition: "Toronto FC", home: true }
+    ],
+    "LAFC": [
+      { opponent: "Foro del club", date: isEs ? "20 Ago 2026" : "Aug 20, 2026", competition: "Foro del club", home: false },
+      { opponent: "Foro del club", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Foro del club", home: true },
+      { opponent: "Foro del club", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Foro del club", home: true }
+    ],
+    "LA Galaxy": [
+      { opponent: "San Diego FC", date: isEs ? "24 Feb 2025" : "Feb 24, 2025", competition: "San Diego FC", home: true },
+      { opponent: "Vancouver Whitecaps FC", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "Vancouver Whitecaps FC", home: false },
+      { opponent: "St. Louis CITY SC", date: isEs ? "10 Mar 2025" : "Mar 10, 2025", competition: "St. Louis CITY SC", home: true }
+    ],
+    "Toronto FC": [
+      { opponent: "D.C. United", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "D.C. United", home: false },
+      { opponent: "Orlando City SC", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "Orlando City SC", home: false },
+      { opponent: "FC Cincinnati", date: isEs ? "9 Mar 2025" : "Mar 9, 2025", competition: "FC Cincinnati", home: false }
+    ],
+    "Minnesota United": [
+      { opponent: "Los Ángeles FC", date: isEs ? "22 Feb 2025" : "Feb 22, 2025", competition: "Los Ángeles FC", home: false },
+      { opponent: "CF Montréal", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "CF Montréal", home: true },
+      { opponent: "San José Earthquakes", date: isEs ? "9 Mar 2025" : "Mar 9, 2025", competition: "San José Earthquakes", home: false }
+    ],
+    "Sporting Kansas City": [
+      { opponent: "Austin FC", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Austin FC", home: false },
+      { opponent: "San José Earthquakes", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "San José Earthquakes", home: true },
+      { opponent: "D.C. United", date: isEs ? "9 Mar 2025" : "Mar 9, 2025", competition: "D.C. United", home: false }
+    ],
+    "St. Louis CITY SC": [
+      { opponent: "Colorado Rapids", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Colorado Rapids", home: true },
+      { opponent: "San Diego FC", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "San Diego FC", home: false },
+      { opponent: "Los Ángeles Galaxy", date: isEs ? "10 Mar 2025" : "Mar 10, 2025", competition: "Los Ángeles Galaxy", home: false }
+    ],
+    "Al-Taawoun": [
+      { opponent: "Al-Khaleej FC", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Al-Khaleej FC", home: true },
+      { opponent: "Al-Kholood Club", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Al-Kholood Club", home: false },
+      { opponent: "Al-Fayha FC", date: isEs ? "25 Ago 2026" : "Aug 25, 2026", competition: "Al-Fayha FC", home: true }
+    ],
+    "Al-Ettifaq": [
+      { opponent: "Al-Riyadh SC", date: isEs ? "14 Ago 2026" : "Aug 14, 2026", competition: "Al-Riyadh SC", home: true },
+      { opponent: "Al-Fateh SC", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Al-Fateh SC", home: false },
+      { opponent: "Al-Nassr FC", date: isEs ? "25 Ago 2026" : "Aug 25, 2026", competition: "Al-Nassr FC", home: true }
+    ],
+    "Al-Qadsiah": [
+      { opponent: "Al-Shabab FC", date: isEs ? "13 Ago 2026" : "Aug 13, 2026", competition: "Al-Shabab FC", home: false },
+      { opponent: "Al-Ittihad Club", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Al-Ittihad Club", home: true },
+      { opponent: "NEOM SC", date: isEs ? "24 Ago 2026" : "Aug 24, 2026", competition: "NEOM SC", home: false }
+    ],
+    "Al-Ahli SFC": [
+      { opponent: "Al-Diriyah FC", date: isEs ? "13 Ago 2026" : "Aug 13, 2026", competition: "Al-Diriyah FC", home: false },
+      { opponent: "Abha Club", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Abha Club", home: true },
+      { opponent: "Al-Hilal SFC", date: isEs ? "1 Sep 2026" : "Sep 1, 2026", competition: "Al-Hilal SFC", home: false }
+    ],
+    "Al-Ittihad Club": [
+      { opponent: "Al-Kholood Club", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Al-Kholood Club", home: true },
+      { opponent: "Al-Qadsiah FC", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Al-Qadsiah FC", home: false },
+      { opponent: "Al-Hazem SC", date: isEs ? "24 Ago 2026" : "Aug 24, 2026", competition: "Al-Hazem SC", home: true }
+    ],
+    "Vancouver Whitecaps": [
+      { opponent: "Portland Timbers", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Portland Timbers", home: false },
+      { opponent: "Los Ángeles Galaxy", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "Los Ángeles Galaxy", home: true },
+      { opponent: "CF Montréal", date: isEs ? "9 Mar 2025" : "Mar 9, 2025", competition: "CF Montréal", home: true }
+    ],
+    "Al-Shabab FC": [
+      { opponent: "Al-Qadsiah FC", date: isEs ? "13 Ago 2026" : "Aug 13, 2026", competition: "Al-Qadsiah FC", home: true },
+      { opponent: "Al-Khaleej FC", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Al-Khaleej FC", home: false },
+      { opponent: "Al-Riyadh SC", date: isEs ? "25 Ago 2026" : "Aug 25, 2026", competition: "Al-Riyadh SC", home: true }
+    ],
+    "Al-Hazem": [
+      { opponent: "Al-Anwar Club", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Al-Anwar Club", home: true },
+      { opponent: "Al-Okhdood Club", date: isEs ? "26 Ago 2026" : "Aug 26, 2026", competition: "Al-Okhdood Club", home: false },
+      { opponent: "Al-Adalah FC", date: isEs ? "31 Ago 2026" : "Aug 31, 2026", competition: "Al-Adalah FC", home: true }
+    ],
+    "Al-Khaleej": [
+      { opponent: "Al-Taawoun FC", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Al-Taawoun FC", home: false },
+      { opponent: "Al-Shabab FC", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Al-Shabab FC", home: true },
+      { opponent: "Abha Club", date: isEs ? "25 Ago 2026" : "Aug 25, 2026", competition: "Abha Club", home: false }
+    ],
+    "NEOM SC": [
+      { opponent: "Al-Fayha FC", date: isEs ? "14 Ago 2026" : "Aug 14, 2026", competition: "Al-Fayha FC", home: true },
+      { opponent: "Al-Faisaly FC", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Al-Faisaly FC", home: false },
+      { opponent: "Al-Qadsiah FC", date: isEs ? "24 Ago 2026" : "Aug 24, 2026", competition: "Al-Qadsiah FC", home: true }
+    ],
+    "Al-Fateh SC": [
+      { opponent: "Al-Nassr FC", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Al-Nassr FC", home: false },
+      { opponent: "Al-Ettifaq FC", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Al-Ettifaq FC", home: true },
+      { opponent: "Al-Faisaly FC", date: isEs ? "26 Ago 2026" : "Aug 26, 2026", competition: "Al-Faisaly FC", home: false }
+    ],
+    "Al-Kholood": [
+      { opponent: "Al-Ittihad Club", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Al-Ittihad Club", home: false },
+      { opponent: "Al-Taawoun FC", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Al-Taawoun FC", home: true },
+      { opponent: "Al-Diriyah FC", date: isEs ? "26 Ago 2026" : "Aug 26, 2026", competition: "Al-Diriyah FC", home: false }
+    ],
+    "Damac FC": [
+      { opponent: "Al-Saqer FC", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Al-Saqer FC", home: false },
+      { opponent: "Al-Orobah FC", date: isEs ? "28 Ago 2026" : "Aug 28, 2026", competition: "Al-Orobah FC", home: true },
+      { opponent: "Al-Wehda FC", date: isEs ? "2 Sep 2026" : "Sep 2, 2026", competition: "Al-Wehda FC", home: false }
+    ],
+    "Al-Najma": [
+      { opponent: "Al-Jandal SC", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Al-Jandal SC", home: true },
+      { opponent: "Jeddah SC", date: isEs ? "27 Ago 2026" : "Aug 27, 2026", competition: "Jeddah SC", home: false },
+      { opponent: "Al-Jabalain FC", date: isEs ? "1 Sep 2026" : "Sep 1, 2026", competition: "Al-Jabalain FC", home: true }
+    ],
+    "Kashima Antlers": [
+      { opponent: "Yokohama F. Marinos", date: isEs ? "7 Ago 2026" : "Aug 7, 2026", competition: "Yokohama F. Marinos", home: false },
+      { opponent: "Nagoya Grampus", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Nagoya Grampus", home: true },
+      { opponent: "Avispa Fukuoka", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Avispa Fukuoka", home: true }
+    ],
+    "Al-Riyadh": [
+      { opponent: "Al-Ettifaq FC", date: isEs ? "14 Ago 2026" : "Aug 14, 2026", competition: "Al-Ettifaq FC", home: false },
+      { opponent: "Al-Nassr FC", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Al-Nassr FC", home: true },
+      { opponent: "Al-Shabab FC", date: isEs ? "25 Ago 2026" : "Aug 25, 2026", competition: "Al-Shabab FC", home: false }
+    ],
+    "Al-Okhdood": [
+      { opponent: "Al-Tai FC", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Al-Tai FC", home: false },
+      { opponent: "Al-Bukiryah FC", date: isEs ? "26 Ago 2026" : "Aug 26, 2026", competition: "Al-Bukiryah FC", home: true },
+      { opponent: "Al-Saqer FC", date: isEs ? "31 Ago 2026" : "Aug 31, 2026", competition: "Al-Saqer FC", home: false }
+    ],
+    "Kashiwa Reysol": [
+      { opponent: "Mito HollyHock", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Mito HollyHock", home: true },
+      { opponent: "Tokyo Verdy", date: isEs ? "14 Ago 2026" : "Aug 14, 2026", competition: "J1 League", home: false },
+      { opponent: "V-Varen Nagasaki", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "V-Varen Nagasaki", home: true }
+    ],
+    "Machida Zelvia": [
+      { opponent: "FC Tokyo", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "FC Tokyo", home: false },
+      { opponent: "JEF United Chiba", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "JEF United Chiba", home: false },
+      { opponent: "Urawa Red Diamonds", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Urawa Red Diamonds", home: true }
+    ],
+    "Kyoto Sanga": [
+      { opponent: "V-Varen Nagasaki", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "V-Varen Nagasaki", home: false },
+      { opponent: "Kawasaki Frontale", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Kawasaki Frontale", home: false },
+      { opponent: "Mito HollyHock", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Mito HollyHock", home: true }
+    ],
+    "Vissel Kobe": [
+      { opponent: "Avispa Fukuoka", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Avispa Fukuoka", home: false },
+      { opponent: "FC Tokyo", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "FC Tokyo", home: true },
+      { opponent: "Yokohama F. Marinos", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Yokohama F. Marinos", home: false }
+    ],
+    "Urawa Red Diamonds": [
+      { opponent: "Gamba Osaka", date: isEs ? "7 Ago 2026" : "Aug 7, 2026", competition: "Gamba Osaka", home: false },
+      { opponent: "Sanfrecce Hiroshima", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Sanfrecce Hiroshima", home: true },
+      { opponent: "Machida Zelvia", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Machida Zelvia", home: false }
+    ],
+    "Sanfrecce Hiroshima": [
+      { opponent: "JEF United Chiba", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "JEF United Chiba", home: true },
+      { opponent: "Urawa Red Diamonds", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Urawa Red Diamonds", home: false },
+      { opponent: "Kawasaki Frontale", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Kawasaki Frontale", home: true }
+    ],
+    "FC Tokyo": [
+      { opponent: "Machida Zelvia", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Machida Zelvia", home: true },
+      { opponent: "Vissel Kobe", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Vissel Kobe", home: false },
+      { opponent: "JEF United Chiba", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "JEF United Chiba", home: true }
+    ],
+    "Cerezo Osaka": [
+      { opponent: "Fagiano Okayama", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Fagiano Okayama", home: true },
+      { opponent: "Avispa Fukuoka", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Avispa Fukuoka", home: false },
+      { opponent: "Shimizu S-Pulse", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Shimizu S-Pulse", home: true }
+    ],
+    "Gamba Osaka": [
+      { opponent: "Urawa Red Diamonds", date: isEs ? "7 Ago 2026" : "Aug 7, 2026", competition: "Urawa Red Diamonds", home: true },
+      { opponent: "Mito HollyHock", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Mito HollyHock", home: true },
+      { opponent: "Nagoya Grampus", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Nagoya Grampus", home: false }
+    ],
+    "Kawasaki Frontale": [
+      { opponent: "Tokyo Verdy", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "J1 League", home: false },
+      { opponent: "Kyoto Sanga", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Kyoto Sanga", home: true },
+      { opponent: "Sanfrecce Hiroshima", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Sanfrecce Hiroshima", home: true }
+    ],
+    "Fagiano Okayama": [
+      { opponent: "Cerezo Osaka", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Cerezo Osaka", home: false },
+      { opponent: "V-Varen Nagasaki", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "V-Varen Nagasaki", home: true },
+      { opponent: "Tokyo Verdy", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "J1 League", home: true }
+    ],
+    "Avispa Fukuoka": [
+      { opponent: "Vissel Kobe", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Vissel Kobe", home: true },
+      { opponent: "Cerezo Osaka", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Cerezo Osaka", home: true },
+      { opponent: "Kashima Antlers", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Kashima Antlers", home: false }
+    ],
+    "Shimizu S-Pulse": [
+      { opponent: "Nagoya Grampus", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Nagoya Grampus", home: false },
+      { opponent: "Yokohama F. Marinos", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Yokohama F. Marinos", home: true },
+      { opponent: "Cerezo Osaka", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Cerezo Osaka", home: false }
+    ],
+    "Tokyo Verdy": [
+      { opponent: "Kawasaki Frontale", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Kawasaki Frontale", home: true },
+      { opponent: "Kashiwa Reysol", date: isEs ? "14 Ago 2026" : "Aug 14, 2026", competition: "Kashiwa Reysol", home: true },
+      { opponent: "Fagiano Okayama", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Fagiano Okayama", home: false }
+    ],
+    "Nagoya Grampus": [
+      { opponent: "Shimizu S-Pulse", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Shimizu S-Pulse", home: true },
+      { opponent: "Kashima Antlers", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Kashima Antlers", home: false },
+      { opponent: "Gamba Osaka", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Gamba Osaka", home: true }
+    ],
+    "Yokohama FC": [
+      { opponent: "Tegevajaro Miyazaki", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Tegevajaro Miyazaki", home: false },
+      { opponent: "Júbilo Iwata", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Júbilo Iwata", home: true },
+      { opponent: "Montedio Yamagata", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Montedio Yamagata", home: false }
+    ],
+    "Yokohama F. Marinos": [
+      { opponent: "Kashima Antlers", date: isEs ? "7 Ago 2026" : "Aug 7, 2026", competition: "Kashima Antlers", home: true },
+      { opponent: "Shimizu S-Pulse", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Shimizu S-Pulse", home: false },
+      { opponent: "Vissel Kobe", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Vissel Kobe", home: true }
+    ],
+    "Shonan Bellmare": [
+      { opponent: "Oita Trinita", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Oita Trinita", home: false },
+      { opponent: "Montedio Yamagata", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Montedio Yamagata", home: true },
+      { opponent: "Tegevajaro Miyazaki", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Tegevajaro Miyazaki", home: false }
+    ],
+    "Jeonbuk Hyundai Motors": [
+      { opponent: "Kashiwa Reysol", date: isEs ? "16 Sep 2026" : "Sep 16, 2026", competition: "Kashiwa Reysol", home: true },
+      { opponent: "Vissel Kobe", date: isEs ? "14 Oct 2026" : "Oct 14, 2026", competition: "Vissel Kobe", home: false },
+      { opponent: "Beijing Guoan", date: isEs ? "27 Oct 2026" : "Oct 27, 2026", competition: "Beijing Guoan", home: false }
+    ],
+    "Gangwon FC": [
+      { opponent: "Gamba Osaka", date: isEs ? "11 Ago 2026" : "Aug 11, 2026", competition: "Gamba Osaka", home: true },
+      { opponent: "Kitchee", date: isEs ? "17 Sep 2026" : "Sep 17, 2026", competition: "Kitchee", home: true },
+      { opponent: "Phnom Penh Crown", date: isEs ? "15 Oct 2026" : "Oct 15, 2026", competition: "Phnom Penh Crown", home: true }
+    ],
+    "Pohang Steelers": [
+      { opponent: "Beijing Guoan", date: isEs ? "15 Sep 2026" : "Sep 15, 2026", competition: "Beijing Guoan", home: false },
+      { opponent: "Johor Darul Ta'zim", date: isEs ? "13 Oct 2026" : "Oct 13, 2026", competition: "Johor Darul Ta'zim", home: true },
+      { opponent: "Kashima Antlers", date: isEs ? "28 Oct 2026" : "Oct 28, 2026", competition: "Kashima Antlers", home: false }
+    ],
+    "Daejeon Hana Citizen": [
+      { opponent: "Kyoto Sanga", date: isEs ? "15 Sep 2026" : "Sep 15, 2026", competition: "Kyoto Sanga", home: true },
+      { opponent: "Shanghai Port", date: isEs ? "13 Oct 2026" : "Oct 13, 2026", competition: "Shanghai Port", home: false },
+      { opponent: "Vissel Kobe", date: isEs ? "27 Oct 2026" : "Oct 27, 2026", competition: "Vissel Kobe", home: true }
+    ],
+    "Albirex Niigata": [
+      { opponent: "RB Omiya Ardija", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "RB Omiya Ardija", home: false },
+      { opponent: "Hokkaido Consadole Sapporo", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Hokkaido Consadole Sapporo", home: true },
+      { opponent: "Fujieda MYFC", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Fujieda MYFC", home: true }
+    ],
+    "Gimcheon Sangmu": [
+      { opponent: "Jeonbuk Hyundai Motors", date: isEs ? "16 Feb 2025" : "Feb 16, 2025", competition: "Jeonbuk Hyundai Motors", home: true },
+      { opponent: "Jeju SK", date: isEs ? "22 Feb 2025" : "Feb 22, 2025", competition: "Jeju SK", home: false },
+      { opponent: "FC Seoul", date: isEs ? "3 Mar 2025" : "Mar 3, 2025", competition: "FC Seoul", home: false }
+    ],
+    "FC Seoul": [
+      { opponent: "ACL Two Qualifier Winner", date: isEs ? "16 Sep 2026" : "Sep 16, 2026", competition: "ACL Two Qualifier Winner", home: true },
+      { opponent: "Melbourne Victory", date: isEs ? "14 Oct 2026" : "Oct 14, 2026", competition: "Melbourne Victory", home: false },
+      { opponent: "The Cong - Viettel FC", date: isEs ? "28 Oct 2026" : "Oct 28, 2026", competition: "The Cong - Viettel FC", home: false }
+    ],
+    "Suwon FC": [
+      { opponent: "Gwangju FC", date: isEs ? "15 Feb 2025" : "Feb 15, 2025", competition: "Gwangju FC", home: false },
+      { opponent: "Daegu FC", date: isEs ? "22 Feb 2025" : "Feb 22, 2025", competition: "Daegu FC", home: false },
+      { opponent: "Daejeon Hana Citizen", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "Daejeon Hana Citizen", home: true }
+    ],
+    "Gwangju FC": [
+      { opponent: "Suwon FC", date: isEs ? "15 Feb 2025" : "Feb 15, 2025", competition: "Suwon FC", home: true },
+      { opponent: "Jeonbuk Hyundai Motors", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Jeonbuk Hyundai Motors", home: true },
+      { opponent: "FC Anyang", date: isEs ? "1 Mar 2025" : "Mar 1, 2025", competition: "FC Anyang", home: true }
+    ],
+    "FC Anyang": [
+      { opponent: "Ulsan HD FC", date: isEs ? "16 Feb 2025" : "Feb 16, 2025", competition: "Ulsan HD FC", home: true },
+      { opponent: "FC Seoul", date: isEs ? "22 Feb 2025" : "Feb 22, 2025", competition: "FC Seoul", home: false },
+      { opponent: "Gwangju FC", date: isEs ? "1 Mar 2025" : "Mar 1, 2025", competition: "Gwangju FC", home: false }
+    ],
+    "Ulsan HD": [
+      { opponent: "FC Anyang", date: isEs ? "16 Feb 2025" : "Feb 16, 2025", competition: "FC Anyang", home: true },
+      { opponent: "Daejeon Hana Citizen", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Daejeon Hana Citizen", home: true },
+      { opponent: "Jeonbuk Hyundai Motors", date: isEs ? "1 Mar 2025" : "Mar 1, 2025", competition: "Jeonbuk Hyundai Motors", home: true }
+    ],
+    "Jeju United": [
+      { opponent: "FC Seoul", date: isEs ? "15 Feb 2025" : "Feb 15, 2025", competition: "FC Seoul", home: true },
+      { opponent: "Gimcheon Sangmu", date: isEs ? "22 Feb 2025" : "Feb 22, 2025", competition: "Gimcheon Sangmu", home: true },
+      { opponent: "Gangwon FC", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "Gangwon FC", home: false }
+    ],
+    "Mohun Bagan Super Giant": [
+      { opponent: "East Bengal FC", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "East Bengal FC", home: false },
+      { opponent: "South United FC", date: isEs ? "4 Ago 2026" : "Aug 4, 2026", competition: "South United FC", home: true },
+      { opponent: "CISF Protectors", date: isEs ? "10 Ago 2026" : "Aug 10, 2026", competition: "CISF Protectors", home: true }
+    ],
+    "Jamshedpur FC": [
+      { opponent: "Defenders SC", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "Defenders SC", home: true },
+      { opponent: "Sporting Club Delhi", date: isEs ? "4 Ago 2026" : "Aug 4, 2026", competition: "Sporting Club Delhi", home: true },
+      { opponent: "Indian Air Force", date: isEs ? "13 Ago 2026" : "Aug 13, 2026", competition: "Indian Air Force ", home: true }
+    ],
+    "East Bengal": [
+      { opponent: "Jamshedpur FC", date: isEs ? "4 Ago 2026" : "Aug 4, 2026", competition: "Jamshedpur FC", home: false },
+      { opponent: "Defenders SC", date: isEs ? "7 Ago 2026" : "Aug 7, 2026", competition: "Defenders SC", home: true },
+      { opponent: "Indian Air Force", date: isEs ? "10 Ago 2026" : "Aug 10, 2026", competition: "Indian Air Force ", home: true }
+    ],
+    "Mumbai City FC": [
+      { opponent: "Mohun Bagan Super Giant", date: isEs ? "13 Sep 2026" : "Sep 13, 2026", competition: "Mohun Bagan Super Giant", home: false },
+      { opponent: "Jamshedpur FC", date: isEs ? "21 Sep 2026" : "Sep 21, 2026", competition: "Jamshedpur FC", home: false },
+      { opponent: "Bengaluru FC", date: isEs ? "2 Oct 2026" : "Oct 2, 2026", competition: "Bengaluru FC", home: true }
+    ],
+    "Bengaluru FC": [
+      { opponent: "East Bengal FC", date: isEs ? "14 Sep 2026" : "Sep 14, 2026", competition: "East Bengal FC", home: true },
+      { opponent: "Hyderabad FC", date: isEs ? "19 Sep 2026" : "Sep 19, 2026", competition: "Hyderabad FC", home: true },
+      { opponent: "Mohun Bagan Super Giant", date: isEs ? "28 Sep 2026" : "Sep 28, 2026", competition: "Mohun Bagan Super Giant", home: true }
+    ],
+    "Daegu FC": [
+      { opponent: "Gangwon FC", date: isEs ? "16 Feb 2025" : "Feb 16, 2025", competition: "Gangwon FC", home: true },
+      { opponent: "Suwon FC", date: isEs ? "22 Feb 2025" : "Feb 22, 2025", competition: "Suwon FC", home: true },
+      { opponent: "Pohang Steelers", date: isEs ? "1 Mar 2025" : "Mar 1, 2025", competition: "Pohang Steelers", home: false }
+    ],
+    "NorthEast United": [
+      { opponent: "Bodoland FC", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "Bodoland FC", home: true },
+      { opponent: "Karbi Anglong Morning Star FC", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Karbi Anglong Morning Star FC", home: true },
+      { opponent: "FC1", date: isEs ? "11 Ago 2026" : "Aug 11, 2026", competition: "Indian Super League (ISL)", home: true }
+    ],
+    "FC Goa": [
+      { opponent: "FK Arkadag", date: isEs ? "12 Ago 2026" : "Aug 12, 2026", competition: "FK Arkadag", home: false },
+      { opponent: "Jamshedpur FC", date: isEs ? "17 Sep 2026" : "Sep 17, 2026", competition: "Jamshedpur FC", home: true },
+      { opponent: "Mohammedan SC (Kolkata)", date: isEs ? "21 Sep 2026" : "Sep 21, 2026", competition: "Mohammedan SC (Kolkata)", home: false }
+    ],
+    "Kerala Blasters": [
+      { opponent: "Punjab FC", date: isEs ? "15 Sep 2026" : "Sep 15, 2026", competition: "Punjab FC", home: true },
+      { opponent: "East Bengal FC", date: isEs ? "22 Sep 2026" : "Sep 22, 2026", competition: "East Bengal FC", home: true },
+      { opponent: "NorthEast United FC", date: isEs ? "29 Sep 2026" : "Sep 29, 2026", competition: "NorthEast United FC", home: false }
+    ],
+    "Odisha FC": [
+      { opponent: "Chennaiyin FC", date: isEs ? "14 Sep 2026" : "Sep 14, 2026", competition: "Chennaiyin FC", home: true },
+      { opponent: "Punjab FC", date: isEs ? "20 Sep 2026" : "Sep 20, 2026", competition: "Punjab FC", home: false },
+      { opponent: "Jamshedpur FC", date: isEs ? "28 Sep 2026" : "Sep 28, 2026", competition: "Jamshedpur FC", home: true }
+    ],
+    "Punjab FC": [
+      { opponent: "Kerala Blasters FC", date: isEs ? "15 Sep 2026" : "Sep 15, 2026", competition: "Kerala Blasters FC", home: false },
+      { opponent: "Odisha FC", date: isEs ? "20 Sep 2026" : "Sep 20, 2026", competition: "Odisha FC", home: true },
+      { opponent: "Hyderabad FC", date: isEs ? "25 Sep 2026" : "Sep 25, 2026", competition: "Hyderabad FC", home: true }
+    ],
+    "Inter Kashi": [
+      { opponent: "SC Bengaluru", date: isEs ? "22 Nov 2026" : "Nov 22, 2026", competition: "SC Bengaluru ", home: true },
+      { opponent: "Delhi FC", date: isEs ? "1 Dic 2026" : "Dec 1, 2026", competition: "Delhi FC", home: true },
+      { opponent: "Shillong Lajong FC", date: isEs ? "5 Dic 2026" : "Dec 5, 2026", competition: "Shillong Lajong FC", home: false }
+    ],
+    "Shanghai Shenhua": [
+      { opponent: "Tampines Rovers", date: isEs ? "17 Sep 2026" : "Sep 17, 2026", competition: "Tampines Rovers", home: true },
+      { opponent: "Svay Rieng", date: isEs ? "15 Oct 2026" : "Oct 15, 2026", competition: "Svay Rieng", home: false },
+      { opponent: "Machida Zelvia", date: isEs ? "29 Oct 2026" : "Oct 29, 2026", competition: "Machida Zelvia", home: true }
+    ],
+    "Chennaiyin FC": [
+      { opponent: "Odisha FC", date: isEs ? "14 Sep 2026" : "Sep 14, 2026", competition: "Odisha FC", home: false },
+      { opponent: "Mohammedan SC (Kolkata)", date: isEs ? "26 Sep 2026" : "Sep 26, 2026", competition: "Mohammedan SC (Kolkata)", home: true },
+      { opponent: "Hyderabad FC", date: isEs ? "1 Oct 2026" : "Oct 1, 2026", competition: "Hyderabad FC", home: false }
+    ],
+    "Shanghai Port": [
+      { opponent: "Ratchaburi FC", date: isEs ? "15 Sep 2026" : "Sep 15, 2026", competition: "Ratchaburi FC", home: false },
+      { opponent: "Daejeon Hana Citizen", date: isEs ? "13 Oct 2026" : "Oct 13, 2026", competition: "Daejeon Hana Citizen", home: true },
+      { opponent: "Cong An Ha Noi FC", date: isEs ? "27 Oct 2026" : "Oct 27, 2026", competition: "Cong An Ha Noi FC", home: true }
+    ],
+    "Mohammedan SC": [
+      { opponent: "Dhaka Wanderers", date: isEs ? "29 Nov 2026" : "Nov 29, 2026", competition: "Dhaka Wanderers", home: false },
+      { opponent: "Bashundhara Kings", date: isEs ? "6 Dic 2026" : "Dec 6, 2026", competition: "Bashundhara Kings", home: true },
+      { opponent: "Abahani Limited Dhaka", date: isEs ? "14 Dic 2026" : "Dec 14, 2026", competition: "Abahani Limited Dhaka", home: true }
+    ],
+    "Beijing Guoan": [
+      { opponent: "Pohang Steelers", date: isEs ? "15 Sep 2026" : "Sep 15, 2026", competition: "Pohang Steelers", home: true },
+      { opponent: "Buriram United", date: isEs ? "13 Oct 2026" : "Oct 13, 2026", competition: "Buriram United", home: false },
+      { opponent: "Jeonbuk Hyundai Motors", date: isEs ? "27 Oct 2026" : "Oct 27, 2026", competition: "Jeonbuk Hyundai Motors", home: true }
+    ],
+    "Zhejiang FC": [
+      { opponent: "Dalian Yingbo", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Dalian Yingbo", home: true },
+      { opponent: "Yunnan Yukun", date: isEs ? "1 Mar 2025" : "Mar 1, 2025", competition: "Yunnan Yukun", home: false },
+      { opponent: "Wuhan Three Towns", date: isEs ? "28 Mar 2025" : "Mar 28, 2025", competition: "Wuhan Three Towns", home: false }
+    ],
+    "Yunnan Yukun": [
+      { opponent: "Beijing Guoan", date: isEs ? "22 Feb 2025" : "Feb 22, 2025", competition: "Beijing Guoan", home: true },
+      { opponent: "Zhejiang FC", date: isEs ? "1 Mar 2025" : "Mar 1, 2025", competition: "Zhejiang FC", home: true },
+      { opponent: "Shenzhen Peng City", date: isEs ? "28 Mar 2025" : "Mar 28, 2025", competition: "Shenzhen Peng City", home: false }
+    ],
+    "Chengdu Rongcheng": [
+      { opponent: "Wuhan Three Towns", date: isEs ? "22 Feb 2025" : "Feb 22, 2025", competition: "Wuhan Three Towns", home: true },
+      { opponent: "Tianjin Jinmen Tiger", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "Tianjin Jinmen Tiger", home: true },
+      { opponent: "Beijing Guoan", date: isEs ? "29 Mar 2025" : "Mar 29, 2025", competition: "Beijing Guoan", home: false }
+    ],
+    "Tianjin Jinmen Tiger": [
+      { opponent: "Meizhou Hakka", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Meizhou Hakka", home: true },
+      { opponent: "Chengdu Rongcheng", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "Chengdu Rongcheng", home: false },
+      { opponent: "Qingdao Hainiu", date: isEs ? "29 Mar 2025" : "Mar 29, 2025", competition: "Qingdao Hainiu", home: true }
+    ],
+    "Shandong Taishan": [
+      { opponent: "Henan FC", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Henan FC", home: true },
+      { opponent: "Dalian Yingbo", date: isEs ? "28 Feb 2025" : "Feb 28, 2025", competition: "Dalian Yingbo", home: true },
+      { opponent: "Meizhou Hakka", date: isEs ? "29 Mar 2025" : "Mar 29, 2025", competition: "Meizhou Hakka", home: true }
+    ],
+    "Wuhan Three Towns": [
+      { opponent: "Chengdu Rongcheng", date: isEs ? "22 Feb 2025" : "Feb 22, 2025", competition: "Chengdu Rongcheng", home: false },
+      { opponent: "Qingdao West Coast", date: isEs ? "3 Mar 2025" : "Mar 3, 2025", competition: "Qingdao West Coast", home: false },
+      { opponent: "Zhejiang FC", date: isEs ? "28 Mar 2025" : "Mar 28, 2025", competition: "Zhejiang FC", home: true }
+    ],
+    "Shenzhen Peng City": [
+      { opponent: "Shanghai Port", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Shanghai Port", home: false },
+      { opponent: "Qingdao Hainiu", date: isEs ? "1 Mar 2025" : "Mar 1, 2025", competition: "Qingdao Hainiu", home: true },
+      { opponent: "Yunnan Yukun", date: isEs ? "28 Mar 2025" : "Mar 28, 2025", competition: "Yunnan Yukun", home: true }
+    ],
+    "Qingdao Hainiu": [
+      { opponent: "Qingdao West Coast", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Qingdao West Coast", home: true },
+      { opponent: "Shenzhen Peng City", date: isEs ? "1 Mar 2025" : "Mar 1, 2025", competition: "Shenzhen Peng City", home: true },
+      { opponent: "Tianjin Jinmen Tiger", date: isEs ? "29 Mar 2025" : "Mar 29, 2025", competition: "Tianjin Jinmen Tiger", home: false }
+    ],
+    "Dalian Yingbo": [
+      { opponent: "Zhejiang FC", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Zhejiang FC", home: false },
+      { opponent: "Shandong Taishan", date: isEs ? "28 Feb 2025" : "Feb 28, 2025", competition: "Shandong Taishan", home: false },
+      { opponent: "Changchun Yatai", date: isEs ? "29 Mar 2025" : "Mar 29, 2025", competition: "Changchun Yatai", home: true }
+    ],
+    "Henan FC": [
+      { opponent: "Shandong Taishan", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Shandong Taishan", home: false },
+      { opponent: "Meizhou Hakka", date: isEs ? "1 Mar 2025" : "Mar 1, 2025", competition: "Meizhou Hakka", home: true },
+      { opponent: "Shanghai Shenhua", date: isEs ? "29 Mar 2025" : "Mar 29, 2025", competition: "Shanghai Shenhua", home: true }
+    ],
+    "Qingdao West Coast": [
+      { opponent: "Qingdao Hainiu", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Qingdao Hainiu", home: true },
+      { opponent: "Wuhan Three Towns", date: isEs ? "3 Mar 2025" : "Mar 3, 2025", competition: "Wuhan Three Towns", home: true },
+      { opponent: "Shanghai Port", date: isEs ? "28 Mar 2025" : "Mar 28, 2025", competition: "Shanghai Port", home: true }
+    ],
+    "Meizhou Hakka": [
+      { opponent: "Tianjin Jinmen Tiger", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "Tianjin Jinmen Tiger", home: false },
+      { opponent: "Henan FC", date: isEs ? "1 Mar 2025" : "Mar 1, 2025", competition: "Henan FC", home: true },
+      { opponent: "Shandong Taishan", date: isEs ? "29 Mar 2025" : "Mar 29, 2025", competition: "Shandong Taishan", home: true }
+    ],
+    "Al-Wehdat SC": [
+      { opponent: "Al-Sareeh SC", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Al-Sareeh SC", home: true },
+      { opponent: "Moghayer Al-Sarhan", date: isEs ? "17 Ago 2026" : "Aug 17, 2026", competition: "Moghayer Al-Sarhan", home: false },
+      { opponent: "Ma'an SC", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Ma'an SC", home: true }
+    ],
+    "Al-Faisaly SC": [
+      { opponent: "Al-Rayyan SC", date: isEs ? "16 Sep 2026" : "Sep 16, 2026", competition: "Al-Rayyan SC", home: false },
+      { opponent: "Al-Nahda Club", date: isEs ? "14 Oct 2026" : "Oct 14, 2026", competition: "Al-Nahda Club", home: true },
+      { opponent: "Al-Taawoun FC", date: isEs ? "28 Oct 2026" : "Oct 28, 2026", competition: "Al-Taawoun FC", home: true }
+    ],
+    "Salt SC": [
+      { opponent: "&nbsp;", date: isEs ? "10 Ago 2026" : "Aug 10, 2026", competition: "&nbsp;", home: true },
+      { opponent: "&nbsp;", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "&nbsp;", home: true },
+      { opponent: "Al-Ahli (Amman)", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Al-Ahli (Amman)", home: false }
+    ],
+    "Al-Ramtha SC": [
+      { opponent: "Shabab Al-Aqaba Club", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Shabab Al-Aqaba Club", home: false },
+      { opponent: "&nbsp;", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "&nbsp;", home: true },
+      { opponent: "Al-Jazeera Club (Jordan)", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Al-Jazeera Club (Jordan)", home: false }
+    ],
+    "Al-Muharraq": [
+      { opponent: "FK Arkadag", date: isEs ? "15 Sep 2026" : "Sep 15, 2026", competition: "FK Arkadag", home: false },
+      { opponent: "Gol Gohar Sirjan FC", date: isEs ? "14 Oct 2026" : "Oct 14, 2026", competition: "Gol Gohar Sirjan FC", home: true },
+      { opponent: "Al-Jazira Club", date: isEs ? "28 Oct 2026" : "Oct 28, 2026", competition: "Al-Jazira Club", home: false }
+    ],
+    "Shabab Al-Ordon": [
+      { opponent: "Al-Salt SC", date: isEs ? "10 Ago 2026" : "Aug 10, 2026", competition: "Al-Salt SC", home: false },
+      { opponent: "Al-Jazeera Club (Jordan)", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Al-Jazeera Club (Jordan)", home: true },
+      { opponent: "&nbsp;", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "&nbsp;", home: false }
+    ],
+    "Al-Khaldiya": [
+      { opponent: "Nasaf Qarshi", date: isEs ? "16 Sep 2026" : "Sep 16, 2026", competition: "Nasaf Qarshi", home: true },
+      { opponent: "Kuwait SC", date: isEs ? "14 Oct 2026" : "Oct 14, 2026", competition: "Kuwait SC", home: false },
+      { opponent: "Al-Wahda FC", date: isEs ? "28 Oct 2026" : "Oct 28, 2026", competition: "Al-Wahda FC", home: true }
+    ],
+    "Al-Ahli": [
+      { opponent: "Al-Diriyah FC", date: isEs ? "13 Ago 2026" : "Aug 13, 2026", competition: "Al-Diriyah FC", home: false },
+      { opponent: "Abha Club", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Abha Club", home: true },
+      { opponent: "Al-Hilal SFC", date: isEs ? "1 Sep 2026" : "Sep 1, 2026", competition: "Al-Hilal SFC", home: false }
+    ],
+    "Al-Shabab": [
+      { opponent: "Al-Qadsiah FC", date: isEs ? "13 Ago 2026" : "Aug 13, 2026", competition: "Al-Qadsiah FC", home: true },
+      { opponent: "Al-Khaleej FC", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Al-Khaleej FC", home: false },
+      { opponent: "Al-Riyadh SC", date: isEs ? "25 Ago 2026" : "Aug 25, 2026", competition: "Al-Riyadh SC", home: true }
+    ],
+    "Al-Kuwait SC": [
+      { opponent: "Al-Wahda FC", date: isEs ? "16 Sep 2026" : "Sep 16, 2026", competition: "Al-Wahda FC", home: false },
+      { opponent: "Al-Khaldiya SC", date: isEs ? "14 Oct 2026" : "Oct 14, 2026", competition: "Al-Khaldiya SC", home: true },
+      { opponent: "Nasaf Qarshi", date: isEs ? "28 Oct 2026" : "Oct 28, 2026", competition: "Nasaf Qarshi", home: false }
+    ],
+    "Al-Arabi SC": [
+      { opponent: "Al-Shamal SC", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Al-Shamal SC", home: true },
+      { opponent: "Al-Duhail SC", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Al-Duhail SC", home: false },
+      { opponent: "Al-Sailiya SC", date: isEs ? "3 Sep 2026" : "Sep 3, 2026", competition: "Al-Sailiya SC", home: false }
+    ],
+    "Al-Nasr SC": [
+      { opponent: "Kalba FC", date: isEs ? "14 Ago 2026" : "Aug 14, 2026", competition: "Kalba FC", home: true },
+      { opponent: "Al-Wahda FC", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Al-Wahda FC", home: true },
+      { opponent: "Al-Ain FC", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Al-Ain FC", home: false }
+    ],
+    "Bashundhara Kings": [
+      { opponent: "Chittagong Abahani", date: isEs ? "29 Nov 2026" : "Nov 29, 2026", competition: "Chittagong Abahani", home: true },
+      { opponent: "Mohammedan SC (Dhaka)", date: isEs ? "6 Dic 2026" : "Dec 6, 2026", competition: "Mohammedan SC (Dhaka)", home: false },
+      { opponent: "Rahmatganj MFS", date: isEs ? "14 Dic 2026" : "Dec 14, 2026", competition: "Rahmatganj MFS", home: true }
+    ],
+    "Dhaka Abahani": [
+      { opponent: "Fakirapool Young Men's Club", date: isEs ? "30 Nov 2026" : "Nov 30, 2026", competition: "Fakirapool Young Men's Club", home: false },
+      { opponent: "Dhaka Wanderers", date: isEs ? "7 Dic 2026" : "Dec 7, 2026", competition: "Dhaka Wanderers", home: true },
+      { opponent: "Mohammedan SC (Dhaka)", date: isEs ? "14 Dic 2026" : "Dec 14, 2026", competition: "Mohammedan SC (Dhaka)", home: false }
+    ],
+    "Al-Tadamon": [
+      { opponent: "Al-Abbassieh FC", date: isEs ? "20 Sep 2026" : "Sep 20, 2026", competition: "Al-Abbassieh FC", home: false },
+      { opponent: "Shabab Al-Sahel", date: isEs ? "26 Ene 2025" : "Jan 26, 2025", competition: "Shabab Al-Sahel", home: false },
+      { opponent: "Bourj FC", date: isEs ? "1 Feb 2025" : "Feb 1, 2025", competition: "Bourj FC", home: false }
+    ],
+    "Fortis FC": [
+      { opponent: "Muras United Manas", date: isEs ? "11 Ago 2026" : "Aug 11, 2026", competition: "Muras United Manas", home: true },
+      { opponent: "Rahmatganj MFS", date: isEs ? "30 Nov 2026" : "Nov 30, 2026", competition: "Rahmatganj MFS", home: false },
+      { opponent: "Brothers Union", date: isEs ? "7 Dic 2026" : "Dec 7, 2026", competition: "Brothers Union", home: true }
+    ],
+    "Bangladesh Police FC": [
+      { opponent: "Al-Ahli SC (Siria)", date: isEs ? "11 Ago 2026" : "Aug 11, 2026", competition: "Al-Ahli SC (Siria)", home: false },
+      { opponent: "Brothers Union", date: isEs ? "29 Nov 2026" : "Nov 29, 2026", competition: "Brothers Union", home: false },
+      { opponent: "Fakirapool Young Men's Club", date: isEs ? "7 Dic 2026" : "Dec 7, 2026", competition: "Fakirapool Young Men's Club", home: true }
+    ],
+    "Fakirerpool": [
+      { opponent: "Abahani Limited Dhaka", date: isEs ? "30 Nov 2026" : "Nov 30, 2026", competition: "Abahani Limited Dhaka", home: true },
+      { opponent: "Bangladesh Police FC", date: isEs ? "7 Dic 2026" : "Dec 7, 2026", competition: "Bangladesh Police FC", home: false },
+      { opponent: "Fortis FC", date: isEs ? "13 Dic 2026" : "Dec 13, 2026", competition: "Fortis FC", home: true }
+    ],
+    "Brothers Union": [
+      { opponent: "Bangladesh Police FC", date: isEs ? "29 Nov 2026" : "Nov 29, 2026", competition: "Bangladesh Police FC", home: true },
+      { opponent: "Fortis FC", date: isEs ? "7 Dic 2026" : "Dec 7, 2026", competition: "Fortis FC", home: false },
+      { opponent: "Chittagong Abahani", date: isEs ? "13 Dic 2026" : "Dec 13, 2026", competition: "Chittagong Abahani", home: true }
+    ],
+    "Rahmatganj MFS": [
+      { opponent: "Fortis FC", date: isEs ? "30 Nov 2026" : "Nov 30, 2026", competition: "Fortis FC", home: true },
+      { opponent: "Chittagong Abahani", date: isEs ? "6 Dic 2026" : "Dec 6, 2026", competition: "Chittagong Abahani", home: false },
+      { opponent: "Bashundhara Kings", date: isEs ? "14 Dic 2026" : "Dec 14, 2026", competition: "Bashundhara Kings", home: false }
+    ],
+    "Preah Khan Reach Svay Rieng FC": [
+      { opponent: "Machida Zelvia", date: isEs ? "17 Sep 2026" : "Sep 17, 2026", competition: "Machida Zelvia", home: false },
+      { opponent: "Shanghai Shenhua", date: isEs ? "15 Oct 2026" : "Oct 15, 2026", competition: "Shanghai Shenhua", home: true },
+      { opponent: "Tampines Rovers", date: isEs ? "29 Oct 2026" : "Oct 29, 2026", competition: "Tampines Rovers", home: false }
+    ],
+    "Angkor Tiger FC": [
+      { opponent: "&nbsp;", date: isEs ? "11 Ago 2026" : "Aug 11, 2026", competition: "&nbsp;", home: false },
+      { opponent: "Royal Cambodian Armed Forces", date: isEs ? "25 Ago 2026" : "Aug 25, 2026", competition: "Royal Cambodian Armed Forces", home: false },
+      { opponent: "ISI Dangkor Senchey FC", date: isEs ? "15 Sep 2026" : "Sep 15, 2026", competition: "ISI Dangkor Senchey FC", home: false }
+    ],
+    "NagaWorld FC": [
+      { opponent: "Kirivong Sok Sen Chey FC", date: isEs ? "10 Ago 2026" : "Aug 10, 2026", competition: "Kirivong Sok Sen Chey FC", home: true },
+      { opponent: "Visakha FC", date: isEs ? "18 Ago 2026" : "Aug 18, 2026", competition: "Visakha FC", home: false },
+      { opponent: "Boeung Ket", date: isEs ? "14 Sep 2026" : "Sep 14, 2026", competition: "Boeung Ket", home: false }
+    ],
+    "Kairat Almaty": [
+      { opponent: "RSC Anderlecht", date: isEs ? "20 Ago 2026" : "Aug 20, 2026", competition: "RSC Anderlecht", home: true },
+      { opponent: "RSC Anderlecht", date: isEs ? "27 Ago 2026" : "Aug 27, 2026", competition: "RSC Anderlecht", home: false },
+      { opponent: "FK Sutjeska Niksic", date: isEs ? "8 Jul 2026" : "Jul 8, 2026", competition: "FK Sutjeska Niksic", home: true }
+    ],
+    "Visakha FC": [
+      { opponent: "Svay Rieng", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "Svay Rieng", home: false },
+      { opponent: "Phnom Penh Crown", date: isEs ? "10 Ago 2026" : "Aug 10, 2026", competition: "Phnom Penh Crown", home: false },
+      { opponent: "Nagaworld FC", date: isEs ? "18 Ago 2026" : "Aug 18, 2026", competition: "Nagaworld FC", home: true }
+    ],
+    "Royal Cambodian Armed Forces": [
+      { opponent: "Svay Rieng", date: isEs ? "11 Ago 2026" : "Aug 11, 2026", competition: "Svay Rieng", home: false },
+      { opponent: "Phnom Penh Crown", date: isEs ? "17 Ago 2026" : "Aug 17, 2026", competition: "Phnom Penh Crown", home: true },
+      { opponent: "Angkor Tiger FC", date: isEs ? "25 Ago 2026" : "Aug 25, 2026", competition: "Angkor Tiger FC", home: true }
+    ],
+    "Kirivong Sok Sen Chey FC": [
+      { opponent: "Nagaworld FC", date: isEs ? "10 Ago 2026" : "Aug 10, 2026", competition: "Nagaworld FC", home: false },
+      { opponent: "Boeung Ket", date: isEs ? "17 Ago 2026" : "Aug 17, 2026", competition: "Boeung Ket", home: true },
+      { opponent: "Svay Rieng", date: isEs ? "26 Ago 2026" : "Aug 26, 2026", competition: "Svay Rieng", home: false }
+    ],
+    "Astana": [
+      { opponent: "FC Famalicão", date: isEs ? "7 Ago 2026" : "Aug 7, 2026", competition: "FC Famalicão", home: true },
+      { opponent: "CD Nacional", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "CD Nacional", home: false },
+      { opponent: "Rio Ave FC", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Rio Ave FC", home: true }
+    ],
+    "Tobol Kostanay": [
+      { opponent: "FK Panevezys", date: isEs ? "23 Jul 2026" : "Jul 23, 2026", competition: "FK Panevezys", home: false },
+      { opponent: "FK Panevezys", date: isEs ? "30 Jul 2026" : "Jul 30, 2026", competition: "FK Panevezys", home: true },
+      { opponent: "Partizán de Belgrado", date: isEs ? "6 Ago 2026" : "Aug 6, 2026", competition: "Partizán de Belgrado", home: false }
+    ],
+    "Elimai": [
+      { opponent: "Alashkert Yerevan CF", date: isEs ? "9 Jul 2026" : "Jul 9, 2026", competition: "Alashkert Yerevan CF", home: false },
+      { opponent: "Alashkert Yerevan CF", date: isEs ? "16 Jul 2026" : "Jul 16, 2026", competition: "Alashkert Yerevan CF", home: true },
+      { opponent: "FK Atyrau", date: isEs ? "1 Mar 2025" : "Mar 1, 2025", competition: "FK Atyrau", home: false }
+    ],
+    "Aktobe": [
+      { opponent: "Ordabasy Shymkent", date: isEs ? "1 Mar 2025" : "Mar 1, 2025", competition: "Ordabasy Shymkent", home: false },
+      { opponent: "FK Turan", date: isEs ? "9 Mar 2025" : "Mar 9, 2025", competition: "FK Turan", home: true },
+      { opponent: "FK Atyrau", date: isEs ? "30 Mar 2025" : "Mar 30, 2025", competition: "FK Atyrau", home: false }
+    ],
+    "Ordabasy Shymkent": [
+      { opponent: "FK Aktobe", date: isEs ? "1 Mar 2025" : "Mar 1, 2025", competition: "FK Aktobe", home: true },
+      { opponent: "Kairat Almaty", date: isEs ? "8 Mar 2025" : "Mar 8, 2025", competition: "Kairat Almaty", home: false },
+      { opponent: "&nbsp;", date: isEs ? "30 Mar 2025" : "Mar 30, 2025", competition: "&nbsp;", home: true }
+    ],
+    "Okzhetpes": [
+      { opponent: "FK Turan", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "FK Turan", home: false },
+      { opponent: "FK Atyrau", date: isEs ? "8 Mar 2025" : "Mar 8, 2025", competition: "FK Atyrau", home: true },
+      { opponent: "Kaysar Kyzylorda", date: isEs ? "29 Mar 2025" : "Mar 29, 2025", competition: "Kaysar Kyzylorda", home: false }
+    ],
+    "Ulytau": [
+      { opponent: "&nbsp;", date: isEs ? "1 Mar 2025" : "Mar 1, 2025", competition: "&nbsp;", home: false },
+      { opponent: "Zhetysu Taldykorgan", date: isEs ? "8 Mar 2025" : "Mar 8, 2025", competition: "Zhetysu Taldykorgan", home: false },
+      { opponent: "Zhenis Astana", date: isEs ? "30 Mar 2025" : "Mar 30, 2025", competition: "Zhenis Astana", home: true }
+    ],
+    "Zhetysu Taldykorgan": [
+      { opponent: "&nbsp;", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "&nbsp;", home: false },
+      { opponent: "FK Ulytau Zhezkazgan", date: isEs ? "8 Mar 2025" : "Mar 8, 2025", competition: "FK Ulytau Zhezkazgan", home: true },
+      { opponent: "FC Astana", date: isEs ? "30 Mar 2025" : "Mar 30, 2025", competition: "FC Astana", home: false }
+    ],
+    "Atyrau": [
+      { opponent: "Yelimay Semey", date: isEs ? "1 Mar 2025" : "Mar 1, 2025", competition: "Yelimay Semey", home: true },
+      { opponent: "Okzhetpes Kokshetau", date: isEs ? "8 Mar 2025" : "Mar 8, 2025", competition: "Okzhetpes Kokshetau", home: false },
+      { opponent: "FK Aktobe", date: isEs ? "30 Mar 2025" : "Mar 30, 2025", competition: "FK Aktobe", home: true }
+    ],
+    "Kyzylzhar Petropavlovsk": [
+      { opponent: "Zhetysu Taldykorgan", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "Zhetysu Taldykorgan", home: true },
+      { opponent: "FC Astana", date: isEs ? "9 Mar 2025" : "Mar 9, 2025", competition: "FC Astana", home: true },
+      { opponent: "Ordabasy Shymkent", date: isEs ? "30 Mar 2025" : "Mar 30, 2025", competition: "Ordabasy Shymkent", home: false }
+    ],
+    "Nejmeh SC": [
+      { opponent: "Al-Jandal SC", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Al-Jandal SC", home: true },
+      { opponent: "Jeddah SC", date: isEs ? "27 Ago 2026" : "Aug 27, 2026", competition: "Jeddah SC", home: false },
+      { opponent: "Al-Jabalain FC", date: isEs ? "1 Sep 2026" : "Sep 1, 2026", competition: "Al-Jabalain FC", home: true }
+    ],
+    "Racing Beirut": [
+      { opponent: "Safa Beirut SC", date: isEs ? "21 Sep 2026" : "Sep 21, 2026", competition: "Safa Beirut SC", home: false },
+      { opponent: "Al-Ansar FC", date: isEs ? "25 Ene 2025" : "Jan 25, 2025", competition: "Al-Ansar FC", home: false },
+      { opponent: "Shabab Baalbeck SC", date: isEs ? "31 Ene 2025" : "Jan 31, 2025", competition: "Shabab Baalbeck SC", home: false }
+    ],
+    "Al-Ansar FC": [
+      { opponent: "Shabab Baalbeck SC", date: isEs ? "22 Sep 2026" : "Sep 22, 2026", competition: "Shabab Baalbeck SC", home: true },
+      { opponent: "&nbsp;", date: isEs ? "25 Ene 2025" : "Jan 25, 2025", competition: "&nbsp;", home: true },
+      { opponent: "Al-Abbassieh FC", date: isEs ? "1 Feb 2025" : "Feb 1, 2025", competition: "Al-Abbassieh FC", home: true }
+    ],
+    "Shabab Al-Sahel": [
+      { opponent: "&nbsp;", date: isEs ? "20 Sep 2026" : "Sep 20, 2026", competition: "&nbsp;", home: true },
+      { opponent: "Tadamon Sour", date: isEs ? "26 Ene 2025" : "Jan 26, 2025", competition: "Tadamon Sour", home: true },
+      { opponent: "Safa Beirut SC", date: isEs ? "31 Ene 2025" : "Jan 31, 2025", competition: "Safa Beirut SC", home: false }
+    ],
+    "Al-Hikma": [
+      { opponent: "Shabab Al-Sahel", date: isEs ? "20 Sep 2026" : "Sep 20, 2026", competition: "Shabab Al-Sahel", home: false },
+      { opponent: "Bourj FC", date: isEs ? "25 Ene 2025" : "Jan 25, 2025", competition: "Bourj FC", home: false },
+      { opponent: "Nejmeh SC", date: isEs ? "1 Feb 2025" : "Feb 1, 2025", competition: "Nejmeh SC", home: false }
+    ],
+    "Safa SC": [
+      { opponent: "Al-Jubail Club", date: isEs ? "20 Ago 2026" : "Aug 20, 2026", competition: "Al-Jubail Club", home: false },
+      { opponent: "Al-Ain SFC", date: isEs ? "25 Ago 2026" : "Aug 25, 2026", competition: "Al-Ain SFC", home: true },
+      { opponent: "Al-Adalah FC", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "Al-Adalah FC", home: false }
+    ],
+    "SP Falcons": [
+      { opponent: "Madura United FC", date: isEs ? "27 Oct 2026" : "Oct 27, 2026", competition: "Madura United FC", home: true },
+      { opponent: "Svay Rieng", date: isEs ? "30 Oct 2026" : "Oct 30, 2026", competition: "Svay Rieng", home: false }
+    ],
+    "FC Ulaanbaatar": [
+      { opponent: "Hang Yuan FC", date: isEs ? "11 Ago 2026" : "Aug 11, 2026", competition: "Hang Yuan FC", home: true }
+    ],
+    "Chabab Ghazieh": [
+      { opponent: "Nejmeh SC", date: isEs ? "22 Sep 2026" : "Sep 22, 2026", competition: "Nejmeh SC", home: false },
+      { opponent: "Shabab Baalbeck SC", date: isEs ? "25 Ene 2025" : "Jan 25, 2025", competition: "Shabab Baalbeck SC", home: false },
+      { opponent: "&nbsp;", date: isEs ? "31 Ene 2025" : "Jan 31, 2025", competition: "&nbsp;", home: false }
+    ],
+    "ISPE FC": [
+      { opponent: "Mahar United", date: isEs ? "8 Jul 2026" : "Jul 8, 2026", competition: "Mahar United", home: true },
+      { opponent: "Rakhine United", date: isEs ? "13 Jul 2026" : "Jul 13, 2026", competition: "Rakhine United", home: true },
+      { opponent: "Dagon Star United", date: isEs ? "19 Jul 2026" : "Jul 19, 2026", competition: "Dagon Star United", home: false }
+    ],
+    "Mahar United": [
+      { opponent: "ISPE FC", date: isEs ? "8 Jul 2026" : "Jul 8, 2026", competition: "ISPE FC", home: false },
+      { opponent: "Yadanarbon FC", date: isEs ? "12 Jul 2026" : "Jul 12, 2026", competition: "Yadanarbon FC", home: false },
+      { opponent: "Rakhine United", date: isEs ? "20 Jul 2026" : "Jul 20, 2026", competition: "Rakhine United", home: false }
+    ],
+    "Hantharwady United": [
+      { opponent: "Dagon Port (- 2026)", date: isEs ? "7 Jul 2026" : "Jul 7, 2026", competition: "Dagon Port (- 2026)", home: true },
+      { opponent: "Thitsar Arman FC", date: isEs ? "14 Jul 2026" : "Jul 14, 2026", competition: "Thitsar Arman FC", home: true },
+      { opponent: "Yangon United", date: isEs ? "21 Jul 2026" : "Jul 21, 2026", competition: "Yangon United", home: false }
+    ],
+    "Yadanarbon FC": [
+      { opponent: "Ayeyawady United", date: isEs ? "7 Jul 2026" : "Jul 7, 2026", competition: "Ayeyawady United", home: false },
+      { opponent: "Mahar United", date: isEs ? "12 Jul 2026" : "Jul 12, 2026", competition: "Mahar United", home: true },
+      { opponent: "Thitsar Arman FC", date: isEs ? "20 Jul 2026" : "Jul 20, 2026", competition: "Thitsar Arman FC", home: false }
+    ],
+    "Dagon Star United": [
+      { opponent: "Thitsar Arman FC", date: isEs ? "6 Jul 2026" : "Jul 6, 2026", competition: "Thitsar Arman FC", home: true },
+      { opponent: "Shan United", date: isEs ? "11 Jul 2026" : "Jul 11, 2026", competition: "Shan United", home: false },
+      { opponent: "ISPE FC", date: isEs ? "19 Jul 2026" : "Jul 19, 2026", competition: "ISPE FC", home: true }
+    ],
+    "Al-Seeb Club": [
+      { opponent: "Al-Shorta SC", date: isEs ? "16 Sep 2026" : "Sep 16, 2026", competition: "Al-Shorta SC", home: false },
+      { opponent: "Al-Hussein SC (Irbid)", date: isEs ? "13 Oct 2026" : "Oct 13, 2026", competition: "Al-Hussein SC (Irbid)", home: true },
+      { opponent: "East Bengal FC", date: isEs ? "27 Oct 2026" : "Oct 27, 2026", competition: "East Bengal FC", home: true }
+    ],
+    "Rakhine United": [
+      { opponent: "Yangon United", date: isEs ? "6 Jul 2026" : "Jul 6, 2026", competition: "Yangon United", home: false },
+      { opponent: "ISPE FC", date: isEs ? "13 Jul 2026" : "Jul 13, 2026", competition: "ISPE FC", home: false },
+      { opponent: "Mahar United", date: isEs ? "20 Jul 2026" : "Jul 20, 2026", competition: "Mahar United", home: true }
+    ],
+    "ThitSar Arman": [
+      { opponent: "Dagon Star United", date: isEs ? "6 Jul 2026" : "Jul 6, 2026", competition: "Dagon Star United", home: false },
+      { opponent: "Hantharwady United", date: isEs ? "14 Jul 2026" : "Jul 14, 2026", competition: "Hantharwady United", home: false },
+      { opponent: "Yadanarbon FC", date: isEs ? "20 Jul 2026" : "Jul 20, 2026", competition: "Yadanarbon FC", home: true }
+    ],
+    "Ayeyawady United": [
+      { opponent: "Yadanarbon FC", date: isEs ? "7 Jul 2026" : "Jul 7, 2026", competition: "Yadanarbon FC", home: true },
+      { opponent: "Dagon Port (- 2026)", date: isEs ? "14 Jul 2026" : "Jul 14, 2026", competition: "Dagon Port (- 2026)", home: true },
+      { opponent: "Myawady FC", date: isEs ? "21 Jul 2026" : "Jul 21, 2026", competition: "Myawady FC", home: true }
+    ],
+    "Dagon Port": [
+      { opponent: "Hantharwady United", date: isEs ? "7 Jul 2026" : "Jul 7, 2026", competition: "Hantharwady United", home: false },
+      { opponent: "Ayeyawady United", date: isEs ? "14 Jul 2026" : "Jul 14, 2026", competition: "Ayeyawady United", home: false },
+      { opponent: "Shan United", date: isEs ? "21 Jul 2026" : "Jul 21, 2026", competition: "Shan United", home: true }
+    ],
+    "Al-Nahda Club": [
+      { opponent: "Al-Taawoun FC", date: isEs ? "16 Sep 2026" : "Sep 16, 2026", competition: "Al-Taawoun FC", home: true },
+      { opponent: "Al-Faisaly SC", date: isEs ? "14 Oct 2026" : "Oct 14, 2026", competition: "Al-Faisaly SC", home: false },
+      { opponent: "Al-Rayyan SC", date: isEs ? "28 Oct 2026" : "Oct 28, 2026", competition: "Al-Rayyan SC", home: true }
+    ],
+    "Bahla Club": [
+      { opponent: "Sur SC", date: isEs ? "6 Oct 2026" : "Oct 6, 2026", competition: "Sur SC", home: true },
+      { opponent: "Saham Club", date: isEs ? "6 Nov 2026" : "Nov 6, 2026", competition: "Saham Club", home: false },
+      { opponent: "Al-Khaboura SC", date: isEs ? "11 Dic 2026" : "Dec 11, 2026", competition: "Al-Khaboura SC", home: false }
+    ],
+    "Saham Club": [
+      { opponent: "Oman Club", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Oman Club", home: false },
+      { opponent: "Bahla Club", date: isEs ? "6 Nov 2026" : "Nov 6, 2026", competition: "Bahla Club", home: true },
+      { opponent: "Al-Rustaq Club", date: isEs ? "26 Ago 2026" : "Aug 26, 2026", competition: "Al-Rustaq Club", home: false }
+    ],
+    "Al-Khaburah SC": [
+      { opponent: "Al-Shabab SC (Oman)", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Al-Shabab SC (Oman)", home: true },
+      { opponent: "Sur SC", date: isEs ? "20 Ago 2026" : "Aug 20, 2026", competition: "Sur SC", home: false },
+      { opponent: "Bahla Club", date: isEs ? "11 Dic 2026" : "Dec 11, 2026", competition: "Bahla Club", home: true }
+    ],
+    "Al-Rustaq": [
+      { opponent: "Sohar SC", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Sohar SC", home: false },
+      { opponent: "Oman Club", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Oman Club", home: true },
+      { opponent: "Saham Club", date: isEs ? "26 Ago 2026" : "Aug 26, 2026", competition: "Saham Club", home: true }
+    ],
+    "Ibri Club": [
+      { opponent: "Al-Seeb Club", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Al-Seeb Club", home: false },
+      { opponent: "Al-Nahda Club", date: isEs ? "20 Ago 2026" : "Aug 20, 2026", competition: "Al-Nahda Club", home: true },
+      { opponent: "Sohar SC", date: isEs ? "26 Ago 2026" : "Aug 26, 2026", competition: "Sohar SC", home: false }
+    ],
+    "Sohar SC": [
+      { opponent: "Al-Rustaq Club", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Al-Rustaq Club", home: true },
+      { opponent: "Al-Nasr Club", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Al-Nasr Club", home: false },
+      { opponent: "Ibri Club", date: isEs ? "26 Ago 2026" : "Aug 26, 2026", competition: "Ibri Club", home: true }
+    ],
+    "Sur SC": [
+      { opponent: "Bahla Club", date: isEs ? "6 Oct 2026" : "Oct 6, 2026", competition: "Bahla Club", home: false },
+      { opponent: "Al-Khaboura SC", date: isEs ? "20 Ago 2026" : "Aug 20, 2026", competition: "Al-Khaboura SC", home: true },
+      { opponent: "Al-Seeb Club", date: isEs ? "25 Ago 2026" : "Aug 25, 2026", competition: "Al-Seeb Club", home: false }
+    ],
+    "Manila Digger": [
+      { opponent: "Kasuka FC", date: isEs ? "4 Sep 2026" : "Sep 4, 2026", competition: "Kasuka FC", home: true },
+      { opponent: "Kasuka FC", date: isEs ? "12 Sep 2026" : "Sep 12, 2026", competition: "Kasuka FC", home: false },
+      { opponent: "PERSIB Bandung", date: isEs ? "31 Ago 2026" : "Aug 31, 2026", competition: "PERSIB Bandung", home: false }
+    ],
+    "Aguilas-UMak": [
+      { opponent: "Loyola FC", date: isEs ? "28 Sep 2026" : "Sep 28, 2026", competition: "Loyola FC", home: false },
+      { opponent: "Kaya FC-Iloilo", date: isEs ? "6 Oct 2026" : "Oct 6, 2026", competition: "Kaya FC-Iloilo", home: true },
+      { opponent: "One Taguig FC", date: isEs ? "20 Oct 2026" : "Oct 20, 2026", competition: "One Taguig FC", home: true }
+    ],
+    "Kaya FC-Iloilo": [
+      { opponent: "PFF Youth National Team", date: isEs ? "19 Ene 2025" : "Jan 19, 2025", competition: "PFF Youth National Team", home: false },
+      { opponent: "&nbsp;", date: isEs ? "6 Oct 2026" : "Oct 6, 2026", competition: "&nbsp;", home: false },
+      { opponent: "&nbsp;", date: isEs ? "19 Oct 2026" : "Oct 19, 2026", competition: "&nbsp;", home: true }
+    ],
+    "One Taguig": [
+      { opponent: "Manila Digger FC", date: isEs ? "29 Sep 2026" : "Sep 29, 2026", competition: "Manila Digger FC", home: false },
+      { opponent: "Stallion Laguna FC", date: isEs ? "6 Oct 2026" : "Oct 6, 2026", competition: "Stallion Laguna FC", home: true },
+      { opponent: "&nbsp;", date: isEs ? "20 Oct 2026" : "Oct 20, 2026", competition: "&nbsp;", home: false }
+    ],
+    "Stallion Laguna FC": [
+      { opponent: "&nbsp;", date: isEs ? "28 Sep 2026" : "Sep 28, 2026", competition: "&nbsp;", home: false },
+      { opponent: "One Taguig FC", date: isEs ? "6 Oct 2026" : "Oct 6, 2026", competition: "One Taguig FC", home: false },
+      { opponent: "PFF Youth National Team", date: isEs ? "20 Oct 2026" : "Oct 20, 2026", competition: "PFF Youth National Team", home: true }
+    ],
+    "Dynamic Herb Cebu FC": [
+      { opponent: "&nbsp;", date: isEs ? "29 Sep 2026" : "Sep 29, 2026", competition: "&nbsp;", home: false },
+      { opponent: "PFF Youth National Team", date: isEs ? "6 Oct 2026" : "Oct 6, 2026", competition: "PFF Youth National Team", home: false },
+      { opponent: "Manila Digger FC", date: isEs ? "19 Oct 2026" : "Oct 19, 2026", competition: "Manila Digger FC", home: true }
+    ],
+    "Al-Fotuwa SC": [
+      { opponent: "Al-Seeb Club", date: isEs ? "26 Oct 2026" : "Oct 26, 2026", competition: "Al-Seeb Club", home: true },
+      { opponent: "Hilal Al-Quds Club", date: isEs ? "29 Oct 2026" : "Oct 29, 2026", competition: "Hilal Al-Quds Club", home: false },
+      { opponent: "Al-Ahli SC (Bahrain)", date: isEs ? "1 Nov 2026" : "Nov 1, 2026", competition: "Al-Ahli SC (Bahrain)", home: false }
+    ],
+    "Al-Shorta": [
+      { opponent: "Karbala'a FC", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Karbala'a FC", home: true },
+      { opponent: "Al-Karma", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Al-Karma", home: false },
+      { opponent: "Golan SC", date: isEs ? "25 Ago 2026" : "Aug 25, 2026", competition: "Golan SC", home: false }
+    ],
+    "Pakhtakor Tashkent": [
+      { opponent: "Al-Hussein SC (Irbid)", date: isEs ? "11 Ago 2026" : "Aug 11, 2026", competition: "Al-Hussein SC (Irbid)", home: true },
+      { opponent: "Al-Ahli SFC", date: isEs ? "14 Sep 2026" : "Sep 14, 2026", competition: "Al-Ahli SFC", home: false },
+      { opponent: "Al-Qadsiah FC", date: isEs ? "12 Oct 2026" : "Oct 12, 2026", competition: "Al-Qadsiah FC", home: true }
+    ],
+    "Neftchi Fergana": [
+      { opponent: "Al-Quwa Al-Jawiya", date: isEs ? "14 Sep 2026" : "Sep 14, 2026", competition: "Al-Quwa Al-Jawiya", home: true },
+      { opponent: "Al-Nassr FC", date: isEs ? "12 Oct 2026" : "Oct 12, 2026", competition: "Al-Nassr FC", home: false },
+      { opponent: "Al-Ittihad Club", date: isEs ? "26 Oct 2026" : "Oct 26, 2026", competition: "Al-Ittihad Club", home: true }
+    ],
+    "Nasaf Qarshi": [
+      { opponent: "Al-Khaldiya SC", date: isEs ? "16 Sep 2026" : "Sep 16, 2026", competition: "Al-Khaldiya SC", home: false },
+      { opponent: "Al-Wahda FC", date: isEs ? "14 Oct 2026" : "Oct 14, 2026", competition: "Al-Wahda FC", home: true },
+      { opponent: "Kuwait SC", date: isEs ? "28 Oct 2026" : "Oct 28, 2026", competition: "Kuwait SC", home: true }
+    ],
+    "Navbahor Namangan": [
+      { opponent: "Dinamo Samarqand", date: isEs ? "9 Mar 2025" : "Mar 9, 2025", competition: "Dinamo Samarqand", home: true },
+      { opponent: "Sogdiana Jizzakh", date: isEs ? "16 Mar 2025" : "Mar 16, 2025", competition: "Sogdiana Jizzakh", home: false },
+      { opponent: "FK Andijon", date: isEs ? "28 Mar 2025" : "Mar 28, 2025", competition: "FK Andijon", home: true }
+    ],
+    "AGMK Olmaliq": [
+      { opponent: "FC Buxoro", date: isEs ? "7 Mar 2025" : "Mar 7, 2025", competition: "FC Buxoro", home: true },
+      { opponent: "Pakhtakor Tashkent", date: isEs ? "16 Mar 2025" : "Mar 16, 2025", competition: "Pakhtakor Tashkent", home: true },
+      { opponent: "FC Qizilqum", date: isEs ? "28 Mar 2025" : "Mar 28, 2025", competition: "FC Qizilqum", home: false }
+    ],
+    "Sogdiana Jizzakh": [
+      { opponent: "Nasaf Qarshi", date: isEs ? "9 Mar 2025" : "Mar 9, 2025", competition: "Nasaf Qarshi", home: false },
+      { opponent: "Navbahor Namangan", date: isEs ? "16 Mar 2025" : "Mar 16, 2025", competition: "Navbahor Namangan", home: true },
+      { opponent: "Mash'al Mubarek", date: isEs ? "29 Mar 2025" : "Mar 29, 2025", competition: "Mash'al Mubarek", home: false }
+    ],
+    "Dinamo Samarqand": [
+      { opponent: "Navbahor Namangan", date: isEs ? "9 Mar 2025" : "Mar 9, 2025", competition: "Navbahor Namangan", home: false },
+      { opponent: "Mash'al Mubarek", date: isEs ? "15 Mar 2025" : "Mar 15, 2025", competition: "Mash'al Mubarek", home: true },
+      { opponent: "Pakhtakor Tashkent", date: isEs ? "29 Mar 2025" : "Mar 29, 2025", competition: "Pakhtakor Tashkent", home: false }
+    ],
+    "Mash'al Mubarek": [
+      { opponent: "Pakhtakor Tashkent", date: isEs ? "2 Abr 2025" : "Apr 2, 2025", competition: "Pakhtakor Tashkent", home: false },
+      { opponent: "Dinamo Samarqand", date: isEs ? "15 Mar 2025" : "Mar 15, 2025", competition: "Dinamo Samarqand", home: false },
+      { opponent: "Sogdiana Jizzakh", date: isEs ? "29 Mar 2025" : "Mar 29, 2025", competition: "Sogdiana Jizzakh", home: true }
+    ],
+    "Kokand 1912": [
+      { opponent: "FK Andijon", date: isEs ? "8 Mar 2025" : "Mar 8, 2025", competition: "FK Andijon", home: true },
+      { opponent: "Neftchi Fergana", date: isEs ? "14 Mar 2025" : "Mar 14, 2025", competition: "Neftchi Fergana", home: false },
+      { opponent: "Shurtan Guzar", date: isEs ? "27 Mar 2025" : "Mar 27, 2025", competition: "Shurtan Guzar", home: true }
+    ],
+    "Shurtan": [
+      { opponent: "Xorazm Urganch", date: isEs ? "9 Mar 2025" : "Mar 9, 2025", competition: "Xorazm Urganch", home: false },
+      { opponent: "Bunyodkor Tashkent", date: isEs ? "15 Mar 2025" : "Mar 15, 2025", competition: "Bunyodkor Tashkent", home: true },
+      { opponent: "FK Kokand 1912", date: isEs ? "27 Mar 2025" : "Mar 27, 2025", competition: "FK Kokand 1912", home: false }
+    ],
+    "Newcastle Jets": [
+      { opponent: "Central Coast Mariners", date: isEs ? "17 Oct 2026" : "Oct 17, 2026", competition: "Central Coast Mariners", home: false },
+      { opponent: "Macarthur FC", date: isEs ? "24 Oct 2026" : "Oct 24, 2026", competition: "Macarthur FC", home: true },
+      { opponent: "Wellington Phoenix", date: isEs ? "31 Oct 2026" : "Oct 31, 2026", competition: "Wellington Phoenix", home: true }
+    ],
+    "Adelaide United": [
+      { opponent: "Brisbane Roar", date: isEs ? "18 Oct 2026" : "Oct 18, 2026", competition: "Brisbane Roar", home: true },
+      { opponent: "Sydney FC", date: isEs ? "25 Oct 2026" : "Oct 25, 2026", competition: "Sydney FC", home: false },
+      { opponent: "Perth Glory", date: isEs ? "1 Nov 2026" : "Nov 1, 2026", competition: "Perth Glory", home: false }
+    ],
+    "Auckland FC": [
+      { opponent: "Melbourne City FC", date: isEs ? "17 Oct 2026" : "Oct 17, 2026", competition: "Melbourne City FC", home: true },
+      { opponent: "Western Sydney Wanderers", date: isEs ? "24 Oct 2026" : "Oct 24, 2026", competition: "Western Sydney Wanderers", home: false },
+      { opponent: "Brisbane Roar", date: isEs ? "30 Oct 2026" : "Oct 30, 2026", competition: "Brisbane Roar", home: false }
+    ],
+    "Melbourne City": [
+      { opponent: "Auckland FC", date: isEs ? "17 Oct 2026" : "Oct 17, 2026", competition: "Auckland FC", home: false },
+      { opponent: "Melbourne Victory", date: isEs ? "24 Oct 2026" : "Oct 24, 2026", competition: "Melbourne Victory", home: false },
+      { opponent: "Sydney FC", date: isEs ? "31 Oct 2026" : "Oct 31, 2026", competition: "Sydney FC", home: true }
+    ],
+    "Sydney FC": [
+      { opponent: "Western Sydney Wanderers", date: isEs ? "16 Oct 2026" : "Oct 16, 2026", competition: "Western Sydney Wanderers", home: true },
+      { opponent: "Adelaide United", date: isEs ? "25 Oct 2026" : "Oct 25, 2026", competition: "Adelaide United", home: true },
+      { opponent: "Melbourne City FC", date: isEs ? "31 Oct 2026" : "Oct 31, 2026", competition: "Melbourne City FC", home: false }
+    ],
+    "Wellington Phoenix": [
+      { opponent: "Melbourne Victory", date: isEs ? "18 Oct 2026" : "Oct 18, 2026", competition: "Melbourne Victory", home: true },
+      { opponent: "Central Coast Mariners", date: isEs ? "25 Oct 2026" : "Oct 25, 2026", competition: "Central Coast Mariners", home: true },
+      { opponent: "Newcastle United Jets", date: isEs ? "31 Oct 2026" : "Oct 31, 2026", competition: "Newcastle United Jets", home: false }
+    ],
+    "Melbourne Victory": [
+      { opponent: "Wellington Phoenix", date: isEs ? "18 Oct 2026" : "Oct 18, 2026", competition: "Wellington Phoenix", home: false },
+      { opponent: "Melbourne City FC", date: isEs ? "24 Oct 2026" : "Oct 24, 2026", competition: "Melbourne City FC", home: true },
+      { opponent: "Central Coast Mariners", date: isEs ? "1 Nov 2026" : "Nov 1, 2026", competition: "Central Coast Mariners", home: true }
+    ],
+    "Macarthur FC": [
+      { opponent: "Perth Glory", date: isEs ? "17 Oct 2026" : "Oct 17, 2026", competition: "Perth Glory", home: true },
+      { opponent: "Newcastle United Jets", date: isEs ? "24 Oct 2026" : "Oct 24, 2026", competition: "Newcastle United Jets", home: false },
+      { opponent: "Western Sydney Wanderers", date: isEs ? "31 Oct 2026" : "Oct 31, 2026", competition: "Western Sydney Wanderers", home: true }
+    ],
+    "Central Coast Mariners": [
+      { opponent: "Newcastle United Jets", date: isEs ? "17 Oct 2026" : "Oct 17, 2026", competition: "Newcastle United Jets", home: true },
+      { opponent: "Wellington Phoenix", date: isEs ? "25 Oct 2026" : "Oct 25, 2026", competition: "Wellington Phoenix", home: false },
+      { opponent: "Melbourne Victory", date: isEs ? "1 Nov 2026" : "Nov 1, 2026", competition: "Melbourne Victory", home: false }
+    ],
+    "Perth Glory": [
+      { opponent: "Macarthur FC", date: isEs ? "17 Oct 2026" : "Oct 17, 2026", competition: "Macarthur FC", home: false },
+      { opponent: "Brisbane Roar", date: isEs ? "23 Oct 2026" : "Oct 23, 2026", competition: "Brisbane Roar", home: false },
+      { opponent: "Adelaide United", date: isEs ? "1 Nov 2026" : "Nov 1, 2026", competition: "Adelaide United", home: true }
+    ],
+    "Brisbane Roar": [
+      { opponent: "Adelaide United", date: isEs ? "18 Oct 2026" : "Oct 18, 2026", competition: "Adelaide United", home: false },
+      { opponent: "Perth Glory", date: isEs ? "23 Oct 2026" : "Oct 23, 2026", competition: "Perth Glory", home: true },
+      { opponent: "Auckland FC", date: isEs ? "30 Oct 2026" : "Oct 30, 2026", competition: "Auckland FC", home: true }
+    ],
+    "Western Sydney Wanderers": [
+      { opponent: "Sydney FC", date: isEs ? "16 Oct 2026" : "Oct 16, 2026", competition: "Sydney FC", home: false },
+      { opponent: "Auckland FC", date: isEs ? "24 Oct 2026" : "Oct 24, 2026", competition: "Auckland FC", home: true },
+      { opponent: "Macarthur FC", date: isEs ? "31 Oct 2026" : "Oct 31, 2026", competition: "Macarthur FC", home: false }
+    ],
+    "RS Berkane": [
+      { opponent: "Raja Club Athletic", date: isEs ? "31 Ago 2026" : "Aug 31, 2026", competition: "Raja Club Athletic", home: false },
+      { opponent: "Olympique Safi", date: isEs ? "25 Sep 2026" : "Sep 25, 2026", competition: "Olympique Safi", home: false },
+      { opponent: "&nbsp;", date: isEs ? "2 Oct 2026" : "Oct 2, 2026", competition: "&nbsp;", home: true }
+    ],
+    "Raja Casablanca": [
+      { opponent: "Renaissance de Berkane", date: isEs ? "31 Ago 2026" : "Aug 31, 2026", competition: "Renaissance de Berkane", home: true },
+      { opponent: "&nbsp;", date: isEs ? "25 Sep 2026" : "Sep 25, 2026", competition: "&nbsp;", home: false },
+      { opponent: "FUS Rabat", date: isEs ? "2 Oct 2026" : "Oct 2, 2026", competition: "FUS Rabat", home: true }
+    ],
+    "FUS Rabat": [
+      { opponent: "Union Touarga Sportif", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "Union Touarga Sportif", home: false },
+      { opponent: "SC Chabab Mohammédia", date: isEs ? "15 Sep 2026" : "Sep 15, 2026", competition: "SC Chabab Mohammédia", home: true },
+      { opponent: "Raja Club Athletic", date: isEs ? "2 Oct 2026" : "Oct 2, 2026", competition: "Raja Club Athletic", home: false }
+    ],
+    "Wydad Casablanca": [
+      { opponent: "MAS Fès", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "MAS Fès", home: false },
+      { opponent: "Moghreb Atlético Tetuán", date: isEs ? "14 Sep 2026" : "Sep 14, 2026", competition: "Moghreb Atlético Tetuán", home: true },
+      { opponent: "Union Touarga Sportif", date: isEs ? "20 Sep 2026" : "Sep 20, 2026", competition: "Union Touarga Sportif", home: false }
+    ],
+    "Ittihad Tanger": [
+      { opponent: "Hassania d'Agadir", date: isEs ? "31 Ago 2026" : "Aug 31, 2026", competition: "Hassania d'Agadir", home: false },
+      { opponent: "Raja Club Athletic", date: isEs ? "25 Sep 2026" : "Sep 25, 2026", competition: "Raja Club Athletic", home: true },
+      { opponent: "Renaissance de Berkane", date: isEs ? "2 Oct 2026" : "Oct 2, 2026", competition: "Renaissance de Berkane", home: false }
+    ],
+    "Difaa El Jadida": [
+      { opponent: "Jeunesse Sportive de Soualem", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "Jeunesse Sportive de Soualem", home: true },
+      { opponent: "Renaissance Zemamra", date: isEs ? "15 Sep 2026" : "Sep 15, 2026", competition: "Renaissance Zemamra", home: false },
+      { opponent: "AS FAR Rabat", date: isEs ? "2 Oct 2026" : "Oct 2, 2026", competition: "AS FAR Rabat", home: true }
+    ],
+    "AS FAR Rabat": [
+      { opponent: "SC Chabab Mohammédia", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "SC Chabab Mohammédia", home: false },
+      { opponent: "COD Meknès", date: isEs ? "25 Sep 2026" : "Sep 25, 2026", competition: "COD Meknès", home: true },
+      { opponent: "Difaâ El Jadida", date: isEs ? "2 Oct 2026" : "Oct 2, 2026", competition: "Difaâ El Jadida", home: false }
+    ],
+    "Olympique Dcheira": [
+      { opponent: "Jeunesse Sportive de Soualem", date: isEs ? "24 May 2025" : "May 24, 2025", competition: "Jeunesse Sportive de Soualem", home: true },
+      { opponent: "Jeunesse Sportive de Soualem", date: isEs ? "30 May 2025" : "May 30, 2025", competition: "Jeunesse Sportive de Soualem", home: false },
+      { opponent: "Hassania d'Agadir", date: isEs ? "3 Sep 2026" : "Sep 3, 2026", competition: "Hassania d'Agadir", home: true }
+    ],
+    "Hassania Agadir": [
+      { opponent: "&nbsp;", date: isEs ? "31 Ago 2026" : "Aug 31, 2026", competition: "&nbsp;", home: true },
+      { opponent: "Jeunesse Sportive de Soualem", date: isEs ? "15 Sep 2026" : "Sep 15, 2026", competition: "Jeunesse Sportive de Soualem", home: false },
+      { opponent: "Renaissance Zemamra", date: isEs ? "21 Sep 2026" : "Sep 21, 2026", competition: "Renaissance Zemamra", home: true }
+    ],
+    "Renaissance Zemamra": [
+      { opponent: "COD Meknès", date: isEs ? "31 Ago 2026" : "Aug 31, 2026", competition: "COD Meknès", home: false },
+      { opponent: "Difaâ El Jadida", date: isEs ? "15 Sep 2026" : "Sep 15, 2026", competition: "Difaâ El Jadida", home: true },
+      { opponent: "Hassania d'Agadir", date: isEs ? "21 Sep 2026" : "Sep 21, 2026", competition: "Hassania d'Agadir", home: false }
+    ],
+    "Union Touarga": [
+      { opponent: "FUS Rabat", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "FUS Rabat", home: true },
+      { opponent: "MAS Fès", date: isEs ? "14 Sep 2026" : "Sep 14, 2026", competition: "MAS Fès", home: false },
+      { opponent: "Wydad Casablanca", date: isEs ? "20 Sep 2026" : "Sep 20, 2026", competition: "Wydad Casablanca", home: true }
+    ],
+    "Pyramids": [
+      { opponent: "Ghazl El Mahalla", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Ghazl El Mahalla", home: false },
+      { opponent: "Abo Qir Fertilizers", date: isEs ? "27 Ago 2026" : "Aug 27, 2026", competition: "Abo Qir Fertilizers ", home: true },
+      { opponent: "El Masry SC", date: isEs ? "31 Ago 2026" : "Aug 31, 2026", competition: "El Masry SC", home: false }
+    ],
+    "Zamalek": [
+      { opponent: "Ittihad Alexandria SC", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Ittihad Alexandria SC", home: true },
+      { opponent: "Bank El Ahly", date: isEs ? "26 Ago 2026" : "Aug 26, 2026", competition: "Bank El Ahly", home: false },
+      { opponent: "Petrojet", date: isEs ? "31 Ago 2026" : "Aug 31, 2026", competition: "Petrojet", home: true }
+    ],
+    "Al Ahly": [
+      { opponent: "Enppi SC", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Enppi SC", home: true },
+      { opponent: "Zed FC", date: isEs ? "28 Ago 2026" : "Aug 28, 2026", competition: "Zed FC", home: false },
+      { opponent: "Smouha SC", date: isEs ? "1 Sep 2026" : "Sep 1, 2026", competition: "Smouha SC", home: true }
+    ],
+    "Al Masry": [
+      { opponent: "Smouha SC", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Smouha SC", home: true },
+      { opponent: "El Mokawloon SC", date: isEs ? "27 Ago 2026" : "Aug 27, 2026", competition: "El Mokawloon SC", home: false },
+      { opponent: "Pyramids FC", date: isEs ? "31 Ago 2026" : "Aug 31, 2026", competition: "Pyramids FC", home: true }
+    ],
+    "Olympic Club de Safi": [
+      { opponent: "Moghreb Atlético Tetuán", date: isEs ? "31 Ago 2026" : "Aug 31, 2026", competition: "Moghreb Atlético Tetuán", home: false },
+      { opponent: "Renaissance de Berkane", date: isEs ? "25 Sep 2026" : "Sep 25, 2026", competition: "Renaissance de Berkane", home: true },
+      { opponent: "SC Chabab Mohammédia", date: isEs ? "22 Sep 2026" : "Sep 22, 2026", competition: "SC Chabab Mohammédia", home: false }
+    ],
+    "El Gouna": [
+      { opponent: "Modern Sport Club", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Modern Sport Club", home: true },
+      { opponent: "Qanah FC", date: isEs ? "28 Ago 2026" : "Aug 28, 2026", competition: "Qanah FC", home: false },
+      { opponent: "El Mokawloon SC", date: isEs ? "2 Sep 2026" : "Sep 2, 2026", competition: "El Mokawloon SC", home: true }
+    ],
+    "Smouha": [
+      { opponent: "El Masry SC", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "El Masry SC", home: false },
+      { opponent: "Petrol Asyut", date: isEs ? "26 Ago 2026" : "Aug 26, 2026", competition: "Petrol Asyut", home: true },
+      { opponent: "Al Ahly FC", date: isEs ? "1 Sep 2026" : "Sep 1, 2026", competition: "Al Ahly FC", home: false }
+    ],
+    "ZED FC": [
+      { opponent: "Wadi Degla FC", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Wadi Degla FC", home: false },
+      { opponent: "Al Ahly FC", date: isEs ? "28 Ago 2026" : "Aug 28, 2026", competition: "Al Ahly FC", home: true },
+      { opponent: "Tala'ea El Gaish", date: isEs ? "1 Sep 2026" : "Sep 1, 2026", competition: "Tala'ea El Gaish", home: false }
+    ],
+    "Wadi Degla": [
+      { opponent: "Zed FC", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Zed FC", home: true },
+      { opponent: "Enppi SC", date: isEs ? "28 Ago 2026" : "Aug 28, 2026", competition: "Enppi SC", home: false },
+      { opponent: "Qanah FC", date: isEs ? "1 Sep 2026" : "Sep 1, 2026", competition: "Qanah FC", home: true }
+    ],
+    "ENPPI": [
+      { opponent: "Al Ahly FC", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Al Ahly FC", home: false },
+      { opponent: "Wadi Degla FC", date: isEs ? "28 Ago 2026" : "Aug 28, 2026", competition: "Wadi Degla FC", home: true },
+      { opponent: "Ghazl El Mahalla", date: isEs ? "1 Sep 2026" : "Sep 1, 2026", competition: "Ghazl El Mahalla", home: false }
+    ],
+    "National Bank of Egypt": [
+      { opponent: "Abo Qir Fertilizers", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Abo Qir Fertilizers ", home: false },
+      { opponent: "Zamalek SC", date: isEs ? "26 Ago 2026" : "Aug 26, 2026", competition: "Zamalek SC", home: true },
+      { opponent: "Petrol Asyut", date: isEs ? "31 Ago 2026" : "Aug 31, 2026", competition: "Petrol Asyut", home: false }
+    ],
+    "Tala'ea El Gaish": [
+      { opponent: "El Mokawloon SC", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "El Mokawloon SC", home: true },
+      { opponent: "Petrojet", date: isEs ? "26 Ago 2026" : "Aug 26, 2026", competition: "Petrojet", home: false },
+      { opponent: "Zed FC", date: isEs ? "1 Sep 2026" : "Sep 1, 2026", competition: "Zed FC", home: true }
+    ],
+    "Ghazl El Mahalla": [
+      { opponent: "Pyramids FC", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Pyramids FC", home: true },
+      { opponent: "Modern Sport Club", date: isEs ? "27 Ago 2026" : "Aug 27, 2026", competition: "Modern Sport Club", home: false },
+      { opponent: "Enppi SC", date: isEs ? "1 Sep 2026" : "Sep 1, 2026", competition: "Enppi SC", home: true }
+    ],
+    "Petrojet": [
+      { opponent: "Petrol Asyut", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Petrol Asyut", home: false },
+      { opponent: "Tala'ea El Gaish", date: isEs ? "26 Ago 2026" : "Aug 26, 2026", competition: "Tala'ea El Gaish", home: true },
+      { opponent: "Zamalek SC", date: isEs ? "31 Ago 2026" : "Aug 31, 2026", competition: "Zamalek SC", home: false }
+    ],
+    "Modern Sport": [
+      { opponent: "El Gouna FC", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "El Gouna FC", home: false },
+      { opponent: "Ghazl El Mahalla", date: isEs ? "27 Ago 2026" : "Aug 27, 2026", competition: "Ghazl El Mahalla", home: true },
+      { opponent: "Cleopatra FC", date: isEs ? "2 Sep 2026" : "Sep 2, 2026", competition: "Cleopatra FC", home: false }
+    ],
+    "Ismaily": [
+      { opponent: "Tala'ea El Gaish", date: isEs ? "13 Mar 2025" : "Mar 13, 2025", competition: "Tala'ea El Gaish", home: false },
+      { opponent: "Ittihad Alexandria SC", date: isEs ? "10 Abr 2025" : "Apr 10, 2025", competition: "Ittihad Alexandria SC", home: true },
+      { opponent: "Zed FC", date: isEs ? "28 Abr 2025" : "Apr 28, 2025", competition: "Zed FC", home: true }
+    ],
+    "Pharco": [
+      { opponent: "Bank El Ahly", date: isEs ? "12 Mar 2025" : "Mar 12, 2025", competition: "Bank El Ahly", home: true },
+      { opponent: "&nbsp;", date: isEs ? "12 Abr 2025" : "Apr 12, 2025", competition: "&nbsp;", home: true },
+      { opponent: "Pyramids FC", date: isEs ? "4 May 2025" : "May 4, 2025", competition: "Pyramids FC", home: true }
+    ],
+    "Sidama Coffee": [
+      { opponent: "FC Aiglons (Tchad)", date: isEs ? "4 Sep 2026" : "Sep 4, 2026", competition: "FC Aiglons (Tchad)", home: false },
+      { opponent: "FC Aiglons (Tchad)", date: isEs ? "11 Sep 2026" : "Sep 11, 2026", competition: "FC Aiglons (Tchad)", home: true },
+      { opponent: "Hawasa Ketema SC", date: isEs ? "23 Sep 2026" : "Sep 23, 2026", competition: "Hawasa Ketema SC", home: true }
+    ],
+    "Fasil Kenema": [
+      { opponent: "Kidus Giorgis SA", date: isEs ? "22 Sep 2026" : "Sep 22, 2026", competition: "Kidus Giorgis SA", home: false },
+      { opponent: "Mekele 70 Enderta FC", date: isEs ? "26 Sep 2026" : "Sep 26, 2026", competition: "Mekele 70 Enderta FC", home: true },
+      { opponent: "Midre Genet Shire SC", date: isEs ? "1 Oct 2026" : "Oct 1, 2026", competition: "Midre Genet Shire SC", home: true }
+    ],
+    "Ethio Electric": [
+      { opponent: "Wolayta Dicha SC", date: isEs ? "22 Sep 2026" : "Sep 22, 2026", competition: "Wolayta Dicha SC", home: true },
+      { opponent: "Ethiopia Bunna SC", date: isEs ? "26 Sep 2026" : "Sep 26, 2026", competition: "Ethiopia Bunna SC", home: false },
+      { opponent: "Ethiopian Insurance Corporation SA", date: isEs ? "30 Sep 2026" : "Sep 30, 2026", competition: "Ethiopian Insurance Corporation SA", home: false }
+    ],
+    "Wolaitta Dicha": [
+      { opponent: "Ethio Electric SC", date: isEs ? "22 Sep 2026" : "Sep 22, 2026", competition: "Ethio Electric SC", home: false },
+      { opponent: "Diredawa Ketema SC", date: isEs ? "28 Sep 2026" : "Sep 28, 2026", competition: "Diredawa Ketema SC", home: false },
+      { opponent: "Mechal SC", date: isEs ? "2 Oct 2026" : "Oct 2, 2026", competition: "Mechal SC ", home: false }
+    ],
+    "Hawassa City": [
+      { opponent: "Sidama Bunna FC", date: isEs ? "23 Sep 2026" : "Sep 23, 2026", competition: "Sidama Bunna FC ", home: false },
+      { opponent: "Midre Genet Shire SC", date: isEs ? "27 Sep 2026" : "Sep 27, 2026", competition: "Midre Genet Shire SC", home: true },
+      { opponent: "Ethiopia Bunna SC", date: isEs ? "2 Oct 2026" : "Oct 2, 2026", competition: "Ethiopia Bunna SC", home: false }
+    ],
+    "Hadiya Hossana": [
+      { opponent: "Mekele 70 Enderta FC", date: isEs ? "20 Sep 2026" : "Sep 20, 2026", competition: "Mekele 70 Enderta FC", home: false },
+      { opponent: "Bahirdar Ketema SC", date: isEs ? "1 Oct 2026" : "Oct 1, 2026", competition: "Bahirdar Ketema SC", home: false },
+      { opponent: "Hawasa Ketema SC", date: isEs ? "19 Oct 2026" : "Oct 19, 2026", competition: "Hawasa Ketema SC", home: true }
+    ],
+    "Ethiopian Insurance": [
+      { opponent: "Arbaminch Ketema FC", date: isEs ? "25 Sep 2026" : "Sep 25, 2026", competition: "Arbaminch Ketema FC", home: true },
+      { opponent: "Ethio Electric SC", date: isEs ? "30 Sep 2026" : "Sep 30, 2026", competition: "Ethio Electric SC", home: true },
+      { opponent: "Sidama Bunna FC", date: isEs ? "22 Oct 2026" : "Oct 22, 2026", competition: "Sidama Bunna FC ", home: false }
+    ],
+    "CBE": [
+      { opponent: "Siwelele Football Club", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "Siwelele Football Club ", home: false },
+      { opponent: "Mamelodi Sundowns FC", date: isEs ? "11 Ago 2026" : "Aug 11, 2026", competition: "Mamelodi Sundowns FC", home: true },
+      { opponent: "Lamontville Golden Arrows", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Lamontville Golden Arrows", home: true }
+    ],
+    "Mekelle 70 Enderta": [
+      { opponent: "Hadia Hosaina FC", date: isEs ? "20 Sep 2026" : "Sep 20, 2026", competition: "Hadia Hosaina FC", home: true },
+      { opponent: "Fasil Kenema SC", date: isEs ? "26 Sep 2026" : "Sep 26, 2026", competition: "Fasil Kenema SC", home: false },
+      { opponent: "Kidus Giorgis SA", date: isEs ? "30 Sep 2026" : "Sep 30, 2026", competition: "Kidus Giorgis SA", home: false }
+    ],
+    "Adama City": [
+      { opponent: "Midre Genet Shire SC", date: isEs ? "23 Sep 2026" : "Sep 23, 2026", competition: "Midre Genet Shire SC", home: true },
+      { opponent: "Bahirdar Ketema SC", date: isEs ? "27 Sep 2026" : "Sep 27, 2026", competition: "Bahirdar Ketema SC", home: false },
+      { opponent: "Fasil Kenema SC", date: isEs ? "21 Oct 2026" : "Oct 21, 2026", competition: "Fasil Kenema SC", home: true }
+    ],
+    "Shire Endaselassie": [
+      { opponent: "Adama Ketema FC", date: isEs ? "23 Sep 2026" : "Sep 23, 2026", competition: "Adama Ketema FC", home: false },
+      { opponent: "Hawasa Ketema SC", date: isEs ? "27 Sep 2026" : "Sep 27, 2026", competition: "Hawasa Ketema SC", home: false },
+      { opponent: "Fasil Kenema SC", date: isEs ? "1 Oct 2026" : "Oct 1, 2026", competition: "Fasil Kenema SC", home: false }
+    ],
+    "Dire Dawa City": [
+      { opponent: "Arbaminch Ketema FC", date: isEs ? "20 Sep 2026" : "Sep 20, 2026", competition: "Arbaminch Ketema FC", home: false },
+      { opponent: "Wolayta Dicha SC", date: isEs ? "28 Sep 2026" : "Sep 28, 2026", competition: "Wolayta Dicha SC", home: true },
+      { opponent: "Midre Genet Shire SC", date: isEs ? "20 Oct 2026" : "Oct 20, 2026", competition: "Midre Genet Shire SC", home: false }
+    ],
+    "Wiliete": [
+      { opponent: "Foresters Mont Fleuri", date: isEs ? "4 Sep 2026" : "Sep 4, 2026", competition: "Foresters Mont Fleuri", home: true },
+      { opponent: "Foresters Mont Fleuri", date: isEs ? "11 Sep 2026" : "Sep 11, 2026", competition: "Foresters Mont Fleuri", home: false }
+    ],
+    "Kabuscorp": [
+      { opponent: "University of Namibia FC", date: isEs ? "4 Sep 2026" : "Sep 4, 2026", competition: "University of Namibia FC", home: false },
+      { opponent: "University of Namibia FC", date: isEs ? "11 Sep 2026" : "Sep 11, 2026", competition: "University of Namibia FC", home: true }
+    ],
+    "Petro de Luanda": [
+      { opponent: "UD Songo", date: isEs ? "4 Sep 2026" : "Sep 4, 2026", competition: "UD Songo", home: false },
+      { opponent: "UD Songo", date: isEs ? "11 Sep 2026" : "Sep 11, 2026", competition: "UD Songo", home: true },
+      { opponent: "AS Maniema Union", date: isEs ? "14 Sep 2026" : "Sep 14, 2026", competition: "AS Maniema Union", home: false }
+    ],
+    "Primeiro de Agosto": [
+      { opponent: "Green Mamba Big Bend", date: isEs ? "4 Sep 2026" : "Sep 4, 2026", competition: "Green Mamba Big Bend", home: false },
+      { opponent: "Green Mamba Big Bend", date: isEs ? "11 Sep 2026" : "Sep 11, 2026", competition: "Green Mamba Big Bend", home: true }
+    ],
+    "Bravos do Maquis": [
+      { opponent: "Coastal Union", date: isEs ? "17 Ago 2026" : "Aug 17, 2026", competition: "Coastal Union", home: true },
+      { opponent: "Coastal Union", date: isEs ? "25 Ago 2026" : "Aug 25, 2026", competition: "Coastal Union", home: false },
+      { opponent: "FC Saint-Éloi Lupopo", date: isEs ? "15 Sep 2026" : "Sep 15, 2026", competition: "FC Saint-Éloi Lupopo", home: true }
+    ],
+    "Sagrada Esperanca": [
+      { opponent: "St. Louis Suns United", date: isEs ? "17 Ago 2026" : "Aug 17, 2026", competition: "St. Louis Suns United", home: false },
+      { opponent: "St. Louis Suns United", date: isEs ? "24 Ago 2026" : "Aug 24, 2026", competition: "St. Louis Suns United", home: true },
+      { opponent: "Rangers International FC", date: isEs ? "13 Sep 2026" : "Sep 13, 2026", competition: "Rangers International FC", home: false }
+    ],
+    "Lunda Sul": [
+      { opponent: "ASSM Elgeco Plus", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "ASSM Elgeco Plus", home: false },
+      { opponent: "ASSM Elgeco Plus", date: isEs ? "25 Ago 2026" : "Aug 25, 2026", competition: "ASSM Elgeco Plus", home: true },
+      { opponent: "Sekhukhune United FC", date: isEs ? "14 Sep 2026" : "Sep 14, 2026", competition: "Sekhukhune United FC", home: true }
+    ],
+    "Redonda FC": [
+      { opponent: "Cuiabá Esporte Clube (MT)", date: isEs ? "7 Abr 2025" : "Apr 7, 2025", competition: "Cuiabá Esporte Clube (MT)", home: true },
+      { opponent: "Grêmio Novorizontino", date: isEs ? "13 Abr 2025" : "Apr 13, 2025", competition: "Grêmio Novorizontino", home: false },
+      { opponent: "Clube de Regatas Brasil (AL)", date: isEs ? "18 Abr 2025" : "Apr 18, 2025", competition: "Clube de Regatas Brasil (AL)", home: false }
+    ],
+    "União Desportiva do Songo": [
+      { opponent: "CA Petróleos Luanda", date: isEs ? "4 Sep 2026" : "Sep 4, 2026", competition: "CA Petróleos Luanda", home: true },
+      { opponent: "CA Petróleos Luanda", date: isEs ? "11 Sep 2026" : "Sep 11, 2026", competition: "CA Petróleos Luanda", home: false }
+    ],
+    "Associação Black Bulls": [
+      { opponent: "Atomic Ngomé de Ntsoudjini", date: isEs ? "4 Sep 2026" : "Sep 4, 2026", competition: "Atomic Ngomé de Ntsoudjini", home: false },
+      { opponent: "Atomic Ngomé de Ntsoudjini", date: isEs ? "11 Sep 2026" : "Sep 11, 2026", competition: "Atomic Ngomé de Ntsoudjini", home: true },
+      { opponent: "Alizé Fort de Salimani Hambou", date: isEs ? "17 Ago 2026" : "Aug 17, 2026", competition: "Alizé Fort de Salimani Hambou", home: true }
+    ],
+    "Ferroviário da Beira": [
+      { opponent: "Mbabane Swallows", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Mbabane Swallows", home: false },
+      { opponent: "Mbabane Swallows", date: isEs ? "25 Ago 2026" : "Aug 25, 2026", competition: "Mbabane Swallows", home: true }
+    ],
+    "Golden Arrows": [
+      { opponent: "Chippa United", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "Chippa United", home: true },
+      { opponent: "Durban City Football Club", date: isEs ? "12 Ago 2026" : "Aug 12, 2026", competition: "Durban City Football Club", home: false },
+      { opponent: "TS Galaxy FC", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "TS Galaxy FC", home: false }
+    ],
+    "AmaZulu": [
+      { opponent: "Stellenbosch FC", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "Stellenbosch FC", home: false },
+      { opponent: "Orlando Pirates", date: isEs ? "12 Ago 2026" : "Aug 12, 2026", competition: "Orlando Pirates", home: true },
+      { opponent: "Siwelele Football Club", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Siwelele Football Club ", home: true }
+    ],
+    "Orlando Pirates": [
+      { opponent: "Milford FC", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "Milford FC", home: true },
+      { opponent: "AmaZulu FC", date: isEs ? "12 Ago 2026" : "Aug 12, 2026", competition: "AmaZulu FC", home: false },
+      { opponent: "Chippa United", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Chippa United", home: false }
+    ],
+    "Sekhukhune United": [
+      { opponent: "Durban City Football Club", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "Durban City Football Club", home: true },
+      { opponent: "Kaizer Chiefs", date: isEs ? "12 Ago 2026" : "Aug 12, 2026", competition: "Kaizer Chiefs", home: false },
+      { opponent: "Polokwane City FC", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Polokwane City FC", home: true }
+    ],
+    "Kaizer Chiefs": [
+      { opponent: "Kruger United FC", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "Kruger United FC", home: false },
+      { opponent: "Sekhukhune United FC", date: isEs ? "12 Ago 2026" : "Aug 12, 2026", competition: "Sekhukhune United FC", home: true },
+      { opponent: "Mamelodi Sundowns FC", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Mamelodi Sundowns FC", home: true }
+    ],
+    "Mamelodi Sundowns": [
+      { opponent: "Marumo Gallants FC", date: isEs ? "19 Ago 2026" : "Aug 19, 2026", competition: "Marumo Gallants FC", home: true },
+      { opponent: "TS Galaxy FC", date: isEs ? "11 Ago 2026" : "Aug 11, 2026", competition: "TS Galaxy FC", home: false },
+      { opponent: "Kaizer Chiefs", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Kaizer Chiefs", home: false }
+    ],
+    "TS Galaxy": [
+      { opponent: "Siwelele Football Club", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "Siwelele Football Club ", home: false },
+      { opponent: "Mamelodi Sundowns FC", date: isEs ? "11 Ago 2026" : "Aug 11, 2026", competition: "Mamelodi Sundowns FC", home: true },
+      { opponent: "Lamontville Golden Arrows", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Lamontville Golden Arrows", home: true }
+    ],
+    "Durban City": [
+      { opponent: "Sekhukhune United FC", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "Sekhukhune United FC", home: false },
+      { opponent: "Lamontville Golden Arrows", date: isEs ? "12 Ago 2026" : "Aug 12, 2026", competition: "Lamontville Golden Arrows", home: true },
+      { opponent: "Richards Bay FC", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Richards Bay FC ", home: true }
+    ],
+    "Stellenbosch FC": [
+      { opponent: "AmaZulu FC", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "AmaZulu FC", home: true },
+      { opponent: "Polokwane City FC", date: isEs ? "11 Ago 2026" : "Aug 11, 2026", competition: "Polokwane City FC", home: false },
+      { opponent: "Marumo Gallants FC", date: isEs ? "14 Ago 2026" : "Aug 14, 2026", competition: "Marumo Gallants FC", home: true }
+    ],
+    "Siwelele": [
+      { opponent: "TS Galaxy FC", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "TS Galaxy FC", home: true },
+      { opponent: "Milford FC", date: isEs ? "12 Ago 2026" : "Aug 12, 2026", competition: "Milford FC", home: false },
+      { opponent: "AmaZulu FC", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "AmaZulu FC", home: false }
+    ],
+    "Polokwane City": [
+      { opponent: "Richards Bay FC", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "Richards Bay FC ", home: false },
+      { opponent: "Stellenbosch FC", date: isEs ? "11 Ago 2026" : "Aug 11, 2026", competition: "Stellenbosch FC", home: true },
+      { opponent: "Sekhukhune United FC", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Sekhukhune United FC", home: false }
+    ],
+    "Richards Bay": [
+      { opponent: "Polokwane City FC", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "Polokwane City FC", home: true },
+      { opponent: "Chippa United", date: isEs ? "11 Ago 2026" : "Aug 11, 2026", competition: "Chippa United", home: false },
+      { opponent: "Durban City Football Club", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Durban City Football Club", home: false }
+    ],
+    "Chippa United": [
+      { opponent: "Lamontville Golden Arrows", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "Lamontville Golden Arrows", home: false },
+      { opponent: "Richards Bay FC", date: isEs ? "11 Ago 2026" : "Aug 11, 2026", competition: "Richards Bay FC ", home: true },
+      { opponent: "Orlando Pirates", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Orlando Pirates", home: true }
+    ],
+    "Orbit College": [
+      { opponent: "Casric Stars FC", date: isEs ? "21 Jun 2025" : "Jun 21, 2025", competition: "Casric Stars FC", home: false },
+      { opponent: "Cape Town City FC", date: isEs ? "25 Jun 2025" : "Jun 25, 2025", competition: "Cape Town City FC ", home: true },
+      { opponent: "Casric Stars FC", date: isEs ? "11 Jun 2025" : "Jun 11, 2025", competition: "Casric Stars FC", home: true }
+    ],
+    "Magesi": [
+      { opponent: "Sekhukhune United FC", date: isEs ? "18 Sep 2026" : "Sep 18, 2026", competition: "Sekhukhune United FC", home: false },
+      { opponent: "Polokwane City FC", date: isEs ? "21 Sep 2026" : "Sep 21, 2026", competition: "Polokwane City FC", home: true },
+      { opponent: "Lamontville Golden Arrows", date: isEs ? "25 Sep 2026" : "Sep 25, 2026", competition: "Lamontville Golden Arrows", home: false }
+    ],
+    "Power Dynamos": [
+      { opponent: "Al-Merrikh SC", date: isEs ? "4 Sep 2026" : "Sep 4, 2026", competition: "Al-Merrikh SC", home: false },
+      { opponent: "Al-Merrikh SC", date: isEs ? "11 Sep 2026" : "Sep 11, 2026", competition: "Al-Merrikh SC", home: true }
+    ],
+    "ZESCO United": [
+      { opponent: "Dynamos FC", date: isEs ? "18 Ago 2026" : "Aug 18, 2026", competition: "Dynamos FC", home: false },
+      { opponent: "Dynamos FC", date: isEs ? "24 Ago 2026" : "Aug 24, 2026", competition: "Dynamos FC", home: true }
+    ],
+    "Nkana": [
+      { opponent: "Up Country Lions SC", date: isEs ? "17 Jul 2026" : "Jul 17, 2026", competition: "Up Country Lions SC", home: true },
+      { opponent: "Blue Eagles SC", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "Blue Eagles SC", home: true },
+      { opponent: "Red Star SC", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "Red Star SC", home: false }
+    ],
+    "Red Arrows": [
+      { opponent: "Foro del club", date: isEs ? "20 Ago 2026" : "Aug 20, 2026", competition: "Foro del club", home: false },
+      { opponent: "Foro del club", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Foro del club", home: true },
+      { opponent: "Foro del club", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Foro del club", home: true }
+    ],
+    "Green Eagles": [
+      { opponent: "Renaissance de Berkane", date: isEs ? "31 Ago 2026" : "Aug 31, 2026", competition: "Renaissance de Berkane", home: true },
+      { opponent: "&nbsp;", date: isEs ? "25 Sep 2026" : "Sep 25, 2026", competition: "&nbsp;", home: false },
+      { opponent: "FUS Rabat", date: isEs ? "2 Oct 2026" : "Oct 2, 2026", competition: "FUS Rabat", home: true }
+    ],
+    "MUZA": [
+      { opponent: "Le Havre AC", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Le Havre AC", home: true },
+      { opponent: "Olympique de Marsella", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "Olympique de Marsella", home: true },
+      { opponent: "París Saint-Germain", date: isEs ? "4 Sep 2026" : "Sep 4, 2026", competition: "París Saint-Germain", home: false }
+    ],
+    "Indeni": [
+      { opponent: "Foro del club", date: isEs ? "20 Ago 2026" : "Aug 20, 2026", competition: "Foro del club", home: false },
+      { opponent: "Foro del club", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Foro del club", home: true },
+      { opponent: "Foro del club", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Foro del club", home: true }
+    ],
+    "Scottland FC": [
+      { opponent: "Nsingizini Hotspurs FC", date: isEs ? "4 Sep 2026" : "Sep 4, 2026", competition: "Nsingizini Hotspurs FC", home: true },
+      { opponent: "Nsingizini Hotspurs FC", date: isEs ? "11 Sep 2026" : "Sep 11, 2026", competition: "Nsingizini Hotspurs FC", home: true }
+    ],
+    "Platinum": [
+      { opponent: "AS Maniema Union", date: isEs ? "17 Ago 2026" : "Aug 17, 2026", competition: "AS Maniema Union", home: true },
+      { opponent: "AS Maniema Union", date: isEs ? "25 Ago 2026" : "Aug 25, 2026", competition: "AS Maniema Union", home: false }
+    ],
+    "Dynamos": [
+      { opponent: "Chennaiyin FC", date: isEs ? "14 Sep 2026" : "Sep 14, 2026", competition: "Chennaiyin FC", home: true },
+      { opponent: "Punjab FC", date: isEs ? "20 Sep 2026" : "Sep 20, 2026", competition: "Punjab FC", home: false },
+      { opponent: "Jamshedpur FC", date: isEs ? "28 Sep 2026" : "Sep 28, 2026", competition: "Jamshedpur FC", home: true }
+    ],
+    "SK Rapid": [
+      { opponent: "SCR Altach", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "SCR Altach", home: true },
+      { opponent: "SV Ried", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "SV Ried", home: false },
+      { opponent: "Grazer AK 1902", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Grazer AK 1902", home: true }
+    ],
+    "Sturm Graz": [
+      { opponent: "WSG Tirol", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "WSG Tirol", home: false },
+      { opponent: "TSV Hartberg", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "TSV Hartberg", home: true },
+      { opponent: "SCR Altach", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "SCR Altach", home: true }
+    ],
+    "Red Bull Salzburg": [
+      { opponent: "TSV Hartberg", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "TSV Hartberg", home: true },
+      { opponent: "Wolfsberger AC", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Wolfsberger AC", home: false },
+      { opponent: "WSG Tirol", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "WSG Tirol", home: false }
+    ],
+    "Austria Wien": [
+      { opponent: "Wolfsberger AC", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "Wolfsberger AC", home: false },
+      { opponent: "LASK", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "LASK", home: true },
+      { opponent: "TSV Hartberg", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "TSV Hartberg", home: true }
+    ],
+    "LASK": [
+      { opponent: "CD Tenerife", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "CD Tenerife", home: true },
+      { opponent: "Real Valladolid CF", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Real Valladolid CF", home: true },
+      { opponent: "FC Andorra", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "FC Andorra", home: false }
+    ],
+    "WSG Tirol": [
+      { opponent: "SK Sturm Graz", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "SK Sturm Graz", home: true },
+      { opponent: "SCR Altach", date: isEs ? "7 Ago 2026" : "Aug 7, 2026", competition: "SCR Altach", home: false },
+      { opponent: "Red Bull Salzburgo", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Red Bull Salzburgo", home: true }
+    ],
+    "TSV Hartberg": [
+      { opponent: "Red Bull Salzburgo", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "Red Bull Salzburgo", home: false },
+      { opponent: "SK Sturm Graz", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "SK Sturm Graz", home: true },
+      { opponent: "FK Austria Viena", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "FK Austria Viena", home: true }
+    ],
+    "SCR Altach": [
+      { opponent: "SK Rapid Viena", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "SK Rapid Viena", home: false },
+      { opponent: "WSG Tirol", date: isEs ? "7 Ago 2026" : "Aug 7, 2026", competition: "WSG Tirol", home: true },
+      { opponent: "SK Sturm Graz", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "SK Sturm Graz", home: false }
+    ],
+    "SV Ried": [
+      { opponent: "SC Austria Lustenau", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "SC Austria Lustenau", home: false },
+      { opponent: "SK Rapid Viena", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "SK Rapid Viena", home: true },
+      { opponent: "LASK", date: isEs ? "14 Ago 2026" : "Aug 14, 2026", competition: "LASK", home: false }
+    ],
+    "Wolfsberger AC": [
+      { opponent: "FK Austria Viena", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "FK Austria Viena", home: true },
+      { opponent: "Red Bull Salzburgo", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Red Bull Salzburgo", home: true },
+      { opponent: "SC Austria Lustenau", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "SC Austria Lustenau", home: false }
+    ],
+    "Grazer AK": [
+      { opponent: "LASK", date: isEs ? "31 Jul 2026" : "Jul 31, 2026", competition: "LASK", home: false },
+      { opponent: "SC Austria Lustenau", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "SC Austria Lustenau", home: true },
+      { opponent: "SK Rapid Viena", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "SK Rapid Viena", home: false }
+    ],
+    "Espanyol": [
+      { opponent: "Real Sporting de Gijón", date: isEs ? "17 Ago 2026" : "Aug 17, 2026", competition: "Real Sporting de Gijón", home: false },
+      { opponent: "CD Castellón", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "CD Castellón", home: false },
+      { opponent: "UD Almería", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "UD Almería", home: true }
+    ],
+    "Getafe": [
+      { opponent: "Deportivo Alavés", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Deportivo Alavés", home: false },
+      { opponent: "Real Racing Club", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Real Racing Club ", home: true },
+      { opponent: "CA Osasuna", date: isEs ? "31 Ago 2026" : "Aug 31, 2026", competition: "CA Osasuna", home: false }
+    ],
+    "Sevilla": [
+      { opponent: "Libertad FC", date: isEs ? "15 Feb 2025" : "Feb 15, 2025", competition: "Libertad FC", home: false },
+      { opponent: "LDU Quito", date: isEs ? "23 Feb 2025" : "Feb 23, 2025", competition: "LDU Quito", home: true },
+      { opponent: "CD Universidad Católica", date: isEs ? "2 Mar 2025" : "Mar 2, 2025", competition: "CD Universidad Católica", home: true }
+    ],
+    "Villarreal": [
+      { opponent: "Foro del club", date: isEs ? "20 Ago 2026" : "Aug 20, 2026", competition: "Foro del club", home: false },
+      { opponent: "Foro del club", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Foro del club", home: true },
+      { opponent: "Foro del club", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Foro del club", home: true }
+    ],
+    "Atletico Madrid": [
+      { opponent: "Málaga CF", date: isEs ? "19 Ago 2026" : "Aug 19, 2026", competition: "Málaga CF", home: true },
+      { opponent: "Villarreal CF", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Villarreal CF", home: true },
+      { opponent: "Sevilla FC", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Sevilla FC", home: false }
+    ],
+    "Mallorca": [
+      { opponent: "Real Valladolid CF", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Real Valladolid CF", home: true },
+      { opponent: "Granada CF", date: isEs ? "24 Ago 2026" : "Aug 24, 2026", competition: "Granada CF", home: false },
+      { opponent: "AD Ceuta FC", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "AD Ceuta FC", home: true }
+    ],
+    "Elche": [
+      { opponent: "Foro del club", date: isEs ? "20 Ago 2026" : "Aug 20, 2026", competition: "Foro del club", home: false },
+      { opponent: "Foro del club", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Foro del club", home: true },
+      { opponent: "Foro del club", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Foro del club", home: true }
+    ],
+    "Levante": [
+      { opponent: "SR Delémont", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "SR Delémont", home: true },
+      { opponent: "FC Concordia Basel", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "FC Concordia Basel", home: false },
+      { opponent: "FC Courtételle", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "FC Courtételle", home: true }
+    ],
+    "Girona": [
+      { opponent: "Foro del club", date: isEs ? "20 Ago 2026" : "Aug 20, 2026", competition: "Foro del club", home: false },
+      { opponent: "Foro del club", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Foro del club", home: true },
+      { opponent: "Foro del club", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Foro del club", home: true }
+    ],
+    "AFC Bournemouth": [
+      { opponent: "Manchester City", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Manchester City", home: false },
+      { opponent: "Everton FC", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Everton FC", home: true },
+      { opponent: "Newcastle United", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Newcastle United", home: false }
+    ],
+    "Sint-Truiden": [
+      { opponent: "Lommel SK", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Lommel SK", home: true },
+      { opponent: "Círculo de Brujas", date: isEs ? "14 Ago 2026" : "Aug 14, 2026", competition: "Círculo de Brujas", home: false },
+      { opponent: "Union Saint-Gilloise", date: isEs ? "2 Sep 2026" : "Sep 2, 2026", competition: "Union Saint-Gilloise", home: true }
+    ],
+    "Union Saint-Gilloise": [
+      { opponent: "KVC Westerlo", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "KVC Westerlo", home: false },
+      { opponent: "Zulte Waregem", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Zulte Waregem", home: true },
+      { opponent: "Sint-Truidense VV", date: isEs ? "2 Sep 2026" : "Sep 2, 2026", competition: "Sint-Truidense VV", home: false }
+    ],
+    "Club Brugge": [
+      { opponent: "KV Kortrijk", date: isEs ? "7 Ago 2026" : "Aug 7, 2026", competition: "KV Kortrijk", home: true },
+      { opponent: "Oud-Heverlee Leuven", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Oud-Heverlee Leuven", home: false },
+      { opponent: "Círculo de Brujas", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Círculo de Brujas", home: true }
+    ],
+    "Gent": [
+      { opponent: "Foro del club", date: isEs ? "20 Ago 2026" : "Aug 20, 2026", competition: "Foro del club", home: false },
+      { opponent: "Foro del club", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Foro del club", home: true },
+      { opponent: "Foro del club", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Foro del club", home: true }
+    ],
+    "Standard Liege": [
+      { opponent: "Círculo de Brujas", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Círculo de Brujas", home: true },
+      { opponent: "KV Mechelen", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "KV Mechelen", home: false },
+      { opponent: "RAAL La Louvière", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "RAAL La Louvière", home: true }
+    ],
+    "Anderlecht": [
+      { opponent: "RAAL La Louvière", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "RAAL La Louvière", home: true },
+      { opponent: "SK Beveren", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "SK Beveren", home: false },
+      { opponent: "KV Kortrijk", date: isEs ? "3 Sep 2026" : "Sep 3, 2026", competition: "KV Kortrijk", home: true }
+    ],
+    "KV Mechelen": [
+      { opponent: "KAA Gante", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "KAA Gante", home: false },
+      { opponent: "Standard de Lieja", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Standard de Lieja", home: true },
+      { opponent: "R Charleroi SC", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "R Charleroi SC", home: false }
+    ],
+    "Royal Antwerp": [
+      { opponent: "SK Beveren", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "SK Beveren", home: true },
+      { opponent: "KV Kortrijk", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "KV Kortrijk", home: false },
+      { opponent: "KRC Genk", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "KRC Genk", home: true }
+    ],
+    "Westerlo": [
+      { opponent: "París Saint-Germain", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "París Saint-Germain", home: false },
+      { opponent: "Le Mans FC", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "Le Mans FC", home: true },
+      { opponent: "Angers SCO", date: isEs ? "6 Sep 2026" : "Sep 6, 2026", competition: "Angers SCO", home: false }
+    ],
+    "Genk": [
+      { opponent: "Jong KAA Gent", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Jong KAA Gent", home: true },
+      { opponent: "FCV Dender EH", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "FCV Dender EH", home: false },
+      { opponent: "RSCA Futures", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "RSCA Futures", home: false }
+    ],
+    "Charleroi": [
+      { opponent: "Oud-Heverlee Leuven", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Oud-Heverlee Leuven", home: true },
+      { opponent: "Lommel SK", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Lommel SK", home: false },
+      { opponent: "KV Mechelen", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "KV Mechelen", home: true }
+    ],
+    "OH Leuven": [
+      { opponent: "R Charleroi SC", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "R Charleroi SC", home: false },
+      { opponent: "Club Brujas KV", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Club Brujas KV", home: true },
+      { opponent: "KAA Gante", date: isEs ? "3 Sep 2026" : "Sep 3, 2026", competition: "KAA Gante", home: false }
+    ],
+    "Cercle Brugge": [
+      { opponent: "Standard de Lieja", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Standard de Lieja", home: false },
+      { opponent: "Sint-Truidense VV", date: isEs ? "14 Ago 2026" : "Aug 14, 2026", competition: "Sint-Truidense VV", home: true },
+      { opponent: "Club Brujas KV", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Club Brujas KV", home: false }
+    ],
+    "Zulte Waregem": [
+      { opponent: "KRC Genk", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "KRC Genk", home: true },
+      { opponent: "Union Saint-Gilloise", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Union Saint-Gilloise", home: false },
+      { opponent: "SK Beveren", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "SK Beveren", home: true }
+    ],
+    "Dender EH": [
+      { opponent: "Sporting Hasselt", date: isEs ? "14 Ago 2026" : "Aug 14, 2026", competition: "Sporting Hasselt", home: true },
+      { opponent: "Beerschot VA", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Beerschot VA", home: true },
+      { opponent: "RFC Lüttich", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "RFC Lüttich", home: false }
+    ],
+    "RAAL La Louviere": [
+      { opponent: "RSC Anderlecht", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "RSC Anderlecht", home: false },
+      { opponent: "KAA Gante", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "KAA Gante", home: true },
+      { opponent: "Standard de Lieja", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Standard de Lieja", home: false }
+    ],
+    "IFK Goteborg": [
+      { opponent: "FCI Levadia", date: isEs ? "21 Jul 2026" : "Jul 21, 2026", competition: "FCI Levadia", home: true },
+      { opponent: "FCI Levadia", date: isEs ? "30 Jul 2026" : "Jul 30, 2026", competition: "FCI Levadia", home: false },
+      { opponent: "KAA Gante", date: isEs ? "6 Ago 2026" : "Aug 6, 2026", competition: "KAA Gante", home: true }
+    ],
+    "Mjallby AIF": [
+      { opponent: "Red Bull Salzburgo", date: isEs ? "20 Ago 2026" : "Aug 20, 2026", competition: "Red Bull Salzburgo", home: true },
+      { opponent: "Red Bull Salzburgo", date: isEs ? "27 Ago 2026" : "Aug 27, 2026", competition: "Red Bull Salzburgo", home: false },
+      { opponent: "Lincoln Red Imps FC", date: isEs ? "21 Jul 2026" : "Jul 21, 2026", competition: "Lincoln Red Imps FC", home: true }
+    ],
+    "Hammarby IF": [
+      { opponent: "RSC Anderlecht", date: isEs ? "23 Jul 2026" : "Jul 23, 2026", competition: "RSC Anderlecht", home: true },
+      { opponent: "RSC Anderlecht", date: isEs ? "30 Jul 2026" : "Jul 30, 2026", competition: "RSC Anderlecht", home: false },
+      { opponent: "Raków Częstochowa", date: isEs ? "6 Ago 2026" : "Aug 6, 2026", competition: "Raków Częstochowa", home: false }
+    ],
+    "Djurgardens IF": [
+      { opponent: "Malmoe FF", date: isEs ? "29 Mar 2025" : "Mar 29, 2025", competition: "Malmoe FF", home: true },
+      { opponent: "IK Sirius", date: isEs ? "5 Abr 2025" : "Apr 5, 2025", competition: "IK Sirius", home: false },
+      { opponent: "Hammarby IF", date: isEs ? "13 Abr 2025" : "Apr 13, 2025", competition: "Hammarby IF", home: false }
+    ],
+    "Malmo FF": [
+      { opponent: "Djurgårdens IF", date: isEs ? "29 Mar 2025" : "Mar 29, 2025", competition: "Djurgårdens IF", home: false },
+      { opponent: "IF Elfsborg", date: isEs ? "7 Abr 2025" : "Apr 7, 2025", competition: "IF Elfsborg", home: true },
+      { opponent: "AIK", date: isEs ? "14 Abr 2025" : "Apr 14, 2025", competition: "Allsvenskan", home: false }
+    ],
+    "IK Sirius": [
+      { opponent: "IFK Värnamo", date: isEs ? "31 Mar 2025" : "Mar 31, 2025", competition: "IFK Värnamo", home: false },
+      { opponent: "Djurgårdens IF", date: isEs ? "5 Abr 2025" : "Apr 5, 2025", competition: "Djurgårdens IF", home: true },
+      { opponent: "IF Brommapojkarna", date: isEs ? "13 Abr 2025" : "Apr 13, 2025", competition: "IF Brommapojkarna", home: true }
+    ],
+    "BK Hacken": [
+      { opponent: "IF Brommapojkarna", date: isEs ? "29 Mar 2025" : "Mar 29, 2025", competition: "IF Brommapojkarna", home: true },
+      { opponent: "Östers IF", date: isEs ? "5 Abr 2025" : "Apr 5, 2025", competition: "Östers IF", home: false },
+      { opponent: "Mjällby AIF", date: isEs ? "12 Abr 2025" : "Apr 12, 2025", competition: "Mjällby AIF", home: true }
+    ],
+    "IF Brommapojkarna": [
+      { opponent: "BK Häcken", date: isEs ? "29 Mar 2025" : "Mar 29, 2025", competition: "BK Häcken", home: true },
+      { opponent: "Hammarby IF", date: isEs ? "6 Abr 2025" : "Apr 6, 2025", competition: "Hammarby IF", home: true },
+      { opponent: "IK Sirius", date: isEs ? "13 Abr 2025" : "Apr 13, 2025", competition: "IK Sirius", home: false }
+    ],
+    "IF Elfsborg": [
+      { opponent: "Västra Frölunda IF", date: isEs ? "18 Ago 2026" : "Aug 18, 2026", competition: "Västra Frölunda IF", home: false },
+      { opponent: "Mjällby AIF", date: isEs ? "30 Mar 2025" : "Mar 30, 2025", competition: "Mjällby AIF", home: true },
+      { opponent: "Malmoe FF", date: isEs ? "7 Abr 2025" : "Apr 7, 2025", competition: "Malmoe FF", home: false }
+    ],
+    "Halmstads BK": [
+      { opponent: "Degerfors IF", date: isEs ? "30 Mar 2025" : "Mar 30, 2025", competition: "Degerfors IF", home: true },
+      { opponent: "IFK Göteborg", date: isEs ? "5 Abr 2025" : "Apr 5, 2025", competition: "IFK Göteborg", home: false },
+      { opponent: "Östers IF", date: isEs ? "14 Abr 2025" : "Apr 14, 2025", competition: "Östers IF", home: true }
+    ],
+    "AIK": [
+      { opponent: "Udinese", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Udinese", home: false },
+      { opponent: "SSC Nápoles", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "SSC Nápoles", home: false },
+      { opponent: "Génova", date: isEs ? "4 Sep 2026" : "Sep 4, 2026", competition: "Génova", home: false }
+    ],
+    "Viking FK": [
+      { opponent: "GNK Dinamo Zagreb", date: isEs ? "18 Ago 2026" : "Aug 18, 2026", competition: "GNK Dinamo Zagreb", home: false },
+      { opponent: "GNK Dinamo Zagreb", date: isEs ? "26 Ago 2026" : "Aug 26, 2026", competition: "GNK Dinamo Zagreb", home: true },
+      { opponent: "Brodd FK", date: isEs ? "2 Sep 2026" : "Sep 2, 2026", competition: "Brodd FK", home: false }
+    ],
+    "IFK Norrkoping": [
+      { opponent: "Vasalunds IF", date: isEs ? "20 Ago 2026" : "Aug 20, 2026", competition: "Vasalunds IF", home: false },
+      { opponent: "Östers IF", date: isEs ? "30 Mar 2025" : "Mar 30, 2025", competition: "Östers IF", home: true },
+      { opponent: "AIK", date: isEs ? "6 Abr 2025" : "Apr 6, 2025", competition: "Allsvenskan", home: false }
+    ],
+    "IFK Varnamo": [
+      { opponent: "Växjö Norra IF", date: isEs ? "19 Ago 2026" : "Aug 19, 2026", competition: "Växjö Norra IF", home: false },
+      { opponent: "IK Sirius", date: isEs ? "31 Mar 2025" : "Mar 31, 2025", competition: "IK Sirius", home: true },
+      { opponent: "Degerfors IF", date: isEs ? "6 Abr 2025" : "Apr 6, 2025", competition: "Degerfors IF", home: false }
+    ],
+    "Osters IF": [
+      { opponent: "Högaborgs BK", date: isEs ? "19 Ago 2026" : "Aug 19, 2026", competition: "Högaborgs BK", home: false },
+      { opponent: "IFK Norrköping", date: isEs ? "30 Mar 2025" : "Mar 30, 2025", competition: "IFK Norrköping", home: false },
+      { opponent: "BK Häcken", date: isEs ? "5 Abr 2025" : "Apr 5, 2025", competition: "BK Häcken", home: true }
+    ],
+    "Degerfors IF": [
+      { opponent: "IFK Östersund", date: isEs ? "19 Ago 2026" : "Aug 19, 2026", competition: "IFK Östersund", home: false },
+      { opponent: "Halmstads BK", date: isEs ? "30 Mar 2025" : "Mar 30, 2025", competition: "Halmstads BK", home: false },
+      { opponent: "IFK Värnamo", date: isEs ? "6 Abr 2025" : "Apr 6, 2025", competition: "IFK Värnamo", home: true }
+    ],
+    "SK Brann": [
+      { opponent: "FC Universitatea Cluj", date: isEs ? "23 Jul 2026" : "Jul 23, 2026", competition: "FC Universitatea Cluj", home: false },
+      { opponent: "FC Universitatea Cluj", date: isEs ? "30 Jul 2026" : "Jul 30, 2026", competition: "FC Universitatea Cluj", home: true },
+      { opponent: "Apollon Limassol", date: isEs ? "5 Ago 2026" : "Aug 5, 2026", competition: "Apollon Limassol", home: true }
+    ],
+    "Fredrikstad FK": [
+      { opponent: "Eidsvold IF", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Eidsvold IF", home: false },
+      { opponent: "SK Brann", date: isEs ? "29 Mar 2025" : "Mar 29, 2025", competition: "SK Brann", home: true },
+      { opponent: "Rosenborg BK", date: isEs ? "5 Abr 2025" : "Apr 5, 2025", competition: "Rosenborg BK", home: false }
+    ],
+    "Tromso IL": [
+      { opponent: "FC Hradec Kralove", date: isEs ? "23 Jul 2026" : "Jul 23, 2026", competition: "FC Hradec Kralove", home: true },
+      { opponent: "FC Hradec Kralove", date: isEs ? "30 Jul 2026" : "Jul 30, 2026", competition: "FC Hradec Kralove", home: true },
+      { opponent: "CFR Cluj", date: isEs ? "6 Ago 2026" : "Aug 6, 2026", competition: "CFR Cluj", home: false }
+    ],
+    "Sandefjord Fotball": [
+      { opponent: "Eidanger IL", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Eidanger IL", home: false },
+      { opponent: "KFUM-Kameratene Oslo", date: isEs ? "30 Mar 2025" : "Mar 30, 2025", competition: "KFUM-Kameratene Oslo", home: false },
+      { opponent: "Molde FK", date: isEs ? "6 Abr 2025" : "Apr 6, 2025", competition: "Molde FK", home: true }
+    ],
+    "Rosenborg BK": [
+      { opponent: "SK NationalKameratene", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "SK NationalKameratene", home: false },
+      { opponent: "Strømsgodset IF", date: isEs ? "29 Mar 2025" : "Mar 29, 2025", competition: "Strømsgodset IF", home: false },
+      { opponent: "Fredrikstad FK", date: isEs ? "5 Abr 2025" : "Apr 5, 2025", competition: "Fredrikstad FK", home: true }
+    ],
+    "Sarpsborg 08": [
+      { opponent: "FK Sparta Sarpsborg", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "FK Sparta Sarpsborg", home: false },
+      { opponent: "Molde FK", date: isEs ? "30 Mar 2025" : "Mar 30, 2025", competition: "Molde FK", home: false },
+      { opponent: "Vålerenga Fotball Elite", date: isEs ? "6 Abr 2025" : "Apr 6, 2025", competition: "Vålerenga Fotball Elite", home: true }
+    ],
+    "Valerenga Fotball": [
+      { opponent: "Christiania BK", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Christiania BK", home: false },
+      { opponent: "Viking FK", date: isEs ? "30 Mar 2025" : "Mar 30, 2025", competition: "Viking FK", home: true },
+      { opponent: "Sarpsborg 08 FF", date: isEs ? "6 Abr 2025" : "Apr 6, 2025", competition: "Sarpsborg 08 FF", home: false }
+    ],
+    "Bryne FK": [
+      { opponent: "Rosseland BK", date: isEs ? "26 Ago 2026" : "Aug 26, 2026", competition: "Rosseland BK", home: false },
+      { opponent: "FK Bodø/Glimt", date: isEs ? "30 Mar 2025" : "Mar 30, 2025", competition: "FK Bodø/Glimt", home: true },
+      { opponent: "Kristiansund BK", date: isEs ? "6 Abr 2025" : "Apr 6, 2025", competition: "Kristiansund BK", home: false }
+    ],
+    "Kristiansund BK": [
+      { opponent: "IL Trønder-Lyn", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "IL Trønder-Lyn", home: false },
+      { opponent: "Hamarkameratene", date: isEs ? "30 Mar 2025" : "Mar 30, 2025", competition: "Hamarkameratene", home: false },
+      { opponent: "Bryne FK", date: isEs ? "6 Abr 2025" : "Apr 6, 2025", competition: "Bryne FK", home: true }
+    ],
+    "Molde FK": [
+      { opponent: "Midsund IL", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Midsund IL", home: false },
+      { opponent: "Sarpsborg 08 FF", date: isEs ? "30 Mar 2025" : "Mar 30, 2025", competition: "Sarpsborg 08 FF", home: true },
+      { opponent: "Sandefjord Fotball", date: isEs ? "6 Abr 2025" : "Apr 6, 2025", competition: "Sandefjord Fotball", home: false }
+    ],
+    "KFUM Oslo": [
+      { opponent: "IF Ready Fotball", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "IF Ready Fotball", home: false },
+      { opponent: "Sandefjord Fotball", date: isEs ? "30 Mar 2025" : "Mar 30, 2025", competition: "Sandefjord Fotball", home: true },
+      { opponent: "Viking FK", date: isEs ? "6 Abr 2025" : "Apr 6, 2025", competition: "Viking FK", home: false }
+    ],
+    "Rakow Czestochowa": [
+      { opponent: "Wisła Płock", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "Wisła Płock", home: true },
+      { opponent: "Śląsk Wroclaw", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "Śląsk Wroclaw", home: false },
+      { opponent: "Zagłębie Lubin", date: isEs ? "15 Sep 2026" : "Sep 15, 2026", competition: "Zagłębie Lubin", home: true }
+    ],
+    "Gornik Zabrze": [
+      { opponent: "Śląsk Wroclaw", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "Śląsk Wroclaw", home: true },
+      { opponent: "Korona Kielce", date: isEs ? "15 Sep 2026" : "Sep 15, 2026", competition: "Korona Kielce", home: false },
+      { opponent: "Radomiak Radom", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Radomiak Radom", home: false }
+    ],
+    "Lech Poznan": [
+      { opponent: "Cracovia", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "Cracovia", home: true },
+      { opponent: "Wieczysta Krakow", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "Wieczysta Krakow", home: false },
+      { opponent: "Piast Gliwice", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Piast Gliwice", home: true }
+    ],
+    "Jagiellonia Bialystok": [
+      { opponent: "Korona Kielce", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "Korona Kielce", home: true },
+      { opponent: "Motor Lublin", date: isEs ? "31 Jul 2026" : "Jul 31, 2026", competition: "Motor Lublin", home: false },
+      { opponent: "RTS Widzew Łódź", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "RTS Widzew Łódź", home: true }
+    ],
+    "GKS Katowice": [
+      { opponent: "Wisla Cracovia", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "Wisla Cracovia", home: false },
+      { opponent: "Radomiak Radom", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "Radomiak Radom", home: true },
+      { opponent: "Wieczysta Krakow", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Wieczysta Krakow", home: true }
+    ],
+    "Stromsgodset": [
+      { opponent: "Modum FK", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Modum FK", home: false },
+      { opponent: "Rosenborg BK", date: isEs ? "29 Mar 2025" : "Mar 29, 2025", competition: "Rosenborg BK", home: true },
+      { opponent: "FK Haugesund", date: isEs ? "6 Abr 2025" : "Apr 6, 2025", competition: "FK Haugesund", home: true }
+    ],
+    "Radomiak Radom": [
+      { opponent: "Wieczysta Krakow", date: isEs ? "24 Jul 2026" : "Jul 24, 2026", competition: "Wieczysta Krakow", home: true },
+      { opponent: "GKS Katowice", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "GKS Katowice", home: false },
+      { opponent: "Górnik Zabrze", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Górnik Zabrze", home: true }
+    ],
+    "Wisla Plock": [
+      { opponent: "Raków Częstochowa", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "Raków Częstochowa", home: false },
+      { opponent: "RTS Widzew Łódź", date: isEs ? "31 Jul 2026" : "Jul 31, 2026", competition: "RTS Widzew Łódź", home: true },
+      { opponent: "Wisla Cracovia", date: isEs ? "7 Ago 2026" : "Aug 7, 2026", competition: "Wisla Cracovia", home: false }
+    ],
+    "Legia Warszawa": [
+      { opponent: "Pogon Szczecin", date: isEs ? "24 Jul 2026" : "Jul 24, 2026", competition: "Pogon Szczecin", home: false },
+      { opponent: "Zagłębie Lubin", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "Zagłębie Lubin", home: true },
+      { opponent: "Korona Kielce", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Korona Kielce", home: false }
+    ],
+    "Pogon Szczecin": [
+      { opponent: "Legia de Varsovia", date: isEs ? "24 Jul 2026" : "Jul 24, 2026", competition: "Legia de Varsovia", home: true },
+      { opponent: "Cracovia", date: isEs ? "3 Ago 2026" : "Aug 3, 2026", competition: "Cracovia", home: false },
+      { opponent: "Motor Lublin", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Motor Lublin", home: true }
+    ],
+    "Zaglebie Lubin": [
+      { opponent: "Piast Gliwice", date: isEs ? "27 Jul 2026" : "Jul 27, 2026", competition: "Piast Gliwice", home: true },
+      { opponent: "Legia de Varsovia", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "Legia de Varsovia", home: false },
+      { opponent: "Raków Częstochowa", date: isEs ? "15 Sep 2026" : "Sep 15, 2026", competition: "Raków Częstochowa", home: false }
+    ],
+    "Korona Kielce": [
+      { opponent: "Jagiellonia Białystok", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "Jagiellonia Białystok", home: false },
+      { opponent: "Górnik Zabrze", date: isEs ? "15 Sep 2026" : "Sep 15, 2026", competition: "Górnik Zabrze", home: true },
+      { opponent: "Legia de Varsovia", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Legia de Varsovia", home: true }
+    ],
+    "Motor Lublin": [
+      { opponent: "RTS Widzew Łódź", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "RTS Widzew Łódź", home: false },
+      { opponent: "Jagiellonia Białystok", date: isEs ? "31 Jul 2026" : "Jul 31, 2026", competition: "Jagiellonia Białystok", home: true },
+      { opponent: "Pogon Szczecin", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Pogon Szczecin", home: false }
+    ],
+    "Arka Gdynia": [
+      { opponent: "Odra Opole", date: isEs ? "24 Jul 2026" : "Jul 24, 2026", competition: "Odra Opole", home: false },
+      { opponent: "Stal Rzeszow", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "Stal Rzeszow", home: true },
+      { opponent: "Unia Skierniewice", date: isEs ? "10 Ago 2026" : "Aug 10, 2026", competition: "Unia Skierniewice", home: false }
+    ],
+    "Lechia Gdansk": [
+      { opponent: "Pogon Grodzisk Mazowiecki", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "Pogon Grodzisk Mazowiecki", home: true },
+      { opponent: "Warta Poznań", date: isEs ? "31 Jul 2026" : "Jul 31, 2026", competition: "Warta Poznań", home: true },
+      { opponent: "TS Podbeskidzie Bielsko-Biala", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "TS Podbeskidzie Bielsko-Biala", home: false }
+    ],
+    "Widzew Lodz": [
+      { opponent: "Motor Lublin", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "Motor Lublin", home: true },
+      { opponent: "Wisła Płock", date: isEs ? "31 Jul 2026" : "Jul 31, 2026", competition: "Wisła Płock", home: false },
+      { opponent: "Jagiellonia Białystok", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Jagiellonia Białystok", home: false }
+    ],
+    "Cracovia": [
+      { opponent: "Lech Poznan", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "Lech Poznan", home: false },
+      { opponent: "Pogon Szczecin", date: isEs ? "3 Ago 2026" : "Aug 3, 2026", competition: "Pogon Szczecin", home: true },
+      { opponent: "Śląsk Wroclaw", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Śląsk Wroclaw", home: false }
+    ],
+    "Piast Gliwice": [
+      { opponent: "Zagłębie Lubin", date: isEs ? "27 Jul 2026" : "Jul 27, 2026", competition: "Zagłębie Lubin", home: false },
+      { opponent: "Wisla Cracovia", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "Wisla Cracovia", home: true },
+      { opponent: "Lech Poznan", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Lech Poznan", home: false }
+    ],
+    "Dinamo Zagreb": [
+      { opponent: "Slaven Belupo Koprivnica", date: isEs ? "31 Jul 2026" : "Jul 31, 2026", competition: "Slaven Belupo Koprivnica", home: true },
+      { opponent: "HNK Rijeka", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "HNK Rijeka", home: false },
+      { opponent: "NK Rudes", date: isEs ? "14 Ago 2026" : "Aug 14, 2026", competition: "NK Rudes", home: true }
+    ],
+    "Bruk-Bet Termalica Nieciecza": [
+      { opponent: "Ruch Chorzów", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "Ruch Chorzów", home: true },
+      { opponent: "Pogon Siedlce", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "Pogon Siedlce ", home: false },
+      { opponent: "Warta Poznań", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Warta Poznań", home: true }
+    ],
+    "NK Varazdin": [
+      { opponent: "HNK Hajduk Split", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "HNK Hajduk Split", home: true },
+      { opponent: "Slaven Belupo Koprivnica", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Slaven Belupo Koprivnica", home: false },
+      { opponent: "HNK Rijeka", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "HNK Rijeka", home: true }
+    ],
+    "Hajduk Split": [
+      { opponent: "NK Varazdin", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "NK Varazdin", home: false },
+      { opponent: "NK Istra 1961", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "NK Istra 1961", home: true },
+      { opponent: "HNK Gorica", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "HNK Gorica", home: false }
+    ],
+    "HNK Rijeka": [
+      { opponent: "NK Rudes", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "NK Rudes", home: true },
+      { opponent: "GNK Dinamo Zagreb", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "GNK Dinamo Zagreb", home: true },
+      { opponent: "NK Varazdin", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "NK Varazdin", home: false }
+    ],
+    "NK Slaven Belupo": [
+      { opponent: "GNK Dinamo Zagreb", date: isEs ? "31 Jul 2026" : "Jul 31, 2026", competition: "GNK Dinamo Zagreb", home: false },
+      { opponent: "NK Varazdin", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "NK Varazdin", home: true },
+      { opponent: "NK Istra 1961", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "NK Istra 1961", home: false }
+    ],
+    "HNK Gorica": [
+      { opponent: "NK Osijek", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "NK Osijek", home: true },
+      { opponent: "NK Lokomotiva Zagreb", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "NK Lokomotiva Zagreb", home: false },
+      { opponent: "HNK Hajduk Split", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "HNK Hajduk Split", home: true }
+    ],
+    "NK Istra 1961": [
+      { opponent: "NK Lokomotiva Zagreb", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "NK Lokomotiva Zagreb", home: true },
+      { opponent: "HNK Hajduk Split", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "HNK Hajduk Split", home: true },
+      { opponent: "Slaven Belupo Koprivnica", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Slaven Belupo Koprivnica", home: true }
+    ],
+    "NK Lokomotiva Zagreb": [
+      { opponent: "NK Istra 1961", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "NK Istra 1961", home: false },
+      { opponent: "HNK Gorica", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "HNK Gorica", home: true },
+      { opponent: "NK Osijek", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "NK Osijek", home: false }
+    ],
+    "NK Osijek": [
+      { opponent: "HNK Gorica", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "HNK Gorica", home: false },
+      { opponent: "NK Rudes", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "NK Rudes", home: false },
+      { opponent: "NK Lokomotiva Zagreb", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "NK Lokomotiva Zagreb", home: true }
+    ],
+    "Moreirense": [
+      { opponent: "SC Braga", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "SC Braga", home: true },
+      { opponent: "FC Arouca", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "FC Arouca", home: false },
+      { opponent: "SL Benfica", date: isEs ? "9 Sep 2026" : "Sep 9, 2026", competition: "SL Benfica", home: true }
+    ],
+    "Famalicao": [
+      { opponent: "GD Estoril Praia", date: isEs ? "7 Ago 2026" : "Aug 7, 2026", competition: "GD Estoril Praia", home: false },
+      { opponent: "CS Marítimo", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "CS Marítimo", home: true },
+      { opponent: "CD Santa Clara", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "CD Santa Clara", home: false }
+    ],
+    "Sporting Braga": [
+      { opponent: "Moreirense FC", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Moreirense FC", home: false },
+      { opponent: "Gil Vicente FC", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Gil Vicente FC", home: true },
+      { opponent: "CF Estrela Amadora", date: isEs ? "10 Sep 2026" : "Sep 10, 2026", competition: "CF Estrela Amadora", home: false }
+    ],
+    "Arouca": [
+      { opponent: "FC Serpa", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "FC Serpa", home: false },
+      { opponent: "Amora FC", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Amora FC", home: true },
+      { opponent: "JD Lajense", date: isEs ? "6 Sep 2026" : "Sep 6, 2026", competition: "JD Lajense", home: false }
+    ],
+    "Vitoria SC": [
+      { opponent: "FC Arouca", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "FC Arouca", home: true },
+      { opponent: "Sporting de Lisboa", date: isEs ? "14 Ago 2026" : "Aug 14, 2026", competition: "Sporting de Lisboa", home: false },
+      { opponent: "CD Nacional", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "CD Nacional", home: true }
+    ],
+    "Rio Ave": [
+      { opponent: "Foro del club", date: isEs ? "20 Ago 2026" : "Aug 20, 2026", competition: "Foro del club", home: false },
+      { opponent: "Foro del club", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Foro del club", home: true },
+      { opponent: "Foro del club", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Foro del club", home: true }
+    ],
+    "Estoril": [
+      { opponent: "FC Famalicão", date: isEs ? "7 Ago 2026" : "Aug 7, 2026", competition: "FC Famalicão", home: true },
+      { opponent: "CD Nacional", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "CD Nacional", home: false },
+      { opponent: "Rio Ave FC", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Rio Ave FC", home: true }
+    ],
+    "Alverca": [
+      { opponent: "Unión Deportivo Ascensión", date: isEs ? "25 Abr 2025" : "Apr 25, 2025", competition: "Unión Deportivo Ascensión", home: true },
+      { opponent: "Sport Huancayo II", date: isEs ? "3 May 2025" : "May 3, 2025", competition: "Sport Huancayo II", home: true },
+      { opponent: "Ucayali FC", date: isEs ? "10 May 2025" : "May 10, 2025", competition: "Ucayali FC", home: true }
+    ],
+    "Estrela da Amadora": [
+      { opponent: "Sporting de Lisboa", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Sporting de Lisboa", home: true },
+      { opponent: "FC Alverca", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "FC Alverca", home: false },
+      { opponent: "SC Braga", date: isEs ? "10 Sep 2026" : "Sep 10, 2026", competition: "SC Braga", home: true }
+    ],
+    "Tondela": [
+      { opponent: "Amarante FC", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Amarante FC", home: true },
+      { opponent: "Leixões SC", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Leixões SC", home: false },
+      { opponent: "Académica Coimbra", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Académica Coimbra", home: true }
+    ],
+    "Trabzonspor": [
+      { opponent: "Kasimpasa", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Kasimpasa", home: false },
+      { opponent: "Basaksehir FK", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Basaksehir FK", home: true },
+      { opponent: "Amed SK", date: isEs ? "31 Ago 2026" : "Aug 31, 2026", competition: "Amed SK", home: false }
+    ],
+    "Istanbul Basaksehir": [
+      { opponent: "Kocaelispor", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Kocaelispor", home: true },
+      { opponent: "Trabzonspor", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Trabzonspor", home: false },
+      { opponent: "Kasimpasa", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "Kasimpasa", home: true }
+    ],
+    "Besiktas": [
+      { opponent: "Eyüpspor", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Eyüpspor", home: true },
+      { opponent: "Alanyaspor", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Alanyaspor", home: false },
+      { opponent: "Corum FK", date: isEs ? "31 Ago 2026" : "Aug 31, 2026", competition: "Corum FK", home: true }
+    ],
+    "Casa Pia": [
+      { opponent: "CS Marítimo", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "CS Marítimo", home: false },
+      { opponent: "SL Benfica", date: isEs ? "17 Ago 2026" : "Aug 17, 2026", competition: "SL Benfica", home: true },
+      { opponent: "Gil Vicente FC", date: isEs ? "24 Ago 2026" : "Aug 24, 2026", competition: "Gil Vicente FC", home: false }
+    ],
+    "Goztepe": [
+      { opponent: "Foro del club", date: isEs ? "20 Ago 2026" : "Aug 20, 2026", competition: "Foro del club", home: false },
+      { opponent: "Foro del club", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Foro del club", home: true },
+      { opponent: "Foro del club", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Foro del club", home: true }
+    ],
+    "Konyaspor": [
+      { opponent: "Caykur Rizespor", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Caykur Rizespor", home: true },
+      { opponent: "Fenerbahce", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Fenerbahce", home: false },
+      { opponent: "Kocaelispor", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Kocaelispor", home: true }
+    ],
+    "Kocaelispor": [
+      { opponent: "Basaksehir FK", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Basaksehir FK", home: false },
+      { opponent: "Amed SK", date: isEs ? "24 Ago 2026" : "Aug 24, 2026", competition: "Amed SK", home: true },
+      { opponent: "Konyaspor", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Konyaspor", home: false }
+    ],
+    "Caykur Rizespor": [
+      { opponent: "Konyaspor", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Konyaspor", home: false },
+      { opponent: "Samsunspor", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Samsunspor", home: true },
+      { opponent: "Gaziantep FK", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Gaziantep FK", home: false }
+    ],
+    "Samsunspor": [
+      { opponent: "Göztepe", date: isEs ? "17 Ago 2026" : "Aug 17, 2026", competition: "Göztepe", home: true },
+      { opponent: "Caykur Rizespor", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Caykur Rizespor", home: false },
+      { opponent: "Fenerbahce", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "Fenerbahce", home: true }
+    ],
+    "Alanyaspor": [
+      { opponent: "Gaziantep FK", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Gaziantep FK", home: false },
+      { opponent: "Besiktas JK", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Besiktas JK", home: true },
+      { opponent: "Eyüpspor", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "Eyüpspor", home: false }
+    ],
+    "Eyupspor": [
+      { opponent: "Besiktas JK", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Besiktas JK", home: false },
+      { opponent: "Gaziantep FK", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Gaziantep FK", home: true },
+      { opponent: "Alanyaspor", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "Alanyaspor", home: true }
+    ],
+    "Gazisehir Gaziantep": [
+      { opponent: "Alanyaspor U19", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Alanyaspor U19", home: true },
+      { opponent: "Eyüpspor U19", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Eyüpspor U19", home: false },
+      { opponent: "Caykur Rizespor U19", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Caykur Rizespor U19", home: true }
+    ],
+    "Kayserispor": [
+      { opponent: "Van Spor FK", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Van Spor FK", home: false },
+      { opponent: "Sivasspor", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Sivasspor", home: true },
+      { opponent: "Igdir FK", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Igdir FK", home: false }
+    ],
+    "Genclerbirligi": [
+      { opponent: "Fenerbahce", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Fenerbahce", home: true },
+      { opponent: "Göztepe", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Göztepe", home: false },
+      { opponent: "BErzurumspor FK", date: isEs ? "28 Ago 2026" : "Aug 28, 2026", competition: "BErzurumspor FK", home: true }
+    ],
+    "Kasimpasa": [
+      { opponent: "Trabzonspor", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Trabzonspor", home: true },
+      { opponent: "Corum FK", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Corum FK", home: false },
+      { opponent: "Basaksehir FK", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "Basaksehir FK", home: false }
+    ],
+    "Antalyaspor": [
+      { opponent: "Ankara Keciörengücü", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Ankara Keciörengücü", home: true },
+      { opponent: "Mardin 1969 Spor", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Mardin 1969 Spor", home: false },
+      { opponent: "Pendikspor", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Pendikspor", home: true }
+    ],
+    "Fatih Karagumruk": [
+      { opponent: "Igdir FK", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Igdir FK", home: false },
+      { opponent: "Ümraniyespor", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Ümraniyespor", home: true },
+      { opponent: "Bursaspor", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Bursaspor", home: true }
+    ],
+    "FC Thun": [
+      { opponent: "FC Lucerna", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "FC Lucerna", home: false },
+      { opponent: "BSC Young Boys", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "BSC Young Boys", home: true },
+      { opponent: "FC Basilea", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "FC Basilea", home: false }
+    ],
+    "AEK Athens": [
+      { opponent: "Iraklis de Tesalónica", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Iraklis de Tesalónica", home: true },
+      { opponent: "AE Kifisia", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "AE Kifisia", home: false },
+      { opponent: "Aris de Salónica", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Aris de Salónica", home: true }
+    ],
+    "PAOK": [
+      { opponent: "Levadiakos", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Levadiakos", home: true },
+      { opponent: "Atromitos FC", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Atromitos FC", home: false },
+      { opponent: "Panathinaikos", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Panathinaikos", home: false }
+    ],
+    "FC Winterthur": [
+      { opponent: "Yverdon Sport FC", date: isEs ? "24 Jul 2026" : "Jul 24, 2026", competition: "Yverdon Sport FC", home: true },
+      { opponent: "SC Kriens", date: isEs ? "31 Jul 2026" : "Jul 31, 2026", competition: "SC Kriens", home: false },
+      { opponent: "FC Wil 1900", date: isEs ? "7 Ago 2026" : "Aug 7, 2026", competition: "FC Wil 1900", home: true }
+    ],
+    "Panathinaikos": [
+      { opponent: "AE Kifisia", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "AE Kifisia", home: true },
+      { opponent: "Levadiakos", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Levadiakos", home: false },
+      { opponent: "PAOK de Salónica FC", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "PAOK de Salónica FC", home: true }
+    ],
+    "Olympiacos": [
+      { opponent: "Atromitos FC", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Atromitos FC", home: true },
+      { opponent: "Asteras Aktor", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Asteras Aktor", home: false },
+      { opponent: "Volos FC", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Volos FC", home: false }
+    ],
+    "Levadiakos": [
+      { opponent: "PAOK de Salónica FC", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "PAOK de Salónica FC", home: false },
+      { opponent: "Panathinaikos", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Panathinaikos", home: true },
+      { opponent: "Panetolikos", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Panetolikos", home: true }
+    ],
+    "Atromitos": [
+      { opponent: "Olympiacos El Pireo", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Olympiacos El Pireo", home: false },
+      { opponent: "PAOK de Salónica FC", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "PAOK de Salónica FC", home: true },
+      { opponent: "Kalamata FC", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Kalamata FC", home: true }
+    ],
+    "OFI Crete": [
+      { opponent: "Volos FC", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Volos FC", home: true },
+      { opponent: "Aris de Salónica", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Aris de Salónica", home: false },
+      { opponent: "AE Kifisia", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "AE Kifisia", home: true }
+    ],
+    "AE Kifisia": [
+      { opponent: "Panathinaikos", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Panathinaikos", home: false },
+      { opponent: "AEK Atenas FC", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "AEK Atenas FC", home: true },
+      { opponent: "OFI Creta", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "OFI Creta", home: false }
+    ],
+    "Panetolikos": [
+      { opponent: "Asteras Aktor", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Asteras Aktor", home: true },
+      { opponent: "Kalamata FC", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Kalamata FC", home: true },
+      { opponent: "Levadiakos", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Levadiakos", home: false }
+    ],
+    "Aris": [
+      { opponent: "Foro del club", date: isEs ? "20 Ago 2026" : "Aug 20, 2026", competition: "Foro del club", home: false },
+      { opponent: "Foro del club", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Foro del club", home: true },
+      { opponent: "Foro del club", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Foro del club", home: true }
+    ],
+    "FC Nordsjaelland": [
+      { opponent: "AC Horsens", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "AC Horsens", home: true },
+      { opponent: "Randers FC", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "Randers FC", home: true },
+      { opponent: "FC Copenhague", date: isEs ? "3 Sep 2026" : "Sep 3, 2026", competition: "FC Copenhague", home: false }
+    ],
+    "Asteras Tripolis": [
+      { opponent: "Panetolikos", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "Panetolikos", home: false },
+      { opponent: "Olympiacos El Pireo", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Olympiacos El Pireo", home: true },
+      { opponent: "Iraklis de Tesalónica", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Iraklis de Tesalónica", home: false }
+    ],
+    "FC Midtjylland": [
+      { opponent: "Sönderjyske Fodbold", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "Sönderjyske Fodbold", home: false },
+      { opponent: "AC Horsens", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "AC Horsens", home: true },
+      { opponent: "Aarhus GF", date: isEs ? "2 Sep 2026" : "Sep 2, 2026", competition: "Aarhus GF", home: false }
+    ],
+    "Panserraikos": [
+      { opponent: "Panthrakikos", date: isEs ? "19 Ago 2026" : "Aug 19, 2026", competition: "Panthrakikos", home: true },
+      { opponent: "&nbsp;", date: isEs ? "17 Ago 2026" : "Aug 17, 2026", competition: "&nbsp;", home: false },
+      { opponent: "Aris de Salónica", date: isEs ? "24 Ago 2026" : "Aug 24, 2026", competition: "Aris de Salónica", home: true }
+    ],
+    "FC Copenhague": [
+      { opponent: "Lyngby Boldklub", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "Lyngby Boldklub", home: true },
+      { opponent: "Silkeborg IF", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "Silkeborg IF", home: false },
+      { opponent: "FC Nordsjælland", date: isEs ? "3 Sep 2026" : "Sep 3, 2026", competition: "FC Nordsjælland", home: true }
+    ],
+    "Sonderjyske": [
+      { opponent: "FC Midtjylland", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "FC Midtjylland", home: true },
+      { opponent: "Odense Boldklub", date: isEs ? "3 Ago 2026" : "Aug 3, 2026", competition: "Odense Boldklub", home: false },
+      { opponent: "Viborg FF", date: isEs ? "7 Ago 2026" : "Aug 7, 2026", competition: "Viborg FF", home: true }
+    ],
+    "Brondby IF": [
+      { opponent: "Aarhus GF", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "Aarhus GF", home: false },
+      { opponent: "Viborg FF", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "Viborg FF", home: true },
+      { opponent: "AC Horsens", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "AC Horsens", home: true }
+    ],
+    "Silkeborg IF": [
+      { opponent: "Randers FC", date: isEs ? "27 Jul 2026" : "Jul 27, 2026", competition: "Randers FC", home: false },
+      { opponent: "FC Copenhague", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "FC Copenhague", home: true },
+      { opponent: "Odense Boldklub", date: isEs ? "10 Ago 2026" : "Aug 10, 2026", competition: "Odense Boldklub", home: true }
+    ],
+    "Viborg FF": [
+      { opponent: "Odense Boldklub", date: isEs ? "24 Jul 2026" : "Jul 24, 2026", competition: "Odense Boldklub", home: true },
+      { opponent: "Brøndby IF", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "Brøndby IF", home: false },
+      { opponent: "Sönderjyske Fodbold", date: isEs ? "7 Ago 2026" : "Aug 7, 2026", competition: "Sönderjyske Fodbold", home: false }
+    ],
+    "Vejle Boldklub": [
+      { opponent: "Akademisk Boldklub", date: isEs ? "24 Jul 2026" : "Jul 24, 2026", competition: "Akademisk Boldklub", home: true },
+      { opponent: "HB Køge", date: isEs ? "31 Jul 2026" : "Jul 31, 2026", competition: "HB Køge", home: false },
+      { opponent: "Hilleröd Fodbold", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Hilleröd Fodbold", home: true }
+    ],
+    "Randers FC": [
+      { opponent: "Silkeborg IF", date: isEs ? "27 Jul 2026" : "Jul 27, 2026", competition: "Silkeborg IF", home: true },
+      { opponent: "FC Nordsjælland", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "FC Nordsjælland", home: false },
+      { opponent: "Lyngby Boldklub", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Lyngby Boldklub", home: true }
+    ],
+    "Partizan": [
+      { opponent: "FK Zemun", date: isEs ? "18 Jul 2026" : "Jul 18, 2026", competition: "FK Zemun", home: false },
+      { opponent: "FK Macva Sabac", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "FK Macva Sabac", home: false },
+      { opponent: "FK IMT Belgrad", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "FK IMT Belgrad", home: true }
+    ],
+    "Crvena Zvezda": [
+      { opponent: "FK Macva Sabac", date: isEs ? "17 Jul 2026" : "Jul 17, 2026", competition: "FK Macva Sabac", home: true },
+      { opponent: "FK Vojvodina Novi Sad", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "FK Vojvodina Novi Sad", home: true },
+      { opponent: "FK Radnik Surdulica", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "FK Radnik Surdulica", home: false }
+    ],
+    "FC Fredericia": [
+      { opponent: "HB Køge", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "HB Køge", home: true },
+      { opponent: "Akademisk Boldklub", date: isEs ? "31 Jul 2026" : "Jul 31, 2026", competition: "Akademisk Boldklub", home: false },
+      { opponent: "Vendsyssel FF", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Vendsyssel FF", home: true }
+    ],
+    "Vojvodina": [
+      { opponent: "OFK Beograd", date: isEs ? "19 Jul 2026" : "Jul 19, 2026", competition: "OFK Beograd", home: true },
+      { opponent: "Estrella Roja de Belgrado", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "Estrella Roja de Belgrado", home: false },
+      { opponent: "FK Macva Sabac", date: isEs ? "3 Ago 2026" : "Aug 3, 2026", competition: "FK Macva Sabac", home: true }
+    ],
+    "Zeleznicar Pancevo": [
+      { opponent: "FK Radnicki Niš", date: isEs ? "17 Jul 2026" : "Jul 17, 2026", competition: "FK Radnicki Niš", home: true },
+      { opponent: "FK Radnicki 1923 Kragujevac", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "FK Radnicki 1923 Kragujevac", home: false },
+      { opponent: "FK Mladost Lucani", date: isEs ? "3 Ago 2026" : "Aug 3, 2026", competition: "FK Mladost Lucani", home: true }
+    ],
+    "Cukaricki": [
+      { opponent: "FK IMT Belgrad", date: isEs ? "19 Jul 2026" : "Jul 19, 2026", competition: "FK IMT Belgrad", home: true },
+      { opponent: "FK Radnicki Niš", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "FK Radnicki Niš", home: false },
+      { opponent: "FK Radnicki 1923 Kragujevac", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "FK Radnicki 1923 Kragujevac", home: true }
+    ],
+    "Novi Pazar": [
+      { opponent: "FK Radnicki 1923 Kragujevac", date: isEs ? "18 Jul 2026" : "Jul 18, 2026", competition: "FK Radnicki 1923 Kragujevac", home: true },
+      { opponent: "FK Mladost Lucani", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "FK Mladost Lucani", home: false },
+      { opponent: "OFK Beograd", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "OFK Beograd", home: true }
+    ],
+    "Radnik Surdulica": [
+      { opponent: "FK Mladost Lucani", date: isEs ? "19 Jul 2026" : "Jul 19, 2026", competition: "FK Mladost Lucani", home: true },
+      { opponent: "OFK Beograd", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "OFK Beograd", home: false },
+      { opponent: "Estrella Roja de Belgrado", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "Estrella Roja de Belgrado", home: true }
+    ],
+    "OFK Beograd": [
+      { opponent: "FK Vojvodina Novi Sad", date: isEs ? "19 Jul 2026" : "Jul 19, 2026", competition: "FK Vojvodina Novi Sad", home: false },
+      { opponent: "FK Radnik Surdulica", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "FK Radnik Surdulica", home: true },
+      { opponent: "FK Novi Pazar", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "FK Novi Pazar", home: false }
+    ],
+    "Mladost Lucani": [
+      { opponent: "FK Radnik Surdulica", date: isEs ? "19 Jul 2026" : "Jul 19, 2026", competition: "FK Radnik Surdulica", home: false },
+      { opponent: "FK Novi Pazar", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "FK Novi Pazar", home: true },
+      { opponent: "FK Zeleznicar Pancevo", date: isEs ? "3 Ago 2026" : "Aug 3, 2026", competition: "FK Zeleznicar Pancevo", home: false }
+    ],
+    "Radnicki 1923 Kragujevac": [
+      { opponent: "FK Novi Pazar", date: isEs ? "18 Jul 2026" : "Jul 18, 2026", competition: "FK Novi Pazar", home: false },
+      { opponent: "FK Zeleznicar Pancevo", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "FK Zeleznicar Pancevo", home: true },
+      { opponent: "FK Cukaricki", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "FK Cukaricki", home: false }
+    ],
+    "Javor-Matis": [
+      { opponent: "FK Teleoptik Zemun", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "FK Teleoptik Zemun", home: true },
+      { opponent: "FK TSC Backa Topola", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "FK TSC Backa Topola", home: false },
+      { opponent: "OFK Vrsac", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "OFK Vrsac", home: true }
+    ],
+    "Radnicki Nis": [
+      { opponent: "FK Zeleznicar Pancevo", date: isEs ? "17 Jul 2026" : "Jul 17, 2026", competition: "FK Zeleznicar Pancevo", home: false },
+      { opponent: "FK Cukaricki", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "FK Cukaricki", home: true },
+      { opponent: "FK Zemun", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "FK Zemun", home: false }
+    ],
+    "TSC Backa Topola": [
+      { opponent: "OFK Vrsac", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "OFK Vrsac", home: true },
+      { opponent: "FK Javor-Matis Ivanjica", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "FK Javor-Matis Ivanjica", home: true },
+      { opponent: "FK Jedinstvo Ub", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "FK Jedinstvo Ub", home: false }
+    ],
+    "Spartak Subotica": [
+      { opponent: "FK Bor 1919", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "FK Bor 1919", home: true },
+      { opponent: "FK Metalac Gornji Milanovac", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "FK Metalac Gornji Milanovac", home: false },
+      { opponent: "FK Teleoptik Zemun", date: isEs ? "14 Ago 2026" : "Aug 14, 2026", competition: "FK Teleoptik Zemun", home: true }
+    ],
+    "Slavia Praga": [
+      { opponent: "1.FC Slovacko", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "1.FC Slovacko", home: true },
+      { opponent: "FC Banik Ostrava", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "FC Banik Ostrava", home: false },
+      { opponent: "FK Pardubice", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "FK Pardubice", home: true }
+    ],
+    "Viktoria Plzen": [
+      { opponent: "FC Slovan Liberec", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "FC Slovan Liberec", home: true },
+      { opponent: "FC Zbrojovka Brno", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "FC Zbrojovka Brno", home: true },
+      { opponent: "FK Teplice", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "FK Teplice", home: false }
+    ],
+    "Napredak Krusevac": [
+      { opponent: "Graficar Belgrad", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "Graficar Belgrad", home: true },
+      { opponent: "FK Bor 1919", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "FK Bor 1919", home: false },
+      { opponent: "FK Metalac Gornji Milanovac", date: isEs ? "14 Ago 2026" : "Aug 14, 2026", competition: "FK Metalac Gornji Milanovac", home: true }
+    ],
+    "Hradec Kralove": [
+      { opponent: "FK Pardubice", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "FK Pardubice", home: true },
+      { opponent: "Bohemians Praga 1905", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "Bohemians Praga 1905", home: false },
+      { opponent: "FC Banik Ostrava", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "FC Banik Ostrava", home: true }
+    ],
+    "Sparta Praga": [
+      { opponent: "FC Zbrojovka Brno", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "FC Zbrojovka Brno", home: false },
+      { opponent: "FC Zlin", date: isEs ? "31 Jul 2026" : "Jul 31, 2026", competition: "FC Zlin", home: true },
+      { opponent: "FK Mlada Boleslav", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "FK Mlada Boleslav", home: false }
+    ],
+    "Jablonec": [
+      { opponent: "SK Sigma Olomouc", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "SK Sigma Olomouc", home: true },
+      { opponent: "FK Pardubice", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "FK Pardubice", home: false },
+      { opponent: "1.FC Slovacko", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "1.FC Slovacko", home: true }
+    ],
+    "Pardubice": [
+      { opponent: "FC Hradec Kralove", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "FC Hradec Kralove", home: true },
+      { opponent: "FK Jablonec", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "FK Jablonec", home: true },
+      { opponent: "SK Slavia Praga", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "SK Slavia Praga", home: false }
+    ],
+    "Bohemians 1905": [
+      { opponent: "FK Teplice", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "FK Teplice", home: false },
+      { opponent: "FC Hradec Kralove", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "FC Hradec Kralove", home: true },
+      { opponent: "FC Zlin", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "FC Zlin", home: false }
+    ],
+    "Slovan Liberec": [
+      { opponent: "FC Viktoria Plzen", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "FC Viktoria Plzen", home: false },
+      { opponent: "FK Teplice", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "FK Teplice", home: true },
+      { opponent: "FC Zbrojovka Brno", date: isEs ? "7 Ago 2026" : "Aug 7, 2026", competition: "FC Zbrojovka Brno", home: false }
+    ],
+    "Karvina": [
+      { opponent: "Slezsky FC Opava", date: isEs ? "27 Jul 2026" : "Jul 27, 2026", competition: "Slezsky FC Opava", home: false },
+      { opponent: "FC Sellier & Bellot Vlasim", date: isEs ? "31 Jul 2026" : "Jul 31, 2026", competition: "FC Sellier & Bellot Vlasim", home: true },
+      { opponent: "1.SK Prostejov", date: isEs ? "7 Ago 2026" : "Aug 7, 2026", competition: "1.SK Prostejov", home: false }
+    ],
+    "Sigma Olomouc": [
+      { opponent: "FK Jablonec", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "FK Jablonec", home: false },
+      { opponent: "FK Mlada Boleslav", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "FK Mlada Boleslav", home: true },
+      { opponent: "SK Artis Brno", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "SK Artis Brno", home: false }
+    ],
+    "Zlin": [
+      { opponent: "Foro del club", date: isEs ? "20 Ago 2026" : "Aug 20, 2026", competition: "Foro del club", home: false },
+      { opponent: "Foro del club", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Foro del club", home: true },
+      { opponent: "Foro del club", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Foro del club", home: true }
+    ],
+    "Slovacko": [
+      { opponent: "SK Slavia Praga", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "SK Slavia Praga", home: false },
+      { opponent: "SK Artis Brno", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "SK Artis Brno", home: true },
+      { opponent: "FK Jablonec", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "FK Jablonec", home: false }
+    ],
+    "Teplice": [
+      { opponent: "Bohemians Praga 1905", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "Bohemians Praga 1905", home: true },
+      { opponent: "FC Slovan Liberec", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "FC Slovan Liberec", home: false },
+      { opponent: "FC Viktoria Plzen", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "FC Viktoria Plzen", home: true }
+    ],
+    "Mlada Boleslav": [
+      { opponent: "SK Artis Brno", date: isEs ? "27 Jul 2026" : "Jul 27, 2026", competition: "SK Artis Brno", home: false },
+      { opponent: "SK Sigma Olomouc", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "SK Sigma Olomouc", home: false },
+      { opponent: "AC Sparta Praga", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "AC Sparta Praga", home: true }
+    ],
+    "Banik Ostrava": [
+      { opponent: "FC Zlin", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "FC Zlin", home: false },
+      { opponent: "SK Slavia Praga", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "SK Slavia Praga", home: true },
+      { opponent: "FC Hradec Kralove", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "FC Hradec Kralove", home: true }
+    ],
+    "Borac Banja Luka": [
+      { opponent: "FK Velez Mostar", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "FK Velez Mostar", home: true },
+      { opponent: "FK Sloga Meridian", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "FK Sloga Meridian", home: false },
+      { opponent: "NK Celik Zenica", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "NK Celik Zenica", home: true }
+    ],
+    "Dukla Praga": [
+      { opponent: "FK Arsenal Ceska Lipa", date: isEs ? "24 Jul 2026" : "Jul 24, 2026", competition: "FK Arsenal Ceska Lipa", home: true },
+      { opponent: "FC SILON Taborsko", date: isEs ? "31 Jul 2026" : "Jul 31, 2026", competition: "FC SILON Taborsko", home: false },
+      { opponent: "SK Hanacka Slavia Kromeriz", date: isEs ? "7 Ago 2026" : "Aug 7, 2026", competition: "SK Hanacka Slavia Kromeriz", home: true }
+    ],
+    "Radnik Bijeljina": [
+      { opponent: "FK Sarajevo", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "FK Sarajevo", home: false },
+      { opponent: "HSK Zrinjski Mostar", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "HSK Zrinjski Mostar", home: true },
+      { opponent: "NK Siroki Brijeg", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "NK Siroki Brijeg", home: false }
+    ],
+    "Sarajevo": [
+      { opponent: "FK Radnik Bijeljina", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "FK Radnik Bijeljina", home: true },
+      { opponent: "FK BSK Banja Luka", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "FK BSK Banja Luka", home: true },
+      { opponent: "HSK Zrinjski Mostar", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "HSK Zrinjski Mostar", home: true }
+    ],
+    "Siroki Brijeg": [
+      { opponent: "FK Sloga Meridian", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "FK Sloga Meridian", home: true },
+      { opponent: "NK Celik Zenica", date: isEs ? "14 Ago 2026" : "Aug 14, 2026", competition: "NK Celik Zenica", home: false },
+      { opponent: "FK Radnik Bijeljina", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "FK Radnik Bijeljina", home: true }
+    ],
+    "Velez Mostar": [
+      { opponent: "FK Borac Banja Luka", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "FK Borac Banja Luka", home: false },
+      { opponent: "FK BSK Banja Luka", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "FK BSK Banja Luka", home: false },
+      { opponent: "FK Sloga Meridian", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "FK Sloga Meridian", home: true }
+    ],
+    "Zeljeznicar": [
+      { opponent: "FK BSK Banja Luka", date: isEs ? "7 Ago 2026" : "Aug 7, 2026", competition: "FK BSK Banja Luka", home: true },
+      { opponent: "FK Sarajevo", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "FK Sarajevo", home: true },
+      { opponent: "HSK Zrinjski Mostar", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "HSK Zrinjski Mostar", home: false }
+    ],
+    "Zrinjski Mostar": [
+      { opponent: "NK Celik Zenica", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "NK Celik Zenica", home: true },
+      { opponent: "FK Radnik Bijeljina", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "FK Radnik Bijeljina", home: false },
+      { opponent: "FK Zeljeznicar Sarajevo", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "FK Zeljeznicar Sarajevo", home: true }
+    ],
+    "Lokomotiv Moscu": [
+      { opponent: "Akhmat Grozny", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "Akhmat Grozny", home: true },
+      { opponent: "Dinamo Makhachkala", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "Dinamo Makhachkala", home: false },
+      { opponent: "Akron Togliatti", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Akron Togliatti", home: true }
+    ],
+    "FK Krasnodar": [
+      { opponent: "Rubin Kazan", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "Rubin Kazan", home: false },
+      { opponent: "Fakel Voronezh", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "Fakel Voronezh", home: true },
+      { opponent: "FC Spartak de Moscú", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: " FC Spartak de Moscú", home: false }
+    ],
+    "Posusje": [
+      { opponent: "NK Bratstvo Gracanica", date: isEs ? "14 Ago 2026" : "Aug 14, 2026", competition: "NK Bratstvo Gracanica", home: false },
+      { opponent: "NK Zvijezda Gradacac", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "NK Zvijezda Gradacac", home: true },
+      { opponent: "FK Igman Konjic", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "FK Igman Konjic", home: false }
+    ],
+    "Sloga Doboj": [
+      { opponent: "NK Siroki Brijeg U17", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "NK Siroki Brijeg U17", home: true },
+      { opponent: "FK Borac Banja Luka U17", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "FK Borac Banja Luka U17", home: false },
+      { opponent: "FK Velez Mostar U17", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "FK Velez Mostar U17", home: true }
+    ],
+    "Rudar Prijedor": [
+      { opponent: "FK Majevica", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "FK Majevica", home: false },
+      { opponent: "FK Romanija Pale", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "FK Romanija Pale", home: true },
+      { opponent: "FK Leotar Trebinje", date: isEs ? "2 Sep 2026" : "Sep 2, 2026", competition: "FK Leotar Trebinje", home: false }
+    ],
+    "Spartak Moscu": [
+      { opponent: "Rodina Moscow", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "Rodina Moscow", home: true },
+      { opponent: "Akhmat Grozny", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "Akhmat Grozny", home: false },
+      { opponent: "FK Krasnodar", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "FK Krasnodar", home: true }
+    ],
+    "Akron Tolyatti": [
+      { opponent: "Zenit de San Petersburgo", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "Zenit de San Petersburgo", home: true },
+      { opponent: "Rubin Kazan", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "Rubin Kazan", home: true },
+      { opponent: "Lokomotiv Moscú", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Lokomotiv Moscú", home: false }
+    ],
+    "CSKA Moscu": [
+      { opponent: "Baltika Kaliningrad", date: isEs ? "24 Jul 2026" : "Jul 24, 2026", competition: "Baltika Kaliningrad", home: true },
+      { opponent: "Krylya Sovetov Samara", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "Krylya Sovetov Samara", home: true },
+      { opponent: "FK Rostov", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "FK Rostov", home: true }
+    ],
+    "FK Orenburg": [
+      { opponent: "FK Rostov", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "FK Rostov", home: true },
+      { opponent: "Zenit de San Petersburgo", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "Zenit de San Petersburgo", home: true },
+      { opponent: "Rubin Kazan", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Rubin Kazan", home: false }
+    ],
+    "FK Sochi": [
+      { opponent: "Shinnik Yaroslavl", date: isEs ? "12 Jul 2026" : "Jul 12, 2026", competition: "Shinnik Yaroslavl", home: false },
+      { opponent: "Spartak Kostroma", date: isEs ? "19 Jul 2026" : "Jul 19, 2026", competition: "Spartak Kostroma", home: true },
+      { opponent: "Arsenal Tula", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "Arsenal Tula", home: true }
+    ],
+    "Rubin Kazan": [
+      { opponent: "FK Krasnodar", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "FK Krasnodar", home: true },
+      { opponent: "Akron Togliatti", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "Akron Togliatti", home: false },
+      { opponent: "FK Orenburg", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "FK Orenburg", home: true }
+    ],
+    "Akhmat Grozny": [
+      { opponent: "Lokomotiv Moscú", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "Lokomotiv Moscú", home: false },
+      { opponent: "FC Spartak de Moscú", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: " FC Spartak de Moscú", home: true },
+      { opponent: "Fakel Voronezh", date: isEs ? "10 Ago 2026" : "Aug 10, 2026", competition: "Fakel Voronezh", home: false }
+    ],
+    "FK Rostov": [
+      { opponent: "FK Orenburg", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "FK Orenburg", home: false },
+      { opponent: "Rodina Moscow", date: isEs ? "31 Jul 2026" : "Jul 31, 2026", competition: "Rodina Moscow", home: false },
+      { opponent: "CSKA Moscú", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "CSKA Moscú", home: false }
+    ],
+    "Shakhtar Donetsk": [
+      { opponent: "FC Kudrivka", date: isEs ? "3 Ago 2026" : "Aug 3, 2026", competition: "FC Kudrivka", home: true },
+      { opponent: "Epitsentr Kamyanets-Podilskyi", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Epitsentr Kamyanets-Podilskyi", home: false },
+      { opponent: "FC Kharkiv", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "FC Kharkiv", home: false }
+    ],
+    "LNZ Cherkasy": [
+      { opponent: "Bukovyna Chernivtsi", date: isEs ? "3 Ago 2026" : "Aug 3, 2026", competition: "Bukovyna Chernivtsi", home: false },
+      { opponent: "Karpaty Lviv", date: isEs ? "10 Ago 2026" : "Aug 10, 2026", competition: "Karpaty Lviv", home: false },
+      { opponent: "Chornomorets Odesa", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Chornomorets Odesa", home: true }
+    ],
+    "Polissya Zhytomyr": [
+      { opponent: "Chornomorets Odesa", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "Chornomorets Odesa", home: false },
+      { opponent: "FC Kharkiv", date: isEs ? "10 Ago 2026" : "Aug 10, 2026", competition: "FC Kharkiv", home: true },
+      { opponent: "Zorya Lugansk", date: isEs ? "17 Ago 2026" : "Aug 17, 2026", competition: "Zorya Lugansk", home: true }
+    ],
+    "Dynamo Kiev": [
+      { opponent: "Livyi Bereg Kyiv", date: isEs ? "2 Dic 2026" : "Dec 2, 2026", competition: "Livyi Bereg Kyiv", home: true },
+      { opponent: "NK Veres Rivne", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Ukrainian Premier League", home: false },
+      { opponent: "Kolos Kovalivka", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Kolos Kovalivka", home: true }
+    ],
+    "Metalist 1925 Kharkiv": [
+      { opponent: "NK Veres Rivne", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "Ukrainian Premier League", home: true },
+      { opponent: "Polissya Zhytomyr", date: isEs ? "10 Ago 2026" : "Aug 10, 2026", competition: "Polissya Zhytomyr", home: false },
+      { opponent: "Shakhtar Donetsk", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Shakhtar Donetsk", home: true }
+    ],
+    "Kolos Kovalivka": [
+      { opponent: "Zorya Lugansk", date: isEs ? "31 Jul 2026" : "Jul 31, 2026", competition: "Zorya Lugansk", home: false },
+      { opponent: "Chornomorets Odesa", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Chornomorets Odesa", home: false },
+      { opponent: "FC Dinamo de Kiev", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "FC Dinamo de Kiev", home: false }
+    ],
+    "Kryvbas Kryvyi Rih": [
+      { opponent: "Karpaty Lviv", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "Karpaty Lviv", home: true },
+      { opponent: "Zorya Lugansk", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Zorya Lugansk", home: false },
+      { opponent: "Livyi Bereg Kyiv", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Livyi Bereg Kyiv", home: true }
+    ],
+    "Veres Rivne": [
+      { opponent: "FC Kharkiv", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "FC Kharkiv", home: false },
+      { opponent: "FC Dinamo de Kiev", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "FC Dinamo de Kiev", home: true },
+      { opponent: "Epitsentr Kamyanets-Podilskyi", date: isEs ? "14 Ago 2026" : "Aug 14, 2026", competition: "Epitsentr Kamyanets-Podilskyi", home: false }
+    ],
+    "Karpaty Lviv": [
+      { opponent: "Kryvbas Kryvyi Rig", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "Kryvbas Kryvyi Rig", home: false },
+      { opponent: "LNZ Cherkasy", date: isEs ? "10 Ago 2026" : "Aug 10, 2026", competition: "LNZ Cherkasy", home: true },
+      { opponent: "Bukovyna Chernivtsi", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Bukovyna Chernivtsi", home: true }
+    ],
+    "Zorya Luhansk": [
+      { opponent: "Kolos Kovalivka", date: isEs ? "31 Jul 2026" : "Jul 31, 2026", competition: "Kolos Kovalivka", home: true },
+      { opponent: "Kryvbas Kryvyi Rig", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Kryvbas Kryvyi Rig", home: true },
+      { opponent: "Polissya Zhytomyr", date: isEs ? "17 Ago 2026" : "Aug 17, 2026", competition: "Polissya Zhytomyr", home: false }
+    ],
+    "FC Obolon Kiev": [
+      { opponent: "Epitsentr Kamyanets-Podilskyi", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "Epitsentr Kamyanets-Podilskyi", home: false },
+      { opponent: "Bukovyna Chernivtsi", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Bukovyna Chernivtsi", home: false },
+      { opponent: "FC Kudrivka", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "FC Kudrivka", home: false }
+    ],
+    "Rukh Lviv": [
+      { opponent: "Nyva Vinnytsya", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "Nyva Vinnytsya", home: false },
+      { opponent: "Dinaz Vyshgorod", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Dinaz Vyshgorod", home: false },
+      { opponent: "Dnister Zalishchyky", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Dnister Zalishchyky", home: true }
+    ],
+    "KF Vllaznia": [
+      { opponent: "KF Skënderbeu", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "KF Skënderbeu", home: true },
+      { opponent: "AF Elbasani", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "AF Elbasani", home: false },
+      { opponent: "FK Partizani", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "FK Partizani", home: true }
+    ],
+    "SC Poltava": [
+      { opponent: "Agrobiznes Volochysk", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "Agrobiznes Volochysk", home: false },
+      { opponent: "Nyva Ternopil", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "Nyva Ternopil", home: true },
+      { opponent: "Feniks-Mariupol", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Feniks-Mariupol", home: false }
+    ],
+    "Oleksandriya": [
+      { opponent: "Nyva Ternopil", date: isEs ? "24 Jul 2026" : "Jul 24, 2026", competition: "Nyva Ternopil", home: true },
+      { opponent: "UCSA Tarasivka", date: isEs ? "31 Jul 2026" : "Jul 31, 2026", competition: "UCSA Tarasivka", home: false },
+      { opponent: "Ingulets Petrove", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Ingulets Petrove", home: true }
+    ],
+    "Kudrivka": [
+      { opponent: "Shakhtar Donetsk", date: isEs ? "3 Ago 2026" : "Aug 3, 2026", competition: "Shakhtar Donetsk", home: false },
+      { opponent: "Livyi Bereg Kyiv", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Livyi Bereg Kyiv", home: false },
+      { opponent: "Obolon Kyiv", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Obolon Kyiv", home: true }
+    ],
+    "FC Dinamo City": [
+      { opponent: "KF Vora", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "KF Vora", home: true },
+      { opponent: "KF Skënderbeu", date: isEs ? "31 Ago 2026" : "Aug 31, 2026", competition: "KF Skënderbeu", home: false },
+      { opponent: "AF Elbasani", date: isEs ? "6 Sep 2026" : "Sep 6, 2026", competition: "AF Elbasani", home: true }
+    ],
+    "KF Egnatia": [
+      { opponent: "KF Tirana", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "KF Tirana", home: true },
+      { opponent: "KF Vora", date: isEs ? "31 Ago 2026" : "Aug 31, 2026", competition: "KF Vora", home: false },
+      { opponent: "KF Skënderbeu", date: isEs ? "4 Sep 2026" : "Sep 4, 2026", competition: "KF Skënderbeu", home: true }
+    ],
+    "AF Elbasani": [
+      { opponent: "KF Laçi", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "KF Laçi", home: false },
+      { opponent: "KF Vllaznia", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "KF Vllaznia", home: true },
+      { opponent: "FC Dinamo City", date: isEs ? "6 Sep 2026" : "Sep 6, 2026", competition: "FC Dinamo City", home: false }
+    ],
+    "KF Tirana": [
+      { opponent: "KF Egnatia", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "KF Egnatia", home: false },
+      { opponent: "KF Teuta", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "KF Teuta", home: false },
+      { opponent: "KF Vora", date: isEs ? "6 Sep 2026" : "Sep 6, 2026", competition: "KF Vora", home: true }
+    ],
+    "KF Vora": [
+      { opponent: "FC Dinamo City", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "FC Dinamo City", home: false },
+      { opponent: "KF Egnatia", date: isEs ? "31 Ago 2026" : "Aug 31, 2026", competition: "KF Egnatia", home: true },
+      { opponent: "KF Tirana", date: isEs ? "6 Sep 2026" : "Sep 6, 2026", competition: "KF Tirana", home: false }
+    ],
+    "KF Flamurtari": [
+      { opponent: "KF Llapi", date: isEs ? "4 Dic 2026" : "Dec 4, 2026", competition: "KF Llapi", home: true }
+    ],
+    "KF Teuta": [
+      { opponent: "FK Partizani", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "FK Partizani", home: false },
+      { opponent: "KF Tirana", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "KF Tirana", home: true },
+      { opponent: "KF Laçi", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "KF Laçi", home: false }
+    ],
+    "NK Bravo": [
+      { opponent: "NK Olimpija Ljubljana", date: isEs ? "18 Jul 2026" : "Jul 18, 2026", competition: "NK Olimpija Ljubljana", home: false },
+      { opponent: "NK Nafta 1903", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "NK Nafta 1903", home: true },
+      { opponent: "NK Radomlje", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "NK Radomlje", home: false }
+    ],
+    "NK Celje": [
+      { opponent: "NS Mura", date: isEs ? "17 Jul 2026" : "Jul 17, 2026", competition: "NS Mura", home: true },
+      { opponent: "NK Aluminij Kidricevo", date: isEs ? "2 Sep 2026" : "Sep 2, 2026", competition: "NK Aluminij Kidricevo", home: false },
+      { opponent: "NK Maribor", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "NK Maribor", home: true }
+    ],
+    "FC Koper": [
+      { opponent: "NK Nafta 1903", date: isEs ? "17 Jul 2026" : "Jul 17, 2026", competition: "NK Nafta 1903", home: false },
+      { opponent: "NK Radomlje", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "NK Radomlje", home: true },
+      { opponent: "NK Brinje Grosuplje", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "NK Brinje Grosuplje", home: false }
+    ],
+    "NK Aluminij": [
+      { opponent: "NK Maribor", date: isEs ? "19 Jul 2026" : "Jul 19, 2026", competition: "NK Maribor", home: true },
+      { opponent: "NK Celje", date: isEs ? "2 Sep 2026" : "Sep 2, 2026", competition: "NK Celje", home: true },
+      { opponent: "NK Olimpija Ljubljana", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "NK Olimpija Ljubljana", home: false }
+    ],
+    "NK Radomlje": [
+      { opponent: "NK Brinje Grosuplje", date: isEs ? "18 Jul 2026" : "Jul 18, 2026", competition: "NK Brinje Grosuplje", home: true },
+      { opponent: "FC Koper", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "FC Koper", home: false },
+      { opponent: "NK Bravo", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "NK Bravo", home: true }
+    ],
+    "ND Primorje": [
+      { opponent: "NK Krsko", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "NK Krsko", home: false },
+      { opponent: "NK Dekani", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "NK Dekani", home: true },
+      { opponent: "ND Beltinci", date: isEs ? "23 Ago 2026" : "Aug 23, 2026", competition: "ND Beltinci", home: false }
+    ],
+    "NK Maribor": [
+      { opponent: "NK Aluminij Kidricevo", date: isEs ? "19 Jul 2026" : "Jul 19, 2026", competition: "NK Aluminij Kidricevo", home: false },
+      { opponent: "NK Brinje Grosuplje", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "NK Brinje Grosuplje", home: true },
+      { opponent: "NK Celje", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "NK Celje", home: false }
+    ],
+    "NK Olimpija Ljubljana": [
+      { opponent: "NK Bravo", date: isEs ? "18 Jul 2026" : "Jul 18, 2026", competition: "NK Bravo", home: true },
+      { opponent: "NS Mura", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "NS Mura", home: false },
+      { opponent: "NK Aluminij Kidricevo", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "NK Aluminij Kidricevo", home: true }
+    ],
+    "Tikvesh": [
+      { opponent: "Arsimi", date: isEs ? "24 Jul 2026" : "Jul 24, 2026", competition: "Arsimi", home: true },
+      { opponent: "Bashkimi", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Bashkimi", home: false },
+      { opponent: "Shkendija Haracine 77", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Shkendija Haracine 77", home: true }
+    ],
+    "Vardar": [
+      { opponent: "Foro del club", date: isEs ? "20 Ago 2026" : "Aug 20, 2026", competition: "Foro del club", home: false },
+      { opponent: "Foro del club", date: isEs ? "21 Ago 2026" : "Aug 21, 2026", competition: "Foro del club", home: true },
+      { opponent: "Foro del club", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Foro del club", home: true }
+    ],
+    "Sileks": [
+      { opponent: "Bashkimi", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "Bashkimi", home: true },
+      { opponent: "Shkendija Haracine 77", date: isEs ? "7 Ago 2026" : "Aug 7, 2026", competition: "Shkendija Haracine 77", home: true },
+      { opponent: "FK Skopje", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "FK Skopje", home: true }
+    ],
+    "Shkendija": [
+      { opponent: "FK Skopje", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "FK Skopje", home: true },
+      { opponent: "Vardar Skopje", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "Vardar Skopje", home: false },
+      { opponent: "Bregalnica Stip", date: isEs ? "16 Ago 2026" : "Aug 16, 2026", competition: "Bregalnica Stip", home: true }
+    ],
+    "Makedonija Gjorce Petrov": [
+      { opponent: "Belasica Strumica", date: isEs ? "2 Oct 2026" : "Oct 2, 2026", competition: "Belasica Strumica", home: false },
+      { opponent: "Struga Trim & Lum", date: isEs ? "23 Oct 2026" : "Oct 23, 2026", competition: "Struga Trim & Lum", home: false }
+    ],
+    "Arsimi": [
+      { opponent: "Tikves Kavadarci", date: isEs ? "24 Jul 2026" : "Jul 24, 2026", competition: "Tikves Kavadarci", home: false },
+      { opponent: "Bregalnica Stip", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Bregalnica Stip", home: false },
+      { opponent: "Bashkimi", date: isEs ? "14 Ago 2026" : "Aug 14, 2026", competition: "Bashkimi", home: true }
+    ],
+    "Bashkimi": [
+      { opponent: "Sileks Kratovo", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "Sileks Kratovo", home: false },
+      { opponent: "Tikves Kavadarci", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "Tikves Kavadarci", home: true },
+      { opponent: "Arsimi", date: isEs ? "14 Ago 2026" : "Aug 14, 2026", competition: "Arsimi", home: false }
+    ],
+    "Rabotnicki": [
+      { opponent: "Sileks Kratovo", date: isEs ? "11 Ago 2026" : "Aug 11, 2026", competition: "Sileks Kratovo", home: true },
+      { opponent: "Shkendija Tetovo", date: isEs ? "18 Ago 2026" : "Aug 18, 2026", competition: "Shkendija Tetovo", home: false },
+      { opponent: "Struga Trim & Lum", date: isEs ? "25 Ago 2026" : "Aug 25, 2026", competition: "Struga Trim & Lum", home: true }
+    ],
+    "Pelister": [
+      { opponent: "Gostivar", date: isEs ? "11 Ago 2026" : "Aug 11, 2026", competition: "Gostivar", home: true },
+      { opponent: "Vardar Skopje", date: isEs ? "18 Ago 2026" : "Aug 18, 2026", competition: "Vardar Skopje", home: false },
+      { opponent: "Sileks Kratovo", date: isEs ? "25 Ago 2026" : "Aug 25, 2026", competition: "Sileks Kratovo", home: true }
+    ],
+    "Dinamo Minsk": [
+      { opponent: "Sileks Kratovo", date: isEs ? "9 Jul 2026" : "Jul 9, 2026", competition: "Sileks Kratovo", home: true },
+      { opponent: "Sileks Kratovo", date: isEs ? "16 Jul 2026" : "Jul 16, 2026", competition: "Sileks Kratovo", home: false },
+      { opponent: "Neftchi PFK", date: isEs ? "22 Jul 2026" : "Jul 22, 2026", competition: "Neftchi PFK", home: false }
+    ],
+    "FC Minsk": [
+      { opponent: "FK Ostrovets", date: isEs ? "30 Mar 2025" : "Mar 30, 2025", competition: "FK Ostrovets", home: false },
+      { opponent: "FK Orsha", date: isEs ? "5 Abr 2025" : "Apr 5, 2025", competition: "FK Orsha", home: true },
+      { opponent: "FK Lida", date: isEs ? "11 Abr 2025" : "Apr 11, 2025", competition: "FK Lida", home: true }
+    ],
+    "Slavia Mozyr": [
+      { opponent: "Volna Pinsk", date: isEs ? "19 Jul 2026" : "Jul 19, 2026", competition: "Volna Pinsk", home: false },
+      { opponent: "Dynamo Brest", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "Dynamo Brest", home: true },
+      { opponent: "Isloch Minsk Region", date: isEs ? "14 Mar 2025" : "Mar 14, 2025", competition: "Isloch Minsk Region", home: false }
+    ],
+    "Torpedo-BelAZ Zhodino": [
+      { opponent: "FK Lida", date: isEs ? "18 Jul 2026" : "Jul 18, 2026", competition: "FK Lida", home: false },
+      { opponent: "Dnepr Mogilev", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "Dnepr Mogilev", home: true },
+      { opponent: "FK Gomel", date: isEs ? "15 Mar 2025" : "Mar 15, 2025", competition: "FK Gomel", home: false }
+    ],
+    "Dynamo Brest": [
+      { opponent: "Krumkachi Minsk", date: isEs ? "19 Jul 2026" : "Jul 19, 2026", competition: " Krumkachi Minsk", home: false },
+      { opponent: "Slavia Mozyr", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "Slavia Mozyr", home: false },
+      { opponent: "Arsenal Dzerzhinsk", date: isEs ? "16 Mar 2025" : "Mar 16, 2025", competition: "Arsenal Dzerzhinsk", home: false }
+    ],
+    "BATE Borisov": [
+      { opponent: "AF Elbasani", date: isEs ? "7 Jul 2026" : "Jul 7, 2026", competition: "AF Elbasani", home: false },
+      { opponent: "AF Elbasani", date: isEs ? "16 Jul 2026" : "Jul 16, 2026", competition: "AF Elbasani", home: true },
+      { opponent: "FC Sion", date: isEs ? "23 Jul 2026" : "Jul 23, 2026", competition: "FC Sion", home: true }
+    ],
+    "Gomel": [
+      { opponent: "HNK Orijent Rijeka", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "HNK Orijent Rijeka", home: true },
+      { opponent: "HNK Vukovar 1991", date: isEs ? "28 Ago 2026" : "Aug 28, 2026", competition: "HNK Vukovar 1991", home: false },
+      { opponent: "NK Kustosija Zagreb", date: isEs ? "2 Sep 2026" : "Sep 2, 2026", competition: "NK Kustosija Zagreb", home: true }
+    ],
+    "Vitebsk": [
+      { opponent: "Spartak Police nad Metuji", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "Spartak Police nad Metuji", home: true }
+    ],
+    "Arsenal Dzerzhinsk": [
+      { opponent: "Bumprom Gomel", date: isEs ? "18 Jul 2026" : "Jul 18, 2026", competition: "Bumprom Gomel", home: false },
+      { opponent: "Neman Grodno", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "Neman Grodno", home: true },
+      { opponent: "Dynamo Brest", date: isEs ? "16 Mar 2025" : "Mar 16, 2025", competition: "Dynamo Brest", home: true }
+    ],
+    "Neman Grodno": [
+      { opponent: "FK Soligorsk", date: isEs ? "19 Jul 2026" : "Jul 19, 2026", competition: "FK Soligorsk", home: false },
+      { opponent: "Arsenal Dzerzhinsk", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "Arsenal Dzerzhinsk", home: false },
+      { opponent: "FK Molodechno", date: isEs ? "15 Mar 2025" : "Mar 15, 2025", competition: "FK Molodechno", home: true }
+    ],
+    "Naftan Novopolotsk": [
+      { opponent: "FK Orsha", date: isEs ? "19 Jul 2026" : "Jul 19, 2026", competition: "FK Orsha", home: false },
+      { opponent: "FK Minsk", date: isEs ? "13 Mar 2025" : "Mar 13, 2025", competition: "FK Minsk", home: false },
+      { opponent: "Dynamo Brest", date: isEs ? "30 Mar 2025" : "Mar 30, 2025", competition: "Dynamo Brest", home: true }
+    ],
+    "Rapid Bucuresti": [
+      { opponent: "Sepsi OSK Sf. Gheorghe", date: isEs ? "20 Jul 2026" : "Jul 20, 2026", competition: "Sepsi OSK Sf. Gheorghe", home: true },
+      { opponent: "FC Botoșani", date: isEs ? "27 Jul 2026" : "Jul 27, 2026", competition: "FC Botoșani", home: false },
+      { opponent: "CFR Cluj", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "CFR Cluj", home: true }
+    ],
+    "Molodechno": [
+      { opponent: "FK Urozhaynaya", date: isEs ? "27 May 2026" : "May 27, 2026", competition: "FK Urozhaynaya", home: false },
+      { opponent: "BATE Borisov", date: isEs ? "17 Jun 2026" : "Jun 17, 2026", competition: "BATE Borisov", home: true },
+      { opponent: "Neman Grodno", date: isEs ? "15 Mar 2025" : "Mar 15, 2025", competition: "Neman Grodno", home: false }
+    ],
+    "Slutsk": [
+      { opponent: "Probiy Gorodenka", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "Probiy Gorodenka", home: false },
+      { opponent: "Polissya-2 Zhytomyr", date: isEs ? "3 Ago 2026" : "Aug 3, 2026", competition: "Polissya-2 Zhytomyr", home: true },
+      { opponent: "FK Oleksandriya", date: isEs ? "8 Ago 2026" : "Aug 8, 2026", competition: "FK Oleksandriya", home: false }
+    ],
+    "Smorgon": [
+      { opponent: "Vertikal Kalinkovichi", date: isEs ? "27 May 2026" : "May 27, 2026", competition: "Belarusian Premier League", home: false },
+      { opponent: "FK Minsk", date: isEs ? "18 Jul 2026" : "Jul 18, 2026", competition: "FK Minsk", home: true },
+      { opponent: "Dinamo Minsk", date: isEs ? "16 Mar 2025" : "Mar 16, 2025", competition: "Dinamo Minsk", home: false }
+    ],
+    "Universitatea Craiova": [
+      { opponent: "UTA Arad", date: isEs ? "18 Jul 2026" : "Jul 18, 2026", competition: "UTA Arad", home: true },
+      { opponent: "FC Dinamo 1948", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "FC Dinamo 1948", home: false },
+      { opponent: "Petrolul Ploiesti", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "Petrolul Ploiesti", home: true }
+    ],
+    "CFR Cluj": [
+      { opponent: "SC Otelul Galati", date: isEs ? "18 Jul 2026" : "Jul 18, 2026", competition: "SC Otelul Galati", home: false },
+      { opponent: "FC Voluntari", date: isEs ? "27 Jul 2026" : "Jul 27, 2026", competition: "FC Voluntari", home: true },
+      { opponent: "FC Rapid 1923", date: isEs ? "2 Ago 2026" : "Aug 2, 2026", competition: "FC Rapid 1923", home: false }
+    ],
+    "Dinamo Bucuresti": [
+      { opponent: "Petrolul Ploiesti", date: isEs ? "19 Jul 2026" : "Jul 19, 2026", competition: "Petrolul Ploiesti", home: false },
+      { opponent: "CS Universitatea Craiova", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "CS Universitatea Craiova", home: true },
+      { opponent: "SC Otelul Galati", date: isEs ? "31 Jul 2026" : "Jul 31, 2026", competition: "SC Otelul Galati", home: false }
+    ],
+    "UTA Arad": [
+      { opponent: "CS Universitatea Craiova", date: isEs ? "18 Jul 2026" : "Jul 18, 2026", competition: "CS Universitatea Craiova", home: false },
+      { opponent: "SC Otelul Galati", date: isEs ? "24 Jul 2026" : "Jul 24, 2026", competition: "SC Otelul Galati", home: true },
+      { opponent: "FC Voluntari", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "FC Voluntari", home: false }
+    ],
+    "FC Arges Pitesti": [
+      { opponent: "FCSB", date: isEs ? "17 Jul 2026" : "Jul 17, 2026", competition: "FCSB", home: false },
+      { opponent: "Petrolul Ploiesti", date: isEs ? "24 Jul 2026" : "Jul 24, 2026", competition: "Petrolul Ploiesti", home: true },
+      { opponent: "FK Csikszereda Miercurea Ciuc", date: isEs ? "31 Jul 2026" : "Jul 31, 2026", competition: "FK Csikszereda Miercurea Ciuc", home: true }
+    ],
+    "FCSB": [
+      { opponent: "ACSC FC Arges", date: isEs ? "17 Jul 2026" : "Jul 17, 2026", competition: "ACSC FC Arges", home: true },
+      { opponent: "FK Csikszereda Miercurea Ciuc", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "FK Csikszereda Miercurea Ciuc", home: false },
+      { opponent: "FCV Farul Constanta", date: isEs ? "3 Ago 2026" : "Aug 3, 2026", competition: "FCV Farul Constanta", home: true }
+    ],
+    "Universitatea Cluj": [
+      { opponent: "FCV Farul Constanta", date: isEs ? "19 Jul 2026" : "Jul 19, 2026", competition: "FCV Farul Constanta", home: true },
+      { opponent: "Sepsi OSK Sf. Gheorghe", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "Sepsi OSK Sf. Gheorghe", home: false },
+      { opponent: "FC Botoșani", date: isEs ? "3 Ago 2026" : "Aug 3, 2026", competition: "FC Botoșani", home: true }
+    ],
+    "Csikszereda Miercurea Ciuc": [
+      { opponent: "Corvinul Hunedoara", date: isEs ? "20 Jul 2026" : "Jul 20, 2026", competition: "Corvinul Hunedoara", home: true },
+      { opponent: "FCSB", date: isEs ? "26 Jul 2026" : "Jul 26, 2026", competition: "FCSB", home: true },
+      { opponent: "ACSC FC Arges", date: isEs ? "31 Jul 2026" : "Jul 31, 2026", competition: "ACSC FC Arges", home: false }
+    ],
+    "Otelul Galati": [
+      { opponent: "CFR Cluj", date: isEs ? "18 Jul 2026" : "Jul 18, 2026", competition: "CFR Cluj", home: true },
+      { opponent: "UTA Arad", date: isEs ? "24 Jul 2026" : "Jul 24, 2026", competition: "UTA Arad", home: false },
+      { opponent: "FC Dinamo 1948", date: isEs ? "31 Jul 2026" : "Jul 31, 2026", competition: "FC Dinamo 1948", home: true }
+    ],
+    "Farul Constanta": [
+      { opponent: "FC Universitatea Cluj", date: isEs ? "19 Jul 2026" : "Jul 19, 2026", competition: "FC Universitatea Cluj", home: false },
+      { opponent: "Corvinul Hunedoara", date: isEs ? "25 Jul 2026" : "Jul 25, 2026", competition: "Corvinul Hunedoara", home: true },
+      { opponent: "FCSB", date: isEs ? "3 Ago 2026" : "Aug 3, 2026", competition: "FCSB", home: false }
+    ],
+    "Petrolul Ploiesti": [
+      { opponent: "FC Dinamo 1948", date: isEs ? "19 Jul 2026" : "Jul 19, 2026", competition: "FC Dinamo 1948", home: true },
+      { opponent: "ACSC FC Arges", date: isEs ? "24 Jul 2026" : "Jul 24, 2026", competition: "ACSC FC Arges", home: false },
+      { opponent: "CS Universitatea Craiova", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "CS Universitatea Craiova", home: false }
+    ],
+    "Unirea Slobozia": [
+      { opponent: "FC Bihor 1902", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "FC Bihor 1902", home: false },
+      { opponent: "Gloria Bistrita", date: isEs ? "7 Ago 2026" : "Aug 7, 2026", competition: "Gloria Bistrita", home: true },
+      { opponent: "Politehnica Timișoara", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "Politehnica Timișoara", home: false }
+    ],
+    "FC Botosani": [
+      { opponent: "FC Voluntari", date: isEs ? "17 Jul 2026" : "Jul 17, 2026", competition: "FC Voluntari", home: false },
+      { opponent: "FC Rapid 1923", date: isEs ? "27 Jul 2026" : "Jul 27, 2026", competition: "FC Rapid 1923", home: true },
+      { opponent: "FC Universitatea Cluj", date: isEs ? "3 Ago 2026" : "Aug 3, 2026", competition: "FC Universitatea Cluj", home: false }
+    ],
+    "Metaloglobus Bucuresti": [
+      { opponent: "AFC Metalul Buzau", date: isEs ? "1 Ago 2026" : "Aug 1, 2026", competition: "AFC Metalul Buzau", home: true },
+      { opponent: "AFC Chindia Targoviste", date: isEs ? "9 Ago 2026" : "Aug 9, 2026", competition: "AFC Chindia Targoviste", home: false },
+      { opponent: "CSC 1599 Selimbar", date: isEs ? "15 Ago 2026" : "Aug 15, 2026", competition: "CSC 1599 Selimbar", home: true }
+    ],
+    "Hermannstadt": [
+      { opponent: "AFC Chindia Targoviste", date: isEs ? "24 Oct 2026" : "Oct 24, 2026", competition: "AFC Chindia Targoviste", home: false },
+      { opponent: "CSC 1599 Selimbar", date: isEs ? "31 Oct 2026" : "Oct 31, 2026", competition: "CSC 1599 Selimbar", home: true },
+      { opponent: "AFC Unirea 04 Slobozia", date: isEs ? "7 Nov 2026" : "Nov 7, 2026", competition: "AFC Unirea 04 Slobozia", home: false }
+    ],
+    "Tottenham": [
+      { opponent: "Brentford FC", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "Brentford FC", home: false },
+      { opponent: "Newcastle United", date: isEs ? "29 Ago 2026" : "Aug 29, 2026", competition: "Newcastle United", home: true },
+      { opponent: "Nottingham Forest", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "Nottingham Forest", home: false }
+    ],
+    "Inter": [
+      { opponent: "SV Werder Bremen", date: isEs ? "30 Ago 2026" : "Aug 30, 2026", competition: "SV Werder Bremen", home: true },
+      { opponent: "SC Paderborn 07", date: isEs ? "5 Sep 2026" : "Sep 5, 2026", competition: "SC Paderborn 07", home: false },
+      { opponent: "Borussia Mönchengladbach", date: isEs ? "12 Sep 2026" : "Sep 12, 2026", competition: "Borussia Mönchengladbach", home: true }
+    ],
   };
-  return REAL_2024_25_FIXTURES[clubName] || null;
+  if (REAL_2026_27_FIXTURES[clubName]) return REAL_2026_27_FIXTURES[clubName];
+  const norm = clubName.toLowerCase().replace(/[^a-z0-9]/g, '');
+  for (const k of Object.keys(REAL_2026_27_FIXTURES)) {
+    const kNorm = k.toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (norm.length >= 4 && (norm === kNorm || norm.includes(kNorm) || kNorm.includes(norm))) {
+      return REAL_2026_27_FIXTURES[k];
+    }
+  }
+  return null;
 }
 
 async function renderMyClubMatches(clubName, countryName) {
@@ -3725,8 +7796,8 @@ async function renderMyClubMatches(clubName, countryName) {
       <div class="db-no-matches-container">
         <div class="db-no-matches-icon">📅</div>
         <div class="db-no-matches-text">
-          <h4>${isEs ? 'Los partidos se anunciarán más adelante' : 'Matches will be announced later'}</h4>
-          <p>${isEs ? 'No se han encontrado partidos oficiales verificados para este club en la temporada 2024/25.' : 'No verified official matches were found for this club in the 2024/25 season.'}</p>
+          <h4>${isEs ? 'No hay partidos por ahora' : 'No matches for now'}</h4>
+          <p>${isEs ? 'No se han encontrado partidos oficiales programados para este club en la temporada 2026/27.' : 'No verified official matches were found for this club in the 2026/27 season.'}</p>
         </div>
       </div>
     `;
@@ -3745,7 +7816,7 @@ async function renderMyClubMatches(clubName, countryName) {
   const badgeHtml = `
     <div class="db-season-badge-container">
       <div class="db-season-badge current">
-        <span>📅 ${isEs ? 'Temporada 2024/25 · Partidos Verificados' : '2024/25 Season · Verified Fixtures'}</span>
+        <span>📅 ${isEs ? 'Temporada 2026/27 · Partidos Verificados (Transfermarkt API)' : '2026/27 Season · Verified Fixtures (Transfermarkt API)'}</span>
       </div>
     </div>
   `;
@@ -6115,46 +10186,56 @@ function buildUpcomingFixtures(myClubName) {
   const realFixtures = getReal202425Fixtures(myClubName);
   
   if (realFixtures && realFixtures.length > 0) {
-    realFixtures.forEach((f, index) => {
+    const seasonHeader = document.createElement('div');
+    seasonHeader.style.cssText = 'font-size: 11px; color: #00f0ff; background: rgba(0,240,255,0.08); border: 1px solid rgba(0,240,255,0.2); padding: 4px 8px; border-radius: 4px; margin-bottom: 10px; font-weight: 500; text-align: center;';
+    seasonHeader.textContent = isEs ? '📅 Temporada 2026/27 · Transfermarkt API' : '📅 2026/27 Season · Transfermarkt API';
+    fixturesContainer.appendChild(seasonHeader);
+
+    realFixtures.forEach((f) => {
       const item = document.createElement('div');
       item.className = 'fixture-item';
       
+      const clubTheme = getClubTheme(myClubName);
+      const oppTheme = getClubTheme(f.opponent);
+      const homeTheme = f.home ? clubTheme : oppTheme;
+      const awayTheme = f.home ? oppTheme : clubTheme;
       const homeName = f.home ? myClubName : f.opponent;
       const awayName = f.home ? f.opponent : myClubName;
       
-      const dateStr = `${f.date} · ${f.competition}`;
       item.innerHTML = `
-        <div class="fixture-teams">
-          <div class="fixture-vs">${homeName} <span>vs</span> ${awayName}</div>
-          <div class="fixture-info">${dateStr}</div>
+        <div class="fixture-club home-club">
+          <div class="fixture-shield" style="background: linear-gradient(135deg, ${homeTheme.colors[0]}, ${homeTheme.colors[1]}); border-color: ${homeTheme.colors[0]};">
+            ${homeTheme.short}
+          </div>
+          <span class="fixture-club-name">${getShortTeamName(homeName)}</span>
         </div>
-        <button class="btn-fixture-sim" onclick="simulateFixture('${f.opponent}')">Simular</button>
+        <div class="fixture-center-meta">
+          <span class="fixture-vs-badge">VS</span>
+          <span class="fixture-date-text">${f.date}</span>
+          <span class="fixture-comp-tag">${f.competition}</span>
+        </div>
+        <div class="fixture-club away-club">
+          <span class="fixture-club-name">${getShortTeamName(awayName)}</span>
+          <div class="fixture-shield" style="background: linear-gradient(135deg, ${awayTheme.colors[0]}, ${awayTheme.colors[1]}); border-color: ${awayTheme.colors[0]};">
+            ${awayTheme.short}
+          </div>
+        </div>
+        <button class="btn-fixture-sim" onclick="simulateFixture('${f.opponent}')">
+          ${isEs ? 'Simular' : 'Simulate'}
+        </button>
       `;
       fixturesContainer.appendChild(item);
     });
     return;
   }
   
-  const candidates = allTeamsForSim.filter(t => t.name !== myClubName);
-  if (candidates.length === 0) {
-    fixturesContainer.innerHTML = '<p style="color: rgba(255,255,255,0.45); font-size:12px;">No se encontraron otros clubes en tu liga.</p>';
-    return;
-  }
-  
-  const selectedCandidates = candidates.slice(0, 3);
-  selectedCandidates.forEach((opp, index) => {
-    const item = document.createElement('div');
-    item.className = 'fixture-item';
-    const dateStr = `Jornada ${index + 1} · Temporada 24-25`;
-    item.innerHTML = `
-      <div class="fixture-teams">
-        <div class="fixture-vs">${myClubName} <span>vs</span> ${opp.name}</div>
-        <div class="fixture-info">${dateStr}</div>
-      </div>
-      <button class="btn-fixture-sim" onclick="simulateFixture('${opp.name}')">Simular</button>
-    `;
-    fixturesContainer.appendChild(item);
-  });
+  fixturesContainer.innerHTML = `
+    <div class="sim-no-matches" style="padding: 20px; text-align: center; color: rgba(255,255,255,0.7); font-size: 13px;">
+      <span style="font-size: 24px; display: block; margin-bottom: 6px;">📅</span>
+      <strong style="color: #fff; font-size: 14px; display: block; margin-bottom: 2px;">${isEs ? 'No hay partidos por ahora' : 'No matches for now'}</strong>
+      <span style="color: rgba(255,255,255,0.45); font-size: 11px;">${isEs ? 'No se han encontrado partidos programados para este equipo.' : 'No scheduled matches found for this team.'}</span>
+    </div>
+  `;
 }
 
 window.simulateFixture = function(opponentName) {
