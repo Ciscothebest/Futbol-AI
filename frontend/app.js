@@ -7816,7 +7816,7 @@ async function renderMyClubMatches(clubName, countryName) {
   const badgeHtml = `
     <div class="db-season-badge-container">
       <div class="db-season-badge current">
-        <span>📅 ${isEs ? 'Temporada 2026/27 · Partidos Verificados (Transfermarkt API)' : '2026/27 Season · Verified Fixtures (Transfermarkt API)'}</span>
+        <span>📅 ${isEs ? 'Temporada 2026/27 · Partidos Verificados' : '2026/27 Season · Verified Fixtures'}</span>
       </div>
     </div>
   `;
@@ -10188,7 +10188,7 @@ function buildUpcomingFixtures(myClubName) {
   if (realFixtures && realFixtures.length > 0) {
     const seasonHeader = document.createElement('div');
     seasonHeader.style.cssText = 'font-size: 11px; color: #00f0ff; background: rgba(0,240,255,0.08); border: 1px solid rgba(0,240,255,0.2); padding: 4px 8px; border-radius: 4px; margin-bottom: 10px; font-weight: 500; text-align: center;';
-    seasonHeader.textContent = isEs ? '📅 Temporada 2026/27 · Transfermarkt API' : '📅 2026/27 Season · Transfermarkt API';
+    seasonHeader.textContent = isEs ? '📅 Temporada 2026/27' : '📅 2026/27 Season';
     fixturesContainer.appendChild(seasonHeader);
 
     realFixtures.forEach((f) => {
