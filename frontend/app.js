@@ -10479,6 +10479,302 @@ function selectArenaAwayTeam(teamName) {
   }
 }
 
+// ──────────────── SIMULATION LINEUP EDITOR MODULE ────────────────
+window.simCustomRosters = {};
+let currentSimStartingXI = [];
+let currentSimBench = [];
+let selectedSimSlotIndex = 0;
+let currentSimPosFilter = '';
+
+window.openSimLineupModal = async function() {
+  const modal = document.getElementById('sim-lineup-editor-modal');
+  if (!modal) return;
+
+  const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  const myClubName = user.selectedClub || 'FC Barcelona';
+
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+
+  // Load custom simulation squad if saved, otherwise fetch or generate default
+  const savedRaw = localStorage.getItem('sim_custom_roster_' + myClubName);
+  if (savedRaw) {
+    try {
+      const parsed = JSON.parse(savedRaw);
+      currentSimStartingXI = parsed.startingXI || [];
+      currentSimBench = parsed.bench || [];
+    } catch(e) {
+      currentSimStartingXI = [];
+      currentSimBench = [];
+    }
+  } else {
+    currentSimStartingXI = [];
+    currentSimBench = [];
+  }
+
+  if (!currentSimStartingXI || currentSimStartingXI.length === 0) {
+    const realPlayers = await fetchTeamPlayers(myClubName);
+    if (realPlayers && realPlayers.length > 0) {
+      currentSimStartingXI = realPlayers.slice(0, 11);
+      currentSimBench = realPlayers.slice(11, 18);
+    } else {
+      currentSimStartingXI = getUserClubStartingXI(myClubName, user);
+      currentSimBench = [];
+    }
+  }
+
+  selectedSimSlotIndex = 0;
+  renderSimModalStartingXI();
+  renderSimModalBench();
+  renderSimModalGlobalPlayers('');
+  setupSimModalSearchListeners();
+};
+
+window.closeSimLineupModal = function() {
+  const modal = document.getElementById('sim-lineup-editor-modal');
+  if (modal) modal.style.display = 'none';
+  document.body.style.overflow = '';
+};
+
+function renderSimModalStartingXI() {
+  const container = document.getElementById('sim-modal-starting-xi');
+  const valueEl = document.getElementById('sim-modal-value');
+  if (!container) return;
+
+  container.innerHTML = '';
+
+  let totalVal = 0;
+
+  currentSimStartingXI.forEach((p, idx) => {
+    totalVal += (p.marketValue || 50000000);
+    const item = document.createElement('div');
+    const isSelected = selectedSimSlotIndex === idx;
+    item.style.cssText = `display: flex; align-items: center; justify-content: space-between; padding: 7px 10px; background: ${isSelected ? 'rgba(0, 240, 255, 0.15)' : 'rgba(255, 255, 255, 0.03)'}; border: 1px solid ${isSelected ? '#00f0ff' : 'rgba(255, 255, 255, 0.08)'}; border-radius: 8px; cursor: pointer; transition: all 0.2s;`;
+    
+    const posCode = p.position || 'MED';
+    const avatarUrl = p.avatarUrl || p.photoUrl || `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(p.name)}&backgroundColor=0d1117&textColor=ffffff&radius=50`;
+
+    item.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 8px; min-width: 0;">
+        <span style="font-size: 10px; font-weight: 800; color: #00f0ff; background: rgba(0, 240, 255, 0.1); border: 1px solid rgba(0, 240, 255, 0.3); padding: 2px 6px; border-radius: 4px; flex-shrink: 0;">${posCode}</span>
+        <img src="${avatarUrl}" style="width: 26px; height: 26px; border-radius: 50%; object-fit: cover; flex-shrink: 0;" onerror="this.src='${getSilhouetteNoImageSvg()}'" />
+        <div style="min-width: 0;">
+          <div style="font-size: 12px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.name}</div>
+          <div style="font-size: 10px; color: rgba(255,255,255,0.4);">${p.currentTeam || 'Simulación'}</div>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+        <span style="font-size: 11px; font-weight: 700; color: #00f0ff;">${formatContractValue(p.marketValue || 50000000)}</span>
+        <button onclick="event.stopPropagation(); selectSimSlot(${idx})" style="font-size: 10.5px; font-weight: 700; padding: 3px 7px; background: ${isSelected ? '#00f0ff' : 'rgba(255,255,255,0.06)'}; border: 1px solid rgba(0,240,255,0.3); color: ${isSelected ? '#000' : '#fff'}; border-radius: 5px; cursor: pointer;">
+          ${isSelected ? 'Seleccionado' : 'Elegir'}
+        </button>
+      </div>
+    `;
+
+    item.onclick = () => selectSimSlot(idx);
+    container.appendChild(item);
+  });
+
+  if (valueEl) {
+    valueEl.textContent = `VALOR ${formatContractValue(totalVal)}`;
+  }
+}
+
+function selectSimSlot(idx) {
+  selectedSimSlotIndex = idx;
+  renderSimModalStartingXI();
+}
+
+function renderSimModalBench() {
+  const container = document.getElementById('sim-modal-bench');
+  if (!container) return;
+
+  container.innerHTML = '';
+
+  if (currentSimBench.length === 0) {
+    container.innerHTML = `<div style="font-size: 11px; color: rgba(255,255,255,0.4); text-align: center; padding: 10px;">Sin suplentes asignados</div>`;
+    return;
+  }
+
+  currentSimBench.forEach((p, idx) => {
+    const item = document.createElement('div');
+    item.style.cssText = 'display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 8px;';
+    const posCode = p.position || 'MED';
+
+    item.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 8px; min-width: 0;">
+        <span style="font-size: 9.5px; font-weight: 800; color: #ffbe10; background: rgba(255, 190, 16, 0.1); border: 1px solid rgba(255, 190, 16, 0.3); padding: 1px 5px; border-radius: 4px; flex-shrink: 0;">${posCode}</span>
+        <span style="font-size: 11.5px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.name}</span>
+      </div>
+      <button onclick="removeSimBenchPlayer(${idx})" style="font-size: 10px; color: #ff6b6b; background: none; border: none; cursor: pointer; padding: 2px 6px;">✕ Quitar</button>
+    `;
+    container.appendChild(item);
+  });
+}
+
+function removeSimBenchPlayer(idx) {
+  currentSimBench.splice(idx, 1);
+  renderSimModalBench();
+}
+
+function renderSimModalGlobalPlayers(query = '') {
+  const container = document.getElementById('sim-modal-global-players-list');
+  const countEl = document.getElementById('sim-modal-global-count');
+  if (!container) return;
+
+  container.innerHTML = '';
+
+  const playersSource = (window.allPlayers && Array.isArray(window.allPlayers) && window.allPlayers.length > 0) ? window.allPlayers : [];
+  const nQuery = normalizeString(query.toLowerCase());
+
+  const filtered = playersSource.filter(p => {
+    if (!p || !p.name) return false;
+    if (currentSimPosFilter && !isPositionMatch(p.position || p.positionEs, currentSimPosFilter)) return false;
+    if (!nQuery) return true;
+    return normalizeString(p.name).includes(nQuery) ||
+           normalizeString(p.currentTeam || '').includes(nQuery) ||
+           normalizeString(p.nationality || '').includes(nQuery);
+  });
+
+  if (countEl) {
+    countEl.textContent = `${filtered.length.toLocaleString()} disponibles`;
+  }
+
+  const visible = filtered.slice(0, 30);
+
+  if (visible.length === 0) {
+    container.innerHTML = `<div style="font-size: 11px; color: rgba(255,255,255,0.4); text-align: center; padding: 20px;">No se encontraron jugadores coincidentes</div>`;
+    return;
+  }
+
+  visible.forEach(p => {
+    const item = document.createElement('div');
+    item.style.cssText = 'display: flex; align-items: center; justify-content: space-between; padding: 7px 10px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.07); border-radius: 8px; transition: background 0.2s;';
+    
+    const posCode = p.position || 'MED';
+    const avatarUrl = p.avatarUrl || p.photoUrl || `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(p.name)}&backgroundColor=0d1117&textColor=ffffff&radius=50`;
+
+    item.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 8px; min-width: 0;">
+        <span style="font-size: 10px; font-weight: 800; color: #00f0ff; background: rgba(0, 240, 255, 0.1); border: 1px solid rgba(0, 240, 255, 0.3); padding: 2px 6px; border-radius: 4px; flex-shrink: 0;">${posCode}</span>
+        <img src="${avatarUrl}" style="width: 26px; height: 26px; border-radius: 50%; object-fit: cover; flex-shrink: 0;" onerror="this.src='${getSilhouetteNoImageSvg()}'" />
+        <div style="min-width: 0;">
+          <div style="font-size: 12px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.name}</div>
+          <div style="font-size: 10px; color: rgba(255,255,255,0.4);">${p.currentTeam || 'Jugadores'} · ${formatContractValue(p.marketValue || 20000000)}</div>
+        </div>
+      </div>
+      <div style="display: flex; gap: 4px; flex-shrink: 0;">
+        <button onclick="insertGlobalPlayerToSimXI('${p.id}')" style="font-size: 10.5px; font-weight: 700; padding: 4px 8px; background: rgba(0,240,255,0.15); border: 1px solid #00f0ff; color: #00f0ff; border-radius: 6px; cursor: pointer;">
+          + Titular (${selectedSimSlotIndex + 1})
+        </button>
+        <button onclick="insertGlobalPlayerToSimBench('${p.id}')" style="font-size: 10.5px; font-weight: 700; padding: 4px 8px; background: rgba(255,190,16,0.15); border: 1px solid #ffbe10; color: #ffbe10; border-radius: 6px; cursor: pointer;">
+          + Suplente
+        </button>
+      </div>
+    `;
+    container.appendChild(item);
+  });
+}
+
+window.filterSimModalGlobalPlayers = function(pos) {
+  currentSimPosFilter = pos;
+  document.querySelectorAll('.sim-pos-chip').forEach(btn => {
+    if (btn.dataset.pos === pos) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+  const input = document.getElementById('sim-modal-search-input');
+  renderSimModalGlobalPlayers(input ? input.value : '');
+};
+
+function setupSimModalSearchListeners() {
+  const input = document.getElementById('sim-modal-search-input');
+  if (input && !input.dataset.setupDone) {
+    input.dataset.setupDone = 'true';
+    input.addEventListener('input', (e) => {
+      renderSimModalGlobalPlayers(e.target.value);
+    });
+  }
+}
+
+window.insertGlobalPlayerToSimXI = function(playerId) {
+  const player = (window.allPlayers || []).find(p => p.id === playerId);
+  if (!player) return;
+
+  currentSimStartingXI[selectedSimSlotIndex] = player;
+  renderSimModalStartingXI();
+};
+
+window.insertGlobalPlayerToSimBench = function(playerId) {
+  const player = (window.allPlayers || []).find(p => p.id === playerId);
+  if (!player) return;
+
+  currentSimBench.push(player);
+  renderSimModalBench();
+};
+
+window.saveSimLineupChanges = async function() {
+  const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  const myClubName = user.selectedClub || 'FC Barcelona';
+
+  const payload = {
+    startingXI: currentSimStartingXI,
+    bench: currentSimBench
+  };
+
+  localStorage.setItem('sim_custom_roster_' + myClubName, JSON.stringify(payload));
+  window.simCustomRosters[myClubName] = payload;
+
+  // Recalculate Home team rating in simulation card
+  const totalRoster = [...currentSimStartingXI, ...currentSimBench];
+  const homeValue = calculateTeamRosterValue(totalRoster);
+  const ratingEl = document.getElementById('arena-home-rating');
+  if (ratingEl) {
+    ratingEl.textContent = `VALOR ${formatContractValue(homeValue)}`;
+  }
+
+  closeSimLineupModal();
+
+  if (typeof showToast === 'function') {
+    showToast('✓ Alineación de simulación guardada con éxito (No altera la plantilla real)', 'success');
+  } else {
+    alert('✓ Alineación de simulación guardada con éxito (No altera la plantilla real)');
+  }
+};
+
+window.resetSimLineupToReal = async function() {
+  const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+  const myClubName = user.selectedClub || 'FC Barcelona';
+
+  localStorage.removeItem('sim_custom_roster_' + myClubName);
+  delete window.simCustomRosters[myClubName];
+
+  const realPlayers = await fetchTeamPlayers(myClubName);
+  if (realPlayers && realPlayers.length > 0) {
+    currentSimStartingXI = realPlayers.slice(0, 11);
+    currentSimBench = realPlayers.slice(11, 18);
+  } else {
+    currentSimStartingXI = getUserClubStartingXI(myClubName, user);
+    currentSimBench = [];
+  }
+
+  renderSimModalStartingXI();
+  renderSimModalBench();
+
+  const totalRoster = [...currentSimStartingXI, ...currentSimBench];
+  const homeValue = calculateTeamRosterValue(totalRoster);
+  const ratingEl = document.getElementById('arena-home-rating');
+  if (ratingEl) {
+    ratingEl.textContent = `VALOR ${formatContractValue(homeValue)}`;
+  }
+
+  if (typeof showToast === 'function') {
+    showToast('🔄 Alineación restablecida a la plantilla real del club', 'info');
+  }
+};
+
 function resetAwayArena() {
   document.getElementById('arena-away-name').textContent = 'Visitante';
   document.getElementById('arena-away-badge').classList.remove('active-away');

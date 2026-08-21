@@ -1151,7 +1151,19 @@
         <!-- Left Panel: Active Club & Fixtures -->
         <div class="sim-left-panel">
           <div class="sim-card active-club-card">
-            <h3 class="sim-card-title">Tu Club Activo</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <h3 class="sim-card-title" style="margin: 0;">Tu Club Activo</h3>
+              <button 
+                class="btn-edit-sim-lineup" 
+                id="btn-edit-sim-lineup" 
+                onclick="openSimLineupModal()" 
+                style="padding: 6px 14px; font-size: 11.5px; font-weight: 700; background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.3); color: #00f0ff; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 6px;"
+                onmouseover="this.style.background='rgba(0, 240, 255, 0.22)'; this.style.borderColor='#00f0ff';"
+                onmouseout="this.style.background='rgba(0, 240, 255, 0.08)'; this.style.borderColor='rgba(0, 240, 255, 0.3)';"
+              >
+                <span>⚙️</span> Editar Alineación
+              </button>
+            </div>
             <div class="sim-club-details">
               <div class="sim-club-badge" id="sim-my-club-badge"></div>
               <div class="sim-club-info">
@@ -2437,6 +2449,91 @@
           Cerrar ✕
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- ──────────────── SIMULATION LINEUP EDITOR MODAL ──────────────── -->
+  <div class="modal-overlay" id="sim-lineup-editor-modal" style="display:none; z-index: 23500; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(4, 6, 12, 0.88); backdrop-filter: blur(8px); align-items: center; justify-content: center; padding: 20px;">
+    <div class="modal" style="max-width: 980px; width: 95%; background: rgba(8, 14, 26, 0.98); border: 1.5px solid #00f0ff; border-radius: 20px; padding: 25px; box-shadow: 0 0 50px rgba(0, 240, 255, 0.25); text-align: left; position: relative; display: flex; flex-direction: column; color: #fff; max-height: 90vh; overflow-y: auto;">
+      <button class="modal-close" onclick="closeSimLineupModal()" style="position: absolute; top: 15px; right: 20px; background: none; border: none; color: rgba(255,255,255,0.4); font-size: 24px; cursor: pointer; transition: color 0.2s; z-index: 10;">✕</button>
+      
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 15px; margin-bottom: 15px;">
+        <div>
+          <h2 style="font-size: 20px; font-weight: 800; color: #fff; margin: 0 0 4px 0; display: flex; align-items: center; gap: 8px;">
+            <span>⚽</span> Editar Alineación de Simulación
+          </h2>
+          <p style="font-size: 12px; color: rgba(0, 240, 255, 0.9); margin: 0;">
+            Los cambios aplicados aquí afectarán <strong>únicamente las Simulaciones IA</strong> de este club y NO modificarán la plantilla real del club en la base de datos.
+          </p>
+        </div>
+        <button onclick="resetSimLineupToReal()" style="padding: 7px 14px; font-size: 11.5px; font-weight: 700; background: rgba(255, 100, 100, 0.12); border: 1px solid rgba(255, 100, 100, 0.35); color: #ff6b6b; border-radius: 8px; cursor: pointer; white-space: nowrap;">
+          🔄 Restablecer Plantilla Real
+        </button>
+      </div>
+
+      <!-- Main Layout: 2 Columns (Current Sim XI/Bench vs Global Database Player Selector) -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; min-height: 480px;">
+        
+        <!-- Left Panel: Current Simulation Lineup (Titulares & Suplentes) -->
+        <div style="background: rgba(10, 20, 35, 0.5); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 14px;">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <h3 style="font-size: 13.5px; font-weight: 700; color: #00f0ff; margin: 0;">🟢 Titulares para Simulación (11)</h3>
+              <span id="sim-modal-value" style="font-size: 11px; color: #00f0ff; font-weight: 700; background: rgba(0, 240, 255, 0.1); padding: 2px 8px; border-radius: 6px;">VALOR €--</span>
+            </div>
+            <div id="sim-modal-starting-xi" style="display: flex; flex-direction: column; gap: 6px; max-height: 300px; overflow-y: auto; padding-right: 4px;">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <div>
+            <h3 style="font-size: 13.5px; font-weight: 700; color: #ffbe10; margin: 0 0 8px 0;">🟡 Suplentes de Simulación</h3>
+            <div id="sim-modal-bench" style="display: flex; flex-direction: column; gap: 6px; max-height: 140px; overflow-y: auto; padding-right: 4px;">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Panel: Global Player Database Selector (Módulo Jugadores) -->
+        <div style="background: rgba(10, 20, 35, 0.5); border: 1px solid rgba(0, 240, 255, 0.15); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 12px;">
+          <h3 style="font-size: 13.5px; font-weight: 700; color: #fff; margin: 0; display: flex; justify-content: space-between; align-items: center;">
+            <span>🔍 Módulo Jugadores (BD Global)</span>
+            <span style="font-size: 11px; color: rgba(255,255,255,0.4);" id="sim-modal-global-count">5,000+ disponibles</span>
+          </h3>
+
+          <input 
+            type="text" 
+            id="sim-modal-search-input" 
+            placeholder="Buscar cualquier jugador por nombre, club o país..." 
+            style="width: 100%; padding: 8px 12px; font-size: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(0, 240, 255, 0.25); border-radius: 8px; color: #fff; outline: none;"
+          />
+
+          <!-- Positional Filter Chips -->
+          <div style="display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px;">
+            <button class="chip active sim-pos-chip" data-pos="" onclick="filterSimModalGlobalPlayers('')">Todos</button>
+            <button class="chip sim-pos-chip" data-pos="DEL" onclick="filterSimModalGlobalPlayers('DEL')">Delanteros</button>
+            <button class="chip sim-pos-chip" data-pos="MED" onclick="filterSimModalGlobalPlayers('MED')">Medios</button>
+            <button class="chip sim-pos-chip" data-pos="DEF" onclick="filterSimModalGlobalPlayers('DEF')">Defensas</button>
+            <button class="chip sim-pos-chip" data-pos="GK" onclick="filterSimModalGlobalPlayers('GK')">Porteros</button>
+          </div>
+
+          <div id="sim-modal-global-players-list" style="display: flex; flex-direction: column; gap: 6px; overflow-y: auto; max-height: 360px; padding-right: 4px;">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 18px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 14px;">
+        <button onclick="closeSimLineupModal()" style="padding: 9px 20px; font-size: 12.5px; font-weight: 600; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); color: #fff; border-radius: 8px; cursor: pointer;">
+          Cancelar
+        </button>
+        <button onclick="saveSimLineupChanges()" style="padding: 9px 24px; font-size: 12.5px; font-weight: 700; background: var(--cyan); border: none; color: #000; border-radius: 8px; cursor: pointer; box-shadow: 0 0 15px rgba(0,240,255,0.4);">
+          Guardar Alineación de Simulación 💾
+        </button>
+      </div>
+
     </div>
   </div>
 
