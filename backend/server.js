@@ -311,15 +311,13 @@ app.get(['/api/player-photo/:id', '/api/player-photo/*'], (req, res) => {
     return client.get(targetUrl, options, (proxyRes) => {
       if (proxyRes.statusCode !== 200) {
         proxyRes.resume();
-        const fallbackName = targetUrl.split('text=')[1] ? decodeURIComponent(targetUrl.split('text=')[1]) : 'Futbol AI';
-        return res.redirect(`https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(fallbackName)}&backgroundColor=000000&textColor=00f0ff&radius=50`);
+        return res.redirect(`https://api.dicebear.com/9.x/initials/svg?seed=Player&backgroundColor=0d1117&textColor=ffffff&radius=50`);
       }
       res.setHeader('Content-Type', proxyRes.headers['content-type'] || 'image/jpeg');
       res.setHeader('Cache-Control', 'public, max-age=86400');
       proxyRes.pipe(res);
     }).on('error', () => {
-      const fallbackName = targetUrl.split('text=')[1] ? decodeURIComponent(targetUrl.split('text=')[1]) : 'Futbol AI';
-      res.redirect(`https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(fallbackName)}&backgroundColor=000000&textColor=00f0ff&radius=50`);
+      res.redirect(`https://api.dicebear.com/9.x/initials/svg?seed=Player&backgroundColor=0d1117&textColor=ffffff&radius=50`);
     });
   }
 
@@ -1666,39 +1664,58 @@ function startServer(retries = 2) {
         if (fs.existsSync(playersFile)) {
           const fileData = JSON.parse(fs.readFileSync(playersFile, 'utf8'));
           const playersList = Array.isArray(fileData) ? fileData : (fileData.players || []);
-          const totalJsonPlayers = playersList.length;
+          const jsonPlayerIds = new Set(playersList.map(p => p.id));
           
-          // Get all existing player IDs in DB
+          // 1. Purge deleted duplicate records from active DB not present in players.json
           const dbPlayers = await Player.findAll({ attributes: ['id'] });
-          const dbPlayerIds = new Set(dbPlayers.map(p => p.id));
-          
-          // Filter out players already in DB
-          const missingPlayers = playersList.filter(p => !dbPlayerIds.has(p.id));
-          
-          if (missingPlayers.length > 0) {
-            console.log(`🌱 Database Seeding: Syncing ${missingPlayers.length} missing players from players.json...`);
-            const playersToInsert = missingPlayers.map(p => {
-              return {
-                ...p,
-                stats: p.stats ? (typeof p.stats === 'string' ? p.stats : JSON.stringify(p.stats)) : null,
-                careerTotals: p.careerTotals ? (typeof p.careerTotals === 'string' ? p.careerTotals : JSON.stringify(p.careerTotals)) : null,
-                trophies: p.trophies ? (typeof p.trophies === 'string' ? p.trophies : JSON.stringify(p.trophies)) : null,
-                transfers: p.transfers ? (typeof p.transfers === 'string' ? p.transfers : JSON.stringify(p.transfers)) : null,
-                strengths: p.strengths ? (typeof p.strengths === 'string' ? p.strengths : JSON.stringify(p.strengths)) : null,
-                tags: p.tags ? (typeof p.tags === 'string' ? p.tags : JSON.stringify(p.tags)) : null,
-                history: p.history ? (typeof p.history === 'string' ? p.history : JSON.stringify(p.history)) : null
-              };
-            });
-            await Player.bulkCreate(playersToInsert);
-            count = await Player.count();
-            console.log(`✅ Seeded ${missingPlayers.length} missing players successfully! Total is now ${count}.`);
+          const obsoletePlayers = dbPlayers.filter(p => !jsonPlayerIds.has(p.id));
+          if (obsoletePlayers.length > 0) {
+            console.log(`🧹 Purging ${obsoletePlayers.length} obsolete/duplicate records from active database...`);
+            for (const obs of obsoletePlayers) {
+              await Player.destroy({ where: { id: obs.id } });
+            }
           }
 
-          console.log(`✅ Synchronizing market values for ${totalJsonPlayers} players across database...`);
+          // 2. Upsert (update or insert) all clean players with photos, injuries, and 2025/26 history
+          console.log(`🌱 Synchronizing ${playersList.length} players from players.json into active database...`);
           for (const p of playersList) {
-            await Player.update({ marketValue: p.marketValue || 0 }, { where: { id: p.id } });
+            const formattedPlayer = {
+              id: p.id,
+              name: p.name,
+              photoId: p.photoId || null,
+              nickname: p.nickname || null,
+              age: p.age || null,
+              nationality: p.nationality || null,
+              nationalityEs: p.nationalityEs || null,
+              flag: p.flag || null,
+              position: p.position || null,
+              positionEs: p.positionEs || null,
+              currentTeam: p.currentTeam || null,
+              league: p.league || null,
+              country: p.country || null,
+              jerseyNumber: p.jerseyNumber || null,
+              height: p.height || null,
+              weight: p.weight || null,
+              preferredFoot: p.preferredFoot || null,
+              marketValue: p.marketValue || 0,
+              overallRating: p.overallRating || 7.2,
+              stats: p.stats ? (typeof p.stats === 'string' ? p.stats : JSON.stringify(p.stats)) : null,
+              careerTotals: p.careerTotals ? (typeof p.careerTotals === 'string' ? p.careerTotals : JSON.stringify(p.careerTotals)) : null,
+              trophies: p.trophies ? (typeof p.trophies === 'string' ? p.trophies : JSON.stringify(p.trophies)) : null,
+              transfers: p.transfers ? (typeof p.transfers === 'string' ? p.transfers : JSON.stringify(p.transfers)) : null,
+              bio: p.bio || null,
+              bioEs: p.bioEs || null,
+              strengths: p.strengths ? (typeof p.strengths === 'string' ? p.strengths : JSON.stringify(p.strengths)) : null,
+              tags: p.tags ? (typeof p.tags === 'string' ? p.tags : JSON.stringify(p.tags)) : null,
+              history: p.history ? (typeof p.history === 'string' ? p.history : JSON.stringify(p.history)) : null,
+              medicalStatus: p.medicalStatus || 'Disponible',
+              injuries: p.injuries ? (typeof p.injuries === 'string' ? p.injuries : JSON.stringify(p.injuries)) : null
+            };
+            
+            await Player.upsert(formattedPlayer);
           }
-          console.log(`✅ Synchronized marketValue for ${totalJsonPlayers} players in active database.`);
+          count = await Player.count();
+          console.log(`✅ Synchronized ${playersList.length} players successfully in active database. Total count: ${count}`);
         } else {
           console.warn('⚠️ Seeding warning: knowledge/players.json not found.');
         }
