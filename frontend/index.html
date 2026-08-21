@@ -890,7 +890,7 @@
             <div class="agent-avatar">⚽</div>
             <div class="agent-info">
               <h3 data-i18n="chat_agent_name">FutbolAI Agent</h3>
-              <p class="agent-status" id="agent-status-text">Online — Gemini Powered</p>
+              <p class="agent-status" id="agent-status-text">Online</p>
             </div>
             <div id="chat-daily-limit-badge" style="display: none; margin-left: auto; background: rgba(0, 240, 255, 0.1); border: 1px solid rgba(0, 240, 255, 0.3); color: #00f0ff; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600;"></div>
             <button class="btn-icon" id="btn-mute-agent" title="Silenciar Agente / Mute Agent">🔊</button>
@@ -1144,16 +1144,16 @@
     <!-- SIMULATIONS SECTION -->
     <section class="section" id="section-simulations">
       <div class="section-title-bar">
-        <h2 data-i18n="section_simulations">🎮 Simulador de Partidos IA</h2>
+        <h2 data-i18n="section_simulations">Simulador de Partidos IA</h2>
       </div>
 
       <div class="simulations-layout">
         <!-- Left Panel: Active Club & Fixtures -->
         <div class="sim-left-panel">
           <div class="sim-card active-club-card">
-            <h3 class="sim-card-title">🛡️ Tu Club Activo</h3>
+            <h3 class="sim-card-title">Tu Club Activo</h3>
             <div class="sim-club-details">
-              <div class="sim-club-badge" id="sim-my-club-badge">⚽</div>
+              <div class="sim-club-badge" id="sim-my-club-badge"></div>
               <div class="sim-club-info">
                 <h4 id="sim-my-club-name">Mi Club</h4>
                 <p id="sim-my-club-league">Cargando liga...</p>
@@ -1163,7 +1163,7 @@
           </div>
 
           <div class="sim-card fixtures-card">
-            <h3 class="sim-card-title">📅 Próximos Partidos</h3>
+            <h3 class="sim-card-title">Próximos Partidos</h3>
             <div class="fixtures-list" id="sim-fixtures-list">
               <!-- Fixtures loaded dynamically -->
             </div>
@@ -1173,11 +1173,11 @@
         <!-- Right Panel: Custom Simulation Arena -->
         <div class="sim-right-panel">
           <div class="sim-card arena-card">
-            <h3 class="sim-card-title">⚡ Arena de Simulación</h3>
+            <h3 class="sim-card-title">Arena de Simulación</h3>
             
             <div class="arena-setup">
               <div class="arena-team home">
-                <div class="arena-badge" id="arena-home-badge">🛡️</div>
+                <div class="arena-badge" id="arena-home-badge"></div>
                 <span class="arena-team-name" id="arena-home-name">Local</span>
                 <span class="arena-rating" id="arena-home-rating">VALOR --</span>
               </div>
@@ -1185,19 +1185,40 @@
               <div class="arena-vs">VS</div>
               
               <div class="arena-team away">
-                <div class="arena-select-wrap">
-                  <select id="arena-away-select" class="arena-select">
+                <div class="arena-select-wrap" style="width: 100%;">
+                  <!-- Custom Searchable Dropdown for Arena Away Team -->
+                  <div class="custom-dropdown" id="custom-dropdown-arena-away" style="width: 100%; position: relative;">
+                    <div class="dropdown-trigger" id="dropdown-trigger-arena-away" style="padding: 8px 14px; background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.25); border-radius: 8px;">
+                      <span class="dropdown-trigger-text" id="arena-away-trigger-text" style="font-size: 12px; font-weight: 600; color: #fff; text-transform: none;">Selecciona un rival...</span>
+                      <span class="dropdown-arrow" style="color: var(--cyan);">▼</span>
+                    </div>
+                    <div class="dropdown-menu" id="dropdown-menu-arena-away" style="width: 100%; min-width: 240px; right: 0; left: auto;">
+                      <div class="dropdown-search-wrap" style="padding: 8px;">
+                        <input 
+                          type="text" 
+                          class="dropdown-search-input" 
+                          id="dropdown-search-arena-away" 
+                          placeholder="Buscar cualquier equipo..." 
+                          autocomplete="off" 
+                          style="width: 100%; padding: 6px 10px; font-size: 12px; border-radius: 6px;"
+                        />
+                      </div>
+                      <div class="dropdown-options" id="dropdown-options-arena-away" style="max-height: 220px; overflow-y: auto;"></div>
+                    </div>
+                  </div>
+                  <!-- Hidden native select for compatibility -->
+                  <select id="arena-away-select" class="arena-select" style="display: none;">
                     <option value="">Selecciona un rival...</option>
                   </select>
                 </div>
-                <div class="arena-badge" id="arena-away-badge">🚩</div>
+                <div class="arena-badge" id="arena-away-badge"></div>
                 <span class="arena-team-name" id="arena-away-name">Visitante</span>
                 <span class="arena-rating" id="arena-away-rating">VALOR --</span>
               </div>
             </div>
 
             <button class="btn-primary btn-full btn-sim-start" id="btn-run-simulation" disabled>
-              <span>🎮</span> Iniciar Simulación con IA
+              Iniciar Simulación con IA
             </button>
           </div>
         </div>
@@ -1234,7 +1255,7 @@
             <div class="scoreboard-sim">
               <div style="display:flex;align-items:center;justify-content:center;gap:12px;">
                 <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;">
-                  <div class="crest" id="sim-live-home-logo">⚽</div>
+                  <div class="crest" id="sim-live-home-logo"></div>
                   <span style="font-size:14px;font-weight:700;color:var(--text-1)" id="sim-live-home-name">Local</span>
                 </div>
                 <div style="display:flex;align-items:center;gap:15px;padding:0 16px;">
@@ -1243,7 +1264,7 @@
                   <span class="score-n" id="sim-live-away-score" style="color:var(--orange)">0</span>
                 </div>
                 <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;">
-                  <div class="crest" id="sim-live-away-logo">⚽</div>
+                  <div class="crest" id="sim-live-away-logo"></div>
                   <span style="font-size:14px;font-weight:700;color:var(--text-1)" id="sim-live-away-name">Visitante</span>
                 </div>
               </div>
@@ -1275,14 +1296,14 @@
               <button class="sp-btn animate-btn" id="sim-speed-normal" onclick="setSimSpeed(1000,'sim-speed-normal')">Normal</button>
               <button class="sp-btn animate-btn on" id="sim-speed-fast" onclick="setSimSpeed(300,'sim-speed-fast')">Rápido</button>
               <button class="sp-btn animate-btn" id="sim-speed-turbo" onclick="setSimSpeed(80,'sim-speed-turbo')">Turbo</button>
-              <button class="sp-btn animate-btn" id="btn-skip-sim" onclick="skipMatchSimulation()" style="margin-left: auto; background: rgba(255, 61, 0, 0.1); border-color: rgba(255, 61, 0, 0.3); color: var(--orange);">Saltar simulación ⏭️</button>
+              <button class="sp-btn animate-btn" id="btn-skip-sim" onclick="skipMatchSimulation()" style="margin-left: auto; background: rgba(255, 61, 0, 0.1); border-color: rgba(255, 61, 0, 0.3); color: var(--orange);">Saltar simulación</button>
             </div>
 
             <div class="sim-live-tabs">
-              <div class="sim-live-tab on" id="sim-live-tab-field" onclick="switchLiveSimTab('field')">🎮 Táctico</div>
-              <div class="sim-live-tab" id="sim-live-tab-stats" onclick="switchLiveSimTab('stats')">📊 Stats</div>
-              <div class="sim-live-tab" id="sim-live-tab-events" onclick="switchLiveSimTab('events')">⏱️ Eventos</div>
-              <div class="sim-live-tab" id="sim-live-tab-ai" onclick="switchLiveSimTab('ai')">🧠 IA</div>
+              <div class="sim-live-tab on" id="sim-live-tab-field" onclick="switchLiveSimTab('field')">Táctico</div>
+              <div class="sim-live-tab" id="sim-live-tab-stats" onclick="switchLiveSimTab('stats')">Stats</div>
+              <div class="sim-live-tab" id="sim-live-tab-events" onclick="switchLiveSimTab('events')">Eventos</div>
+              <div class="sim-live-tab" id="sim-live-tab-ai" onclick="switchLiveSimTab('ai')">IA</div>
             </div>
 
             <!-- TAB CONTENTS -->
@@ -1348,7 +1369,7 @@
             <div class="sim-live-tc" id="sim-live-tc-ai">
               <div class="ai-wrap">
                 <div class="ai-card">
-                  <div class="ai-hdr" style="color: var(--cyan);"><span style="font-size:14px;">✨</span> Análisis en tiempo real</div>
+                  <div class="ai-hdr" style="color: var(--cyan);">Análisis en tiempo real</div>
                   <div class="ai-txt" id="sim-live-ai-txt">Iniciando simulación...</div>
                 </div>
               </div>
@@ -1379,16 +1400,16 @@
 
             <!-- Tab Navigation Bar -->
             <div class="sim-tabs-bar">
-              <button class="sim-tab-btn active" id="btn-sim-tab-events" onclick="switchSimTab('events')">⏱️ Eventos</button>
-              <button class="sim-tab-btn" id="btn-sim-tab-stats" onclick="switchSimTab('stats')">📊 Estadísticas</button>
-              <button class="sim-tab-btn" id="btn-sim-tab-home" onclick="switchSimTab('home-lineup')">🛡️ Alineación Local</button>
-              <button class="sim-tab-btn" id="btn-sim-tab-away" onclick="switchSimTab('away-lineup')">🚩 Alineación Visitante</button>
-              <button class="sim-tab-btn" id="btn-sim-tab-tactics" onclick="switchSimTab('tactics')">🧠 Recomendaciones de IA</button>
+              <button class="sim-tab-btn active" id="btn-sim-tab-events" onclick="switchSimTab('events')">Eventos</button>
+              <button class="sim-tab-btn" id="btn-sim-tab-stats" onclick="switchSimTab('stats')">Estadísticas</button>
+              <button class="sim-tab-btn" id="btn-sim-tab-home" onclick="switchSimTab('home-lineup')">Alineación Local</button>
+              <button class="sim-tab-btn" id="btn-sim-tab-away" onclick="switchSimTab('away-lineup')">Alineación Visitante</button>
+              <button class="sim-tab-btn" id="btn-sim-tab-tactics" onclick="switchSimTab('tactics')">Recomendaciones de IA</button>
             </div>
 
             <!-- Tab Content 1: Events -->
             <div class="sim-tab-content active" id="sim-tab-events">
-              <h4 class="grid-col-title">⏱️ Eventos del Partido</h4>
+              <h4 class="grid-col-title">Eventos del Partido</h4>
               <div class="timeline" id="result-timeline">
                 <!-- Timeline items injected dynamically -->
               </div>
@@ -1396,7 +1417,7 @@
 
             <!-- Tab Content 2: Stats -->
             <div class="sim-tab-content" id="sim-tab-stats">
-              <h4 class="grid-col-title">📊 Estadísticas Finales del Partido</h4>
+              <h4 class="grid-col-title">Estadísticas Finales del Partido</h4>
               <div class="stats-wrap" id="result-stats-content" style="padding: 12px 0;">
                 <!-- Stats injected dynamically -->
               </div>
@@ -1405,7 +1426,7 @@
             <!-- Tab Content 3: Home Lineup -->
             <div class="sim-tab-content" id="sim-tab-home-lineup">
               <div class="results-squad-section">
-                <h4 class="grid-col-title" id="result-home-squad-title">📋 Alineación de Mi Club Utilizada</h4>
+                <h4 class="grid-col-title" id="result-home-squad-title">Alineación de Mi Club Utilizada</h4>
                 <p id="result-home-squad-desc" style="font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 15px;">La simulación se ha realizado utilizando la alineación titular configurada en la sección "Mi Club".</p>
                 <div class="results-squad-list" id="result-home-xi">
                   <!-- Home players grid -->
@@ -1416,7 +1437,7 @@
             <!-- Tab Content 4: Away Lineup -->
             <div class="sim-tab-content" id="sim-tab-away-lineup">
               <div class="results-squad-section">
-                <h4 class="grid-col-title" id="result-away-squad-title">📋 Alineación del Rival Utilizada</h4>
+                <h4 class="grid-col-title" id="result-away-squad-title">Alineación del Rival Utilizada</h4>
                 <p id="result-away-squad-desc" style="font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 15px;">Alineación del rival para este encuentro calculada por el motor de IA.</p>
                 <div class="results-squad-list" id="result-away-xi">
                   <!-- Away players grid -->

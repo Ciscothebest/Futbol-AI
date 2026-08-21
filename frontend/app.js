@@ -21,7 +21,7 @@ function formatContractValue(val) {
 const TRANSLATIONS = {
   es: {
     nav_home: 'Inicio', nav_my_club: 'Mi Club', nav_players: 'Jugadores', nav_chat: 'Chat IA',
-    nav_compare: 'Comparar', nav_predictions: 'Predicciones', nav_simulations: 'Simulaciones', section_simulations: '🎮 Simulador de Partidos IA', sim_report_title: 'Reporte de Simulación IA',
+    nav_compare: 'Comparar', nav_predictions: 'Predicciones', nav_simulations: 'Simulaciones', section_simulations: 'Simulador de Partidos IA', sim_report_title: 'Reporte de Simulación IA',
     db_my_club: 'Mi Club', db_position: 'Posición', db_goals: 'Goles Favor (GF)', db_xg: 'xG', db_wins: 'Ganados (G)', db_draws: 'Empatados (E)', db_losses: 'Perdidos (P)', db_gc: 'Goles Contra (GC)', db_dg: 'Dif. Goles (DG)',
     db_matches: 'Partidos', db_next_matches: 'Próximos partidos', db_title_formation: 'Alineación Titular',
     db_btn_edit_formation: 'Editar alineación', db_alerts_title: 'Alertas IA',
@@ -60,7 +60,7 @@ const TRANSLATIONS = {
     chat_placeholder: 'Escribe tu pregunta...',
     welcome_title: '¡Bienvenido a FutbolAI!',
     welcome_text: 'Soy tu experto en fútbol mundial. Puedo responder cualquier pregunta sobre jugadores, estadísticas, carreras y más.',
-    status_online: 'Gemini IA Online', status_demo: 'Modo Demo', status_offline: 'Backend offline',
+    status_online: 'Online', status_demo: 'Modo Demo', status_offline: 'Backend offline',
     status_connecting: 'Conectando...',
     goals: 'GOLES', assists: 'ASIST.', matches: 'PART.',
     goals_full: 'Goles', assists_full: 'Asistencias', matches_full: 'Partidos (Club)',
@@ -128,7 +128,7 @@ const TRANSLATIONS = {
   },
   en: {
     nav_home: 'Home', nav_my_club: 'My Club', nav_players: 'Players', nav_chat: 'AI Chat',
-    nav_compare: 'Compare', nav_predictions: 'Predictions', nav_simulations: 'Simulations', section_simulations: '🎮 AI Match Simulator', sim_report_title: 'AI Simulation Report',
+    nav_compare: 'Compare', nav_predictions: 'Predictions', nav_simulations: 'Simulations', section_simulations: 'AI Match Simulator', sim_report_title: 'AI Simulation Report',
     db_my_club: 'My Club', db_position: 'Position', db_goals: 'Goals For (GF)', db_xg: 'xG', db_wins: 'Wins (W)', db_draws: 'Draws (D)', db_losses: 'Losses (L)', db_gc: 'Goals Conceded (GA)', db_dg: 'Goal Diff (GD)',
     db_matches: 'Matches', db_next_matches: 'Upcoming Matches', db_title_formation: 'Starting XI',
     db_btn_edit_formation: 'Edit Formation', db_alerts_title: 'AI Alerts',
@@ -167,7 +167,7 @@ const TRANSLATIONS = {
     chat_placeholder: 'Type your question...',
     welcome_title: 'Welcome to FutbolAI!',
     welcome_text: "I'm your global football expert. I can answer any question about players, stats, careers and more.",
-    status_online: 'Gemini IA Online', status_demo: 'Demo Mode', status_offline: 'Backend offline',
+    status_online: 'Online', status_demo: 'Demo Mode', status_offline: 'Backend offline',
     status_connecting: 'Connecting...',
     goals: 'GOLES', assists: 'ASSISTS', matches: 'MATCHES',
     goals_full: 'Goals', assists_full: 'Assists', matches_full: 'Club Matches',
@@ -9714,24 +9714,14 @@ function updateDailyLimitsBadges(user) {
     }
   }
 
-  // 3. Mi Club Pitch Edit Guard
+  // 3. Mi Club Pitch Edit Guard - Enabled for all plans
   const pitchEditBtn = document.getElementById('db-btn-edit-formation');
   if (pitchEditBtn) {
-    if (isGratis) {
-      pitchEditBtn.title = 'Edición restringida en Plan Gratis (Solo Resumen de Temporada disponible)';
-      pitchEditBtn.onclick = (e) => {
-        e.preventDefault();
-        alert('En el Plan Gratis tienes acceso únicamente al Resumen de Temporada de tu equipo.\n\nPara visualizar la alineación general o personalizar tácticas, actualiza a un plan superior (Pro, Plus, Local o Enterprise).');
-      };
-    } else if (isPro) {
-      pitchEditBtn.title = 'Edición de alineación restringida en Plan Pro (Modo Lectura de Alineación General)';
-      pitchEditBtn.onclick = (e) => {
-        e.preventDefault();
-        alert('En el Plan Pro puedes consultar la Alineación General del equipo, pero la edición personalizada de alineaciones y tácticas está reservada para los planes Plus, Local y Enterprise.');
-      };
-    } else {
-      pitchEditBtn.onclick = null;
-    }
+    pitchEditBtn.title = 'Editar alineación';
+    pitchEditBtn.disabled = false;
+    pitchEditBtn.onclick = () => {
+      window.openTacticalEditorModal();
+    };
   }
 
   // 4. Mi Club AI Alerts Guard
@@ -9975,45 +9965,52 @@ async function initSimulationsSection() {
   const arenaHomeEl = document.getElementById('arena-home-name');
   if (arenaHomeEl) arenaHomeEl.textContent = myClubName;
   
-  // Load my team average rating using starting XI from "Mi Club"
-  const homeStartingXI = getUserClubStartingXI(myClubName, user);
-  const homeOvr = calculateStartingXIAverageRating(homeStartingXI);
+  // Load my team total roster market value
+  const homePlayers = await fetchTeamPlayers(myClubName);
+  let homeValue = calculateTeamRosterValue(homePlayers);
+  if (!homeValue || homeValue === 0) {
+    const homeStartingXI = getUserClubStartingXI(myClubName, user);
+    const homeOvr = calculateStartingXIAverageRating(homeStartingXI);
+    homeValue = homeOvr * 10000000;
+  }
   const ratingEl = document.getElementById('arena-home-rating');
-  if (ratingEl) ratingEl.textContent = `OVR ${homeOvr}`;
+  if (ratingEl) ratingEl.textContent = `VALOR ${formatContractValue(homeValue)}`;
 
   // Fetch my club logo
   loadTeamLogo(myClubName, 'sim-my-club-badge');
   loadTeamLogo(myClubName, 'arena-home-badge');
   
-  // Load opponent selector and fixtures list if first time or club changed
+  // Load all teams from entire database across all leagues & countries
   if (!simulationsInitialized || lastInitializedClub !== myClubName) {
     simulationsInitialized = true;
     lastInitializedClub = myClubName;
     
-    // Load all teams from same country
     try {
-      const response = await fetchWithAuth(`${API}/onboarding/teams?country=${encodeURIComponent(myClubCountry)}`);
+      const response = await fetchWithAuth(`${API}/onboarding/teams`);
       const data = await response.json();
-      allTeamsForSim = data.teams || [];
+      let dbTeams = data.teams || [];
+      
+      const teamSet = new Set(dbTeams.map(t => t.name));
+      if (window.allPlayers && Array.isArray(window.allPlayers)) {
+        window.allPlayers.forEach(p => {
+          if (p.currentTeam && !teamSet.has(p.currentTeam)) {
+            teamSet.add(p.currentTeam);
+            dbTeams.push({
+              name: p.currentTeam,
+              country: p.country || p.league || 'Global',
+              leagueName: p.league || 'Base de Datos'
+            });
+          }
+        });
+      }
+      allTeamsForSim = dbTeams;
     } catch (err) {
-      console.error('Error fetching teams for simulation:', err);
+      console.error('Error fetching all teams for simulation:', err);
       allTeamsForSim = [];
     }
     
-    // Populate select
-    const select = document.getElementById('arena-away-select');
-    if (select) {
-      select.innerHTML = '<option value="">Selecciona un rival...</option>';
-      
-      allTeamsForSim.forEach(team => {
-        if (team.name !== myClubName) {
-          const opt = document.createElement('option');
-          opt.value = team.name;
-          opt.textContent = team.name;
-          select.appendChild(opt);
-        }
-      });
-    }
+    setupArenaAwayDropdown();
+    populateArenaAwaySelect('', myClubName);
   }
 
   // Set up event listeners only once
@@ -10032,10 +10029,14 @@ async function initSimulationsSection() {
       document.getElementById('arena-away-name').textContent = opponentName;
       document.getElementById('arena-away-badge').classList.add('active-away');
       
-      // Load opponent rating
+      // Load opponent rating / roster value
       const oppPlayers = await fetchTeamPlayers(opponentName);
-      const awayOvr = calculateTeamAverageRating(oppPlayers);
-      document.getElementById('arena-away-rating').textContent = `VALOR ${formatContractValue(awayOvr * 10000000)}`;
+      let awayValue = calculateTeamRosterValue(oppPlayers);
+      if (!awayValue || awayValue === 0) {
+        const awayOvr = calculateTeamAverageRating(oppPlayers);
+        awayValue = awayOvr * 10000000;
+      }
+      document.getElementById('arena-away-rating').textContent = `VALOR ${formatContractValue(awayValue)}`;
       
       // Load logo
       loadTeamLogo(opponentName, 'arena-away-badge');
@@ -10071,12 +10072,10 @@ async function initSimulationsSection() {
       }
 
       const opponent = select.value;
-      const awayOvrText = document.getElementById('arena-away-rating').textContent;
-      const awayOvr = parseInt(awayOvrText.replace('OVR ', '')) || 75;
+      const oppPlayers = await fetchTeamPlayers(opponent);
+      const awayOvr = calculateTeamAverageRating(oppPlayers);
       
       const currentClub = currentUser.selectedClub || 'FC Barcelona';
-      
-      // Calculate homeOvr dynamically based on current club starting XI
       const currentStartingXI = getUserClubStartingXI(currentClub, currentUser);
       const currentHomeOvr = calculateStartingXIAverageRating(currentStartingXI);
       
@@ -10099,6 +10098,29 @@ async function fetchTeamPlayers(teamName) {
   }
 }
 
+function parseMarketValueNum(val) {
+  if (!val) return 0;
+  if (typeof val === 'number') return val;
+  if (typeof val === 'string') {
+    const clean = val.replace(/[^0-9.]/g, '');
+    let num = parseFloat(clean) || 0;
+    if (val.toUpperCase().includes('M')) num *= 1000000;
+    else if (val.toUpperCase().includes('K')) num *= 1000;
+    else if (val.toUpperCase().includes('B')) num *= 1000000000;
+    return num;
+  }
+  return 0;
+}
+
+function calculateTeamRosterValue(players) {
+  if (!players || players.length === 0) return 0;
+  let total = 0;
+  players.forEach(p => {
+    total += parseMarketValueNum(p.marketValue);
+  });
+  return total;
+}
+
 function calculateTeamAverageRating(players) {
   if (!players || players.length === 0) return 75;
   let sum = 0;
@@ -10118,10 +10140,10 @@ async function loadTeamLogo(teamIdentifier, elementOrId) {
       const url = getAbsoluteUrl(data.logoUrl);
       el.innerHTML = `<img src="${url}" style="width: 80%; height: 80%; object-fit: contain;">`;
     } else {
-      el.textContent = '⚽';
+      el.textContent = '';
     }
   } catch (err) {
-    el.textContent = '⚽';
+    el.textContent = '';
   }
 }
 
@@ -10146,10 +10168,10 @@ async function loadLeagueLogo(leagueIdentifier, elementOrId) {
       const url = getAbsoluteUrl(data.logoUrl);
       el.innerHTML = `<img src="${url}" style="width: 80%; height: 80%; object-fit: contain;">`;
     } else {
-      el.textContent = '🌐';
+      el.textContent = '';
     }
   } catch (err) {
-    el.textContent = '🌐';
+    el.textContent = '';
   }
 }
 
@@ -10187,8 +10209,8 @@ function buildUpcomingFixtures(myClubName) {
   
   if (realFixtures && realFixtures.length > 0) {
     const seasonHeader = document.createElement('div');
-    seasonHeader.style.cssText = 'font-size: 11px; color: #00f0ff; background: rgba(0,240,255,0.08); border: 1px solid rgba(0,240,255,0.2); padding: 4px 8px; border-radius: 4px; margin-bottom: 10px; font-weight: 500; text-align: center;';
-    seasonHeader.textContent = isEs ? '📅 Temporada 2026/27' : '📅 2026/27 Season';
+    seasonHeader.className = 'fixtures-season-header';
+    seasonHeader.innerHTML = `<span class="fixtures-season-badge">${isEs ? 'Temporada 2026/27' : '2026/27 Season'}</span>`;
     fixturesContainer.appendChild(seasonHeader);
 
     realFixtures.forEach((f) => {
@@ -10197,28 +10219,27 @@ function buildUpcomingFixtures(myClubName) {
       
       const clubTheme = getClubTheme(myClubName);
       const oppTheme = getClubTheme(f.opponent);
-      const homeTheme = f.home ? clubTheme : oppTheme;
-      const awayTheme = f.home ? oppTheme : clubTheme;
-      const homeName = f.home ? myClubName : f.opponent;
-      const awayName = f.home ? f.opponent : myClubName;
+      const isHome = f.home;
+      const locText = isHome ? (isEs ? 'Local' : 'Home') : (isEs ? 'Visitante' : 'Away');
+      const locClass = isHome ? 'fixture-loc-home' : 'fixture-loc-away';
       
       item.innerHTML = `
         <div class="fixture-club home-club">
-          <div class="fixture-shield" style="background: linear-gradient(135deg, ${homeTheme.colors[0]}, ${homeTheme.colors[1]}); border-color: ${homeTheme.colors[0]};">
-            ${homeTheme.short}
+          <div class="fixture-shield" style="background: linear-gradient(135deg, ${clubTheme.colors[0]}, ${clubTheme.colors[1]}); border-color: ${clubTheme.colors[0]};">
+            ${clubTheme.short}
           </div>
-          <span class="fixture-club-name">${getShortTeamName(homeName)}</span>
+          <span class="fixture-club-name" title="${myClubName}">${getShortTeamName(myClubName)}</span>
         </div>
         <div class="fixture-center-meta">
+          <span class="fixture-loc-badge ${locClass}">${locText}</span>
           <span class="fixture-vs-badge">VS</span>
-          <span class="fixture-date-text">${f.date}</span>
-          <span class="fixture-comp-tag">${f.competition}</span>
+          <span class="fixture-sub-info">${f.date} &bull; ${f.competition}</span>
         </div>
         <div class="fixture-club away-club">
-          <span class="fixture-club-name">${getShortTeamName(awayName)}</span>
-          <div class="fixture-shield" style="background: linear-gradient(135deg, ${awayTheme.colors[0]}, ${awayTheme.colors[1]}); border-color: ${awayTheme.colors[0]};">
-            ${awayTheme.short}
+          <div class="fixture-shield" style="background: linear-gradient(135deg, ${oppTheme.colors[0]}, ${oppTheme.colors[1]}); border-color: ${oppTheme.colors[0]};">
+            ${oppTheme.short}
           </div>
+          <span class="fixture-club-name" title="${f.opponent}">${getShortTeamName(f.opponent)}</span>
         </div>
         <button class="btn-fixture-sim" onclick="simulateFixture('${f.opponent}')">
           ${isEs ? 'Simular' : 'Simulate'}
@@ -10231,7 +10252,6 @@ function buildUpcomingFixtures(myClubName) {
   
   fixturesContainer.innerHTML = `
     <div class="sim-no-matches" style="padding: 20px; text-align: center; color: rgba(255,255,255,0.7); font-size: 13px;">
-      <span style="font-size: 24px; display: block; margin-bottom: 6px;">📅</span>
       <strong style="color: #fff; font-size: 14px; display: block; margin-bottom: 2px;">${isEs ? 'No hay partidos por ahora' : 'No matches for now'}</strong>
       <span style="color: rgba(255,255,255,0.45); font-size: 11px;">${isEs ? 'No se han encontrado partidos programados para este equipo.' : 'No scheduled matches found for this team.'}</span>
     </div>
@@ -10261,12 +10281,170 @@ window.simulateFixture = function(opponentName) {
   }
 };
 
+function setupArenaAwayDropdown() {
+  const trigger = document.getElementById('dropdown-trigger-arena-away');
+  const menu = document.getElementById('dropdown-menu-arena-away');
+  const searchInput = document.getElementById('dropdown-search-arena-away');
+
+  if (trigger && menu && !trigger.dataset.setupDone) {
+    trigger.dataset.setupDone = 'true';
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      document.querySelectorAll('.dropdown-menu').forEach(m => {
+        if (m !== menu) m.classList.remove('show');
+      });
+      menu.classList.toggle('show');
+      if (menu.classList.contains('show') && searchInput) {
+        searchInput.value = '';
+        const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+        const myClub = user.selectedClub || 'FC Barcelona';
+        populateArenaAwaySelect('', myClub);
+        searchInput.focus();
+      }
+    });
+  }
+
+  if (searchInput && !searchInput.dataset.setupDone) {
+    searchInput.dataset.setupDone = 'true';
+    searchInput.addEventListener('input', (e) => {
+      const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+      const myClub = user.selectedClub || 'FC Barcelona';
+      populateArenaAwaySelect(e.target.value, myClub);
+    });
+    searchInput.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+  }
+}
+
+const POPULAR_ARENA_TEAMS = [
+  'Real Madrid', 'FC Barcelona', 'Manchester City', 'Bayern München', 'Bayern Munich',
+  'Paris Saint-Germain', 'Liverpool', 'Arsenal', 'Inter', 'Juventus',
+  'Atlético de Madrid', 'Atlético Madrid', 'Chelsea', 'Borussia Dortmund', 'AC Milan',
+  'Boca Juniors', 'River Plate', 'CR Flamengo', 'Flamengo', 'Palmeiras',
+  'Al-Nassr', 'Al-Hilal', 'Bayer 04 Leverkusen', 'Bayer Leverkusen', 'Tottenham Hotspur',
+  'Sevilla FC', 'Real Betis', 'Athletic Club', 'AS Roma', 'Napoli', 'SS Lazio'
+];
+
+function getPopularRank(teamName) {
+  if (!teamName) return 999;
+  const nameLower = teamName.toLowerCase();
+  const index = POPULAR_ARENA_TEAMS.findIndex(p => p.toLowerCase() === nameLower || nameLower.includes(p.toLowerCase()));
+  return index !== -1 ? index : 999;
+}
+
+function isValidTeamName(name) {
+  if (!name || typeof name !== 'string') return false;
+  const trimmed = name.trim();
+  if (trimmed.length < 2) return false;
+  if (trimmed.startsWith('"') || trimmed.startsWith('|') || trimmed.startsWith("'")) return false;
+  const upper = trimmed.toUpperCase();
+  if (upper.includes('N/D') || upper.includes('N/A') || upper.includes('NO DISPONIBLE') || upper.includes('UNDEFINED') || upper.includes('NULL')) return false;
+  if (upper.includes('EQUIPOS') || upper.includes('CORRECTOS') || upper.includes('DOCUMENTO') || upper.includes('VER TAMBIÉN') || upper.includes('ACTUAL,')) return false;
+  return true;
+}
+
+function populateArenaAwaySelect(searchQuery = '', myClubName = '') {
+  const optionsContainer = document.getElementById('dropdown-options-arena-away');
+  const nativeSelect = document.getElementById('arena-away-select');
+  if (!optionsContainer) return;
+  
+  optionsContainer.innerHTML = '';
+  if (nativeSelect) {
+    nativeSelect.innerHTML = '<option value="">Selecciona un rival...</option>';
+  }
+
+  const query = (searchQuery || '').trim().toLowerCase();
+  
+  // Filter teams across ALL 1,200+ teams in DB
+  const filtered = allTeamsForSim.filter(team => {
+    if (!team || !team.name) return false;
+    if (!isValidTeamName(team.name)) return false;
+    if (myClubName && team.name === myClubName) return false;
+    if (!query) return true;
+    const nameMatch = team.name.toLowerCase().includes(query);
+    const leagueMatch = (team.leagueName || '').toLowerCase().includes(query);
+    const countryMatch = (team.country || '').toLowerCase().includes(query);
+    return nameMatch || leagueMatch || countryMatch;
+  });
+
+  if (!query) {
+    // When no search query is typed, sort popular/top tier teams first!
+    filtered.sort((a, b) => {
+      const rankA = getPopularRank(a.name);
+      const rankB = getPopularRank(b.name);
+      if (rankA !== rankB) return rankA - rankB;
+      return a.name.localeCompare(b.name);
+    });
+  }
+
+  // Populate native select for fallback
+  if (nativeSelect) {
+    filtered.forEach(team => {
+      const opt = document.createElement('option');
+      opt.value = team.name;
+      opt.textContent = team.name;
+      nativeSelect.appendChild(opt);
+    });
+  }
+
+  // LIMIT VISUALLY TO MAXIMUM 20 TEAMS
+  const visible = filtered.slice(0, 20);
+
+  if (visible.length === 0) {
+    const emptyOpt = document.createElement('div');
+    emptyOpt.className = 'dropdown-option';
+    emptyOpt.style.cursor = 'default';
+    emptyOpt.style.color = 'var(--text-3)';
+    emptyOpt.textContent = 'Sin resultados';
+    optionsContainer.appendChild(emptyOpt);
+    return;
+  }
+
+  const activeVal = nativeSelect ? nativeSelect.value : '';
+
+  visible.forEach(team => {
+    const opt = document.createElement('div');
+    opt.className = 'dropdown-option';
+    if (activeVal === team.name) opt.classList.add('active');
+    opt.dataset.value = team.name;
+    const leagueTag = team.leagueName || team.country ? ` (${team.leagueName || team.country})` : '';
+    opt.textContent = `${team.name}${leagueTag}`;
+    
+    opt.addEventListener('click', (e) => {
+      e.stopPropagation();
+      selectArenaAwayTeam(team.name);
+    });
+    
+    optionsContainer.appendChild(opt);
+  });
+}
+
+function selectArenaAwayTeam(teamName) {
+  const triggerText = document.getElementById('arena-away-trigger-text');
+  const menu = document.getElementById('dropdown-menu-arena-away');
+  const nativeSelect = document.getElementById('arena-away-select');
+
+  if (triggerText) {
+    triggerText.textContent = teamName || 'Selecciona un rival...';
+  }
+  if (menu) {
+    menu.classList.remove('show');
+  }
+  if (nativeSelect) {
+    nativeSelect.value = teamName;
+    nativeSelect.dispatchEvent(new Event('change'));
+  }
+}
+
 function resetAwayArena() {
   document.getElementById('arena-away-name').textContent = 'Visitante';
   document.getElementById('arena-away-badge').classList.remove('active-away');
-  document.getElementById('arena-away-badge').innerHTML = '🚩';
+  document.getElementById('arena-away-badge').innerHTML = '';
   document.getElementById('arena-away-rating').textContent = 'VALOR --';
   document.getElementById('btn-run-simulation').disabled = true;
+  const triggerText = document.getElementById('arena-away-trigger-text');
+  if (triggerText) triggerText.textContent = 'Selecciona un rival...';
 }
 
 function runMatchSimulation(homeName, awayName, homeOvr, awayOvr) {

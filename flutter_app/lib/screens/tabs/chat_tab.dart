@@ -113,7 +113,7 @@ class _ChatTabState extends State<ChatTab> {
                         ),
                         SizedBox(width: 4),
                         Text(
-                          'Online — Gemini IA Active',
+                          'Online',
                           style: TextStyle(color: Colors.white30, fontSize: 9, fontWeight: FontWeight.bold),
                         ),
                       ],

@@ -796,9 +796,20 @@ app.get('/api/onboarding/teams', authenticate, async (req, res) => {
     if (league) {
       where.leagueName = league;
     }
-    const teams = await Team.findAll({
+    const rawTeams = await Team.findAll({
       where,
       order: [['position', 'ASC'], ['name', 'ASC']]
+    });
+
+    const teams = rawTeams.filter(t => {
+      if (!t || !t.name) return false;
+      const trimmed = t.name.trim();
+      if (trimmed.length < 2) return false;
+      if (trimmed.startsWith('"') || trimmed.startsWith('|') || trimmed.startsWith("'")) return false;
+      const upper = trimmed.toUpperCase();
+      if (upper.includes('N/D') || upper.includes('N/A') || upper.includes('NO DISPONIBLE') || upper.includes('UNDEFINED') || upper.includes('NULL')) return false;
+      if (upper.includes('EQUIPOS') || upper.includes('CORRECTOS') || upper.includes('DOCUMENTO') || upper.includes('VER TAMBIÉN') || upper.includes('ACTUAL,')) return false;
+      return true;
     });
 
     res.json({ teams });
