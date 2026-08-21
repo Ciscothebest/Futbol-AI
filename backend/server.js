@@ -129,7 +129,29 @@ app.get('/api/players', authenticate, async (req, res) => {
     }
     
     if (position) {
-      where.position = position.toUpperCase();
+      const posUpper = position.toUpperCase().trim();
+      const posMap = {
+        'GK': ['GK', 'PO', 'POR', 'PORTERO'],
+        'POR': ['GK', 'PO', 'POR', 'PORTERO'],
+        'DEF': ['DEF', 'CB', 'DFC', 'LB', 'LI', 'RB', 'LD', 'LWB', 'RWB', 'DEFENSOR', 'DEFENSA'],
+        'CB': ['CB', 'DFC', 'DEF'],
+        'LB': ['LB', 'LI', 'DEF'],
+        'RB': ['RB', 'LD', 'DEF'],
+        'MED': ['MED', 'CM', 'MC', 'DM', 'MCD', 'AM', 'MCO', 'LM', 'MI', 'RM', 'MD', 'MEDIOCAMPISTA', 'MEDIOCENTRO'],
+        'CM': ['CM', 'MC', 'MED'],
+        'DM': ['DM', 'MCD', 'MED'],
+        'AM': ['AM', 'MCO', 'MED'],
+        'DEL': ['DEL', 'ST', 'DC', 'CF', 'SD', 'LW', 'EI', 'RW', 'ED', 'DELANTERO'],
+        'ST': ['ST', 'DC', 'DEL'],
+        'LW': ['LW', 'EI', 'DEL'],
+        'RW': ['RW', 'ED', 'DEL']
+      };
+
+      const matchValues = posMap[posUpper] || [posUpper];
+      where[Op.or] = [
+        { position: { [Op.in]: matchValues } },
+        { positionEs: { [Op.in]: matchValues } }
+      ];
     }
 
     if (team) {
@@ -145,8 +167,26 @@ app.get('/api/players', authenticate, async (req, res) => {
       limit: limit ? parseInt(limit) : undefined,
       order: [['marketValue', 'DESC']]
     });
+
+    const posEsMap = {
+      'GK': 'Portero (PO)', 'PO': 'Portero (PO)', 'POR': 'Portero (PO)',
+      'CB': 'Defensa Central (DFC)', 'DFC': 'Defensa Central (DFC)',
+      'LB': 'Lateral Izquierdo (LI)', 'LI': 'Lateral Izquierdo (LI)',
+      'RB': 'Lateral Derecho (LD)', 'LD': 'Lateral Derecho (LD)',
+      'LWB': 'Carrilero Izquierdo (CAD)', 'RWB': 'Carrilero Derecho (CAR)',
+      'DM': 'Pivote Defensivo (MCD)', 'MCD': 'Pivote Defensivo (MCD)',
+      'CM': 'Mediocentro (MC)', 'MC': 'Mediocentro (MC)',
+      'AM': 'Mediapunta (MCO)', 'MCO': 'Mediapunta (MCO)',
+      'LM': 'Interior Izquierdo (MI)', 'MI': 'Interior Izquierdo (MI)',
+      'RM': 'Interior Derecho (MD)', 'MD': 'Interior Derecho (MD)',
+      'LW': 'Extremo Izquierdo (EI)', 'EI': 'Extremo Izquierdo (EI)',
+      'RW': 'Extremo Derecho (ED)', 'ED': 'Extremo Derecho (ED)',
+      'CF': 'Segundo Delantero (SD)', 'SD': 'Segundo Delantero (SD)',
+      'ST': 'Delantero Centro (DC)', 'DC': 'Delantero Centro (DC)',
+      'DEF': 'Defensor (DEF)', 'MED': 'Mediocampista (MED)', 'DEL': 'Delantero (DEL)'
+    };
     
-    // Inject avatar data
+    // Inject avatar data & guarantee non-null position fields
     const fs = require('fs');
     const apiHost = req.protocol + '://' + req.get('host');
     results = results.map(p => {
@@ -163,9 +203,14 @@ app.get('/api/players', authenticate, async (req, res) => {
       } else {
         avatarUrl = fallbackUrl;
       }
+
+      const finalPos = data.position || data.positionEs || 'MED';
+      const finalPosEs = data.positionEs || posEsMap[String(finalPos).toUpperCase()] || finalPos;
       
       return {
         ...data,
+        position: finalPos,
+        positionEs: finalPosEs,
         avatarUrl
       };
     });
@@ -270,6 +315,26 @@ app.get('/api/players/:id', async (req, res) => {
     if (!player) return res.status(404).json({ error: 'Player not found' });
     
     const data = player.toJSON();
+    const posEsMap = {
+      'GK': 'Portero (PO)', 'PO': 'Portero (PO)', 'POR': 'Portero (PO)',
+      'CB': 'Defensa Central (DFC)', 'DFC': 'Defensa Central (DFC)',
+      'LB': 'Lateral Izquierdo (LI)', 'LI': 'Lateral Izquierdo (LI)',
+      'RB': 'Lateral Derecho (LD)', 'LD': 'Lateral Derecho (LD)',
+      'LWB': 'Carrilero Izquierdo (CAD)', 'RWB': 'Carrilero Derecho (CAR)',
+      'DM': 'Pivote Defensivo (MCD)', 'MCD': 'Pivote Defensivo (MCD)',
+      'CM': 'Mediocentro (MC)', 'MC': 'Mediocentro (MC)',
+      'AM': 'Mediapunta (MCO)', 'MCO': 'Mediapunta (MCO)',
+      'LM': 'Interior Izquierdo (MI)', 'MI': 'Interior Izquierdo (MI)',
+      'RM': 'Interior Derecho (MD)', 'MD': 'Interior Derecho (MD)',
+      'LW': 'Extremo Izquierdo (EI)', 'EI': 'Extremo Izquierdo (EI)',
+      'RW': 'Extremo Derecho (ED)', 'ED': 'Extremo Derecho (ED)',
+      'CF': 'Segundo Delantero (SD)', 'SD': 'Segundo Delantero (SD)',
+      'ST': 'Delantero Centro (DC)', 'DC': 'Delantero Centro (DC)',
+      'DEF': 'Defensor (DEF)', 'MED': 'Mediocampista (MED)', 'DEL': 'Delantero (DEL)'
+    };
+    data.position = data.position || data.positionEs || 'MED';
+    data.positionEs = data.positionEs || posEsMap[String(data.position).toUpperCase()] || data.position;
+
     const fs = require('fs');
     const localImgPath = path.join(FRONTEND_PATH, 'assets', 'players', `${data.id}.png`);
     const apiHost = req.protocol + '://' + req.get('host');

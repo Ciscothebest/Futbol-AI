@@ -350,9 +350,51 @@ function getPositionEs(pos) {
     'CF': 'Segundo Delantero (SD)',
     'SD': 'Segundo Delantero (SD)',
     'ST': 'Delantero Centro (DC)',
-    'DC': 'Delantero Centro (DC)'
+    'DC': 'Delantero Centro (DC)',
+    'DEF': 'Defensor (DEF)',
+    'MED': 'Mediocampista (MED)',
+    'DEL': 'Delantero (DEL)'
   };
   return map[posUpper] || pos;
+}
+
+function getPositionDisplay(p) {
+  if (!p) return 'Mediocampista (MC)';
+  const raw = p.position || p.positionEs || 'MC';
+  if (currentLang === 'es') {
+    return p.positionEs || getPositionEs(raw);
+  }
+  return p.position || p.positionEs || 'CM';
+}
+
+function isPositionMatch(playerPos, filterPos) {
+  if (!filterPos) return true;
+  if (!playerPos) return false;
+  
+  const pUpper = String(playerPos).toUpperCase().trim();
+  const fUpper = String(filterPos).toUpperCase().trim();
+  
+  if (pUpper === fUpper) return true;
+  
+  const groups = {
+    'GK': ['GK', 'PO', 'POR', 'PORTERO'],
+    'POR': ['GK', 'PO', 'POR', 'PORTERO'],
+    'DEF': ['DEF', 'CB', 'DFC', 'LB', 'LI', 'RB', 'LD', 'LWB', 'RWB', 'DEFENSOR'],
+    'CB': ['CB', 'DFC', 'DEF'],
+    'LB': ['LB', 'LI', 'DEF'],
+    'RB': ['RB', 'LD', 'DEF'],
+    'MED': ['MED', 'CM', 'MC', 'DM', 'MCD', 'AM', 'MCO', 'LM', 'MI', 'RM', 'MD', 'MEDIOCAMPISTA'],
+    'CM': ['CM', 'MC', 'MED'],
+    'DM': ['DM', 'MCD', 'MED'],
+    'AM': ['AM', 'MCO', 'MED'],
+    'DEL': ['DEL', 'ST', 'DC', 'CF', 'SD', 'LW', 'EI', 'RW', 'ED', 'DELANTERO'],
+    'ST': ['ST', 'DC', 'DEL'],
+    'LW': ['LW', 'EI', 'DEL'],
+    'RW': ['RW', 'ED', 'DEL']
+  };
+  
+  if (groups[fUpper] && groups[fUpper].includes(pUpper)) return true;
+  return false;
 }
 
 function getInitials(name) {
@@ -14953,7 +14995,7 @@ function createPlayerCard(p) {
       <div class="player-sub-name">${lastName}</div>
       
       <div class="tactical-badges">
-        <span class="t-badge">${currentLang === 'es' ? p.positionEs : p.position}</span>
+        <span class="t-badge">${getPositionDisplay(p)}</span>
       </div>
 
       <div class="player-rating-star">
@@ -15063,7 +15105,7 @@ function setupFilters() {
       } else if (pos === 'fav') {
         matchPos = isFavorite(p.id);
       } else {
-        matchPos = p.position === pos;
+        matchPos = isPositionMatch(p.position || p.positionEs, pos);
       }
       
       const matchLeague = !leagueFilter || 
