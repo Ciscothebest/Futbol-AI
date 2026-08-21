@@ -11142,6 +11142,12 @@ function runMatchSimulation(homeName, awayName, homeOvr, awayOvr) {
 
 
 async function showSimulationResults(homeName, awayName, homeOvr, awayOvr) {
+  // Sync scoreline directly with pre-generated match events log
+  const hGoals = (simPreGeneratedEvents || []).filter(e => (e.type === 'g' || e.type === 'goal') && e.team === 'h').length;
+  const aGoals = (simPreGeneratedEvents || []).filter(e => (e.type === 'g' || e.type === 'goal') && e.team === 'a').length;
+  simScoreH = hGoals;
+  simScoreA = aGoals;
+
   const homeScore = simScoreH;
   const awayScore = simScoreA;
   
@@ -11201,20 +11207,34 @@ async function showSimulationResults(homeName, awayName, homeOvr, awayOvr) {
   renderStartingXi(userStartingXI, 'result-home-xi', true);
   renderStartingXi(awayPlayers, 'result-away-xi', false);
   
+  // Extract simulation stats at top scope of showSimulationResults
+  const t = simStats || { shots: [12, 8], onTarget: [5, 3], xg: [1.8, 0.9], passes: [480, 390], fouls: [8, 12], possession: [56, 44] };
+  const hShots = t.shots ? (t.shots[0] || 0) : 0;
+  const aShots = t.shots ? (t.shots[1] || 0) : 0;
+  const sh = hShots + aShots + 1;
+
+  const hOnTarget = t.onTarget ? (t.onTarget[0] || 0) : 0;
+  const aOnTarget = t.onTarget ? (t.onTarget[1] || 0) : 0;
+  const ot = hOnTarget + aOnTarget + 1;
+
+  const hXg = t.xg ? (t.xg[0] || 0) : 0;
+  const aXg = t.xg ? (t.xg[1] || 0) : 0;
+  const xgt = hXg + aXg + 0.1;
+
+  const hPasses = t.passes ? (t.passes[0] || 0) : 0;
+  const aPasses = t.passes ? (t.passes[1] || 0) : 0;
+  const pt = hPasses + aPasses + 1;
+
+  const hFouls = t.fouls ? (t.fouls[0] || 0) : 0;
+  const aFouls = t.fouls ? (t.fouls[1] || 0) : 0;
+  const ft = hFouls + aFouls + 1;
+
+  const homePoss = (t.possession && Array.isArray(t.possession) && t.possession.length > 0) ? t.possession[0] : 56;
+  const awayPoss = (t.possession && Array.isArray(t.possession) && t.possession.length > 1) ? t.possession[1] : (100 - homePoss);
+
   // Render Final Stats
   const statsContent = document.getElementById('result-stats-content');
   if (statsContent) {
-    const t = simStats;
-    const sh = t.shots[0] + t.shots[1] + 1;
-    const xgt = t.xg[0] + t.xg[1] + 0.1;
-    const pt = t.passes[0] + t.passes[1] + 1;
-    const ft = t.fouls[0] + t.fouls[1] + 1;
-    const ot = t.onTarget[0] + t.onTarget[1] + 1;
-    
-    const ovrDiff = homeOvr - awayOvr;
-    const homePoss = Math.min(Math.max(50 + Math.round(ovrDiff * 1.2), 35), 65);
-    const awayPoss = 100 - homePoss;
-    
     statsContent.innerHTML = `
       <div class="stat-row">
         <div class="stat-hdr">
@@ -11281,7 +11301,6 @@ async function showSimulationResults(homeName, awayName, homeOvr, awayOvr) {
           <span style="color:var(--cyan);font-weight:700;">${t.fouls[0]}</span>
           <span style="color:var(--text-2); font-size:12px;">Faltas</span>
           <span style="color:var(--orange);font-weight:700;">${t.fouls[1]}</span>
-        </div>
         <div class="stat-bar" style="height:6px; background:rgba(255,255,255,0.05); border-radius:3px; display:flex; overflow:hidden;">
           <div style="background:var(--cyan); width:${Math.round(t.fouls[0]/ft*100)}%; height:100%;"></div>
           <div style="background:var(--orange); width:${Math.round(t.fouls[1]/ft*100)}%; height:100%;"></div>
@@ -11289,12 +11308,12 @@ async function showSimulationResults(homeName, awayName, homeOvr, awayOvr) {
       </div>
     `;
   }
-  
+
   // Tactical Recommendations
   const recHomeTitle = document.getElementById('rec-home-title');
   const recAwayTitle = document.getElementById('rec-away-title');
-  if (recHomeTitle) recHomeTitle.textContent = currentLang === 'es' ? `Recomendaciones tácticas — ${homeName}` : `Tactical Recommendations — ${homeName}`;
-  if (recAwayTitle) recAwayTitle.textContent = currentLang === 'es' ? `Recomendaciones tácticas — ${awayName}` : `Tactical Recommendations — ${awayName}`;
+  if (recHomeTitle) recHomeTitle.textContent = currentLang === 'es' ? 'Fortalezas' : 'Strengths';
+  if (recAwayTitle) recAwayTitle.textContent = currentLang === 'es' ? 'Aspectos de Mejora' : 'Areas for Improvement';
 
   const recHomeCards = document.getElementById('rec-home-cards');
   const recAwayCards = document.getElementById('rec-away-cards');
@@ -11322,124 +11341,291 @@ async function showSimulationResults(homeName, awayName, homeOvr, awayOvr) {
     const awayDfs = awayPlayers.filter(p => ['CB', 'LB', 'RB', 'DFC', 'DF', 'LI', 'LD', 'LWB', 'RWB'].includes(p.position?.toUpperCase())).sort(sortFn);
     const awayMfs = awayPlayers.filter(p => ['CM', 'DM', 'AM', 'LM', 'RM', 'MC', 'MCD', 'MCO', 'VOL'].includes(p.position?.toUpperCase())).sort(sortFn);
     const awayFws = awayPlayers.filter(p => ['ST', 'CF', 'LW', 'RW', 'DC', 'EI', 'ED', 'ATA', 'SD'].includes(p.position?.toUpperCase())).sort(sortFn);
-    
-    // Extract best players for matchup calculations
-    const homeBestFw = homeFws[0];
-    const homeBestMf = homeMfs[0];
-    const homeBestDf = homeDfs[0];
-    const homeBestGk = homeGks[0];
-    
-    const awayBestFw = awayFws[0];
-    const awayBestMf = awayMfs[0];
-    const awayBestDf = awayDfs[0];
-    const awayBestGk = awayGks[0];
 
-    const homeBadgeText = homeName.substring(0, 3).toUpperCase();
-    const awayBadgeText = awayName.substring(0, 3).toUpperCase();
+    // Identify standout and struggling players from home team
+    const sobresalientePlayerObj = homePlayersForMatchups.find(p => p && p.simForm && p.simForm.formState === 'sobresaliente') || homePlayersForMatchups[0] || null;
+    const terriblePlayerObj = homePlayersForMatchups.find(p => p && p.simForm && p.simForm.formState === 'terrible') || (homePlayersForMatchups.length > 1 ? homePlayersForMatchups[homePlayersForMatchups.length - 1] : null);
 
-    // 1. Home cards
+    // ══════════════ FULLY DYNAMIC & RANDOMIZED EMPIRICAL DIAGNOSIS ENGINE ══════════════
+    const homePoss = (simStats && simStats.possession) ? simStats.possession[0] : 54;
+    const awayPoss = 100 - homePoss;
+    const hShots = (simStats && simStats.shots) ? simStats.shots[0] : 10;
+    const hOnTarget = (simStats && simStats.onTarget) ? simStats.onTarget[0] : 4;
+    const aOnTarget = (simStats && simStats.onTarget) ? simStats.onTarget[1] : 3;
+    const hXg = (simStats && simStats.xg) ? simStats.xg[0] : 1.4;
+    const aXg = (simStats && simStats.xg) ? simStats.xg[1] : 1.2;
+    const hPasses = (simStats && simStats.passes) ? simStats.passes[0] : 480;
+    const hFouls = (simStats && simStats.fouls) ? simStats.fouls[0] : 10;
+
+    let activePlayers = userStartingXI
+      .map(item => item ? (item.player || item) : null)
+      .filter(p => p && p.name && !p.isVirtual);
+    if (activePlayers.length === 0) {
+      activePlayers = (simHomePlayers && simHomePlayers.length > 0) ? simHomePlayers : homePlayers;
+    }
+
+    // Shuffle active players array to randomize individual player selections per match
+    const shuffledActivePlayers = [...activePlayers].sort(() => Math.random() - 0.5);
+
+    const fwsList = shuffledActivePlayers.filter(p => ['ST', 'CF', 'LW', 'RW', 'DC', 'EI', 'ED', 'ATA', 'SD'].includes((p.position || '').toUpperCase()));
+    const mfsList = shuffledActivePlayers.filter(p => ['CM', 'DM', 'AM', 'LM', 'RM', 'MC', 'MCD', 'MCO', 'VOL'].includes((p.position || '').toUpperCase()));
+    const dfsList = shuffledActivePlayers.filter(p => ['CB', 'LB', 'RB', 'DFC', 'DF', 'LI', 'LD', 'LWB', 'RWB'].includes((p.position || '').toUpperCase()));
+    const gksList = shuffledActivePlayers.filter(p => ['GK', 'PO', 'POR'].includes((p.position || '').toUpperCase()));
+
+    // Extract dynamic events from match transcript
+    const homeGoalEvents = (simPreGeneratedEvents || []).filter(e => (e.type === 'g' || e.type === 'goal') && e.team === 'h');
+    const homeGoalScorers = homeGoalEvents.map(e => e.scorer).filter(Boolean);
+
+    const sobresalientePlayers = activePlayers.filter(p => p.simForm && p.simForm.formState === 'sobresaliente');
+    const terriblePlayers = activePlayers.filter(p => p.simForm && p.simForm.formState === 'terrible');
+
+    // --- CANDIDATE STRENGTHS (STRICT EMPIRICAL THRESHOLDS - UP TO 4) ---
+    const strengthCandidates = [];
+
+    // 1. Outstanding Player Form Roll
+    if (sobresalientePlayers.length > 0) {
+      const p = sobresalientePlayers[Math.floor(Math.random() * sobresalientePlayers.length)];
+      strengthCandidates.push({
+        score: 95 + Math.random(),
+        category: 'player',
+        title: currentLang === 'es' ? `Actuación estelar de ${p.name}` : `Outstanding display by ${p.name}`,
+        body: currentLang === 'es' ?
+          `${p.name} marcó la diferencia en el campo con una valoración sobresaliente de ${p.simForm.matchRating.toFixed(1)}, desequilibrando en duelos individuales.` :
+          `${p.name} delivered a masterclass match rating of ${p.simForm.matchRating.toFixed(1)}, driving key advantages.`
+      });
+    }
+
+    // 2. Goalscorer Impact
+    if (homeGoalScorers.length > 0) {
+      const scorerName = homeGoalScorers[Math.floor(Math.random() * homeGoalScorers.length)];
+      strengthCandidates.push({
+        score: 92 + Math.random(),
+        category: 'player',
+        title: currentLang === 'es' ? `Contundencia anotadora de ${scorerName}` : `Goalscoring impact by ${scorerName}`,
+        body: currentLang === 'es' ?
+          `${scorerName} estuvo incisivo de cara a puerta, concretando situaciones clave para adelantar a ${homeName}.` :
+          `${scorerName} was clinical in front of goal, capitalizing on critical chances for ${homeName}.`
+      });
+    }
+
+    // 3. Forward Threat
+    if (fwsList.length > 0 && (simScoreH > 0 || hXg >= 1.2)) {
+      const pFw = fwsList[Math.floor(Math.random() * fwsList.length)];
+      strengthCandidates.push({
+        score: 85 + Math.random(),
+        category: 'player',
+        title: currentLang === 'es' ? `Desborde y ataque al espacio de ${pFw.name}` : `Attacking threat by ${pFw.name}`,
+        body: currentLang === 'es' ?
+          `${pFw.name} generó constantes líneas de pase rompiendo la zaga de ${awayName} y sumando remates de peligro.` :
+          `${pFw.name} created passing lanes constantly, exploiting space in ${awayName}'s defense.`
+      });
+    }
+
+    // 4. Midfielder Distribution
+    if (mfsList.length > 0 && hPasses >= 420) {
+      const pMf = mfsList[Math.floor(Math.random() * mfsList.length)];
+      strengthCandidates.push({
+        score: 82 + Math.random(),
+        category: 'player',
+        title: currentLang === 'es' ? `Circulación y visión táctica de ${pMf.name}` : `Game vision & distribution by ${pMf.name}`,
+        body: currentLang === 'es' ?
+          `${pMf.name} distribuyó el juego en la medular conectando la salida de balón con los atacantes de manera fluida.` :
+          `${pMf.name} distributed play cleanly in midfield, connecting defense with forwards.`
+      });
+    }
+
+    // 5. Defender Tackles & Interceptions
+    if (dfsList.length > 0 && (simScoreA === 0 || aXg <= 1.2)) {
+      const pDf = dfsList[Math.floor(Math.random() * dfsList.length)];
+      strengthCandidates.push({
+        score: 79 + Math.random(),
+        category: 'player',
+        title: currentLang === 'es' ? `Anticipación defensiva y robos de ${pDf.name}` : `Tackling & interception by ${pDf.name}`,
+        body: currentLang === 'es' ?
+          `${pDf.name} mantuvo la firmeza en duelos directos, cortando internadas peligrosas del rival.` :
+          `${pDf.name} was solid in tackles, stopping dangerous counter progressions.`
+      });
+    }
+
+    // 6. High Possession
+    if (homePoss >= 52) {
+      strengthCandidates.push({
+        score: homePoss + Math.random(),
+        category: 'team',
+        title: currentLang === 'es' ? `Dominio del ritmo y posesión colectiva (${homePoss}%)` : `Ball possession & tempo control (${homePoss}%)`,
+        body: currentLang === 'es' ?
+          `El equipo controló el tempo del partido completando ${hPasses} pases e imponiendo la iniciativa frente a ${awayName}.` :
+          `The team set the match tempo completing ${hPasses} passes and controlling possession against ${awayName}.`
+      });
+    }
+
+    // 7. Defensive Solidity / Clean Sheet
+    if (simScoreA === 0 || aXg <= 0.9) {
+      strengthCandidates.push({
+        score: 88 + Math.random(),
+        category: 'team',
+        title: currentLang === 'es' ? "Solidez del bloque defensivo" : "Collective defensive block solidity",
+        body: currentLang === 'es' ?
+          `${simScoreA === 0 ? 'Portería a cero lograda.' : 'Baja concesión de peligro.'} El equipo limitó a ${awayName} a solo ${aOnTarget} disparos a puerta.` :
+          `${simScoreA === 0 ? 'Clean sheet achieved.' : 'Low threat allowed.'} The team kept ${awayName} to just ${aOnTarget} shots on target.`
+      });
+    }
+
+    // --- CANDIDATE IMPROVEMENTS (STRICT EMPIRICAL THRESHOLDS - UP TO 4) ---
+    const improvementCandidates = [];
+
+    // 1. Terrible Player Form Roll
+    if (terriblePlayers.length > 0) {
+      const p = terriblePlayers[Math.floor(Math.random() * terriblePlayers.length)];
+      improvementCandidates.push({
+        score: 95 + Math.random(),
+        category: 'player',
+        title: currentLang === 'es' ? `Apoyo posicional y coberturas a ${p.name}` : `Coverage support for ${p.name}`,
+        body: currentLang === 'es' ?
+          `${p.name} tuvo minutos con imprecisiones en los pases; conviene reforzar apoyos y ángulos de pase en su zona.` :
+          `${p.name} struggled with turnovers; offer closer passing support in their sector.`
+      });
+    }
+
+    // 2. Unconverted xG for Forwards
+    if (fwsList.length > 0 && hXg > simScoreH + 0.4) {
+      const pFw = fwsList[Math.floor(Math.random() * fwsList.length)];
+      improvementCandidates.push({
+        score: 84 + Math.random(),
+        category: 'player',
+        title: currentLang === 'es' ? `Calma y finura en el último toque de ${pFw.name}` : `Finishing composure for ${pFw.name}`,
+        body: currentLang === 'es' ?
+          `${pFw.name} disfrutó de posiciones de remate francas; falta serenidad en la toma de decisiones final.` :
+          `${pFw.name} found shooting positions; calmer final decisions are needed.`
+      });
+    }
+
+    // 3. Low Possession
+    if (homePoss <= 48) {
+      improvementCandidates.push({
+        score: (50 - homePoss) * 10 + Math.random(),
+        category: 'team',
+        title: currentLang === 'es' ? `Recuperar el control de la posesión (${homePoss}%)` : `Regain possession control (${homePoss}%)`,
+        body: currentLang === 'es' ?
+          `El equipo cedió la iniciativa durante tramos prolongados a ${awayName}, viéndose replegado en campo propio.` :
+          `The team conceded possession for long periods to ${awayName}, getting pushed back.`
+      });
+    }
+
+    // 4. Unconverted Team xG
+    if (hXg > simScoreH + 0.3) {
+      improvementCandidates.push({
+        score: (hXg - simScoreH) * 20 + Math.random(),
+        category: 'team',
+        title: currentLang === 'es' ? "Conversión de ocasiones claras de gol" : "Chance conversion efficiency",
+        body: currentLang === 'es' ?
+          `Se generaron ${hXg.toFixed(2)} xG esperados pero solo se convirtieron ${simScoreH} tanto(s), dejando escapar ventaja.` :
+          `Generated ${hXg.toFixed(2)} expected goals but scored only ${simScoreH} goal(s), letting advantage slip.`
+      });
+    }
+
+    // 5. High Opponent Threat Allowed
+    if (aXg >= 1.2 || simScoreA >= 2) {
+      improvementCandidates.push({
+        score: aXg * 15 + Math.random(),
+        category: 'team',
+        title: currentLang === 'es' ? "Ajuste del bloque defensivo ante la presión rival" : "Defensive block compactness adjustment",
+        body: currentLang === 'es' ?
+          `${awayName} acumuló ${aXg.toFixed(2)} xG en el área; se requiere reducir la distancia entre líneas para cerrar pasillos interiores.` :
+          `${awayName} accumulated ${aXg.toFixed(2)} xG in the box; reduce line spacing to close central lanes.`
+      });
+    }
+
+    // 6. High Foul Count
+    if (hFouls >= 11) {
+      improvementCandidates.push({
+        score: hFouls * 5 + Math.random(),
+        category: 'situation',
+        title: currentLang === 'es' ? `Control de faltas en la frontal del área (${hFouls} faltas)` : `Foul discipline control (${hFouls} fouls)`,
+        body: currentLang === 'es' ?
+          `Se registraron ${hFouls} infracciones cometidas, cediendo opciones de balón parado peligroso a ${awayName}.` :
+          `Committed ${hFouls} fouls, conceding dangerous set-piece scenarios to ${awayName}.`
+      });
+    }
+
+    // 7. Low Pass Volume
+    if (hPasses < 420) {
+      improvementCandidates.push({
+        score: (450 - hPasses) * 0.1 + Math.random(),
+        category: 'team',
+        title: currentLang === 'es' ? "Fluidez y progresión en pases verticales" : "Vertical pass fluidity & progression",
+        body: currentLang === 'es' ?
+          `El equipo registró solo ${hPasses} pases completados. Se necesita mayor velocidad en la circulación entre la zaga y la medular.` :
+          `The team completed only ${hPasses} passes. Faster circulation is needed between defense and midfield.`
+      });
+    }
+
+    // 8. Low Shot Precision
+    if (hShots >= 6 && (hOnTarget / Math.max(1, hShots)) < 0.38) {
+      const missPct = Math.round((1 - (hOnTarget / Math.max(1, hShots))) * 100);
+      improvementCandidates.push({
+        score: missPct + Math.random(),
+        category: 'situation',
+        title: currentLang === 'es' ? `Precipitación en disparos de media distancia (${missPct}% desviados)` : `Shot selection from distance (${missPct}% off target)`,
+        body: currentLang === 'es' ?
+          `De ${hShots} tiros intentados, solo ${hOnTarget} fueron al arco. Se requiere elaborar más la jugada antes de disparar.` :
+          `Out of ${hShots} total shots, only ${hOnTarget} hit the target. Elaborate more before shooting.`
+      });
+    }
+
+    // Balanced Selection Function across Categories (Player, Situation, Team)
+    function selectBalancedUpTo4Insights(cands) {
+      cands.sort((a, b) => b.score - a.score);
+      const selected = [];
+      const usedCategories = new Set();
+
+      // 1. Pick top candidate for each distinct category first
+      for (const item of cands) {
+        if (!usedCategories.has(item.category) && selected.length < 4) {
+          selected.push(item);
+          usedCategories.add(item.category);
+        }
+      }
+      // 2. Fill up to 4 items with remaining highest scoring candidates
+      for (const item of cands) {
+        if (selected.length >= 4) break;
+        if (!selected.includes(item)) {
+          selected.push(item);
+        }
+      }
+      return selected;
+    }
+
+    const top4Strengths = selectBalancedUpTo4Insights(strengthCandidates).slice(0, 4);
     let homeCardsHtml = '';
-    
-    // Card 1: Pressing
-    const homeTurnovers = 5 + (homeName.length % 4);
-    const titleHome1 = currentLang === 'es' ? "Mantener presión alta en salida rival" : "Maintain high press during opponent build-up";
-    const bodyHome1 = currentLang === 'es' ? 
-      `La formación generó ${homeTurnovers} recuperaciones en campo rival. ${awayName} tuvo dificultades para salir jugando de forma limpia. Conservar esta estructura de pressing con ${homeBestMf ? homeBestMf.name : 'nuestros volantes'} como referencia del mediocampo alto.` :
-      `The formation generated ${homeTurnovers} turnovers in the opponent's half. ${awayName} struggled to build up cleanly. Preserve this pressing structure with ${homeBestMf ? homeBestMf.name : 'our midfielders'} as the reference in high areas.`;
-    homeCardsHtml += `
-      <div class="tac-card">
-        <div class="tac-hdr">
-          <span class="tac-title">${titleHome1}</span>
-          <span class="tac-badge badge-h">${homeBadgeText}</span>
+    top4Strengths.forEach(st => {
+      homeCardsHtml += `
+        <div class="tac-card" style="border-left: 3px solid var(--cyan);">
+          <div class="tac-hdr">
+            <span class="tac-title">${st.title}</span>
+            <span class="tac-badge badge-h" style="background: rgba(0, 240, 255, 0.15); color: var(--cyan); border: 1px solid rgba(0, 240, 255, 0.3);">${currentLang === 'es' ? 'FORTALEZA' : 'STRENGTH'}</span>
+          </div>
+          <div class="tac-body">${st.body}</div>
+          <span class="priority-pill pp-high" style="background: rgba(0, 240, 255, 0.1); color: var(--cyan); border: 1px solid rgba(0, 240, 255, 0.25);">${currentLang === 'es' ? 'Destacado' : 'Key Strength'}</span>
         </div>
-        <div class="tac-body">${bodyHome1}</div>
-        <span class="priority-pill pp-high">${currentLang === 'es' ? 'Prioridad alta' : 'High priority'}</span>
-      </div>
-    `;
-
-    // Card 2: Winger/Forward
-    const titleHome2 = currentLang === 'es' ? `Explotar banda con ${homeBestFw ? homeBestFw.name.split(' ').pop() : 'atacante'}` : `Exploit the wing with ${homeBestFw ? homeBestFw.name.split(' ').pop() : 'forward'}`;
-    const bodyHome2 = currentLang === 'es' ? 
-      `${homeBestFw ? homeBestFw.name : 'El atacante'} generó ${simStats.xg[0].toFixed(2)} xG desde la banda con regates exitosos. La defensa rival mostró vulnerabilidad en duelos 1v1 a alta velocidad. Priorizar combinaciones por ese sector.` :
-      `${homeBestFw ? homeBestFw.name : 'The forward'} generated ${simStats.xg[0].toFixed(2)} xG from the wing with successful dribbles. The opponent's defense showed vulnerability in 1v1 duels at high speed. Prioritize play through this sector.`;
-    homeCardsHtml += `
-      <div class="tac-card">
-        <div class="tac-hdr">
-          <span class="tac-title">${titleHome2}</span>
-          <span class="tac-badge badge-h">${homeBadgeText}</span>
-        </div>
-        <div class="tac-body">${bodyHome2}</div>
-        <span class="priority-pill pp-high">${currentLang === 'es' ? 'Prioridad alta' : 'High priority'}</span>
-      </div>
-    `;
-
-    // Card 3: Defense
-    const titleHome3 = currentLang === 'es' ? "Reforzar mediocampo tras pérdidas" : "Reinforce midfield after turnovers";
-    const bodyHome3 = currentLang === 'es' ? 
-      `Los ${simScoreA} gol${simScoreA === 1 ? '' : 'es'} de ${awayName} llegaron tras pérdidas de balón en mediocampo. Se deben cubrir mejor las transiciones defensivas cuando los volantes suben al ataque simultáneamente.` :
-      `The ${simScoreA} goal${simScoreA === 1 ? '' : 's'} for ${awayName} came from midfield turnovers. Defensive transitions must be covered better when midfielders push forward simultaneously.`;
-    homeCardsHtml += `
-      <div class="tac-card">
-        <div class="tac-hdr">
-          <span class="tac-title">${titleHome3}</span>
-          <span class="tac-badge badge-h">${homeBadgeText}</span>
-        </div>
-        <div class="tac-body">${bodyHome3}</div>
-        <span class="priority-pill pp-med">${currentLang === 'es' ? 'Prioridad media' : 'Medium priority'}</span>
-      </div>
-    `;
+      `;
+    });
     recHomeCards.innerHTML = homeCardsHtml;
 
-    // 2. Away cards
+    const top4Improvements = selectBalancedUpTo4Insights(improvementCandidates).slice(0, 4);
     let awayCardsHtml = '';
-    
-    // Card 1: Substitution
-    const titleAway1 = currentLang === 'es' ? `Entrada temprana de ${awayBestMf ? awayBestMf.name.split(' ').pop() : 'mediocampista'}` : `Early entry of ${awayBestMf ? awayBestMf.name.split(' ').pop() : 'midfielder'}`;
-    const bodyAway1 = currentLang === 'es' ? 
-      `${awayBestMf ? awayBestMf.name : 'El mediocampista'} promedió gran precisión en distribución tras asentarse. Si hubiera iniciado desde el comienzo, el control del mediocampo habría limitado el xG rival. Considerar como titular en el próximo encuentro.` :
-      `${awayBestMf ? awayBestMf.name : 'The midfielder'} averaged high precision in distribution after settling in. Had they started from the beginning, midfield control would have limited the opponent's xG. Consider starting them in the next match.`;
-    awayCardsHtml += `
-      <div class="tac-card">
-        <div class="tac-hdr">
-          <span class="tac-title">${titleAway1}</span>
-          <span class="tac-badge badge-a">${awayBadgeText}</span>
+    top4Improvements.forEach(imp => {
+      awayCardsHtml += `
+        <div class="tac-card" style="border-left: 3px solid var(--orange);">
+          <div class="tac-hdr">
+            <span class="tac-title">${imp.title}</span>
+            <span class="tac-badge badge-a" style="background: rgba(255, 107, 0, 0.15); color: var(--orange); border: 1px solid rgba(255, 107, 0, 0.3);">${currentLang === 'es' ? 'MEJORA' : 'IMPROVEMENT'}</span>
+          </div>
+          <div class="tac-body">${imp.body}</div>
+          <span class="priority-pill pp-high">${currentLang === 'es' ? 'Prioridad recomendada' : 'Recommended Priority'}</span>
         </div>
-        <div class="tac-body">${bodyAway1}</div>
-        <span class="priority-pill pp-high">${currentLang === 'es' ? 'Prioridad alta' : 'High priority'}</span>
-      </div>
-    `;
-
-    // Card 2: Defensive Block
-    const titleAway2 = currentLang === 'es' ? `Presión alta contra el juego directo de ${homeName}` : `High press against ${homeName}'s direct play`;
-    const bodyAway2 = currentLang === 'es' ? 
-      `${homeName} ejecutó transiciones muy rápidas en pocos segundos. Un bloque de ${awayName} más compacto entre líneas (PPDA bajo) habría reducido significativamente los espacios a las espaldas de los laterales.` :
-      `${homeName} executed high-speed transitions in just a few seconds. A more compact defensive block between lines (low PPDA) for ${awayName} would have significantly reduced space behind the fullbacks.`;
-    awayCardsHtml += `
-      <div class="tac-card">
-        <div class="tac-hdr">
-          <span class="tac-title">${titleAway2}</span>
-          <span class="tac-badge badge-a">${awayBadgeText}</span>
-        </div>
-        <div class="tac-body">${bodyAway2}</div>
-        <span class="priority-pill pp-high">${currentLang === 'es' ? 'Prioridad alta' : 'High priority'}</span>
-      </div>
-    `;
-
-    // Card 3: Depth/Verticality
-    const titleAway3 = currentLang === 'es' ? "Mayor verticalidad desde mediocampo" : "Increase vertical progression in midfield";
-    const bodyAway3 = currentLang === 'es' ? 
-      `${awayName} completó ${simStats.passes[1]} pases pero el ritmo de juego fue mayormente horizontal. Atacantes como ${awayBestFw ? awayBestFw.name : 'nuestros delanteros'} necesitan más balones en profundidad para explotar el espacio entre líneas.` :
-      `${awayName} completed ${simStats.passes[1]} passes, but the tempo was mostly horizontal. Attackers like ${awayBestFw ? awayBestFw.name : 'our forwards'} need more vertical and deep passes to exploit space between lines.`;
-    awayCardsHtml += `
-      <div class="tac-card">
-        <div class="tac-hdr">
-          <span class="tac-title">${titleAway3}</span>
-          <span class="tac-badge badge-a">${awayBadgeText}</span>
-        </div>
-        <div class="tac-body">${bodyAway3}</div>
-        <span class="priority-pill pp-med">${currentLang === 'es' ? 'Prioridad media' : 'Medium priority'}</span>
-      </div>
-    `;
+      `;
+    });
     recAwayCards.innerHTML = awayCardsHtml;
   }
   
@@ -11583,20 +11769,13 @@ function renderStartingXi(teamPlayers, containerId, isHome = true) {
       ratingBonus = goals * 1.6 + shots * 0.12 + dribbles * 0.1;
     }
     
-    // Calculate final rating (OVR base + ratingBonus + team performance)
-    let teamDiff = simScoreH - simScoreA;
-    if (!isHome) teamDiff = -teamDiff;
-    const teamBonus = teamDiff > 0 ? 0.4 : (teamDiff < 0 ? -0.3 : 0.0);
-    
-    let ovrVal = parseFloat(item.p.overallRating) || 70;
-    if (ovrVal < 15) ovrVal = ovrVal * 10;
-    let baseRating = 6.2 + ((ovrVal - 65) / 18);
-    let rating = baseRating + ratingBonus + teamBonus + ((hash % 10) / 10 - 0.5);
-    
-    // Caps
-    rating = Math.min(9.9, Math.max(5.0, rating));
-    const finalRatingStr = rating.toFixed(1);
-    
+    // Use dynamic performance form if assigned during preGenerateMatchState
+    const simForm = item.p.simForm || (typeof assignPlayerMatchForm === 'function' ? assignPlayerMatchForm(item.p) : null);
+    let finalRatingNum = simForm ? simForm.matchRating : 7.2;
+    if (goals > 0) finalRatingNum += goals * 0.4;
+    finalRatingNum = Math.min(9.9, Math.max(5.0, finalRatingNum));
+    const finalRatingStr = finalRatingNum.toFixed(1);
+
     const row = document.createElement('div');
     row.className = 'player-row';
     row.innerHTML = `
@@ -20342,6 +20521,170 @@ function sortPlayersForField(players) {
   return [...gks, ...dfs, ...mfs, ...fws];
 }
 
+// ══════════════ PLAYER MATCH FORM & VARIANCE SYSTEM ══════════════
+const SIM_FORM_STORAGE_KEY = 'futbolai_sim_player_form_history';
+
+function getSimPlayerFormHistory() {
+  try {
+    return JSON.parse(localStorage.getItem(SIM_FORM_STORAGE_KEY) || '{}');
+  } catch(e) {
+    return {};
+  }
+}
+
+function saveSimPlayerFormHistory(history) {
+  try {
+    localStorage.setItem(SIM_FORM_STORAGE_KEY, JSON.stringify(history));
+  } catch(e) {}
+}
+
+function assignPlayerMatchForm(player) {
+  if (!player) return { formState: 'promedio', multiplier: 1.0, matchRating: 7.2 };
+
+  const history = getSimPlayerFormHistory();
+  const playerId = String(player.id || player.name || 'player_unknown').toLowerCase();
+  const lastForm = history[playerId] || null;
+
+  // Base Probabilities: Promedio (60%), Sobresaliente (20%), Terrible (20%)
+  let pSobresaliente = 0.22;
+  let pTerrible = 0.18;
+
+  const playerOvr = Number(player.overallRating || player.overall || 75);
+  if (playerOvr >= 85) {
+    pSobresaliente = 0.28;
+    pTerrible = 0.12;
+  } else if (playerOvr <= 72) {
+    pSobresaliente = 0.15;
+    pTerrible = 0.25;
+  }
+
+  // ANTI-CONSECUTIVE EXTREME RULE:
+  // If last match performance was 'sobresaliente', set probability of repeating 'sobresaliente' to 0!
+  // If last match performance was 'terrible', set probability of repeating 'terrible' to 0!
+  if (lastForm === 'sobresaliente') {
+    pSobresaliente = 0.0;
+  } else if (lastForm === 'terrible') {
+    pTerrible = 0.0;
+  }
+
+  const roll = Math.random();
+  let chosenForm = 'promedio';
+  let multiplier = 1.0;
+  let matchRating = 7.0 + (Math.random() * 0.8 - 0.4);
+
+  if (roll < pSobresaliente) {
+    chosenForm = 'sobresaliente';
+    multiplier = 1.18; // +18% performance boost
+    matchRating = 8.5 + (Math.random() * 1.3); // 8.5 to 9.8
+  } else if (roll < pSobresaliente + pTerrible) {
+    chosenForm = 'terrible';
+    multiplier = 0.80; // -20% performance penalty
+    matchRating = 5.2 + (Math.random() * 1.2); // 5.2 to 6.4
+  } else {
+    chosenForm = 'promedio';
+    multiplier = 1.0;
+    matchRating = 6.8 + (Math.random() * 0.9); // 6.8 to 7.7
+  }
+
+  history[playerId] = chosenForm;
+  saveSimPlayerFormHistory(history);
+
+  return {
+    formState: chosenForm,
+    multiplier: parseFloat(multiplier.toFixed(2)),
+    matchRating: parseFloat(matchRating.toFixed(1))
+  };
+}
+
+function getPlayerPositionGroup(pos) {
+  const role = (pos || '').toUpperCase();
+  if (['GK', 'PO', 'POR'].includes(role)) return 'GK';
+  if (['CB', 'LB', 'RB', 'DFC', 'DF', 'LI', 'LD', 'LWB', 'RWB'].includes(role)) return 'DEF';
+  if (['CM', 'DM', 'AM', 'LM', 'RM', 'MC', 'MCD', 'MCO', 'VOL', 'MED'].includes(role)) return 'MED';
+  return 'DEL';
+}
+
+function generateCoherentSubstitutions(startingXI, benchList, teamName, isHome, getRandomMinute, usedMinutes) {
+  const events = [];
+  if (!startingXI || startingXI.length === 0) return events;
+
+  // 1. Filter out Goalkeepers from bench list for standard tactical substitutions
+  const outfieldBench = (benchList || []).filter(p => {
+    const grp = getPlayerPositionGroup(p.position);
+    return grp !== 'GK';
+  });
+
+  if (outfieldBench.length === 0) return events;
+
+  // 2. Filter starting XI to outfield players only (exclude GK)
+  const outfieldStarters = startingXI.filter(p => {
+    const grp = getPlayerPositionGroup(p.position);
+    return grp !== 'GK';
+  });
+
+  if (outfieldStarters.length === 0) return events;
+
+  const usedBenchIndices = new Set();
+  const usedStarterIndices = new Set();
+  const numSubs = Math.min(3, Math.max(1, outfieldBench.length));
+
+  for (let s = 0; s < numSubs; s++) {
+    const min = Math.floor(Math.random() * 30) + 55;
+    usedMinutes.add(min);
+
+    // Pick an unused starting outfield player
+    let starterIdx = -1;
+    for (let attempts = 0; attempts < 15; attempts++) {
+      const randIdx = Math.floor(Math.random() * outfieldStarters.length);
+      if (!usedStarterIndices.has(randIdx)) {
+        starterIdx = randIdx;
+        break;
+      }
+    }
+    if (starterIdx < 0) continue;
+
+    const playerOut = outfieldStarters[starterIdx];
+    usedStarterIndices.add(starterIdx);
+    const targetGroup = getPlayerPositionGroup(playerOut.position);
+
+    // Find bench player matching the SAME position group first (DEF->DEF, MED->MED, DEL->DEL)
+    let chosenBenchIdx = -1;
+    for (let b = 0; b < outfieldBench.length; b++) {
+      if (usedBenchIndices.has(b)) continue;
+      const bGroup = getPlayerPositionGroup(outfieldBench[b].position);
+      if (bGroup === targetGroup) {
+        chosenBenchIdx = b;
+        break;
+      }
+    }
+
+    // Fallback: Pick any unused outfield bench player if exact position match not found
+    if (chosenBenchIdx < 0) {
+      for (let b = 0; b < outfieldBench.length; b++) {
+        if (!usedBenchIndices.has(b)) {
+          chosenBenchIdx = b;
+          break;
+        }
+      }
+    }
+
+    if (chosenBenchIdx >= 0) {
+      usedBenchIndices.add(chosenBenchIdx);
+      const playerIn = outfieldBench[chosenBenchIdx];
+
+      events.push({
+        min,
+        type: 'sub',
+        team: isHome ? 'h' : 'a',
+        txt: `🔄 Cambio en ${teamName}`,
+        sub: `Sale ${playerOut.name}, entra ${playerIn.name}`
+      });
+    }
+  }
+
+  return events;
+}
+
 async function preGenerateMatchState(homeName, awayName, homeOvr, awayOvr) {
   simHomeName = homeName;
   simAwayName = awayName;
@@ -20367,22 +20710,88 @@ async function preGenerateMatchState(homeName, awayName, homeOvr, awayOvr) {
   const simAwayData = await getSimulationAwayRoster(awayName, homeName);
   simAwayPlayers = simAwayData.startingXI && simAwayData.startingXI.length > 0 ? simAwayData.startingXI : simAwayData.availableAwayPlayers;
   
-  const diff = homeOvr - awayOvr;
-  let homeWinProb = Math.min(Math.max(50 + diff * 3, 10), 90);
-  let drawProb = 20;
-  
+  // Assign dynamic match form to all starting players
+  simHomePlayers = homePlayersList.map(p => ({
+    ...p,
+    simForm: assignPlayerMatchForm(p)
+  }));
+  simAwayPlayers = simAwayPlayers.map(p => ({
+    ...p,
+    simForm: assignPlayerMatchForm(p)
+  }));
+
+  // Calculate effective team power based on dynamic player form
+  let homeFormPower = 0;
+  simHomePlayers.forEach(p => {
+    const baseOvr = Number(p.overallRating || p.overall || 75);
+    homeFormPower += baseOvr * (p.simForm ? p.simForm.multiplier : 1.0);
+  });
+  let awayFormPower = 0;
+  simAwayPlayers.forEach(p => {
+    const baseOvr = Number(p.overallRating || p.overall || 75);
+    awayFormPower += baseOvr * (p.simForm ? p.simForm.multiplier : 1.0);
+  });
+
+  const effHomeOvr = Math.round((homeFormPower / Math.max(1, simHomePlayers.length)) || homeOvr);
+  const effAwayOvr = Math.round((awayFormPower / Math.max(1, simAwayPlayers.length)) || awayOvr);
+
+  const diff = effHomeOvr - effAwayOvr;
+  let homeWinProb = Math.min(Math.max(50 + diff * 3.5, 10), 90);
+  let drawProb = Math.max(12, Math.round(22 - Math.abs(diff) * 0.5));
+
   const roll = Math.random() * 100;
   if (roll < homeWinProb) {
-    simScoreH = Math.floor(Math.random() * 3) + 1;
-    simScoreA = Math.floor(Math.random() * simScoreH);
+    simScoreH = Math.floor(Math.random() * 3) + 1 + (diff > 10 ? 1 : 0);
+    simScoreA = Math.floor(Math.random() * Math.max(1, simScoreH));
   } else if (roll < homeWinProb + drawProb) {
     simScoreH = Math.floor(Math.random() * 3);
     simScoreA = simScoreH;
   } else {
-    simScoreA = Math.floor(Math.random() * 3) + 1;
-    simScoreH = Math.floor(Math.random() * simScoreA);
+    simScoreA = Math.floor(Math.random() * 3) + 1 + (diff < -10 ? 1 : 0);
+    simScoreH = Math.floor(Math.random() * Math.max(1, simScoreA));
   }
-  
+
+  // Calculate Realistic Proportional Team Game Statistics with distinct team separation
+  // Tactical momentum roll ensures even equal-OVR teams don't get identical 50-50 stats
+  const tacticalSwing = (Math.floor(Math.random() * 14) - 7); // -7 to +7% swing
+  const homePoss = Math.min(76, Math.max(24, Math.round(52 + diff * 1.5 + tacticalSwing)));
+  const awayPoss = 100 - homePoss;
+
+  // Shots calculation based on team power, scoreline, and form
+  let baseShotsH = Math.max(5, Math.round(13 + diff * 0.5 + (Math.random() * 6 - 3)));
+  let baseShotsA = Math.max(3, Math.round(8 - diff * 0.4 + (Math.random() * 5 - 2.5)));
+
+  // Ensure shot separation unless it's a tight draw
+  if (baseShotsH === baseShotsA) {
+    if (homePoss > awayPoss) baseShotsH += 3;
+    else baseShotsA += 3;
+  }
+
+  const onTargetH = Math.max(simScoreH, Math.round(baseShotsH * (0.38 + Math.random() * 0.12)));
+  const onTargetA = Math.max(simScoreA, Math.round(baseShotsA * (0.32 + Math.random() * 0.12)));
+
+  const xgH = parseFloat((onTargetH * 0.24 + simScoreH * 0.32 + (Math.random() * 0.22)).toFixed(2));
+  const xgA = parseFloat((onTargetA * 0.22 + simScoreA * 0.32 + (Math.random() * 0.18)).toFixed(2));
+
+  const passesH = Math.round(homePoss * 9.4 + Math.random() * 45);
+  const passesA = Math.round(awayPoss * 8.2 + Math.random() * 35);
+
+  // Fouls: team with less possession or trailing team tends to commit more fouls
+  const foulsH = Math.round((100 - homePoss) * 0.22 + Math.random() * 5 + 4);
+  let foulsA = Math.round((100 - awayPoss) * 0.24 + Math.random() * 5 + 5);
+  if (foulsH === foulsA) {
+    foulsA += 3;
+  }
+
+  simStats = {
+    shots: [baseShotsH, baseShotsA],
+    onTarget: [onTargetH, onTargetA],
+    xg: [xgH, xgA],
+    passes: [passesH, passesA],
+    fouls: [foulsH, foulsA],
+    possession: [homePoss, awayPoss]
+  };
+
   simPreGeneratedEvents = [];
   const usedMinutes = new Set();
   
@@ -20403,9 +20812,31 @@ async function preGenerateMatchState(homeName, awayName, homeOvr, awayOvr) {
     'Definición mano a mano cruzada'
   ];
   
+  function selectWeightedScorer(players) {
+    if (!players || players.length === 0) return 'Atacante';
+    const weights = players.map(p => {
+      let w = 1.0;
+      const role = (p.position || '').toUpperCase();
+      if (['ST', 'CF', 'LW', 'RW', 'DC', 'EI', 'ED', 'DEL'].includes(role)) w += 3.0;
+      else if (['CM', 'AM', 'LM', 'RM', 'MC', 'MCO', 'MED'].includes(role)) w += 1.5;
+
+      if (p.simForm && p.simForm.formState === 'sobresaliente') w *= 2.5;
+      else if (p.simForm && p.simForm.formState === 'terrible') w *= 0.2;
+      return w;
+    });
+
+    const totalW = weights.reduce((a, b) => a + b, 0);
+    let r = Math.random() * totalW;
+    for (let i = 0; i < players.length; i++) {
+      if (r < weights[i]) return players[i].name;
+      r -= weights[i];
+    }
+    return players[0].name;
+  }
+
   for (let i = 0; i < simScoreH; i++) {
     const min = getRandomMinute();
-    const scorer = simHomePlayers.length > 0 ? simHomePlayers[Math.floor(Math.random() * simHomePlayers.length)].name : 'Delantero Local';
+    const scorer = selectWeightedScorer(simHomePlayers);
     const detail = goalDetails[Math.floor(Math.random() * goalDetails.length)];
     const xg = parseFloat((0.4 + Math.random() * 0.45).toFixed(2));
     simPreGeneratedEvents.push({
@@ -20421,7 +20852,7 @@ async function preGenerateMatchState(homeName, awayName, homeOvr, awayOvr) {
   
   for (let i = 0; i < simScoreA; i++) {
     const min = getRandomMinute();
-    const scorer = simAwayPlayers.length > 0 ? simAwayPlayers[Math.floor(Math.random() * simAwayPlayers.length)].name : 'Delantero Rival';
+    const scorer = selectWeightedScorer(simAwayPlayers);
     const detail = goalDetails[Math.floor(Math.random() * goalDetails.length)];
     const xg = parseFloat((0.4 + Math.random() * 0.45).toFixed(2));
     simPreGeneratedEvents.push({
@@ -20461,36 +20892,29 @@ async function preGenerateMatchState(homeName, awayName, homeOvr, awayOvr) {
     });
   }
   
-  if (simHomePlayers.length > 3) {
-    const min = Math.floor(Math.random() * 30) + 50;
-    usedMinutes.add(min);
-    const idxOut = Math.floor(Math.random() * 3) + 7;
-    const idxIn = Math.floor(Math.random() * (simHomePlayers.length - 11)) + 11;
-    const playerOut = simHomePlayers[idxOut] ? simHomePlayers[idxOut].name : 'Centrocampista Local';
-    const playerIn = simHomePlayers[idxIn] ? simHomePlayers[idxIn].name : 'Suplente Local';
-    simPreGeneratedEvents.push({
-      min,
-      type: 'sub',
-      team: 'h',
-      txt: `🔄 Cambio en ${homeName}`,
-      sub: `Sale ${playerOut}, entra ${playerIn}`
-    });
+  // Get Real Bench Players for Home and Away teams
+  let homeBenchList = [];
+  if (simRoster.bench && simRoster.bench.length > 0) {
+    homeBenchList = simRoster.bench;
+  } else {
+    const allHomeTeamPlayers = await fetchTeamPlayers(homeName);
+    const homeStartingIds = new Set(simHomePlayers.map(p => p.id || p.name));
+    homeBenchList = (allHomeTeamPlayers || []).filter(p => !homeStartingIds.has(p.id || p.name));
   }
-  if (simAwayPlayers.length > 3) {
-    const min = Math.floor(Math.random() * 30) + 50;
-    usedMinutes.add(min);
-    const idxOut = Math.floor(Math.random() * 3) + 7;
-    const idxIn = Math.floor(Math.random() * (simAwayPlayers.length - 11)) + 11;
-    const playerOut = simAwayPlayers[idxOut] ? simAwayPlayers[idxOut].name : 'Centrocampista Rival';
-    const playerIn = simAwayPlayers[idxIn] ? simAwayPlayers[idxIn].name : 'Suplente Rival';
-    simPreGeneratedEvents.push({
-      min,
-      type: 'sub',
-      team: 'a',
-      txt: `🔄 Cambio en ${awayName}`,
-      sub: `Sale ${playerOut}, entra ${playerIn}`
-    });
+
+  let awayBenchList = [];
+  if (simAwayData.bench && simAwayData.bench.length > 0) {
+    awayBenchList = simAwayData.bench;
+  } else {
+    const awayStartingIds = new Set(simAwayPlayers.map(p => p.id || p.name));
+    awayBenchList = (simAwayData.availableAwayPlayers || []).filter(p => !awayStartingIds.has(p.id || p.name));
   }
+
+  // Generate Position-Coherent Substitutions for both teams
+  const homeSubEvents = generateCoherentSubstitutions(simHomePlayers, homeBenchList, homeName, true, getRandomMinute, usedMinutes);
+  const awaySubEvents = generateCoherentSubstitutions(simAwayPlayers, awayBenchList, awayName, false, getRandomMinute, usedMinutes);
+
+  simPreGeneratedEvents.push(...homeSubEvents, ...awaySubEvents);
   
   const numMisses = Math.floor(Math.random() * 3) + 2;
   const missDetails = [
@@ -20558,7 +20982,7 @@ function startLiveSimulation() {
   simCurrentMin = 0;
   simScoreH = 0;
   simScoreA = 0;
-  simStats = { shots: [0, 0], onTarget: [0, 0], xg: [0, 0], passes: [0, 0], fouls: [0, 0] };
+  // Preserve simStats generated by preGenerateMatchState
   
   document.getElementById('sim-live-home-score').textContent = '0';
   document.getElementById('sim-live-away-score').textContent = '0';
@@ -20602,14 +21026,6 @@ function simTick() {
     ball.setAttribute('cy', (100 + Math.random() * 200).toFixed(0));
   }
   
-  simStats.passes[0] += Math.floor(Math.random() * 4 + 3);
-  simStats.passes[1] += Math.floor(Math.random() * 3 + 2);
-  
-  if (Math.random() < 0.12) {
-    if (Math.random() < 0.5) simStats.fouls[0]++;
-    else simStats.fouls[1]++;
-  }
-  
   const scoreDiff = simScoreH - simScoreA;
   let ph = Math.min(88, Math.max(8, 50 + scoreDiff * 18 - ((90 - simCurrentMin) / 90) * 5));
   let pa = Math.min(88, Math.max(8, 50 - scoreDiff * 18 - ((90 - simCurrentMin) / 90) * 5));
@@ -20629,17 +21045,6 @@ function simTick() {
         simScoreA++;
         document.getElementById('sim-live-away-score').textContent = simScoreA;
       }
-      simStats.shots[ev.team === 'h' ? 0 : 1]++;
-      simStats.onTarget[ev.team === 'h' ? 0 : 1]++;
-      simStats.xg[ev.team === 'h' ? 0 : 1] += ev.xg || 0.75;
-    } else if (ev.type === 's') {
-      simStats.shots[ev.team === 'h' ? 0 : 1]++;
-      simStats.xg[ev.team === 'h' ? 0 : 1] += ev.xg || 0.15;
-      if (ev.txt.includes('portero') || ev.txt.includes('travesaño')) {
-        simStats.onTarget[ev.team === 'h' ? 0 : 1]++;
-      }
-    } else if (ev.type === 'y') {
-      simStats.fouls[ev.team === 'h' ? 0 : 1]++;
     }
     
     addLiveEvent(ev);
@@ -20722,19 +21127,22 @@ function drawLiveStats() {
   const ft = t.fouls[0] + t.fouls[1] + 1;
   const ot = t.onTarget[0] + t.onTarget[1] + 1;
   
+  const homePoss = (t.possession && t.possession.length > 0) ? t.possession[0] : 56;
+  const awayPoss = (t.possession && t.possession.length > 1) ? t.possession[1] : (100 - homePoss);
+  
   const statsContent = document.getElementById('sim-live-stats-content');
   if (!statsContent) return;
   
   statsContent.innerHTML = `
     <div class="stat-row">
       <div class="stat-hdr">
-        <span style="color:var(--cyan);font-weight:700;">52%</span>
+        <span style="color:var(--cyan);font-weight:700;">${homePoss}%</span>
         <span style="color:var(--text-2);">Posesión</span>
-        <span style="color:var(--orange);font-weight:700;">48%</span>
+        <span style="color:var(--orange);font-weight:700;">${awayPoss}%</span>
       </div>
       <div class="stat-bar" style="height:6px; background:rgba(255,255,255,0.05); border-radius:3px; display:flex; overflow:hidden;">
-        <div style="background:var(--cyan); width:52%; height:100%;"></div>
-        <div style="background:var(--orange); width:48%; height:100%;"></div>
+        <div style="background:var(--cyan); width:${homePoss}%; height:100%;"></div>
+        <div style="background:var(--orange); width:${awayPoss}%; height:100%;"></div>
       </div>
     </div>
     
@@ -20829,6 +21237,14 @@ function skipMatchSimulation() {
 }
 
 function finishSimulation() {
+  if (simInterval) clearInterval(simInterval);
+
+  // Synchronize final score from pre-generated match events log
+  const hGoals = (simPreGeneratedEvents || []).filter(e => (e.type === 'g' || e.type === 'goal') && e.team === 'h').length;
+  const aGoals = (simPreGeneratedEvents || []).filter(e => (e.type === 'g' || e.type === 'goal') && e.team === 'a').length;
+  simScoreH = hGoals;
+  simScoreA = aGoals;
+
   const liveView = document.getElementById('sim-live-view');
   const reportView = document.getElementById('sim-report-view');
   if (liveView) liveView.style.display = 'none';
