@@ -28,7 +28,7 @@ const TRANSLATIONS = {
     db_performance_title: 'Rendimiento reciente', db_chat_title: 'Chat IA',
     db_chat_placeholder: 'Pregunta algo sobre tu equipo...',
     chat_agent_name: 'Agente FutbolAI',
-    hero_badge: '🤖 Impulsado por Gemini AI',
+    hero_badge: '🤖 Impulsado por DeepSeek AI',
     hero_title: 'Inteligencia Artificial<br/><span class="gradient-text">del Fútbol Mundial</span>',
     hero_subtitle: 'Consulta estadísticas, compara jugadores y obtén análisis profundos con IA.',
     btn_talk_agent: '💬 Hablar con el Agente',
@@ -135,7 +135,7 @@ const TRANSLATIONS = {
     db_performance_title: 'Recent Performance', db_chat_title: 'AI Chat',
     db_chat_placeholder: 'Ask something about your team...',
     chat_agent_name: 'FutbolAI Agent',
-    hero_badge: '🤖 Powered by Gemini AI',
+    hero_badge: '🤖 Powered by DeepSeek AI',
     hero_title: 'Artificial Intelligence<br/><span class="gradient-text">for World Football</span>',
     hero_subtitle: 'Query stats, compare players and get deep AI-powered insights.',
     btn_talk_agent: '💬 Talk to the Agent',
@@ -9885,6 +9885,7 @@ function goToSection(name) {
   if (name === 'my-players') window.renderMyPlayersModule();
   if (name === 'my-club') renderMyClubDashboard();
   if (name === 'players') renderPlayers();
+  if (name === 'compare') window.resetCompareModule();
   if (name === 'predictions' && !predictionsLoaded) loadPredictions();
   if (name === 'profile') renderProfile();
   if (name === 'simulations') initSimulationsSection();
@@ -12652,11 +12653,11 @@ window.getDevicePasskeyInfo = () => {
   const screenWidth = window.screen ? window.screen.width : 0;
   const screenHeight = window.screen ? window.screen.height : 0;
 
-  // 🍎 iOS Identification (iPhones 2023+)
+  // 🍎 iOS Identification (iPhones / iPads)
   if (/iphone|ipad|ipod/i.test(ua)) {
     if (/ipad/i.test(ua)) {
       if (/M4/i.test(ua) || (screenWidth >= 1024 && screenHeight >= 1366)) return 'Apple iPad Pro M4 / Air (2024+)';
-      return 'Apple iPad (iOS)';
+      return 'Apple iPad (iPadOS)';
     }
     const ratio = window.devicePixelRatio || 1;
     const maxDim = Math.max(screenWidth, screenHeight);
@@ -12667,9 +12668,8 @@ window.getDevicePasskeyInfo = () => {
     return 'Apple iPhone (iOS)';
   }
 
-  // 📱 Samsung Galaxy Model Mapping Complete (Lanzamientos 2023 - 2026)
+  // 📱 Samsung Galaxy Model Mapping
   if (/samsung|galaxy|SM-/i.test(ua)) {
-    // S-Series Flagships (2023 - 2026)
     if (/SM-S938/i.test(ua)) return 'Samsung Galaxy S25 Ultra';
     if (/SM-S936/i.test(ua)) return 'Samsung Galaxy S25+';
     if (/SM-S931/i.test(ua)) return 'Samsung Galaxy S25';
@@ -12684,14 +12684,12 @@ window.getDevicePasskeyInfo = () => {
     if (/SM-S911/i.test(ua)) return 'Samsung Galaxy S23';
     if (/SM-S711/i.test(ua)) return 'Samsung Galaxy S23 FE';
 
-    // Z-Series Plegables (2023 - 2025)
     if (/SM-F958/i.test(ua)) return 'Samsung Galaxy Z Fold Special Edition';
     if (/SM-F956/i.test(ua)) return 'Samsung Galaxy Z Fold6';
     if (/SM-F741/i.test(ua)) return 'Samsung Galaxy Z Flip6';
     if (/SM-F946/i.test(ua)) return 'Samsung Galaxy Z Fold5';
     if (/SM-F731/i.test(ua)) return 'Samsung Galaxy Z Flip5';
 
-    // A-Series (2023 - 2025)
     if (/SM-A566/i.test(ua)) return 'Samsung Galaxy A56 5G';
     if (/SM-A556/i.test(ua)) return 'Samsung Galaxy A55 5G';
     if (/SM-A546/i.test(ua)) return 'Samsung Galaxy A54 5G';
@@ -12713,7 +12711,6 @@ window.getDevicePasskeyInfo = () => {
     if (/SM-A055/i.test(ua)) return 'Samsung Galaxy A05';
     if (/SM-A042/i.test(ua)) return 'Samsung Galaxy A04e';
 
-    // M-Series & F-Series (2023 - 2025)
     if (/SM-M556/i.test(ua) || /SM-F556/i.test(ua)) return 'Samsung Galaxy M55 / F55 5G';
     if (/SM-M546/i.test(ua) || /SM-F546/i.test(ua)) return 'Samsung Galaxy M54 / F54 5G';
     if (/SM-M356/i.test(ua) || /SM-F346/i.test(ua)) return 'Samsung Galaxy M35 / F34 5G';
@@ -12722,11 +12719,9 @@ window.getDevicePasskeyInfo = () => {
     if (/SM-M146/i.test(ua) || /SM-F146/i.test(ua)) return 'Samsung Galaxy M14 / F14 5G';
     if (/SM-M055/i.test(ua) || /SM-F055/i.test(ua)) return 'Samsung Galaxy M05 / F05';
 
-    // XCover Rugged (2023 - 2024)
     if (/SM-G556/i.test(ua)) return 'Samsung Galaxy XCover 7';
     if (/SM-G736/i.test(ua)) return 'Samsung Galaxy XCover 6 Pro';
 
-    // Tab-Series Tablets (2023 - 2025)
     if (/SM-X926|SM-X920/i.test(ua)) return 'Samsung Galaxy Tab S10 Ultra';
     if (/SM-X826|SM-X820/i.test(ua)) return 'Samsung Galaxy Tab S10+';
     if (/SM-X916|SM-X910/i.test(ua)) return 'Samsung Galaxy Tab S9 Ultra';
@@ -12735,13 +12730,12 @@ window.getDevicePasskeyInfo = () => {
     if (/SM-X616|SM-X516/i.test(ua)) return 'Samsung Galaxy Tab S9 FE';
     if (/SM-X216|SM-X115/i.test(ua)) return 'Samsung Galaxy Tab A9+ / A9';
 
-    // Fallback Samsung con número de modelo
     const modelMatch = ua.match(/SM-[A-Z0-9]+/i);
     if (modelMatch) return `Samsung Galaxy (${modelMatch[0]})`;
     return 'Samsung Galaxy (Android)';
   }
 
-  // 🤖 Google Pixel Series (2023-2025)
+  // 🤖 Google Pixel Series
   if (/pixel/i.test(ua)) {
     if (/Pixel 9 Pro XL/i.test(ua)) return 'Google Pixel 9 Pro XL';
     if (/Pixel 9 Pro Fold/i.test(ua)) return 'Google Pixel 9 Pro Fold';
@@ -12755,7 +12749,7 @@ window.getDevicePasskeyInfo = () => {
     return 'Google Pixel (Android)';
   }
 
-  // 📱 Xiaomi / Redmi / POCO (2023-2025)
+  // 📱 Xiaomi / Redmi / POCO
   if (/xiaomi|redmi|poco/i.test(ua)) {
     if (/14 Ultra/i.test(ua)) return 'Xiaomi 14 Ultra';
     if (/14 Pro/i.test(ua)) return 'Xiaomi 14 Pro';
@@ -12767,7 +12761,33 @@ window.getDevicePasskeyInfo = () => {
     if (/POCO F5/i.test(ua)) return 'POCO F5';
     if (/Redmi Note 13/i.test(ua)) return 'Redmi Note 13 Pro 5G';
     if (/Redmi Note 12/i.test(ua)) return 'Redmi Note 12 Pro';
-    return 'Dispositivo Xiaomi / Redmi';
+    return 'Dispositivo Xiaomi / Redmi (Android)';
+  }
+
+  // 📱 Motorola / Moto / Razr
+  if (/moto|motorola|razr/i.test(ua)) {
+    const motoMatch = ua.match(/(moto\s+[^\s;\)]+|edge\s+\d+[^\s;\)]*|razr[^\s;\)]*)/i);
+    if (motoMatch) return `Motorola ${motoMatch[0]}`;
+    return 'Motorola Moto (Android)';
+  }
+
+  // 📱 Huawei / Honor
+  if (/huawei|honor/i.test(ua)) {
+    const hwMatch = ua.match(/(p[0-9]+|mate\s+[0-9]+|nova\s+[0-9]+|magic[0-9]*)/i);
+    if (hwMatch) return `Huawei/Honor (${hwMatch[0]})`;
+    return 'Dispositivo Huawei / Honor';
+  }
+
+  // 📱 OPPO / OnePlus / Realme / Vivo / iQOO
+  if (/oppo|oneplus|realme|vivo|iqoo/i.test(ua)) {
+    const oppoMatch = ua.match(/(oneplus\s+[^\s;\)]+|find\s+x[0-9]*|reno[0-9]*|realme[^\s;\)]*|iqoo[^\s;\)]*)/i);
+    if (oppoMatch) return `Dispositivo ${oppoMatch[0]}`;
+    return 'Dispositivo Móvil (OPPO/OnePlus/Realme/Vivo)';
+  }
+
+  // 📱 Infinix / TECNO / Itel / Sony / ASUS
+  if (/infinix|tecno|itel|sony|xperia|asus|zenfone|rog/i.test(ua)) {
+    return 'Dispositivo Móvil Android';
   }
 
   // Extracción genérica de modelo Android
@@ -12779,14 +12799,15 @@ window.getDevicePasskeyInfo = () => {
         return `Dispositivo Android (${rawModel})`;
       }
     }
-    return 'Dispositivo Móvil Android';
+    return 'Celular / Tablet Android';
   }
 
-  // Identificación de Escritorio / Laptops
+  // 💻 Identificación de Computadoras de Escritorio / Laptops
   if (/macintosh|mac os x/i.test(ua)) return 'Equipo Mac (macOS)';
   if (/windows nt 10\.0/i.test(ua)) return 'Equipo PC (Windows 10/11)';
   if (/windows/i.test(ua)) return 'Equipo PC (Windows)';
-  if (/linux/i.test(ua)) return 'Dispositivo Linux';
+  if (/cros/i.test(ua)) return 'Chromebook (ChromeOS)';
+  if (/linux/i.test(ua)) return 'Computadora Linux';
 
   return 'Dispositivo de Acceso Registrado';
 };
@@ -12835,7 +12856,7 @@ window.renderSecurityPasskeyUser = (user) => {
     if (!hasAnyPasskey) {
       deviceIconEl.textContent = '🔒';
     } else {
-      const isMobile = /android|iphone|ipad|mobile|samsung|galaxy|pixel|xiaomi|redmi|poco/i.test(mainDeviceName) || /android|iphone|ipad|mobile/i.test(navigator.userAgent);
+      const isMobile = /android|iphone|ipad|mobile|samsung|galaxy|pixel|xiaomi|redmi|poco|moto|motorola|huawei|honor|oppo|oneplus|realme|vivo/i.test(mainDeviceName) || /android|iphone|ipad|mobile/i.test(navigator.userAgent);
       deviceIconEl.textContent = isMobile ? '📱' : '💻';
     }
   }
@@ -12845,7 +12866,7 @@ window.renderSecurityPasskeyUser = (user) => {
     statusEl.innerHTML = '<span style="display: inline-block; width: 8px; height: 8px; background: #00f0ff; border-radius: 50%; box-shadow: 0 0 8px #00f0ff;"></span> Passkey Configurada y Activa (Biometría + PIN de Respaldo)';
     statusEl.style.color = '#00f0ff';
   } else if (hasWebAuthn) {
-    statusEl.innerHTML = '<span style="display: inline-block; width: 8px; height: 8px; background: #00f0ff; border-radius: 50%; box-shadow: 0 0 8px #00f0ff;"></span> Passkey Configurada y Activa (Biometría / Windows Hello)';
+    statusEl.innerHTML = '<span style="display: inline-block; width: 8px; height: 8px; background: #00f0ff; border-radius: 50%; box-shadow: 0 0 8px #00f0ff;"></span> Passkey Configurada y Activa (Biometría: Celular / Computadora)';
     statusEl.style.color = '#00f0ff';
   } else if (hasPin) {
     statusEl.innerHTML = '<span style="display: inline-block; width: 8px; height: 8px; background: #00f0ff; border-radius: 50%; box-shadow: 0 0 8px #00f0ff;"></span> Passkey Configurada y Activa (PIN de Respaldo)';
@@ -12861,14 +12882,20 @@ window.renderSecurityPasskeyUser = (user) => {
       <div style="font-size: 0.85rem; font-weight: 700; color: rgba(255,255,255,0.9); margin-bottom: 4px;">Medios de Autenticación Passkey Registrados:</div>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px;">
         <div style="background: ${hasWebAuthn ? 'rgba(0, 240, 255, 0.08)' : 'rgba(255, 255, 255, 0.02)'}; border: 1px solid ${hasWebAuthn ? 'rgba(0, 240, 255, 0.3)' : 'rgba(255, 255, 255, 0.08)'}; border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between;">
-          <div style="font-weight: 700; font-size: 0.88rem; color: #fff;">Biometría / Windows Hello</div>
+          <div>
+            <div style="font-weight: 700; font-size: 0.88rem; color: #fff;">Biometría (Celulares & Computadoras)</div>
+            <div style="font-size: 0.75rem; color: var(--cyan); margin-top: 3px;">${hasWebAuthn ? (webauthnDevice || 'Dispositivo biométrico registrado') : 'No configurado'}</div>
+          </div>
           <span style="font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 10px; ${hasWebAuthn ? 'background: rgba(0, 240, 255, 0.2); color: #00f0ff; border: 1px solid #00f0ff;' : 'background: rgba(255, 170, 0, 0.15); color: #ffaa00; border: 1px solid #ffaa00;'}">
             ${hasWebAuthn ? 'ACTIVO' : 'PENDIENTE'}
           </span>
         </div>
 
         <div style="background: ${hasPin ? 'rgba(0, 240, 255, 0.08)' : 'rgba(255, 255, 255, 0.02)'}; border: 1px solid ${hasPin ? 'rgba(0, 240, 255, 0.3)' : 'rgba(255, 255, 255, 0.08)'}; border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between;">
-          <div style="font-weight: 700; font-size: 0.88rem; color: #fff;">PIN Passkey de Respaldo</div>
+          <div>
+            <div style="font-weight: 700; font-size: 0.88rem; color: #fff;">PIN Passkey de Respaldo</div>
+            <div style="font-size: 0.75rem; color: var(--cyan); margin-top: 3px;">${hasPin ? (pinDevice || 'Dispositivo PIN registrado') : 'No configurado'}</div>
+          </div>
           <span style="font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 10px; ${hasPin ? 'background: rgba(0, 240, 255, 0.2); color: #00f0ff; border: 1px solid #00f0ff;' : 'background: rgba(255, 170, 0, 0.15); color: #ffaa00; border: 1px solid #ffaa00;'}">
             ${hasPin ? 'ACTIVO' : 'PENDIENTE'}
           </span>
@@ -13092,7 +13119,7 @@ window.updatePasskeyWebAuthn = async () => {
   const token = localStorage.getItem('scout_ai_token');
   if (!token) return;
 
-  window.showPasskeyModal('loading', 'Vinculación Biométrica Passkey', 'Por favor realiza la autenticación en tu dispositivo (Windows Hello, huella dactilar o rostro)...');
+  window.showPasskeyModal('loading', 'Vinculación Biométrica Passkey', 'Por favor realiza la autenticación en tu dispositivo (huella dactilar, Face ID, Touch ID, Windows Hello o clave del equipo)...');
 
   try {
     const optRes = await fetch('/api/auth/passkey/register-options', {
@@ -13199,7 +13226,7 @@ window.removePasskeyMethod = async (method) => {
   const token = localStorage.getItem('scout_ai_token');
   if (!token) return;
 
-  const methodName = method === 'webauthn' ? 'Biometría / Windows Hello' : 'PIN de Respaldo';
+  const methodName = method === 'webauthn' ? 'Biometría (Celulares & Computadoras)' : 'PIN de Respaldo';
   if (!confirm(`¿Estás seguro de que deseas desvincular el método de Passkey (${methodName})?`)) {
     return;
   }
@@ -13779,6 +13806,8 @@ window.renderMyPlayersModule = async (skipFetch = false) => {
                        (user.role || '').toLowerCase() === 'local' || 
                        (user.role || '').toLowerCase() === 'entrenador local';
 
+  const players = typeof window.getLocalPlayersList === 'function' ? window.getLocalPlayersList() : [];
+
   // Profile Tab elements (if present)
   const emptyEl = document.getElementById('local-players-empty');
   const upgradeNoticeEl = document.getElementById('local-players-upgrade-notice');
@@ -13787,16 +13816,21 @@ window.renderMyPlayersModule = async (skipFetch = false) => {
   const totalEl = document.getElementById('local-roster-total');
   const availEl = document.getElementById('local-roster-available');
   const totalValEl = document.getElementById('local-roster-total-value');
-    if (totalValEl) {
-      const totalVal = players.reduce((sum, p) => sum + (Number(p.marketValue) || 5000000), 0);
-      totalValEl.textContent = formatContractValue(totalVal);
-    }
-  if (avgRatingMainEl) avgRatingMainEl.textContent = avgRating;
-  if (topCatEl) topCatEl.textContent = domCat;
-  if (topCatMainEl) topCatMainEl.textContent = domCat;
 
-  window.filterLocalPlayers();
-  window.filterLocalPlayersMain();
+  if (badgeEl) badgeEl.textContent = players.length;
+  if (totalEl) totalEl.textContent = players.length;
+  if (availEl) {
+    const availCount = players.filter(p => (p.medicalStatus || 'Disponible') === 'Disponible').length;
+    availEl.textContent = availCount;
+  }
+
+  if (totalValEl) {
+    const totalVal = players.reduce((sum, p) => sum + (Number(p.marketValue) || 5000000), 0);
+    totalValEl.textContent = typeof formatContractValue === 'function' ? formatContractValue(totalVal) : `€${(totalVal / 1000000).toFixed(1)}M`;
+  }
+
+  if (typeof window.filterLocalPlayers === 'function') window.filterLocalPlayers();
+  if (typeof window.filterLocalPlayersMain === 'function') window.filterLocalPlayersMain();
 };
 
 window.filterLocalPlayersMain = () => {
@@ -16772,7 +16806,6 @@ function openPlayerModal(playerOrId) {
     <div class="modal-tabs">
       <button class="modal-tab active" onclick="switchModalTab(this, 'season')">${t('tab_season')}</button>
       ${!isProspect ? `<button class="modal-tab" onclick="switchModalTab(this, 'competition')">${t('tab_competition')}</button>` : ''}
-      ${!isProspect ? `<button class="modal-tab" onclick="switchModalTab(this, 'vs-team')">${t('tab_vs_team')}</button>` : ''}
       <button class="modal-tab" onclick="switchModalTab(this, 'global')">${t('tab_global')}</button>
       <button class="modal-tab" onclick="switchModalTab(this, 'injuries')">${t('tab_injuries')}</button>
       ${showLegalTab ? `<button class="modal-tab" onclick="switchModalTab(this, 'legal-contact')">${currentLang === 'es' ? 'Contacto legal' : 'Legal Contact'}</button>` : ''}
@@ -16873,17 +16906,6 @@ function openPlayerModal(playerOrId) {
        </div>
     </div>` : ''}
 
-    ${!isProspect ? `
-    <!-- PANE: VS TEAM -->
-    <div id="pane-vs-team" class="modal-pane">
-       <div class="modal-section">
-          <h4>${currentLang === 'es' ? 'Historial vs Equipos' : 'History vs Teams'}</h4>
-          <p style="color:var(--text-2); font-size:14px;">${currentLang === 'es' ? 'Rendimiento histórico del jugador contra equipos específicos.' : 'Historical performance of the player against specific teams.'}</p>
-          <div style="height:150px; display:flex; align-items:center; justify-content:center; color:var(--text-2); border:1px solid var(--border); border-radius:8px; margin-top:20px;">
-             ${currentLang === 'es' ? 'No hay datos suficientes para esta comparación.' : 'Not enough data for this comparison.'}
-          </div>
-       </div>
-    </div>` : ''}
 
     <!-- PANE: GLOBAL -->
     <div id="pane-global" class="modal-pane">
@@ -16959,14 +16981,6 @@ function openPlayerModal(playerOrId) {
             </div>
 
             <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(0,240,255,0.15); border-radius: 10px; padding: 12px 14px;">
-              <div style="font-size: 11px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 4px;">Identificación / Documento</div>
-              <div style="font-size: 13.5px; font-weight: 700; color: #00f0ff; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
-                <span>${docTypeDisplay}: ${p.docNumber || '—'}</span>
-                ${p.docFileUrl ? `<a href="${p.docFileUrl}" target="_blank" style="font-size: 11px; background: rgba(0,240,255,0.15); border: 1px solid #00f0ff; color: #00f0ff; padding: 2px 8px; border-radius: 6px; text-decoration: none;" title="Ver Documento Adjunto">📎 Ver</a>` : ''}
-              </div>
-            </div>
-
-            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(0,240,255,0.15); border-radius: 10px; padding: 12px 14px;">
               <div style="font-size: 11px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 4px;">Dorsal / Camiseta</div>
               <div style="font-size: 13.5px; font-weight: 700; color: #ffaa00;">${p.jerseyNumber ? `#${p.jerseyNumber}` : '—'}</div>
             </div>
@@ -16984,11 +16998,6 @@ function openPlayerModal(playerOrId) {
             <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(0,240,255,0.15); border-radius: 10px; padding: 12px 14px;">
               <div style="font-size: 11px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 4px;">Estatura & Peso</div>
               <div style="font-size: 13.5px; font-weight: 600; color: var(--text-1);">${p.height ? `${p.height} cm` : '—'} · ${p.weight ? `${p.weight} kg` : '—'}</div>
-            </div>
-
-            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(0,240,255,0.15); border-radius: 10px; padding: 12px 14px;">
-              <div style="font-size: 11px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 4px;">Categoría</div>
-              <div style="font-size: 13.5px; font-weight: 600; color: var(--text-1);">${p.category || 'Local'}</div>
             </div>
 
           </div>
@@ -18454,16 +18463,16 @@ function selectComparePlayer(num, player) {
   card.innerHTML = `
     <div class="sel-player-info">
       <div class="sel-player-top">
-        <span class="sel-flag">${player.flag}</span>
+        <span class="sel-flag">${player.flag || '⚽'}</span>
         <div>
           <div class="sel-name">${player.name}</div>
-          <div class="sel-team">${player.currentTeam} · ${player.league}</div>
+          <div class="sel-team">${player.currentTeam || 'Local'} · ${player.league || 'Liga'}</div>
         </div>
       </div>
       <div class="sel-stats">
-        <div class="sel-stat"><span class="sel-stat-num">${Number(player.overallRating).toFixed(1)}</span><span class="sel-stat-label">OVR</span></div>
-        <div class="sel-stat"><span class="sel-stat-num">${player.stats.goals}</span><span class="sel-stat-label">Goals</span></div>
-        <div class="sel-stat"><span class="sel-stat-num">${player.stats.assists}</span><span class="sel-stat-label">Assists</span></div>
+        <div class="sel-stat"><span class="sel-stat-num" style="font-size:13px">${formatContractValue(player.marketValue)}</span><span class="sel-stat-label">${currentLang === 'es' ? 'VALOR' : 'VALUE'}</span></div>
+        <div class="sel-stat"><span class="sel-stat-num">${player.stats?.goals ?? 0}</span><span class="sel-stat-label">${currentLang === 'es' ? 'Goles' : 'Goals'}</span></div>
+        <div class="sel-stat"><span class="sel-stat-num">${player.stats?.assists ?? 0}</span><span class="sel-stat-label">${currentLang === 'es' ? 'Asistencias' : 'Assists'}</span></div>
       </div>
     </div>
   `;
@@ -18474,16 +18483,65 @@ function selectComparePlayer(num, player) {
   document.getElementById('compare-result').style.display = 'none';
 }
 
+window.resetCompareModule = function() {
+  selectedPlayer1 = null;
+  selectedPlayer2 = null;
+
+  const input1 = document.getElementById('compare-search-1');
+  if (input1) input1.value = '';
+  const input2 = document.getElementById('compare-search-2');
+  if (input2) input2.value = '';
+
+  const results1 = document.getElementById('selector-results-1');
+  if (results1) { results1.classList.remove('open'); results1.innerHTML = ''; }
+  const results2 = document.getElementById('selector-results-2');
+  if (results2) { results2.classList.remove('open'); results2.innerHTML = ''; }
+
+  const emptyText = (typeof currentLang !== 'undefined' && currentLang === 'es') ? 'Selecciona un jugador' : 'Select a player';
+
+  const card1 = document.getElementById('selected-card-1');
+  if (card1) {
+    card1.classList.remove('filled');
+    card1.innerHTML = `<div class="empty-player" data-i18n="select_player">${emptyText}</div>`;
+  }
+
+  const card2 = document.getElementById('selected-card-2');
+  if (card2) {
+    card2.classList.remove('filled');
+    card2.innerHTML = `<div class="empty-player" data-i18n="select_player">${emptyText}</div>`;
+  }
+
+  const btn = document.getElementById('btn-compare');
+  if (btn) {
+    btn.disabled = true;
+    if (typeof t === 'function') {
+      btn.textContent = t('btn_analyze');
+    } else {
+      btn.textContent = '🤖 Analizar con IA';
+    }
+  }
+
+  const resultEl = document.getElementById('compare-result');
+  if (resultEl) resultEl.style.display = 'none';
+
+  const bodyEl = document.getElementById('compare-result-body');
+  if (bodyEl) bodyEl.innerHTML = '';
+};
+
 window.clearCompareSlot = function(num) {
   if (num === 1) selectedPlayer1 = null;
   else selectedPlayer2 = null;
   
   const card = document.getElementById(`selected-card-${num}`);
-  card.classList.remove('filled');
-  card.innerHTML = `<div class="empty-player" data-i18n="select_player">` + (currentLang === 'es' ? 'Selecciona un jugador' : 'Select a player') + `</div>`;
+  if (card) {
+    card.classList.remove('filled');
+    card.innerHTML = `<div class="empty-player" data-i18n="select_player">` + (currentLang === 'es' ? 'Selecciona un jugador' : 'Select a player') + `</div>`;
+  }
   
-  document.getElementById('btn-compare').disabled = true;
-  document.getElementById('compare-result').style.display = 'none';
+  const btn = document.getElementById('btn-compare');
+  if (btn) btn.disabled = true;
+  const resultEl = document.getElementById('compare-result');
+  if (resultEl) resultEl.style.display = 'none';
 };
 
 function closeComparison() {
@@ -18730,9 +18788,11 @@ function fillH2HBars(p1, p2) {
 }
 
 function getPlayerChartData(player) {
-  // Convert 1-10 rating to 10-100 base for chart calculations
-  const base = player.overallRating > 10 ? player.overallRating : player.overallRating * 10;
-  const seed = player.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  // Convert rating to 10-100 base for chart calculations
+  const ovrVal = Number(player.overallRating);
+  const base = (!isNaN(ovrVal) && ovrVal > 0) ? (ovrVal > 10 ? ovrVal : ovrVal * 10) : 75;
+  const pId = String(player.id || player.name || '0');
+  const seed = pId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
   const pseudoRand = (offset) => ((seed + offset) % 15) - 7;
 
   const stats = {
@@ -18905,36 +18965,63 @@ async function loadPredictions() {
 // ──────────────────────────────────────────
 function markdownToHtml(md) {
   if (!md) return '';
-  return md
+  let html = md
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/&lt;img(.+?)&gt;/g, '<img$1>') // Allow img tags
+    .replace(/&lt;img(.+?)&gt;/g, '<img$1>')
     .replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2" alt="$1" style="max-width:100%;border-radius:8px;margin-top:10px;">')
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
     .replace(/`(.+?)`/g, '<code>$1</code>')
     .replace(/^### (.+)$/gm, '<h3>$1</h3>')
     .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-    .replace(/^# (.+)$/gm, '<h2>$1</h2>')
-    .replace(/^\|?(.+)\|?$/gm, (match, row) => {
-      if (!match.includes('|')) return match;
-      const cells = row.split('|').map(c => c.trim()).filter(c => c !== '');
-      if (cells.length === 0) return match;
-      const isHeader = cells.some(c => c.match(/^-+$/));
-      if (isHeader) return '';
-      return `<tr>${cells.map(c => `<td>${c}</td>`).join('')}</tr>`;
-    })
-    .replace(/(<tr>[\s\S]+?<\/tr>)/g, (match) => {
-      const rows = match.match(/<tr>[\s\S]*?<\/tr>/g) || [];
-      const firstRow = rows[0]?.replace(/<td>/g, '<th>').replace(/<\/td>/g, '</th>');
-      const rest = rows.slice(1).join('');
-      return `<table><thead>${firstRow}</thead><tbody>${rest}</tbody></table>`;
-    })
-    .replace(/^[-*] (.+)$/gm, '<li>$1</li>')
-    .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
-    .replace(/\n{2,}/g, '</p><p>')
-    .replace(/^(?!<[hultpc])(.+)$/gm, (line) => line ? line : '')
-    .replace(/\n/g, '<br />')
-    .replace(/(<br \/>){3,}/g, '<br /><br />');
+    .replace(/^# (.+)$/gm, '<h2>$1</h2>');
+
+  html = html.replace(/^\|?(.+)\|?$/gm, (match, row) => {
+    if (!match.includes('|')) return match;
+    const cells = row.split('|').map(c => c.trim()).filter(c => c !== '');
+    if (cells.length === 0) return match;
+    const isHeader = cells.some(c => c.match(/^-+$/));
+    if (isHeader) return '';
+    return `<tr>${cells.map((c, i) => {
+      let style = '';
+      if (i === 3) {
+        if (c === 'Empate' || c === 'Tie' || c === 'Draw') {
+          style = ' style="color: rgba(255,255,255,0.45); font-weight: 500;"';
+        } else {
+          style = ' style="color: #00f0ff; font-weight: 700;"';
+        }
+      }
+      return `<td${style}>${c}</td>`;
+    }).join('')}</tr>`;
+  });
+
+  html = html.replace(/(<tr>[\s\S]+?<\/tr>)/g, (match) => {
+    const rows = match.match(/<tr>[\s\S]*?<\/tr>/g) || [];
+    const firstRow = rows[0]?.replace(/<td>/g, '<th>').replace(/<\/td>/g, '</th>');
+    const rest = rows.slice(1).join('');
+    return `<table><thead>${firstRow}</thead><tbody>${rest}</tbody></table>`;
+  });
+
+  html = html.replace(/^[-*] (.+)$/gm, '<li>$1</li>');
+  html = html.replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>');
+
+  // Split into blocks by double newlines
+  const blocks = html.split(/\n{2,}/);
+  html = blocks.map(block => {
+    block = block.trim();
+    if (!block) return '';
+    if (block.startsWith('<h') || block.startsWith('<table') || block.startsWith('<ul') || block.startsWith('<ol')) {
+      return block;
+    }
+    // Replace internal single newlines inside prose with a space instead of <br />, preventing broken text lines
+    const cleanParagraph = block.replace(/\s*\n\s*/g, ' ').replace(/\s+([,.:;!?])/g, '$1');
+    return `<p>${cleanParagraph}</p>`;
+  }).join('');
+
+  html = html.replace(/<br\s*\/?>\s*<(h2|h3|table|p)/gi, '<$1');
+  html = html.replace(/<\/(h2|h3|table|p)>\s*<br\s*\/?>/gi, '</$1>');
+
+  return html;
 }
 
 // ──────────────────────────────────────────
