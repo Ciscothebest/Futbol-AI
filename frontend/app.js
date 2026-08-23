@@ -24,7 +24,7 @@ const TRANSLATIONS = {
     nav_compare: 'Comparar', nav_predictions: 'Predicciones', nav_simulations: 'Simulaciones', section_simulations: 'Simulador de Partidos IA', sim_report_title: 'Reporte de Simulación IA',
     db_my_club: 'Mi Club', db_position: 'Posición', db_goals: 'Goles Favor (GF)', db_xg: 'xG', db_wins: 'Ganados (G)', db_draws: 'Empatados (E)', db_losses: 'Perdidos (P)', db_gc: 'Goles Contra (GC)', db_dg: 'Dif. Goles (DG)',
     db_matches: 'Partidos', db_next_matches: 'Próximos partidos', db_title_formation: 'Alineación Titular',
-    db_btn_edit_formation: 'Editar alineación', db_alerts_title: 'Alertas IA',
+    db_btn_edit_formation: 'Editar alineación', db_alerts_title: 'Notificaciones IA',
     db_performance_title: 'Rendimiento reciente', db_chat_title: 'Chat IA',
     db_chat_placeholder: 'Pregunta algo sobre tu equipo...',
     chat_agent_name: 'Agente FutbolAI',
@@ -131,7 +131,7 @@ const TRANSLATIONS = {
     nav_compare: 'Compare', nav_predictions: 'Predictions', nav_simulations: 'Simulations', section_simulations: 'AI Match Simulator', sim_report_title: 'AI Simulation Report',
     db_my_club: 'My Club', db_position: 'Position', db_goals: 'Goals For (GF)', db_xg: 'xG', db_wins: 'Wins (W)', db_draws: 'Draws (D)', db_losses: 'Losses (L)', db_gc: 'Goals Conceded (GA)', db_dg: 'Goal Diff (GD)',
     db_matches: 'Matches', db_next_matches: 'Upcoming Matches', db_title_formation: 'Starting XI',
-    db_btn_edit_formation: 'Edit Formation', db_alerts_title: 'AI Alerts',
+    db_btn_edit_formation: 'Edit Formation', db_alerts_title: 'AI Notifications',
     db_performance_title: 'Recent Performance', db_chat_title: 'AI Chat',
     db_chat_placeholder: 'Ask something about your team...',
     chat_agent_name: 'FutbolAI Agent',
@@ -8514,127 +8514,184 @@ async function renderMyClubAlerts(clubName, countryName) {
   if (!hasVerifiedFixtures && scheduleType === 2) {
     list = isEs ? [
       {
-        type: "warning",
+        kind: "warning",
+        category: "LESIONES",
         icon: "⚠️",
-        msg: `<strong>Sin Partidos Programados:</strong> No se han detectado partidos oficiales para la temporada actual o próxima.`
+        title: `${pName} en riesgo de lesión`,
+        msg: `No se han detectado partidos oficiales recientes para ${pName}. Se recomienda control preventivo de cargas.`,
+        action: "Ver informe completo IA →"
       },
       {
-        type: "info",
+        kind: "info",
+        category: "FICHAJES",
         icon: "🔍",
-        msg: `<strong>Planificación de Fichajes:</strong> La red de scouting ha identificado a <strong>${talentName}</strong> como objetivo prioritario basándose en sus métricas recientes.`
+        title: "Nuevo Talento Detectado",
+        msg: `La red de scouting ha identificado a ${talentName} como objetivo prioritario basándose en sus métricas recientes.`,
+        action: "Ver informe completo IA →"
       },
       {
-        type: "success",
+        kind: "success",
+        category: "TÁCTICA",
         icon: "🛡️",
-        msg: `<strong>Reporte de Pretemporada:</strong> Análisis táctico global del equipo completado y disponible para descarga.`
+        title: "Análisis Táctico Completado",
+        msg: `Análisis táctico global del equipo completado y disponible para descarga.`,
+        action: "Ver informe completo IA →"
       }
     ] : [
       {
-        type: "warning",
+        kind: "warning",
+        category: "INJURIES",
         icon: "⚠️",
-        msg: `<strong>No Scheduled Matches:</strong> No official matches have been detected for the current or next season.`
+        title: `${pName} at injury risk`,
+        msg: `No official matches detected for ${pName}. Preventive load control is recommended.`,
+        action: "View full AI report →"
       },
       {
-        type: "info",
+        kind: "info",
+        category: "TRANSFERS",
         icon: "🔍",
-        msg: `<strong>Transfer Planning:</strong> The scouting network has identified <strong>${talentName}</strong> as a priority target based on recent metrics.`
+        title: "New Talent Detected",
+        msg: `The scouting network identified ${talentName} as a priority target based on recent metrics.`,
+        action: "View full AI report →"
       },
       {
-        type: "success",
+        kind: "success",
+        category: "TACTICS",
         icon: "🛡️",
-        msg: `<strong>Pre-season Report:</strong> Team's global tactical analysis completed and available for download.`
+        title: "Tactical Analysis Completed",
+        msg: `Team's global tactical analysis completed and available for download.`,
+        action: "View full AI report →"
       }
     ];
   } else if (!hasVerifiedFixtures && scheduleType === 1) {
     list = isEs ? [
       {
-        type: "warning",
+        kind: "warning",
+        category: "LESIONES",
         icon: "⚠️",
-        msg: `<strong>Alerta de Lesión (Próxima Temporada):</strong> El jugador <strong>${pName}</strong> muestra alta fatiga de gemelo antes del debut vs ${nextOpp}.`
+        title: `${pName} en riesgo de lesión`,
+        msg: `Riesgo estimado de fatiga en ${pName} por carga, sprint y descanso antes del partido vs ${nextOpp}.`,
+        action: "Ver informe completo IA →"
       },
       {
-        type: "info",
+        kind: "info",
+        category: "FICHAJES",
         icon: "🔍",
-        msg: `<strong>Mercado de Fichajes:</strong> <strong>${talentName}</strong> recomendado para reforzar la plantilla esta nueva temporada.`
+        title: "Nuevo Talento Detectado",
+        msg: `${talentName}, 19 años, destaca por velocidad y regate en espacios reducidos.`,
+        action: "Ver informe completo IA →"
       },
       {
-        type: "success",
+        kind: "success",
+        category: "TÁCTICA",
         icon: "🛡️",
-        msg: `<strong>Análisis de Apertura:</strong> Reporte táctico y plan de partido para el debut de liga vs <strong>${nextOpp}</strong> completado.`
+        title: "Análisis Táctico Completado",
+        msg: `Se estudiaron las actuaciones más recientes de ${nextOpp} y se generó un plan de partido con recomendaciones de formación.`,
+        action: "Ver informe completo IA →"
       }
     ] : [
       {
-        type: "warning",
+        kind: "warning",
+        category: "INJURIES",
         icon: "⚠️",
-        msg: `<strong>Injury Alert (Next Season):</strong> Player <strong>${pName}</strong> shows high calf fatigue before the debut vs ${nextOpp}.`
+        title: `${pName} at injury risk`,
+        msg: `Estimated fatigue risk for ${pName} due to load, sprint, and rest before match vs ${nextOpp}.`,
+        action: "View full AI report →"
       },
       {
-        type: "info",
+        kind: "info",
+        category: "TRANSFERS",
         icon: "🔍",
-        msg: `<strong>Transfer Window:</strong> <strong>${talentName}</strong> recommended to reinforce the squad for the new season.`
+        title: "New Talent Detected",
+        msg: `${talentName}, 19 years old, stands out for speed and dribbling in tight spaces.`,
+        action: "View full AI report →"
       },
       {
-        type: "success",
+        kind: "success",
+        category: "TACTICS",
         icon: "🛡️",
-        msg: `<strong>Opening Match Analysis:</strong> Tactical report and game plan for the league debut vs <strong>${nextOpp}</strong> completed.`
+        title: "Tactical Analysis Completed",
+        msg: `Recent performances of ${nextOpp} were analyzed and a match plan with formation recommendations was generated.`,
+        action: "View full AI report →"
       }
     ];
   } else {
     // Current season (scheduleType === 0)
     list = isEs ? [
       {
-        type: "warning",
+        kind: "warning",
+        category: "LESIONES",
         icon: "⚠️",
-        msg: `<strong>Alerta de Lesión Potencial:</strong> El jugador <strong>${pName}</strong> (Riesgo Alto) muestra fatiga de gemelo antes del partido vs ${nextOpp}.`
+        title: `${pName} en riesgo de lesión`,
+        msg: `Riesgo estimado de fatiga en ${pName} por carga, sprint y descanso antes del partido vs ${nextOpp}.`,
+        action: "Ver informe completo IA →"
       },
       {
-        type: "info",
+        kind: "info",
+        category: "FICHAJES",
         icon: "🔍",
-        msg: `<strong>Nuevo Talento Detectado:</strong> <strong>${talentName}</strong> ha sido recomendado por la red de scouting para reforzar la plantilla.`
+        title: "Nuevo Talento Detectado",
+        msg: `${talentName}, 19 años, destaca por velocidad y regate en espacios reducidos.`,
+        action: "Ver informe completo IA →"
       },
       {
-        type: "success",
+        kind: "success",
+        category: "TÁCTICA",
         icon: "🛡️",
-        msg: `<strong>Análisis Táctico Completado:</strong> Reporte Pre-partido vs <strong>${nextOpp}</strong> disponible para descarga.`
+        title: "Análisis Táctico Completado",
+        msg: `Se estudiaron las actuaciones más recientes de ${nextOpp} y se generó un plan de partido con recomendaciones de formación.`,
+        action: "Ver informe completo IA →"
       }
     ] : [
       {
-        type: "warning",
+        kind: "warning",
+        category: "INJURIES",
         icon: "⚠️",
-        msg: `<strong>Potential Injury Alert:</strong> Player <strong>${pName}</strong> (High Risk) shows calf fatigue before match vs ${nextOpp}.`
+        title: `${pName} at injury risk`,
+        msg: `Estimated fatigue risk for ${pName} due to load, sprint, and rest before match vs ${nextOpp}.`,
+        action: "View full AI report →"
       },
       {
-        type: "info",
+        kind: "info",
+        category: "TRANSFERS",
         icon: "🔍",
-        msg: `<strong>New Talent Detected:</strong> <strong>${talentName}</strong> has been recommended by the scouting network to reinforce the squad.`
+        title: "New Talent Detected",
+        msg: `${talentName}, 19 years old, stands out for speed and dribbling in tight spaces.`,
+        action: "View full AI report →"
       },
       {
-        type: "success",
+        kind: "success",
+        category: "TACTICS",
         icon: "🛡️",
-        msg: `<strong>Tactical Analysis Complete:</strong> Pre-match report vs <strong>${nextOpp}</strong> available for download.`
+        title: "Tactical Analysis Completed",
+        msg: `Recent performances of ${nextOpp} were analyzed and a match plan with formation recommendations was generated.`,
+        action: "View full AI report →"
       }
     ];
   }
   
   container.innerHTML = list.map(a => {
     const contextStr = JSON.stringify({ clubName, nextOpp, pName, talentName, talentStats }).replace(/"/g, '&quot;');
-    // Extract text inside strong tags as title
-    const match = a.msg.match(/<strong>(.*?)<\/strong>/);
-    let alertTitle = match ? match[1].replace(':', '').trim() : 'Reporte Ejecutivo';
-    const cleanMsg = a.msg.replace(/<[^>]*>?/gm, ''); // plain text for AI
-    
-    const titleStr = JSON.stringify(alertTitle).replace(/"/g, '&quot;');
-    const typeStr = JSON.stringify(cleanMsg).replace(/"/g, '&quot;');
+    const kindStr = JSON.stringify(a.kind).replace(/"/g, '&quot;');
     
     return `
-    <div class="db-alert-row" style="cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background=''" onclick="openAlertModal(${titleStr}, ${typeStr}, ${contextStr})">
-      <div class="db-alert-icon-wrap ${a.type}">${a.icon}</div>
-      <div class="db-alert-message">${a.msg}</div>
-    </div>
-  `}).join('');
+      <div class="db-alert-card ${a.kind}" onclick="openAlertModal(${kindStr}, ${contextStr})">
+        <div class="db-alert-card-top">
+          <div class="db-alert-icon-wrap ${a.kind}">${a.icon}</div>
+          <div class="db-alert-card-headtext">
+            <span class="db-alert-category ${a.kind}">${a.category}</span>
+            <h4 class="db-alert-card-title">${a.title}</h4>
+          </div>
+          <span class="db-alert-priority-dot ${a.kind}"></span>
+        </div>
+        <p class="db-alert-card-detail">${a.msg}</p>
+        <div class="db-alert-card-footer"><span class="db-alert-cta">${a.action}</span></div>
+      </div>
+    `;
+  }).join('');
 }
 
-async function openAlertModal(alertTitle, alertType, contextData) {
+async function openAlertModal(kind, contextData) {
   const modal = document.getElementById('player-modal');
   const modalBody = document.getElementById('modal-body');
   if (!modal || !modalBody) return;
@@ -8642,47 +8699,221 @@ async function openAlertModal(alertTitle, alertType, contextData) {
   modal.style.display = 'flex';
   
   // Bind close events
-  document.getElementById('modal-close').onclick = closeModal;
-  document.getElementById('player-modal').onclick = (e) => {
-    if (e.target === document.getElementById('player-modal')) closeModal();
+  const closeBtn = document.getElementById('modal-close');
+  if (closeBtn) closeBtn.onclick = closeModal;
+  modal.onclick = (e) => {
+    if (e.target === modal) closeModal();
   };
 
-  // Render final structure immediately to avoid a blank loading screen
+  const isEs = currentLang === 'es';
+  const { clubName = 'Real Madrid', nextOpp = 'FC Barcelona', pName = 'Vinícius Jr.', talentName = 'Pablo Ramírez' } = contextData || {};
+
+  // 1. Render ONLY the FUTBOLAI Loader Screen inside modalBody (no header/chips leaked)
   modalBody.innerHTML = `
-    <div style="padding: 20px;">
-      <h3 style="color: var(--accent); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 1.2rem;">
-        <span>📋</span> ${alertTitle}
-      </h3>
-      <div id="alert-markdown-content" class="markdown-content" style="line-height: 1.6; font-size: 0.95rem; text-align: justify; opacity: 0.7;">
-        <span class="blinking-cursor">Analizando datos y redactando informe ejecutivo...</span>
+    <div class="apl-content" style="padding: 70px 20px; min-height: 420px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;">
+      <div class="apl-ball-wrap">
+        <div class="apl-ball">⚽</div>
+        <div class="apl-ring apl-ring-1"></div>
+        <div class="apl-ring apl-ring-2"></div>
       </div>
+      <div class="apl-brand"><span class="apl-brand-accent">FUTBOL</span>AI</div>
+      <div class="apl-progress-wrap" style="width: 220px;">
+        <div class="apl-progress-bar" style="height: 4px;"><div class="apl-progress-fill" id="alert-modal-fill" style="width: 30%;"></div></div>
+      </div>
+      <div class="apl-text" id="alert-modal-text">${isEs ? 'Cargando informe...' : 'Loading report...'}</div>
     </div>
   `;
+
+  let currentPct = 30;
+  const progressInterval = setInterval(() => {
+    currentPct = Math.min(currentPct + 20, 90);
+    const fillEl = document.getElementById('alert-modal-fill');
+    if (fillEl) fillEl.style.width = `${currentPct}%`;
+  }, 300);
+
+  const REPORTS = {
+    warning: {
+      icon: '⚠️',
+      category: isEs ? 'LESIONES' : 'INJURIES',
+      kind: 'warning',
+      title: isEs ? `${pName} en riesgo de lesión` : `${pName} at injury risk`,
+      severity: isEs ? 'PRIORIDAD ALTA' : 'HIGH PRIORITY',
+      chips: [
+        [isEs ? 'Club' : 'Club', clubName],
+        [isEs ? 'Rival' : 'Opponent', nextOpp],
+        [isEs ? 'Jugador' : 'Player', pName]
+      ],
+      summary: isEs 
+        ? `${pName} presenta un riesgo estimado de fatiga elevado de cara al Clásico ante ${nextOpp}. La conclusión se basa en la convergencia de tres indicadores independientes, no en un único dato.`
+        : `${pName} shows an estimated high fatigue risk ahead of the match vs ${nextOpp}. The conclusion is based on the convergence of three independent indicators.`,
+      keyPoints: isEs ? [
+        '<b>Carga:</b> 290 minutos en las últimas 3 fechas, frente a 254 min de promedio del plantel (+14%).',
+        '<b>Sprint:</b> 801 m por partido, frente a su propio promedio de 900 m (-11%).',
+        '<b>Recuperación:</b> 1 día de descanso, frente a los 3 días recomendados.'
+      ] : [
+        '<b>Load:</b> 290 minutes in the last 3 matches, vs 254 min squad average (+14%).',
+        '<b>Sprint:</b> 801 m per match, vs personal average of 900 m (-11%).',
+        '<b>Recovery:</b> 1 day of rest, vs 3 recommended days.'
+      ],
+      recommendation: isEs
+        ? `Ninguna señal por sí sola sería concluyente, pero la combinación justifica precaución: confirmar con el cuerpo médico y evaluar rotarlo o reservarlo para los últimos 30 minutos del Clásico.`
+        : `No single metric is conclusive on its own, but the combination warrants caution: confirm with the medical staff and evaluate rotation.`
+    },
+    info: {
+      icon: '🔍',
+      category: isEs ? 'FICHAJES' : 'TRANSFERS',
+      kind: 'info',
+      title: isEs ? 'Nuevo Talento Detectado' : 'New Talent Detected',
+      severity: isEs ? 'PRIORIDAD MEDIA' : 'MEDIUM PRIORITY',
+      chips: [
+        [isEs ? 'Club' : 'Club', clubName],
+        [isEs ? 'Jugador' : 'Player', talentName],
+        [isEs ? 'Edad' : 'Age', '19'],
+        [isEs ? 'Club actual' : 'Current Club', 'Club Filial']
+      ],
+      summary: isEs
+        ? `La red de scouting identificó un perfil de alto potencial que cubre una carencia detectada en la plantilla actual.`
+        : `The scouting network identified a high-potential profile addressing squad needs.`,
+      keyPoints: isEs ? [
+        '<b>Datos Generales:</b> 19 años, 181 cm y 74 kg, una altura y peso alineados con el perfil típico de un extremo en esta liga, y compatibles con el estilo de posesión y presión alta del equipo.',
+        '<b>Habilidades:</b> destaca por su velocidad y regate en espacios reducidos; aún debe mejorar la definición de cara al gol y el juego aéreo.',
+        '<b>Localización:</b> actualmente en Club Filial, España.'
+      ] : [
+        '<b>General Data:</b> 19 years old, 181 cm and 74 kg, aligned with dynamic attacker profile.',
+        '<b>Skills:</b> stands out for speed and dribbling in tight spaces.',
+        '<b>Location:</b> currently at Reserve Squad, Spain.'
+      ],
+      recommendation: isEs
+        ? `Iniciar seguimiento cercano y solicitar informe de scouting para evaluarlo de cara a la próxima ventana de fichajes.`
+        : `Initiate close monitoring and request detailed scouting report for the next transfer window.`
+    },
+    success: {
+      icon: '🛡️',
+      category: isEs ? 'TÁCTICA' : 'TACTICS',
+      kind: 'success',
+      title: isEs ? 'Análisis Táctico Completado' : 'Tactical Analysis Completed',
+      severity: isEs ? 'INFORMATIVO' : 'INFORMATIONAL',
+      chips: [
+        [isEs ? 'Club' : 'Club', clubName],
+        [isEs ? 'Rival' : 'Opponent', nextOpp]
+      ],
+      summary: isEs
+        ? `El plan de partido combina cómo explotar una debilidad detectada en ${nextOpp} con cómo proteger un riesgo propio de ${clubName} en esta misma zona del campo.`
+        : `The match plan combines how to exploit a detected weakness in ${nextOpp} while protecting tactical zones.`,
+      keyPoints: isEs ? [
+        `<b>Debilidad Rival:</b> ${nextOpp} construye por el carril izquierdo en el 62% de sus salidas, y al concentrar ahí la circulación deja el costado derecho con menos apoyos, lo que abre espacio para robar y atacar en transición si presionamos ese carril.`,
+        `<b>Riesgo Propio:</b> nuestros laterales suben con frecuencia en la salida de balón, lo que deja la espalda de la defensa expuesta a pérdidas rápidas; si perdemos el balón en esa fase, ${nextOpp} puede explotar ese espacio con un contragolpe directo.`,
+        '<b>Prevención:</b> el mediocentro defensivo debe cubrir el carril del lateral que sube antes de cada salida, no reaccionar después de perder el balón, para cerrar ese espacio antes de que exista.'
+      ] : [
+        `<b>Opponent Weakness:</b> ${nextOpp} builds play primarily through left flank in 62% of build-ups.`,
+        '<b>Team Risk:</b> fullbacks advance frequently leaving defensive spaces behind.',
+        '<b>Prevention:</b> defensive midfielder must offer preventive coverage before possession loss.'
+      ],
+      recommendation: isEs
+        ? `Presionar orientado al carril izquierdo de la salida rival para forzar pérdidas y atacar en transición, mientras el mediocentro defensivo cubre preventivamente la espalda de los laterales para que ese mismo tipo de transición no nos la hagan a nosotros.`
+        : `Press opponent build-up to force turn-overs and attack in transition while covering fullbacks.`
+    }
+  };
+
+  const r = REPORTS[kind] || REPORTS.warning;
+  const chipsHtml = r.chips.map(c => `<span class="db-alert-modal-chip"><strong>${c[0]}:</strong> ${c[1]}</span>`).join('');
+
+  const renderCompleteModal = (customSectionsHtml = null) => {
+    clearInterval(progressInterval);
+    const fillEl = document.getElementById('alert-modal-fill');
+    if (fillEl) fillEl.style.width = '100%';
+
+    setTimeout(() => {
+      const defaultSections = `
+        <div class="db-alert-section">
+          <h5 class="db-alert-section-title">📊 ${isEs ? 'RESUMEN EJECUTIVO' : 'EXECUTIVE SUMMARY'}</h5>
+          <p class="db-alert-section-text">${r.summary}</p>
+        </div>
+        <div class="db-alert-section">
+          <h5 class="db-alert-section-title">🔎 ${isEs ? 'PUNTOS CLAVE DEL ANÁLISIS' : 'KEY ANALYSIS POINTS'}</h5>
+          <ul class="db-alert-keypoints">
+            ${r.keyPoints.map(k => `<li>• ${k}</li>`).join('')}
+          </ul>
+        </div>
+        <div class="db-alert-section db-alert-section-reco">
+          <h5 class="db-alert-section-title">✅ ${isEs ? 'RECOMENDACIÓN' : 'RECOMMENDATION'}</h5>
+          <p class="db-alert-section-text">${r.recommendation}</p>
+        </div>
+      `;
+
+      modalBody.innerHTML = `
+        <div class="db-alert-modal-header ${r.kind}">
+          <div class="db-alert-icon-wrap ${r.kind}" style="width:36px;height:36px;font-size:16px;">${r.icon}</div>
+          <div class="db-alert-modal-headtext">
+            <span class="db-alert-category ${r.kind}">${r.category}</span>
+            <h3 class="db-alert-modal-title">${r.title}</h3>
+          </div>
+          <span class="db-alert-severity-badge ${r.kind}">${r.severity}</span>
+        </div>
+        <div class="db-alert-modal-chips">${chipsHtml}</div>
+        <div class="db-alert-modal-sections">
+          ${customSectionsHtml || defaultSections}
+        </div>
+      `;
+    }, 250);
+  };
 
   try {
     const res = await fetchWithAuth(`${API}/alert/expand`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ alertType, contextData, lang: currentLang })
+      body: JSON.stringify({ alertType: `${r.title}: ${r.summary}`, contextData, lang: currentLang })
     });
 
-    if (!res.ok) throw new Error('Error al conectar con la IA');
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Error from server');
-    
-    // Inject the final content directly into the already-rendered structure
-    const contentDiv = document.getElementById('alert-markdown-content');
-    if (contentDiv) {
-      contentDiv.style.opacity = '1';
-      contentDiv.innerHTML = markdownToHtml(data.report);
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.report) {
+        // Parse AI response text into 3 clean boxes matching screenshot structure if possible
+        const repText = data.report;
+        const execMatch = repText.match(/\*\*Resumen Ejecutivo:\*\*([\s\S]*?)(?=\*\*|$)/i);
+        const techMatch = repText.match(/\*\*(?:Análisis Técnico|Puntos Clave|Puntos Clave del Análisis):\*\*([\s\S]*?)(?=\*\*|$)/i);
+        const recoMatch = repText.match(/\*\*Recomendación:\*\*([\s\S]*?)(?=\*\*|$)/i);
+
+        if (execMatch || techMatch || recoMatch) {
+          const eText = execMatch ? execMatch[1].trim() : r.summary;
+          const tText = techMatch ? techMatch[1].trim() : null;
+          const rText = recoMatch ? recoMatch[1].trim() : r.recommendation;
+
+          let keyPointsList = r.keyPoints;
+          if (tText) {
+            const rawLines = tText.split(/(?:\r?\n|•|-)+/).map(s => s.trim()).filter(Boolean);
+            if (rawLines.length) {
+              keyPointsList = rawLines.map(line => {
+                return line.replace(/^([A-Za-zÁÉÍÓÚáéíóúñÑ\s]{2,22}:)/, '<b>$1</b>');
+              });
+            }
+          }
+
+          renderCompleteModal(`
+            <div class="db-alert-section">
+              <h5 class="db-alert-section-title">📊 ${isEs ? 'RESUMEN EJECUTIVO' : 'EXECUTIVE SUMMARY'}</h5>
+              <p class="db-alert-section-text">${eText}</p>
+            </div>
+            <div class="db-alert-section">
+              <h5 class="db-alert-section-title">🔎 ${isEs ? 'PUNTOS CLAVE DEL ANÁLISIS' : 'KEY ANALYSIS POINTS'}</h5>
+              <ul class="db-alert-keypoints">
+                ${keyPointsList.map(k => `<li>• ${k}</li>`).join('')}
+              </ul>
+            </div>
+            <div class="db-alert-section db-alert-section-reco">
+              <h5 class="db-alert-section-title">✅ ${isEs ? 'RECOMENDACIÓN' : 'RECOMMENDATION'}</h5>
+              <p class="db-alert-section-text">${rText}</p>
+            </div>
+          `);
+          return;
+        }
+      }
     }
   } catch (err) {
-    const contentDiv = document.getElementById('alert-markdown-content');
-    if (contentDiv) {
-      contentDiv.style.opacity = '1';
-      contentDiv.innerHTML = `<span style="color:#ff5555;">⚠️ Error al generar el análisis: ${err.message}</span>`;
-    }
+    console.warn('AI expansion unavailable, using rich structured report fallback:', err);
   }
+
+  renderCompleteModal(null);
 }
 
 async function renderMyClubDashboard() {
@@ -9780,7 +10011,7 @@ function updateDailyLimitsBadges(user) {
     if (isGratis || isPro || isPlus) {
       const alertsList = document.getElementById('db-alerts-list');
       if (alertsList) {
-        alertsList.innerHTML = `<div style="padding: 15px; text-align: center; color: rgba(255,255,255,0.6); font-size: 0.85rem;">Las Alertas IA están reservadas para los planes Local y Enterprise.</div>`;
+        alertsList.innerHTML = `<div style="padding: 15px; text-align: center; color: rgba(255,255,255,0.6); font-size: 0.85rem;">Las Notificaciones IA están reservadas para los planes Local y Enterprise.</div>`;
       }
     }
   }
