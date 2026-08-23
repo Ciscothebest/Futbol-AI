@@ -1,458 +1,690 @@
-const { Player, Prospect, sequelize } = require('./database');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { Player } = require('./database');
 const { Op } = require('sequelize');
-const https = require('https');
 
-const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY || 'sk-2f1665d0795a4b9eb124def134ddac83';
+// Compact system prompt — no player data injected here (keeps token count low)
+const SYSTEM_PROMPT = `You are FutbolAI ⚽ — a world-class football intelligence assistant with deep expertise in global football. You are bilingual: always detect the language the user writes in (Spanish or English) and respond in that same language. If the message is ambiguous, respond in Spanish.
 
-// ─────────────────────────────────────────────────────────────
-// SYSTEM PROMPT — Prioridad: datos de la app → conocimiento propio → búsqueda web
-// ─────────────────────────────────────────────────────────────
-const SYSTEM_PROMPT = `Eres FutbolAI ⚽ — un asistente de inteligencia de fútbol de clase mundial con expertise profundo en fútbol global. Eres bilingüe: siempre detecta el idioma en que escribe el usuario (español o inglés) y responde en ese mismo idioma. Si el mensaje es ambiguo, responde en español.
+You can:
+- Answer detailed questions about any player's stats, career, playing style, strengths and weaknesses
+- Compare players side by side with nuanced analysis beyond just statistics
+- Provide informed predictions about player performance, transfers, and league outcomes
+- Discuss tactics, formations, and how specific players fit into systems
+- Talk about historical achievements, transfer history, and trophies
 
-REGLAS CRÍTICAS DE COMPORTAMIENTO:
-1. PRIORIDAD DE FUENTES: Cuando se te proporciona información de la base de datos de la aplicación en el contexto, esa información ES LA VERDAD. Úsala como fuente principal y cita los datos concretos de la app (ratings, equipos, posiciones, estadísticas).
-2. CONOCIMIENTO PROPIO: Para información que NO está en la base de datos (jugadores históricos, eventos recientes, ligas no cubiertas), usa tu conocimiento entrenado sobre fútbol mundial.
-3. COBERTURA GLOBAL: Tienes conocimiento de TODAS las ligas y competiciones del mundo: La Liga, Serie A, Bundesliga, Ligue 1, MLS, Liga MX, Eredivisie, Primeira Liga, Champions League, Europa League, Copa Libertadores, Copa del Mundo, Eurocopa, y muchas más. NO te limites solo a la Premier League.
-4. NUNCA menciones limitaciones de información al usuario. Si no tienes datos exactos, responde con tu mejor análisis basado en tu conocimiento general.
-5. Responde de forma apasionada, experta y con terminología futbolística natural.
-6. Usa formato Markdown cuando sea apropiado para estructurar respuestas largas.
+PREMIER LEAGUE CONTEXT (2024-25 Season):
+The Premier League has 20 clubs. Current teams:
+Arsenal, Aston Villa, Bournemouth, Brentford, Brighton & Hove Albion, Burnley, Chelsea, Crystal Palace, Everton, Fulham, Leeds United, Liverpool, Manchester City, Manchester United, Newcastle United, Nottingham Forest, Sunderland, Tottenham Hotspur, West Ham United, Wolverhampton Wanderers.
 
-CAPACIDADES:
-- Análisis detallado de jugadores: estadísticas, carrera, estilo de juego, fortalezas y debilidades
-- Comparaciones entre jugadores con análisis matizado más allá de las estadísticas
-- Predicciones sobre rendimiento, fichajes y resultados de ligas
-- Tácticas, formaciones y cómo los jugadores encajan en sistemas
-- Historia del fútbol, palmarés, rachas y records
-- Mercado de fichajes, valoraciones y rumores
-- Análisis de partidos y tendencias tácticas actuales`;
+Key facts: 38-game season, top 4 qualify for Champions League, 5th/6th for Europa League, 7th for Conference League, bottom 3 relegated. Current champions: Manchester City (multiple consecutive titles). Premier League is widely considered the most competitive and watched league in the world.
+
+Be passionate, engaging, and expert. Use football terminology naturally.
+If player data is provided in the user message, use it. If not, use your broad football knowledge.`;
+
+async function findRelevantPlayers(message, limit = 5) {
+  if (!message || message.length < 3) return [];
+  const msg = message.toLowerCase();
+  
+  // Extract potential names/terms (words > 3 chars)
+  const terms = msg.split(/\s+/).filter(w => w.length > 3);
+  if (terms.length === 0) return [];
+
+  // Build OR conditions for ALL valid terms, not just the first two
+  const orConditions = [];
+  for (const term of terms) {
+    orConditions.push({ name: { [Op.like]: `%${term}%` } });
+    orConditions.push({ nickname: { [Op.like]: `%${term}%` } });
+    orConditions.push({ id: { [Op.like]: `%${term.replace(/\s/g, '-').substring(0, 20)}%` } });
+  }
+
+  // Use DB to find matches directly with indexed queries
+  const matches = await Player.findAll({
+    where: { [Op.or]: orConditions },
+    limit: limit,
+    attributes: ['id', 'name', 'flag', 'currentTeam', 'league', 'position', 'overallRating', 'stats', 'bio', 'trophies', 'strengths', 'age', 'nationality']
+  });
+
+  if (matches.length === 0) {
+    // Return empty context if no players found, better than forcing unrelated top players
+    return [];
+  }
+
+  return matches.map(p => ({
+    name: p.name, flag: p.flag, team: p.currentTeam, league: p.league,
+    position: p.position, age: p.age, rating: p.overallRating,
+    goals: p.stats?.goals, assists: p.stats?.assists, matches: p.stats?.matches,
+    marketValue: p.marketValue, strengths: p.strengths?.slice(0, 4),
+    nationality: p.nationality, bio: p.bio, trophies: p.trophies?.slice(0, 5),
+  }));
+}
 
 class FootballAgent {
   constructor() {
-    this.apiKey = DEEPSEEK_API_KEY;
-    this.model = process.env.DEEPSEEK_MODEL || 'deepseek-chat';
-    this.demoMode = !this.apiKey;
-    this.sessions = new Map();
-  }
-
-  // ─── Busca jugadores en la BD por nombre, equipo, liga o posición ───
-  async findRelevantPlayers(message, limit = 8) {
-    if (!message || message.length < 3) return [];
-    const msg = message.toLowerCase();
-
-    // Extraer términos significativos (más de 2 caracteres)
-    const terms = msg.split(/\s+/).filter(w => w.length > 2);
-    if (terms.length === 0) return [];
-
-    const orConditions = [];
-    for (const term of terms) {
-      orConditions.push({ name: { [Op.like]: `%${term}%` } });
-      orConditions.push({ nickname: { [Op.like]: `%${term}%` } });
-      orConditions.push({ currentTeam: { [Op.like]: `%${term}%` } });
-      orConditions.push({ league: { [Op.like]: `%${term}%` } });
-      orConditions.push({ nationality: { [Op.like]: `%${term}%` } });
-      orConditions.push({ position: { [Op.like]: `%${term.toUpperCase()}%` } });
-    }
-
-    try {
-      const players = await Player.findAll({
-        where: { [Op.or]: orConditions, userId: null },
-        limit,
-        order: [['marketValue', 'DESC']],
-        attributes: [
-          'id', 'name', 'nickname', 'flag', 'currentTeam', 'league',
-          'position', 'stats', 'bio', 'bioEs',
-          'trophies', 'strengths', 'age', 'nationality', 'marketValue',
-          'history', 'weaknesses'
-        ]
-      });
-      return players;
-    } catch (e) {
-      console.error('findRelevantPlayers error:', e.message);
-      return [];
-    }
-  }
-
-  // ─── Busca prospectos locales relevantes ───
-  async findRelevantProspects(message, limit = 5) {
-    if (!message || message.length < 3) return [];
-    const msg = message.toLowerCase();
-    const terms = msg.split(/\s+/).filter(w => w.length > 2);
-    if (terms.length === 0) return [];
-
-    const orConditions = [];
-    for (const term of terms) {
-      orConditions.push({ name: { [Op.like]: `%${term}%` } });
-      orConditions.push({ club: { [Op.like]: `%${term}%` } });
-      orConditions.push({ position: { [Op.like]: `%${term.toUpperCase()}%` } });
-    }
-
-    try {
-      return await Prospect.findAll({
-        where: { [Op.or]: orConditions },
-        limit,
-        order: [['createdAt', 'DESC']]
-      });
-    } catch (e) {
-      return [];
-    }
-  }
-
-  // ─── Obtiene estadísticas globales de la app para dar contexto al modelo ───
-  async getAppStats() {
-    try {
-      const totalPlayers = await Player.count({ where: { userId: null } });
-      const leagues = await Player.findAll({
-        attributes: [[sequelize.fn('DISTINCT', sequelize.col('league')), 'league']],
-        where: { league: { [Op.ne]: null }, userId: null }
-      });
-      const topPlayers = await Player.findAll({
-        where: { userId: null },
-        order: [['marketValue', 'DESC']],
-        limit: 5,
-        attributes: ['name', 'currentTeam', 'marketValue', 'position', 'league']
-      });
-      return {
-        totalPlayers,
-        leagues: leagues.map(l => l.league).filter(Boolean),
-        topPlayers: topPlayers.map(p => `${p.name} (${p.currentTeam}, ${p.league}, ${p.position}, Valor: €${((p.marketValue||0)/1000000).toFixed(0)}M)`)
-      };
-    } catch (e) {
-      return null;
-    }
-  }
-
-  // ─── Construye el contexto enriquecido de la app para incluir en el prompt ───
-  buildAppContext(players, prospects, appStats, userContext = null) {
-    let ctx = '';
-
-    if (userContext) {
-      ctx += `\n\n=== INFORMACIÓN Y ROL DEL USUARIO EN FUTBOLAI ===`;
-      ctx += `\nNombre del usuario: ${userContext.name || 'Usuario'}`;
-      ctx += `\nROL PRINCIPAL EN LA PLATAFORMA: ${userContext.role}`;
-      if (userContext.hasBothOnboardings) {
-        ctx += `\nNOTA DE ROL PRIMARIO: Este usuario ha completado AMBOS procesos de onboarding (Entrenador Local y Club Profesional). Sin importar cuál plan tenga activo actualmente (${userContext.activeTier}), SU ROL PRINCIPAL Y PRIMARIO ES ENTRENADOR. Dirígete a él primordialmente como Entrenador / Coach.`;
-      } else if (userContext.role === 'Entrenador') {
-        ctx += `\nEste usuario es Entrenador. Dirígete a él primordialmente como Entrenador / Coach.`;
-      }
-      if (userContext.localClub) {
-        ctx += `\nClub Local que entrena: ${userContext.localClub}`;
-      }
-      if (userContext.selectedClub) {
-        ctx += `\nClub Profesional / Organización: ${userContext.selectedClub}`;
-      }
-    }
-
-    if (appStats) {
-      ctx += `\n\n=== DATOS DE LA APLICACIÓN FUTBOLAI ===`;
-      ctx += `\nBase de datos: ${appStats.totalPlayers} jugadores profesionales registrados.`;
-      ctx += `\nLigas cubiertas: ${appStats.leagues.join(', ') || 'Múltiples ligas globales'}.`;
-      if (appStats.topPlayers.length > 0) {
-        ctx += `\nTop jugadores por valor de mercado en la app: ${appStats.topPlayers.join(' | ')}.`;
-      }
-    }
-
-    if (players.length > 0) {
-      ctx += `\n\n=== JUGADORES ENCONTRADOS EN LA BASE DE DATOS DE LA APP ===\n`;
-      players.forEach(p => {
-        const stats = typeof p.stats === 'string' ? JSON.parse(p.stats || '{}') : (p.stats || {});
-        const statsStr = Object.entries(stats).slice(0, 8).map(([k, v]) => `${k}:${v}`).join(', ');
-        const bio = p.bioEs || p.bio || '';
-        ctx += `\n• ${p.name}`;
-        if (p.nickname) ctx += ` (alias: ${p.nickname})`;
-        ctx += `\n  Equipo: ${p.currentTeam} | Liga: ${p.league || 'N/A'} | Posición: ${p.position}`;
-        ctx += `\n  Edad: ${p.age || 'N/A'} | Nacionalidad: ${p.nationality || 'N/A'}`;
-        if (p.marketValue) ctx += ` | Valor de Contrato: €${(p.marketValue/1000000).toFixed(1)}M`;
-        if (statsStr) ctx += `\n  Estadísticas: ${statsStr}`;
-        if (p.strengths) ctx += `\n  Fortalezas: ${p.strengths}`;
-        if (p.weaknesses) ctx += `\n  Debilidades: ${p.weaknesses}`;
-        if (p.trophies) ctx += `\n  Palmarés: ${p.trophies}`;
-        if (bio) ctx += `\n  Bio: ${bio.substring(0, 200)}`;
-        ctx += '\n';
-      });
-    }
-
-    if (prospects.length > 0) {
-      ctx += `\n=== PROSPECTOS LOCALES REGISTRADOS EN LA APP ===\n`;
-      prospects.forEach(p => {
-        ctx += `• ${p.name} | Posición: ${p.position || 'N/A'} | Club: ${p.club || 'N/A'} | Rating: ${p.rating || 'N/A'} | Categoría: ${p.category || 'N/A'}\n`;
-      });
-    }
-
-    return ctx;
-  }
-
-  callDeepSeekAPI(messages) {
-    return new Promise((resolve, reject) => {
-      const postData = JSON.stringify({
-        model: this.model,
-        messages,
-        temperature: 0.7,
-        max_tokens: 2000
-      });
-
-      const req = https.request({
-        hostname: 'api.deepseek.com',
-        port: 443,
-        path: '/chat/completions',
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.apiKey}`,
-          'Content-Length': Buffer.byteLength(postData)
-        }
-      }, (res) => {
-        let body = '';
-        res.on('data', chunk => body += chunk);
-        res.on('end', () => {
-          if (res.statusCode >= 200 && res.statusCode < 300) {
-            try {
-              const parsed = JSON.parse(body);
-              const content = parsed.choices?.[0]?.message?.content;
-              if (content) resolve(content);
-              else reject(new Error('Respuesta vacía de DeepSeek'));
-            } catch(e) {
-              reject(e);
-            }
-          } else {
-            reject(new Error(`DeepSeek API Error: ${res.statusCode} ${body}`));
-          }
+    this.deepseekApiKey = process.env.DEEPSEEK_API_KEY;
+    this.deepseekModel = process.env.DEEPSEEK_MODEL || 'deepseek-chat';
+    this.geminiApiKey = process.env.GEMINI_API_KEY;
+    this.model = process.env.GEMINI_MODEL || 'gemini-2.5-flash-lite';
+    this.sessions = new Map(); // sessionId -> history[]
+    
+    this.isProduction = process.env.NODE_ENV === 'production';
+    
+    if (this.geminiApiKey && this.geminiApiKey !== 'your_gemini_api_key_here') {
+      try {
+        this.genAI = new GoogleGenerativeAI(this.geminiApiKey);
+        this.geminiModel = this.genAI.getGenerativeModel({
+          model: this.model,
+          systemInstruction: SYSTEM_PROMPT,
         });
-      });
+      } catch (err) {
+        console.warn('⚠️ Gemini initialization error:', err.message);
+      }
+    }
 
-      req.on('error', (e) => reject(e));
-      req.write(postData);
-      req.end();
-    });
+    const hasKeys = !!(this.geminiApiKey || this.deepseekApiKey);
+    this.demoMode = !hasKeys || (this.geminiApiKey === 'your_gemini_api_key_here' && this.deepseekApiKey === 'your_deepseek_api_key_here');
+
+    console.log(this.demoMode
+      ? '⚠️  Demo mode active (no valid API key). Using SQLite database.'
+      : (this.isProduction
+        ? `🚀 [PRODUCCIÓN] DeepSeek API primario (${this.deepseekModel})`
+        : `💻 [LOCAL] Gemini AI primario (${this.model})`)
+    );
   }
 
-  callDeepSeekAPIStream(messages, onChunk, onDone, onError) {
-    const postData = JSON.stringify({
-      model: this.model,
-      messages,
-      temperature: 0.7,
-      max_tokens: 2000,
-      stream: true
-    });
+  async callDeepSeek(prompt, systemInstruction = SYSTEM_PROMPT) {
+    const apiKey = this.deepseekApiKey || process.env.GEMINI_API_KEY;
+    const model = this.deepseekModel;
 
-    const req = https.request({
-      hostname: 'api.deepseek.com',
-      port: 443,
-      path: '/chat/completions',
+    const response = await fetch('https://api.deepseek.com/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.apiKey}`,
-        'Content-Length': Buffer.byteLength(postData)
-      }
-    }, (res) => {
-      let fullText = '';
-      let buffer = '';
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        model: model,
+        messages: [
+          { role: 'system', content: systemInstruction },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.6
+      })
+    });
 
-      res.on('data', chunk => {
-        buffer += chunk.toString();
-        const lines = buffer.split('\n');
-        buffer = lines.pop();
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error(`DeepSeek API error ${response.status}: ${errText}`);
+    }
 
-        for (const line of lines) {
-          const trimmed = line.trim();
-          if (trimmed.startsWith('data: ')) {
-            const dataStr = trimmed.substring(6).trim();
-            if (dataStr === '[DONE]') continue;
-            try {
-              const parsed = JSON.parse(dataStr);
-              const content = parsed.choices?.[0]?.delta?.content;
-              if (content) {
-                fullText += content;
-                if (typeof onChunk === 'function') onChunk(content);
-              }
-            } catch (e) {
-              // Ignore parse errors on partial chunks
-            }
-          }
+    const data = await response.json();
+    return data.choices?.[0]?.message?.content || '';
+  }
+
+  async generateText(prompt, systemInstruction = SYSTEM_PROMPT) {
+    if (this.demoMode) return null;
+
+    if (this.isProduction) {
+      // In Production: DeepSeek primary -> Gemini fallback
+      if (this.deepseekApiKey) {
+        try {
+          console.log(`🤖 [PROD] Generando con DeepSeek API (${this.deepseekModel})...`);
+          return await this.callDeepSeek(prompt, systemInstruction);
+        } catch (err) {
+          console.warn('⚠️ [PROD] Error en DeepSeek API, intentando Gemini fallback:', err.message);
         }
-      });
+      }
+      if (this.geminiModel) {
+        try {
+          console.log(`🤖 [PROD Fallback] Generando con Gemini API (${this.model})...`);
+          const result = await this.geminiModel.generateContent(prompt);
+          return result.response.text();
+        } catch (err) {
+          console.warn('⚠️ [PROD] Error en Gemini API fallback:', err.message);
+        }
+      }
+    } else {
+      // In Local: Gemini primary -> DeepSeek fallback
+      if (this.geminiModel) {
+        try {
+          console.log(`🤖 [LOCAL] Generando con Gemini API (${this.model})...`);
+          const result = await this.geminiModel.generateContent(prompt);
+          return result.response.text();
+        } catch (err) {
+          console.warn('⚠️ [LOCAL] Error en Gemini API, intentando DeepSeek fallback:', err.message);
+        }
+      }
+      if (this.deepseekApiKey) {
+        try {
+          console.log(`🤖 [LOCAL Fallback] Generando con DeepSeek API (${this.deepseekModel})...`);
+          return await this.callDeepSeek(prompt, systemInstruction);
+        } catch (err) {
+          console.warn('⚠️ [LOCAL] Error en DeepSeek API fallback:', err.message);
+        }
+      }
+    }
 
-      res.on('end', () => {
-        if (typeof onDone === 'function') onDone(fullText);
-      });
-    });
+    return null;
+  }
 
-    req.on('error', (err) => {
-      if (typeof onError === 'function') onError(err);
-    });
+  async chat(sessionId, userMessage, language = 'es', audioBase64 = null, mimeType = null) {
+    if (this.demoMode) {
+      return this._demoResponse(userMessage || "audio_message");
+    }
 
-    req.write(postData);
-    req.end();
+    if (!this.sessions.has(sessionId)) {
+      this.sessions.set(sessionId, []);
+    }
+
+    const history = this.sessions.get(sessionId);
+    const langPrefix = language === 'en'
+      ? '[RESPOND IN ENGLISH ONLY] '
+      : '[RESPONDE SIEMPRE EN ESPAÑOL] ';
+
+    const relevantPlayers = await findRelevantPlayers(userMessage || '');
+    const playerContext = relevantPlayers.length
+      ? `\n\n[Player DB context]: ${JSON.stringify(relevantPlayers)}`
+      : '';
+
+    const userPromptText = langPrefix + (userMessage || 'El usuario ha enviado un mensaje de voz.') + playerContext;
+
+    // Use DeepSeek in Production if no audio is provided
+    if (this.isProduction && this.deepseekApiKey && !audioBase64) {
+      try {
+        console.log(`🤖 [PROD Chat] Enviando consulta a DeepSeek API...`);
+        const respText = await this.callDeepSeek(userPromptText, SYSTEM_PROMPT);
+        
+        history.push({ role: 'user', parts: [{ text: userMessage || '[Audio]' }] });
+        history.push({ role: 'model', parts: [{ text: respText }] });
+        if (history.length > 40) this.sessions.set(sessionId, history.slice(-40));
+
+        return respText;
+      } catch (err) {
+        console.warn('⚠️ DeepSeek chat error in PROD, falling back to Gemini:', err.message);
+      }
+    }
+
+    if (!this.geminiModel) {
+      return this._demoResponse(userMessage || "audio_message");
+    }
+
+    const messageParts = [];
+    messageParts.push({ text: userPromptText });
+
+    if (audioBase64 && mimeType) {
+      messageParts.push({ inlineData: { data: audioBase64, mimeType } });
+    }
+
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const chat = this.geminiModel.startChat({ history });
+        const result = await chat.sendMessage(messageParts);
+        const responseText = result.response.text();
+
+        // Store original message in history (not the augmented one)
+        const userHistoryPart = { role: 'user', parts: [] };
+        if (userMessage) userHistoryPart.parts.push({ text: userMessage });
+        if (audioBase64) userHistoryPart.parts.push({ text: '[Mensaje de Audio]' });
+
+        history.push(userHistoryPart);
+        history.push({ role: 'model', parts: [{ text: responseText }] });
+
+        if (history.length > 40) {
+          this.sessions.set(sessionId, history.slice(-40));
+        }
+
+        return responseText;
+      } catch (err) {
+        const errMsg = err.message || '';
+        const isModelError = errMsg.includes('not found') || errMsg.includes('404') || errMsg.includes('supported') || errMsg.includes('model');
+        const isKeyError = errMsg.includes('key') || errMsg.includes('API_KEY') || errMsg.includes('400') || errMsg.includes('403') || errMsg.includes('unauthorized');
+        
+        if (isModelError && this.model !== 'gemini-2.5-flash') {
+          console.warn(`⚠️ Model '${this.model}' failed. Falling back to stable 'gemini-2.5-flash'...`);
+          this.model = 'gemini-2.5-flash';
+          this.geminiModel = this.genAI.getGenerativeModel({
+            model: this.model,
+            systemInstruction: SYSTEM_PROMPT,
+          });
+          attempt--;
+          continue;
+        }
+
+        if (isKeyError) {
+          console.warn('⚠️ Gemini API Key invalid or disabled. Falling back to Demo Mode.');
+          this.demoMode = true;
+          return this._demoResponse(userMessage || "audio_message");
+        }
+
+        const isRateLimit = errMsg.includes('429') || errMsg.includes('quota') || errMsg.includes('RESOURCE_EXHAUSTED');
+        if (isRateLimit && attempt < 2) { // Reduced attempts
+          const retryMatch = errMsg.match(/"retryDelay":"(\d+)s"/);
+          const delaySec = retryMatch ? Math.min(parseInt(retryMatch[1]), 5) + 1 : 3;
+          const delayMs = delaySec * 1000;
+          console.log(`⏳ Rate limit hit (attempt ${attempt + 1}/2), retrying in ${delaySec}s...`);
+          await new Promise(r => setTimeout(r, delayMs));
+          continue;
+        }
+        if (isRateLimit) {
+           console.warn('⚠️ API Limit reached in standard chat. Falling back to Demo Mode.');
+           return (await this._demoResponse(userMessage)) + (language === 'en' ? "\n\n*(Offline mode)*" : "\n\n*(Modo offline)*");
+        }
+        console.error('Gemini API error:', errMsg);
+        throw err;
+      }
+    }
+  }
+
+  async chatStream(sessionId, userMessage, language = 'es', clubContext = null, clubRoster = null, onChunk, onDone, onError) {
+    if (this.demoMode) {
+      const resp = await this._demoResponse(userMessage || "audio_message");
+      onChunk(resp);
+      onDone(resp);
+      return;
+    }
+
+    if (!this.sessions.has(sessionId)) this.sessions.set(sessionId, []);
+    const history = this.sessions.get(sessionId);
+    const langPrefix = language === 'en' ? '[RESPOND IN ENGLISH] ' : '[RESPONDE EN ESPAÑOL] ';
+
+    const relevantPlayers = await findRelevantPlayers(userMessage || '');
+    const playerContext = relevantPlayers.length ? `\n\n[Contexto Jugadores]: ${JSON.stringify(relevantPlayers)}` : '';
+    
+    const rosterRestriction = clubRoster ? `\n\n[ROSTER ACTUAL DEL EQUIPO]: ${clubRoster}\nUtiliza obligatoriamente esta lista de jugadores para cualquier consulta sobre la alineación, plantilla, fortalezas o debilidades actuales de ${clubContext}.` : '';
+    const clubRestriction = clubContext ? `\n\n[INSTRUCCIÓN DE CONTEXTO]: Estás operando en el panel del club ${clubContext}. Asume por defecto que todas las preguntas, análisis o peticiones del usuario se referirán al equipo ${clubContext}. Si el usuario hace una pregunta general (ej: '¿quién es mi mejor jugador?' o '¿cómo formamos?'), responde basándote en la plantilla de ${clubContext}.${rosterRestriction}\n\nNota: Si el usuario menciona explícitamente a otro equipo, liga o jugador externo, ESTÁS AUTORIZADO a responder sobre ese otro tema sin restricciones.` : '';
+    
+    const fullPromptText = langPrefix + clubRestriction + '\n' + (userMessage || 'Mensaje de voz.') + playerContext;
+
+    if (this.isProduction && this.deepseekApiKey) {
+      try {
+        console.log(`🤖 [PROD ChatStream] Transmitiendo desde DeepSeek API...`);
+        const fullResponse = await this.callDeepSeek(fullPromptText, SYSTEM_PROMPT);
+        onChunk(fullResponse);
+
+        const userHistoryPart = { role: 'user', parts: [{ text: userMessage || '[Audio]' }] };
+        history.push(userHistoryPart);
+        history.push({ role: 'model', parts: [{ text: fullResponse }] });
+        if (history.length > 40) this.sessions.set(sessionId, history.slice(-40));
+
+        onDone(fullResponse);
+        return;
+      } catch (err) {
+        console.warn('⚠️ DeepSeek chatStream error in PROD, falling back to Gemini:', err.message);
+      }
+    }
+
+    if (!this.geminiModel) {
+      const resp = await this._demoResponse(userMessage || "audio_message");
+      onChunk(resp);
+      onDone(resp);
+      return;
+    }
+
+    const messageParts = [{ text: fullPromptText }];
+    
+    try {
+      for (let attempt = 0; attempt < 2; attempt++) {
+        try {
+          const chat = this.geminiModel.startChat({ history });
+          const result = await chat.sendMessageStream(messageParts);
+          
+          let fullResponse = '';
+          for await (const chunk of result.stream) {
+            const chunkText = chunk.text();
+            fullResponse += chunkText;
+            onChunk(chunkText);
+          }
+
+          // Store in history
+          const userHistoryPart = { role: 'user', parts: [{ text: userMessage || '[Audio]' }] };
+          history.push(userHistoryPart);
+          history.push({ role: 'model', parts: [{ text: fullResponse }] });
+          if (history.length > 40) this.sessions.set(sessionId, history.slice(-40));
+
+          onDone(fullResponse);
+          return;
+        } catch (err) {
+          const errMsg = err.message || '';
+          const isModelError = errMsg.includes('not found') || errMsg.includes('404') || errMsg.includes('supported') || errMsg.includes('model');
+          const isKeyError = errMsg.includes('key') || errMsg.includes('API_KEY') || errMsg.includes('400') || errMsg.includes('403') || errMsg.includes('unauthorized');
+          
+          if (isModelError && this.model !== 'gemini-2.5-flash') {
+            console.warn(`⚠️ Model '${this.model}' failed in stream. Falling back to stable 'gemini-2.5-flash'...`);
+            this.model = 'gemini-2.5-flash';
+            this.geminiModel = this.genAI.getGenerativeModel({
+              model: this.model,
+              systemInstruction: SYSTEM_PROMPT,
+            });
+            attempt--;
+            continue;
+          }
+
+          if (isKeyError) {
+            console.warn('⚠️ Gemini API Key invalid. Falling back to Demo Mode.');
+            const resp = await this._demoResponse(userMessage);
+            onChunk(resp);
+            onDone(resp);
+            return;
+          }
+
+          const isRateLimit = errMsg.includes('429') || errMsg.includes('quota');
+          if (isRateLimit && attempt === 0) {
+            console.log('⏳ Stream rate limit hit, retrying once in 3s...');
+            await new Promise(r => setTimeout(r, 3000));
+            continue;
+          }
+          throw err;
+        }
+      }
+    } catch (err) {
+      const errMsg = err.message || '';
+      const isRateLimit = errMsg.includes('429') || errMsg.includes('quota');
+      const isKeyError = errMsg === 'key_error' || errMsg.includes('key') || errMsg.includes('API_KEY') || errMsg.includes('400') || errMsg.includes('403') || errMsg.includes('unauthorized');
+      
+      if (isRateLimit || isKeyError) {
+        console.warn('⚠️ Falling back to Demo Mode for this request.');
+        this.demoMode = true;
+        const fallback = await this._demoResponse(userMessage || "audio_message");
+        const notice = language === 'en' 
+          ? "\n\n*(Note: Running in offline mode due to high traffic)*" 
+          : "\n\n*(Nota: Operando en modo offline por alta demanda)*";
+        onChunk(fallback + notice);
+        onDone(fallback + notice);
+      } else {
+        console.error('Stream error:', errMsg);
+        onError(err);
+      }
+    }
+  }
+
+  // ─── Shared ground-truth calculator, used by BOTH the AI prompt and the
+  // offline/demo report — so the two paths can never disagree on the numbers,
+  // the per-row winner, or the overall verdict. Only the surrounding prose
+  // (summary, fit, ceiling paragraphs) is generated separately per path.
+  _buildComparisonCriteria(p1, p2) {
+    const higherWins = (a, b) => {
+      const numA = Number(a) || 0;
+      const numB = Number(b) || 0;
+      if (numA > numB) return 1;
+      if (numB > numA) return 2;
+      return 0;
+    };
+    const lowerWins = (a, b) => {
+      const numA = Number(a) || 0;
+      const numB = Number(b) || 0;
+      if (numA < numB) return 1;
+      if (numB < numA) return 2;
+      return 0;
+    };
+
+    const contrib = (p) => (p.stats && p.stats.matches > 0) ? (((p.stats.goals || 0) + (p.stats.assists || 0)) / p.stats.matches) : 0;
+    const p1Contrib = contrib(p1);
+    const p2Contrib = contrib(p2);
+
+    const p1Short = (p1.name || '').split(' ').pop() || p1.name;
+    const p2Short = (p2.name || '').split(' ').pop() || p2.name;
+
+    const rows = [
+      { label: 'Goles temporada', v1: p1.stats?.goals ?? 0, v2: p2.stats?.goals ?? 0, w: higherWins(p1.stats?.goals ?? 0, p2.stats?.goals ?? 0) },
+      { label: 'Asistencias', v1: p1.stats?.assists ?? 0, v2: p2.stats?.assists ?? 0, w: higherWins(p1.stats?.assists ?? 0, p2.stats?.assists ?? 0) },
+      { label: 'G+A / partido', v1: p1Contrib.toFixed(2), v2: p2Contrib.toFixed(2), w: higherWins(p1Contrib, p2Contrib) },
+      { label: 'Partidos jugados', v1: p1.stats?.matches ?? 0, v2: p2.stats?.matches ?? 0, w: higherWins(p1.stats?.matches ?? 0, p2.stats?.matches ?? 0) },
+      { label: 'Goles carrera', v1: p1.careerTotals?.goals ?? (p1.stats?.goals ?? 0), v2: p2.careerTotals?.goals ?? (p2.stats?.goals ?? 0), w: higherWins(p1.careerTotals?.goals ?? (p1.stats?.goals ?? 0), p2.careerTotals?.goals ?? (p2.stats?.goals ?? 0)) },
+      { label: 'Trofeos', v1: p1.trophies?.length ?? 0, v2: p2.trophies?.length ?? 0, w: higherWins(p1.trophies?.length ?? 0, p2.trophies?.length ?? 0) },
+      { label: 'Amarillas', v1: p1.stats?.yellowCards ?? 0, v2: p2.stats?.yellowCards ?? 0, w: lowerWins(p1.stats?.yellowCards ?? 0, p2.stats?.yellowCards ?? 0) },
+      { label: 'Valor mercado', v1: `${(p1.marketValue / 1000000).toFixed(0)}M€`, v2: `${(p2.marketValue / 1000000).toFixed(0)}M€`, w: higherWins(p1.marketValue, p2.marketValue) },
+    ];
+
+    const p1Wins = rows.filter(r => r.w === 1).length;
+    const p2Wins = rows.filter(r => r.w === 2).length;
+    const overallWinner = p1Wins === p2Wins ? null : (p1Wins > p2Wins ? p1Short : p2Short);
+    const loser = overallWinner ? (overallWinner === p1Short ? p2Short : p1Short) : null;
+    const winnerRows = overallWinner ? rows.filter(r => (overallWinner === p1Short ? r.w === 1 : r.w === 2)) : [];
+    const loserRows = overallWinner ? rows.filter(r => (overallWinner === p1Short ? r.w === 2 : r.w === 1)) : [];
+    const decidingRow = overallWinner ? [...rows].reverse().find(r => r.w === (overallWinner === p1Short ? 1 : 2)) : null;
+
+    // Natural Spanish list join: "a, b y c" instead of "a y b y c"
+    const naturalJoin = (items) => {
+      if (items.length === 0) return 'ningún criterio claro';
+      if (items.length === 1) return items[0];
+      return `${items.slice(0, -1).join(', ')} y ${items[items.length - 1]}`;
+    };
+
+    const getWinnerLabel = (w) => {
+      if (w === 1) return p1Short;
+      if (w === 2) return p2Short;
+      return 'Empate';
+    };
+
+    const tableMarkdown = `| Criterio | ${p1Short} | ${p2Short} | Gana |\n|---|---|---|---|\n` +
+      rows.map(r => `| ${r.label} | ${r.v1} | ${r.v2} | ${getWinnerLabel(r.w)} |`).join('\n');
+
+    return { rows, tableMarkdown, p1Wins, p2Wins, overallWinner, loser, winnerRows, loserRows, decidingRow, naturalJoin, p1Short, p2Short };
+  }
+
+  async comparePlayers(player1Id, player2Id, language = 'es') {
+    const p1 = await Player.findByPk(player1Id);
+    const p2 = await Player.findByPk(player2Id);
+    if (!p1 || !p2) throw new Error('Player not found');
+
+    // Ground truth computed once — same numbers, same per-row winner, same
+    // overall verdict feed both the AI prompt below and the offline fallback.
+    const criteria = this._buildComparisonCriteria(p1, p2);
+
+    const langInstruction = language === 'en'
+      ? 'Respond entirely in English.'
+      : 'Responde completamente en español.';
+
+    const headers = language === 'en'
+      ? {
+          summary: '📋 Executive Summary',
+          attrs: '⚔️ Attribute-by-Attribute Duel',
+          verdict: '🏆 Final Verdict'
+        }
+      : {
+          summary: '📋 Resumen Ejecutivo',
+          attrs: '⚔️ Duelo por Atributos',
+          verdict: '🏆 Veredicto Final'
+        };
+
+    const verdictFacts = criteria.overallWinner
+      ? `The winner is ${criteria.overallWinner} (won ${criteria.overallWinner === p1.name ? criteria.p1Wins : criteria.p2Wins} of ${criteria.rows.length} criteria). The criteria ${criteria.overallWinner} won: ${criteria.winnerRows.map(r => r.label).join('; ')}. The deciding/most important row is "${criteria.decidingRow.label}" (${criteria.decidingRow.v1} vs ${criteria.decidingRow.v2}). The criteria ${criteria.loser} won instead: ${criteria.loserRows.map(r => r.label).join('; ')}.`
+      : `It is a tie: ${criteria.p1Wins}-${criteria.p2Wins} criteria won each. ${p1.name} won: ${criteria.rows.filter(r => r.w === 1).map(r => r.label).join('; ') || 'none'}. ${p2.name} won: ${criteria.rows.filter(r => r.w === 2).map(r => r.label).join('; ') || 'none'}.`;
+
+    const prompt = `${langInstruction} You are writing a scouting report comparing two players. Follow this EXACT structure — same section headers, same order, every time — so the report is consistent and easy to scan. Every paragraph must cite concrete data from the player objects below (real numbers, named trophies, actual transfer fees/clubs, named strengths) — never vague filler like "he is a great player":
+
+## ${headers.summary}
+One paragraph (3-4 sentences) framing the comparison: nationality (flag), age, current club, and one named strength each (from the strengths array) that defines their game.
+
+## ${headers.attrs}
+Reproduce EXACTLY this markdown table, unchanged (it is already computed from real stats — do not recalculate, re-sort, or re-decide any winner):
+
+${criteria.tableMarkdown}
+
+## ${headers.verdict}
+Write two parts, in this order, and base them strictly on these precomputed facts — do not recount or contradict them: ${verdictFacts}
+1. A bold one-line headline sentence: "**Veredicto: [Winner] gana el duelo.**" (or "**Veredicto: empate técnico.**" if tied).
+2. An explanatory paragraph (4-5 sentences) that: names exactly which criteria rows the winner took (from the facts above) and why those matter most for a modern player in their position; explicitly acknowledges the specific criteria the loser won and what that strength is worth in practice; and closes with a concrete, practical takeaway framed as a recommendation (e.g. which player fits better for a team prioritizing physical dominance vs. one prioritizing pace/creativity, or which is the safer investment given age and trend). Do not justify the verdict by citing a generic rating.
+
+Do not add extra sections, do not skip a section, and do not use any headers other than the three above. Do not use pleasantries or a preamble — start directly with "## ${headers.summary}".
+
+Player 1: ${JSON.stringify(p1)}
+Player 2: ${JSON.stringify(p2)}`;
+
+    if (this.demoMode) {
+      return this._demoComparison(p1, p2, criteria);
+    }
+
+    if (this.deepseekApiKey) {
+      try {
+        console.log(`🤖 Generando análisis comparativo con DeepSeek API (${this.deepseekModel})...`);
+        return await this.callDeepSeek(prompt, SYSTEM_PROMPT);
+      } catch (err) {
+        console.warn('⚠️ DeepSeek API error en comparación, intentando fallback:', err.message);
+      }
+    }
+
+    if (this.geminiModel) {
+      try {
+        const result = await this.geminiModel.generateContent(prompt);
+        return result.response.text();
+      } catch (err) {
+        return this._demoComparison(p1, p2, criteria) + '\n\n*⚠️ AI Analysis unavailable due to API rate limits.*';
+      }
+    }
+
+    return this._demoComparison(p1, p2, criteria);
+  }
+
+  async getPredictions(language = 'es') {
+    const langInstruction = language === 'en'
+      ? 'Respond entirely in English.'
+      : 'Responde completamente en español.';
+
+    const prompt = `${langInstruction} Based on the current football season and the player database provided, generate 5 exciting football predictions for the rest of the 2024-25 season. Include: top scorer race, Ballon d\'Or front-runners, surprise performer, transfer rumor prediction, and a bold upset prediction. Be engaging and use real data from the database.`;
+
+    if (this.demoMode) {
+      return this._demoPredictions();
+    }
+
+    if (this.deepseekApiKey) {
+      try {
+        return await this.callDeepSeek(prompt, SYSTEM_PROMPT);
+      } catch (err) {
+        console.warn('⚠️ DeepSeek API error en predicciones, intentando fallback:', err.message);
+      }
+    }
+
+    if (this.geminiModel) {
+      try {
+        const result = await this.geminiModel.generateContent(prompt);
+        return result.response.text();
+      } catch (err) {
+        return this._demoPredictions() + '\n\n*⚠️ AI Predictions unavailable due to API rate limits.*';
+      }
+    }
+
+    return this._demoPredictions();
+  }
+
+  async expandAlert(alertType, contextData, language = 'es') {
+    const langInstruction = language === 'en'
+      ? 'Respond entirely in English.'
+      : 'Responde completamente en español.';
+
+    const clubName = (contextData && contextData.clubName) || 'el equipo';
+    const nextOpp = (contextData && contextData.nextOpp) || 'el rival';
+    const pName = (contextData && contextData.pName) || 'el jugador';
+    const talentName = (contextData && contextData.talentName) || 'el talento';
+
+    const prompt = `${langInstruction} 
+Act as a Senior Sporting Director / Chief Analyst for ${clubName}. 
+You are providing a direct, formal executive brief based on this system alert: "${alertType}".
+Context Data:
+${JSON.stringify(contextData, null, 2)}
+
+Write a highly professional, executive report (max 150 words).
+Use EXACTLY these three bold headers:
+**Resumen Ejecutivo:**
+[Executive summary paragraph analyzing real data for player ${pName} of ${clubName} ahead of match vs ${nextOpp}]
+
+**Puntos Clave del Análisis:**
+- Carga: [Real min vs squad baseline, e.g. 290 min vs 254 min (+14.2%)]
+- Sprint: [Real sprint distance vs personal baseline, e.g. 801 m vs 900 m (-11.0%)]
+- Recuperación: [Real rest days vs medical baseline, e.g. 1.5 days vs 3.0 days (-50.0%)]
+
+**Recomendación:**
+[Actionable recommendation for ${pName} and ${clubName}]
+
+- Every analytical point MUST include explicit quantitative baseline comparisons (e.g. current vs baseline value and exact percentage change like "290 min vs 254 min squad baseline (+14.2%)"). NEVER state a metric change without giving the baseline value.
+- DO NOT use video game acronyms or attributes (e.g. DO NOT write OVR, POT, Pace, Dribbling). Use real sporting terminology only.
+- DO NOT use em-dashes '—' or complex dashes. Write clear, simple, and direct professional sentences.
+- Each item under "Puntos Clave del Análisis" MUST be a single line starting with "- Label: Value". Do not split a point into multiple lines.
+- DO NOT invent fake data. Use the exact player name, opponent, and club name provided.
+- Tone: Serious, highly analytical, data-driven, persuasive, suitable for a Sporting Director.`;
+
+    if (!this.demoMode) {
+      if (this.deepseekApiKey) {
+        try {
+          console.log(`🤖 Generando reporte de alerta con DeepSeek API (${this.deepseekModel})...`);
+          return await this.callDeepSeek(prompt, SYSTEM_PROMPT);
+        } catch (err) {
+          console.warn('⚠️ DeepSeek API error en expandAlert, intentando fallback:', err.message);
+        }
+      }
+
+      if (this.geminiModel) {
+        try {
+          console.log(`🤖 Generando reporte de alerta con Gemini API...`);
+          const result = await this.geminiModel.generateContent(prompt);
+          return result.response.text();
+        } catch (err) {
+          console.warn('⚠️ Gemini API error en expandAlert:', err.message);
+        }
+      }
+    }
+
+    const isEs = language !== 'en';
+    return isEs
+      ? `**Resumen Ejecutivo:**\nSe realizó un análisis exhaustivo para ${clubName} respecto a la notificación de "${alertType}". El informe consolida métricas físicas y tácticas para la toma de decisiones.\n\n**Puntos Clave del Análisis:**\n- Carga: 290 minutos vs 254 minutos del equipo, esto representa un 14.2% más de minutos jugados, esto es negativo porque el jugador viene jugando más minutos que el resto del plantel. Lleva una seguidilla de partidos encima sin rotación, por lo que las piernas le pesan más y viene acumulando cansancio fecha tras fecha; cuando compite en estas condiciones pierde velocidad de reacción en las disputas de balón, llega tarde a las coberturas defensivas y pierde la chispa para desequilibrar en el uno contra uno.\n- Sprint: 801 metros vs 900 metros de su promedio, esto representa una caída del 11.0% en su velocidad, esto es negativo porque el jugador ya no está picando con la misma velocidad ni explosividad. Corrió casi 100 metros menos a máxima velocidad en los últimos partidos porque siente las piernas cargadas, lo que indica que el cuerpo le está pidiendo freno antes de sufrir un tirón.\n- Recuperación: 1 día vs 3 días recomendados, esto solo representa un 33.3% de descanso, esto es negativo porque no le dimos tiempo suficiente a descansar entre fechas. Con solo 1 día de descanso tras un partido exigente, el jugador entra a la cancha con sobrecarga acumulada; jugar en este estado expone al futbolista a un riesgo altísimo de sufrir un tirón o rotura muscular ante cualquier pique fuerte, frenada o cambio de ritmo repentino.\n\n**Recomendación:**\nMantener monitoreo preventivo con el cuerpo técnico y médico, optimizando la distribución de minutos y ajustando la planificación estratégica.`
+      : `**Executive Summary:**\nDetailed analysis completed for ${clubName} regarding "${alertType}". The report consolidates physical and tactical metrics for decision making.\n\n**Key Analysis Points:**\n- Load: 290 minutes vs 254 team minutes, representing 14.2% more minutes played. This is negative because the player has logged more minutes than the rest of the squad without rotation, leading to heavy legs and accumulated fatigue.\n- Sprint: 801 meters vs 900 average meters, representing an 11.0% drop in top speed. This is negative because the player is sprinting less explosively due to muscle fatigue.\n- Recovery: 1 day vs 3 recommended days, representing only 33.3% rest. This is negative because competing with insufficient rest severely increases the risk of muscle strain or tear.\n\n**Recommendation:**\nMaintain preventive monitoring with medical and technical staff to optimize player workload.`;
   }
 
   clearSession(sessionId) {
-    if (sessionId && this.sessions.has(sessionId)) {
-      this.sessions.delete(sessionId);
-    }
+    this.sessions.delete(sessionId);
   }
 
-  async chat(sessionId, message, lang = 'es', audioBase64 = null, mimeType = null, userContext = null) {
-    const history = this.sessions.get(sessionId) || [];
-
-    const [relevantPlayers, prospects, appStats] = await Promise.all([
-      this.findRelevantPlayers(message),
-      this.findRelevantProspects(message),
-      this.getAppStats()
-    ]);
-
-    const contextStr = this.buildAppContext(relevantPlayers, prospects, appStats, userContext);
-
-    const messages = [
-      { role: 'system', content: SYSTEM_PROMPT + contextStr }
-    ];
-
-    history.forEach(msg => {
-      messages.push({ role: msg.role === 'user' ? 'user' : 'assistant', content: msg.content });
+  // ─── Demo Fallbacks (no API key) ───────────────────────────────
+  async _demoResponse(message) {
+    const msg = message.toLowerCase();
+    const allPlayers = await Player.findAll({
+      attributes: ['id', 'name', 'flag', 'currentTeam', 'league', 'position', 'positionEs', 'overallRating', 'stats', 'bio', 'trophies']
     });
+    const found = allPlayers.find(p =>
+      msg.includes(p.name.toLowerCase()) ||
+      msg.includes(p.id.replace('-', ' '))
+    );
 
-    const userText = message || (audioBase64 ? '(Audio de voz procesado)' : 'Hola');
-    messages.push({ role: 'user', content: userText });
-
-    const reply = await this.callDeepSeekAPI(messages);
-
-    history.push({ role: 'user', content: userText });
-    history.push({ role: 'assistant', content: reply });
-    if (history.length > 20) history.splice(0, 2);
-    this.sessions.set(sessionId, history);
-
-    return reply;
-  }
-
-  chatStream(sessionId, message, lang = 'es', audioBase64 = null, mimeType = null, clubContext = null, clubRoster = null, userContext = null, onChunk, onDone, onError) {
-    if (typeof userContext === 'function') {
-      onError = onDone;
-      onDone = onChunk;
-      onChunk = userContext;
-      userContext = null;
+    if (found) {
+      return `**${found.name}** ${found.flag}\n\n📍 **Club:** ${found.currentTeam} (${found.league})\n🎯 **Position:** ${found.positionEs} / ${found.position}\n⭐ **Rating:** ${found.overallRating}/100\n\n📊 **2024-25 Stats:**\n- Goals: ${found.stats?.goals} in ${found.stats?.matches} matches\n- Assists: ${found.stats?.assists}\n\n📝 ${found.bio}\n\n🏆 **Trophies:** ${found.trophies?.slice(0, 3).join(', ')}\n\n---\n*Demo mode — SQLite database connected.*`;
     }
 
-    const history = this.sessions.get(sessionId) || [];
+    return `¡Hola! Soy **FutbolAI** ⚽ — tu experto en fútbol mundial.\n\nActualmente en **modo demo** (sin API key). Puedo darte información sobre jugadores en mi base de datos.\n\nPrueba preguntando sobre: **Haaland, Mbappé, Messi, Ronaldo, Vinicius, Bellingham**, y más.\n\n---\n*Hello! I'm **FutbolAI** ⚽ — your global football expert. Currently in demo mode. Ask me about any top player!*`;
+  }
 
-    Promise.all([
-      this.findRelevantPlayers(message),
-      this.findRelevantProspects(message),
-      this.getAppStats()
-    ]).then(([relevantPlayers, prospects, appStats]) => {
+  _demoComparison(p1, p2, criteria = null) {
+    const { rows, tableMarkdown, p1Wins, p2Wins, overallWinner, loser, winnerRows, loserRows, decidingRow, naturalJoin, p1Short, p2Short } =
+      criteria || this._buildComparisonCriteria(p1, p2);
 
-      let contextStr = this.buildAppContext(relevantPlayers, prospects, appStats, userContext);
-
-      if (clubContext) {
-        contextStr += `\n\n=== CONTEXTO DE CLUB LOCAL DEL USUARIO ===\n${JSON.stringify(clubContext, null, 2)}`;
+    const getFlagEmoji = (countryCode) => {
+      if (!countryCode) return '';
+      if (countryCode.length === 2) {
+        const codePoints = countryCode
+          .toUpperCase()
+          .split('')
+          .map(char => 127397 + char.charCodeAt(0));
+        return ' ' + String.fromCodePoint(...codePoints);
       }
-      if (clubRoster && clubRoster.length > 0) {
-        contextStr += `\n\nPLANTILLA LOCAL:\n`;
-        clubRoster.forEach(p => {
-          contextStr += `• ${p.name} | Posición: ${p.position} | Rating: ${p.rating || 'N/A'}\n`;
-        });
-      }
+      return countryCode.length <= 4 ? ` ${countryCode}` : '';
+    };
 
-      const messages = [
-        { role: 'system', content: SYSTEM_PROMPT + contextStr }
-      ];
+    const strengths2 = (p) => {
+      const arr = (p.strengths || []).map(s => String(s).toLowerCase());
+      if (arr.length === 0) return 'su regularidad';
+      if (arr.length === 1) return arr[0];
+      return `${arr[0]} y ${arr[1]}`;
+    };
 
-      history.forEach(msg => {
-        messages.push({ role: msg.role === 'user' ? 'user' : 'assistant', content: msg.content });
-      });
+    const verdictText = overallWinner
+      ? `**Veredicto: ${overallWinner} gana el duelo.**\n\n${overallWinner} se impone en ${naturalJoin(winnerRows.map(r => r.label.toLowerCase()))} — con ${decidingRow ? `"${decidingRow.label.toLowerCase()}" (${decidingRow.v1} vs ${decidingRow.v2})` : 'su rendimiento'} como el dato que más pesa. Sin embargo, ${loser} sigue siendo superior en ${naturalJoin(loserRows.map(r => r.label.toLowerCase()))}. En la práctica: si el sistema prioriza los criterios donde ${overallWinner} manda, es la opción más segura; si se valora más la eficiencia goleadora pura, la balanza puede inclinarse hacia ${loser}.`
+      : `**Veredicto: empate técnico.**\n\nEl duelo queda empatado ${p1Wins}-${p2Wins} en los criterios evaluados — ${p1Short} destaca en ${naturalJoin(rows.filter(r => r.w === 1).map(r => r.label.toLowerCase()))}, mientras ${p2Short} lo hace en ${naturalJoin(rows.filter(r => r.w === 2).map(r => r.label.toLowerCase()))}. Ninguno domina claramente al otro.`;
 
-      const userText = message || (audioBase64 ? '(Mensaje de audio)' : 'Hola');
-      messages.push({ role: 'user', content: userText });
-
-      this.callDeepSeekAPIStream(
-        messages,
-        (chunk) => {
-          if (typeof onChunk === 'function') onChunk(chunk);
-        },
-        (fullText) => {
-          history.push({ role: 'user', content: userText });
-          history.push({ role: 'assistant', content: fullText });
-          if (history.length > 20) history.splice(0, 2);
-          this.sessions.set(sessionId, history);
-          if (typeof onDone === 'function') onDone(fullText);
-        },
-        (err) => {
-          if (typeof onError === 'function') onError(err);
-        }
-      );
-    }).catch(err => {
-      if (typeof onError === 'function') onError(err);
-    });
+    return `## 📋 Resumen Ejecutivo\n${p1.name}${getFlagEmoji(p1.flag)} (${p1.age} años, ${p1.currentTeam}) destaca por ${strengths2(p1)}, mientras que ${p2.name}${getFlagEmoji(p2.flag)} (${p2.age} años, ${p2.currentTeam}) se apoya en ${strengths2(p2)}. Ambos ocupan la posición de delantero y llegan a esta comparación en plena competencia por el estatus de mejor delantero del momento.\n\n## ⚔️ Duelo por Atributos\n${tableMarkdown}\n\n## 🏆 Veredicto Final\n${verdictText}`;
   }
 
-  async comparePlayers(player1Id, player2Id, lang = 'es') {
-    const p1 = await Player.findByPk(player1Id);
-    const p2 = await Player.findByPk(player2Id);
-
-    if (!p1 || !p2) {
-      throw new Error(`No se encontró uno o ambos jugadores para la comparación (${player1Id}, ${player2Id})`);
-    }
-
-    const fmt = (p) => ({
-      nombre: p.name,
-      equipo: p.currentTeam,
-      liga: p.league,
-      posicion: p.position,
-      valorContrato: p.marketValue ? `€${(p.marketValue/1000000).toFixed(1)}M` : 'N/A',
-      nacionalidad: p.nationality,
-      edad: p.age,
-      valorMercado: p.marketValue ? `€${(p.marketValue/1000000).toFixed(1)}M` : 'N/A',
-      estadisticas: p.stats,
-      puntosFuertes: p.strengths,
-      debilidades: p.weaknesses,
-      trofeos: p.trophies
-    });
-
-    const prompt = `Realiza una comparación táctica, técnica y estadística profesional entre estos dos futbolistas:\n\nJugador 1: ${JSON.stringify(fmt(p1))}\nJugador 2: ${JSON.stringify(fmt(p2))}\n\nEscribe la respuesta en ${lang === 'en' ? 'Inglés' : 'Español'} con formato Markdown profesional. Incluye:\n1. Resumen Ejecutivo y Comparativo Táctico.\n2. Análisis por atributos (Físico, Ataque, Defensa, Visión de Juego, Liderazgo).\n3. Fortalezas diferenciales de cada jugador.\n4. Veredicto Final del Scout de IA (¿en qué contexto destaca mejor cada uno?).`;
-
-    const messages = [
-      { role: 'system', content: SYSTEM_PROMPT },
-      { role: 'user', content: prompt }
-    ];
-
-    return await this.callDeepSeekAPI(messages);
-  }
-
-  async getPredictions(lang = 'es') {
-    const topPlayers = await Player.findAll({ where: { userId: null }, order: [['marketValue', 'DESC']], limit: 10 });
-    const topPlayersList = topPlayers.map(p => `${p.name} (${p.currentTeam}, ${p.league}, Valor: €${((p.marketValue||0)/1000000).toFixed(0)}M)`).join(', ');
-
-    const prompt = `Genera un informe detallado de predicciones tácticas y de rendimiento con IA para la temporada actual (2024-25).\nJugadores top en la base de datos: ${topPlayersList}.\n\nEscribe en ${lang === 'en' ? 'Inglés' : 'Español'} en formato Markdown elegante. Incluye:\n- 🏆 Candidatos al Balón de Oro y Bota de Oro.\n- 🚀 Jugadores Revelación y Promesas a seguir.\n- 🔄 Predicciones de Fichajes y Mercado.\n- 📊 Tendencias Tácticas Dominantes.`;
-
-    const messages = [
-      { role: 'system', content: SYSTEM_PROMPT },
-      { role: 'user', content: prompt }
-    ];
-
-    return await this.callDeepSeekAPI(messages);
-  }
-
-  async expandAlert(alertType, contextData, lang = 'es') {
-    const prompt = `Genera un análisis técnico ampliado para la alerta de scouting tipo: "${alertType}".\nDatos de contexto: ${JSON.stringify(contextData)}.\nResponde en ${lang === 'en' ? 'Inglés' : 'Español'} en Markdown.`;
-
-    const messages = [
-      { role: 'system', content: SYSTEM_PROMPT },
-      { role: 'user', content: prompt }
-    ];
-
-    return await this.callDeepSeekAPI(messages);
-  }
-
-  async ask(userMessage, conversationHistory = []) {
-    return await this.chat('default-ask', userMessage, 'es');
-  }
-
-  async compare(player1, player2) {
-    const p1Id = typeof player1 === 'object' ? player1.id : player1;
-    const p2Id = typeof player2 === 'object' ? player2.id : player2;
-    return await this.comparePlayers(p1Id, p2Id, 'es');
-  }
-
-  async predict() {
-    return await this.getPredictions('es');
+  async _demoPredictions() {
+    const topPlayers = await Player.findAll({ order: [['overallRating', 'DESC']], limit: 10 });
+    const topScorer = topPlayers[0]; // Simplified
+    return `## 🔮 AI Predictions — 2024-25 Season\n\n**1. Top Scorer Race:** ${topScorer.name} ${topScorer.flag} (${topScorer.stats.goals} goals) leads the race and is on track for the golden boot.\n\n**2. Ballon d'Or Front-Runner:** Vinicius Jr. & Bellingham are neck-and-neck for the award after stellar Champions League campaigns.\n\n**3. Surprise Performer:** Lamine Yamal continues to defy his age — don't be surprised to see him nominated for the Ballon d'Or before he turns 20.\n\n**4. Transfer Rumour:** Florian Wirtz is expected to move to a top-6 EPL club this summer in a deal exceeding €150M.\n\n**5. Bold Upset:** Arsenal to win the Premier League title for the first time since the Invincibles era.`;
   }
 }
 

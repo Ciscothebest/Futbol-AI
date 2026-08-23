@@ -24,11 +24,11 @@ const TRANSLATIONS = {
     nav_compare: 'Comparar', nav_predictions: 'Predicciones', nav_simulations: 'Simulaciones', section_simulations: 'Simulador de Partidos IA', sim_report_title: 'Reporte de Simulación IA',
     db_my_club: 'Mi Club', db_position: 'Posición', db_goals: 'Goles Favor (GF)', db_xg: 'xG', db_wins: 'Ganados (G)', db_draws: 'Empatados (E)', db_losses: 'Perdidos (P)', db_gc: 'Goles Contra (GC)', db_dg: 'Dif. Goles (DG)',
     db_matches: 'Partidos', db_next_matches: 'Próximos partidos', db_title_formation: 'Alineación Titular',
-    db_btn_edit_formation: 'Editar alineación', db_alerts_title: 'Alertas IA',
+    db_btn_edit_formation: 'Editar alineación', db_alerts_title: 'Notificaciones IA',
     db_performance_title: 'Rendimiento reciente', db_chat_title: 'Chat IA',
     db_chat_placeholder: 'Pregunta algo sobre tu equipo...',
     chat_agent_name: 'Agente FutbolAI',
-    hero_badge: '🤖 Impulsado por Gemini AI',
+    hero_badge: '🤖 Impulsado por DeepSeek AI',
     hero_title: 'Inteligencia Artificial<br/><span class="gradient-text">del Fútbol Mundial</span>',
     hero_subtitle: 'Consulta estadísticas, compara jugadores y obtén análisis profundos con IA.',
     btn_talk_agent: '💬 Hablar con el Agente',
@@ -131,11 +131,11 @@ const TRANSLATIONS = {
     nav_compare: 'Compare', nav_predictions: 'Predictions', nav_simulations: 'Simulations', section_simulations: 'AI Match Simulator', sim_report_title: 'AI Simulation Report',
     db_my_club: 'My Club', db_position: 'Position', db_goals: 'Goals For (GF)', db_xg: 'xG', db_wins: 'Wins (W)', db_draws: 'Draws (D)', db_losses: 'Losses (L)', db_gc: 'Goals Conceded (GA)', db_dg: 'Goal Diff (GD)',
     db_matches: 'Matches', db_next_matches: 'Upcoming Matches', db_title_formation: 'Starting XI',
-    db_btn_edit_formation: 'Edit Formation', db_alerts_title: 'AI Alerts',
+    db_btn_edit_formation: 'Edit Formation', db_alerts_title: 'AI Notifications',
     db_performance_title: 'Recent Performance', db_chat_title: 'AI Chat',
     db_chat_placeholder: 'Ask something about your team...',
     chat_agent_name: 'FutbolAI Agent',
-    hero_badge: '🤖 Powered by Gemini AI',
+    hero_badge: '🤖 Powered by DeepSeek AI',
     hero_title: 'Artificial Intelligence<br/><span class="gradient-text">for World Football</span>',
     hero_subtitle: 'Query stats, compare players and get deep AI-powered insights.',
     btn_talk_agent: '💬 Talk to the Agent',
@@ -8514,127 +8514,289 @@ async function renderMyClubAlerts(clubName, countryName) {
   if (!hasVerifiedFixtures && scheduleType === 2) {
     list = isEs ? [
       {
-        type: "warning",
+        kind: "warning",
+        category: "LESIONES",
         icon: "⚠️",
-        msg: `<strong>Sin Partidos Programados:</strong> No se han detectado partidos oficiales para la temporada actual o próxima.`
+        title: `${pName} en riesgo de lesión`,
+        msg: `No se han detectado partidos oficiales recientes para ${pName}. Se recomienda control preventivo de cargas.`,
+        action: "Ver informe completo IA →"
       },
       {
-        type: "info",
+        kind: "info",
+        category: "FICHAJES",
         icon: "🔍",
-        msg: `<strong>Planificación de Fichajes:</strong> La red de scouting ha identificado a <strong>${talentName}</strong> como objetivo prioritario basándose en sus métricas recientes.`
+        title: "Nuevo Talento Detectado",
+        msg: `La red de scouting ha identificado a ${talentName} como objetivo prioritario basándose en sus métricas recientes.`,
+        action: "Ver informe completo IA →"
       },
       {
-        type: "success",
+        kind: "success",
+        category: "TÁCTICA",
         icon: "🛡️",
-        msg: `<strong>Reporte de Pretemporada:</strong> Análisis táctico global del equipo completado y disponible para descarga.`
+        title: "Análisis Táctico Completado",
+        msg: `Análisis táctico global del equipo completado y disponible para descarga.`,
+        action: "Ver informe completo IA →"
       }
     ] : [
       {
-        type: "warning",
+        kind: "warning",
+        category: "INJURIES",
         icon: "⚠️",
-        msg: `<strong>No Scheduled Matches:</strong> No official matches have been detected for the current or next season.`
+        title: `${pName} at injury risk`,
+        msg: `No official matches detected for ${pName}. Preventive load control is recommended.`,
+        action: "View full AI report →"
       },
       {
-        type: "info",
+        kind: "info",
+        category: "TRANSFERS",
         icon: "🔍",
-        msg: `<strong>Transfer Planning:</strong> The scouting network has identified <strong>${talentName}</strong> as a priority target based on recent metrics.`
+        title: "New Talent Detected",
+        msg: `The scouting network identified ${talentName} as a priority target based on recent metrics.`,
+        action: "View full AI report →"
       },
       {
-        type: "success",
+        kind: "success",
+        category: "TACTICS",
         icon: "🛡️",
-        msg: `<strong>Pre-season Report:</strong> Team's global tactical analysis completed and available for download.`
+        title: "Tactical Analysis Completed",
+        msg: `Team's global tactical analysis completed and available for download.`,
+        action: "View full AI report →"
       }
     ];
   } else if (!hasVerifiedFixtures && scheduleType === 1) {
     list = isEs ? [
       {
-        type: "warning",
+        kind: "warning",
+        category: "LESIONES",
         icon: "⚠️",
-        msg: `<strong>Alerta de Lesión (Próxima Temporada):</strong> El jugador <strong>${pName}</strong> muestra alta fatiga de gemelo antes del debut vs ${nextOpp}.`
+        title: `${pName} en riesgo de lesión`,
+        msg: `Riesgo estimado de fatiga en ${pName} por carga, sprint y descanso antes del partido vs ${nextOpp}.`,
+        action: "Ver informe completo IA →"
       },
       {
-        type: "info",
+        kind: "info",
+        category: "FICHAJES",
         icon: "🔍",
-        msg: `<strong>Mercado de Fichajes:</strong> <strong>${talentName}</strong> recomendado para reforzar la plantilla esta nueva temporada.`
+        title: "Nuevo Talento Detectado",
+        msg: `${talentName}, 19 años, destaca por velocidad y regate en espacios reducidos.`,
+        action: "Ver informe completo IA →"
       },
       {
-        type: "success",
+        kind: "success",
+        category: "TÁCTICA",
         icon: "🛡️",
-        msg: `<strong>Análisis de Apertura:</strong> Reporte táctico y plan de partido para el debut de liga vs <strong>${nextOpp}</strong> completado.`
+        title: "Análisis Táctico Completado",
+        msg: `Se estudiaron las actuaciones más recientes de ${nextOpp} y se generó un plan de partido con recomendaciones de formación.`,
+        action: "Ver informe completo IA →"
       }
     ] : [
       {
-        type: "warning",
+        kind: "warning",
+        category: "INJURIES",
         icon: "⚠️",
-        msg: `<strong>Injury Alert (Next Season):</strong> Player <strong>${pName}</strong> shows high calf fatigue before the debut vs ${nextOpp}.`
+        title: `${pName} at injury risk`,
+        msg: `Estimated fatigue risk for ${pName} due to load, sprint, and rest before match vs ${nextOpp}.`,
+        action: "View full AI report →"
       },
       {
-        type: "info",
+        kind: "info",
+        category: "TRANSFERS",
         icon: "🔍",
-        msg: `<strong>Transfer Window:</strong> <strong>${talentName}</strong> recommended to reinforce the squad for the new season.`
+        title: "New Talent Detected",
+        msg: `${talentName}, 19 years old, stands out for speed and dribbling in tight spaces.`,
+        action: "View full AI report →"
       },
       {
-        type: "success",
+        kind: "success",
+        category: "TACTICS",
         icon: "🛡️",
-        msg: `<strong>Opening Match Analysis:</strong> Tactical report and game plan for the league debut vs <strong>${nextOpp}</strong> completed.`
+        title: "Tactical Analysis Completed",
+        msg: `Recent performances of ${nextOpp} were analyzed and a match plan with formation recommendations was generated.`,
+        action: "View full AI report →"
       }
     ];
   } else {
     // Current season (scheduleType === 0)
     list = isEs ? [
       {
-        type: "warning",
+        kind: "warning",
+        category: "LESIONES",
         icon: "⚠️",
-        msg: `<strong>Alerta de Lesión Potencial:</strong> El jugador <strong>${pName}</strong> (Riesgo Alto) muestra fatiga de gemelo antes del partido vs ${nextOpp}.`
+        title: `${pName} en riesgo de lesión`,
+        msg: `Riesgo estimado de fatiga en ${pName} por carga, sprint y descanso antes del partido vs ${nextOpp}.`,
+        action: "Ver informe completo IA →"
       },
       {
-        type: "info",
+        kind: "info",
+        category: "FICHAJES",
         icon: "🔍",
-        msg: `<strong>Nuevo Talento Detectado:</strong> <strong>${talentName}</strong> ha sido recomendado por la red de scouting para reforzar la plantilla.`
+        title: "Nuevo Talento Detectado",
+        msg: `${talentName}, 19 años, destaca por velocidad y regate en espacios reducidos.`,
+        action: "Ver informe completo IA →"
       },
       {
-        type: "success",
+        kind: "success",
+        category: "TÁCTICA",
         icon: "🛡️",
-        msg: `<strong>Análisis Táctico Completado:</strong> Reporte Pre-partido vs <strong>${nextOpp}</strong> disponible para descarga.`
+        title: "Análisis Táctico Completado",
+        msg: `Se estudiaron las actuaciones más recientes de ${nextOpp} y se generó un plan de partido con recomendaciones de formación.`,
+        action: "Ver informe completo IA →"
       }
     ] : [
       {
-        type: "warning",
+        kind: "warning",
+        category: "INJURIES",
         icon: "⚠️",
-        msg: `<strong>Potential Injury Alert:</strong> Player <strong>${pName}</strong> (High Risk) shows calf fatigue before match vs ${nextOpp}.`
+        title: `${pName} at injury risk`,
+        msg: `Estimated fatigue risk for ${pName} due to load, sprint, and rest before match vs ${nextOpp}.`,
+        action: "View full AI report →"
       },
       {
-        type: "info",
+        kind: "info",
+        category: "TRANSFERS",
         icon: "🔍",
-        msg: `<strong>New Talent Detected:</strong> <strong>${talentName}</strong> has been recommended by the scouting network to reinforce the squad.`
+        title: "New Talent Detected",
+        msg: `${talentName}, 19 years old, stands out for speed and dribbling in tight spaces.`,
+        action: "View full AI report →"
       },
       {
-        type: "success",
+        kind: "success",
+        category: "TACTICS",
         icon: "🛡️",
-        msg: `<strong>Tactical Analysis Complete:</strong> Pre-match report vs <strong>${nextOpp}</strong> available for download.`
+        title: "Tactical Analysis Completed",
+        msg: `Recent performances of ${nextOpp} were analyzed and a match plan with formation recommendations was generated.`,
+        action: "View full AI report →"
       }
     ];
   }
   
   container.innerHTML = list.map(a => {
     const contextStr = JSON.stringify({ clubName, nextOpp, pName, talentName, talentStats }).replace(/"/g, '&quot;');
-    // Extract text inside strong tags as title
-    const match = a.msg.match(/<strong>(.*?)<\/strong>/);
-    let alertTitle = match ? match[1].replace(':', '').trim() : 'Reporte Ejecutivo';
-    const cleanMsg = a.msg.replace(/<[^>]*>?/gm, ''); // plain text for AI
-    
-    const titleStr = JSON.stringify(alertTitle).replace(/"/g, '&quot;');
-    const typeStr = JSON.stringify(cleanMsg).replace(/"/g, '&quot;');
+    const kindStr = JSON.stringify(a.kind).replace(/"/g, '&quot;');
     
     return `
-    <div class="db-alert-row" style="cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background=''" onclick="openAlertModal(${titleStr}, ${typeStr}, ${contextStr})">
-      <div class="db-alert-icon-wrap ${a.type}">${a.icon}</div>
-      <div class="db-alert-message">${a.msg}</div>
-    </div>
-  `}).join('');
+      <div class="db-alert-card ${a.kind}" onclick="openAlertModal(${kindStr}, ${contextStr})">
+        <div class="db-alert-card-top">
+          <div class="db-alert-icon-wrap ${a.kind}">${a.icon}</div>
+          <div class="db-alert-card-headtext">
+            <span class="db-alert-category ${a.kind}">${a.category}</span>
+            <h4 class="db-alert-card-title">${a.title}</h4>
+          </div>
+          <span class="db-alert-priority-dot ${a.kind}"></span>
+        </div>
+        <p class="db-alert-card-detail">${a.msg}</p>
+        <div class="db-alert-card-footer"><span class="db-alert-cta">${a.action}</span></div>
+      </div>
+    `;
+  }).join('');
 }
 
-async function openAlertModal(alertTitle, alertType, contextData) {
+function getDynamicAlertReports(contextData, isEs) {
+  const { 
+    clubName = 'Real Madrid', 
+    nextOpp = 'FC Barcelona', 
+    pName = 'Vinícius Jr.', 
+    talentName = 'Pablo Ramírez'
+  } = contextData || {};
+
+  const minPlayedLast3 = 290;
+  const squadAvgMin = 254;
+  const loadDiffPct = '+14.2%';
+
+  const sprintRecent = 801;
+  const sprintBaseline = 900;
+  const sprintDiffPct = '-11.0%';
+
+  const restRealDays = 1.5;
+  const restRecDays = 3.0;
+  const restDeficitPct = '50.0%';
+
+  return {
+    warning: {
+      icon: '⚠️',
+      category: isEs ? 'LESIONES' : 'INJURIES',
+      kind: 'warning',
+      title: isEs ? `${pName} en riesgo de lesión` : `${pName} at injury risk`,
+      severity: isEs ? 'PRIORIDAD ALTA' : 'HIGH PRIORITY',
+      chips: [
+        [isEs ? 'Club' : 'Club', clubName],
+        [isEs ? 'Rival' : 'Opponent', nextOpp],
+        [isEs ? 'Jugador' : 'Player', pName]
+      ],
+      summary: isEs 
+        ? `${pName} presenta un riesgo elevado de lesión muscular de cara al partido ante ${nextOpp}. La conclusión se basa en la convergencia cuantitativa de tres indicadores clave comparados con sus valores base del club.`
+        : `${pName} presents an elevated risk of muscle injury ahead of the match vs ${nextOpp}. The conclusion relies on 3 critical physical metrics compared with baseline data.`,
+      keyPoints: isEs ? [
+        '<b>Carga</b>: 290 minutos vs 254 minutos del equipo, esto representa un 14.2% más de minutos jugados, esto es negativo porque el jugador viene jugando más minutos que el resto del plantel. Lleva una seguidilla de partidos encima sin rotación, por lo que las piernas le pesan más y viene acumulando cansancio fecha tras fecha; cuando compite en estas condiciones pierde velocidad de reacción en las disputas de balón, llega tarde a las coberturas defensivas y pierde la chispa para desequilibrar en el uno contra uno.',
+        '<b>Sprint</b>: 801 metros vs 900 metros de su promedio, esto representa una caída del 11.0% en su velocidad, esto es negativo porque el jugador ya no está picando con la misma velocidad ni explosividad. Corrió casi 100 metros menos a máxima velocidad en los últimos partidos porque siente las piernas cargadas, lo que indica que el cuerpo le está pidiendo freno antes de sufrir un tirón.',
+        '<b>Recuperación</b>: 1 día vs 3 días recomendados, esto solo representa un 33.3% de descanso, esto es negativo porque no le dimos tiempo suficiente a descansar entre fechas. Con solo 1 día de descanso tras un partido exigente, el jugador entra a la cancha con sobrecarga acumulada; jugar en este estado expone al futbolista a un riesgo altísimo de sufrir un tirón o rotura muscular ante cualquier pique fuerte, frenada o cambio de ritmo repentino.'
+      ] : [
+        '<b>Load</b>: 290 minutes vs 254 team minutes, representing 14.2% more minutes played. This is negative because the player has logged more minutes than the rest of the squad without rotation, leading to heavy legs and accumulated fatigue.',
+        '<b>Sprint</b>: 801 meters vs 900 average meters, representing an 11.0% drop in top speed. This is negative because the player is sprinting less explosively due to muscle fatigue.',
+        '<b>Recovery</b>: 1 day vs 3 recommended days, representing only 33.3% rest. This is negative because competing with insufficient rest severely increases the risk of muscle strain or tear.'
+      ],
+      recommendation: isEs
+        ? `Se sugiere coordinar con el departamento médico una valoración preventiva para validar formalmente esta sospecha antes del partido ante ${nextOpp}. Como recomendación estratégica para el cuerpo técnico, sería aconsejable evaluar dosificar su carga de minutos e ingresarlo en la última media hora del encuentro, minimizando así la exposición a una rotura muscular sin renunciar a su impacto en el tramo decisivo.`
+        : `It is suggested to coordinate a preventive medical evaluation with the medical staff to validate this suspicion prior to the match against ${nextOpp}. As a strategic technical recommendation, it would be advisable to manage his match load and consider bringing him on in the final 30 minutes, minimizing muscle injury risk while maintaining impact in crucial moments.`
+    },
+    info: {
+      icon: '🔍',
+      category: isEs ? 'FICHAJES' : 'TRANSFERS',
+      kind: 'info',
+      title: isEs ? 'Nuevo Talento Detectado' : 'New Talent Detected',
+      severity: isEs ? 'PRIORIDAD MEDIA' : 'MEDIUM PRIORITY',
+      chips: [
+        [isEs ? 'Club' : 'Club', clubName],
+        [isEs ? 'Jugador' : 'Player', talentName],
+        [isEs ? 'Edad' : 'Age', '19'],
+        [isEs ? 'Club actual' : 'Current Club', 'Club Filial']
+      ],
+      summary: isEs
+        ? `La red de scouting identificó a ${talentName}, un perfil de alto potencial que cubre una carencia detectada en la plantilla de ${clubName}.`
+        : `The scouting network identified ${talentName}, a high-potential profile addressing squad needs for ${clubName}.`,
+      keyPoints: isEs ? [
+        `<b>Datos Generales:</b> 19 años, 181 cm y 74 kg, una altura y peso alineados con el perfil típico de un extremo en esta liga, y compatibles con el estilo de posesión de ${clubName}.`,
+        '<b>Habilidades:</b> destaca por su velocidad y regate en espacios reducidos; aún debe mejorar la definición de cara al gol y el juego aéreo.',
+        '<b>Localización:</b> actualmente en Club Filial, España.'
+      ] : [
+        `<b>General Data:</b> 19 years old, 181 cm and 74 kg, aligned with dynamic attacker profile for ${clubName}.`,
+        '<b>Skills:</b> stands out for speed and dribbling in tight spaces.',
+        '<b>Location:</b> currently at Reserve Squad, Spain.'
+      ],
+      recommendation: isEs
+        ? `Iniciar seguimiento cercano y solicitar informe de scouting para evaluar a ${talentName} de cara a la próxima ventana de fichajes de ${clubName}.`
+        : `Initiate close monitoring and request detailed scouting report for ${talentName} for the next transfer window.`
+    },
+    success: {
+      icon: '🛡️',
+      category: isEs ? 'TÁCTICA' : 'TACTICS',
+      kind: 'success',
+      title: isEs ? 'Análisis Táctico Completado' : 'Tactical Analysis Completed',
+      severity: isEs ? 'INFORMATIVO' : 'INFORMATIONAL',
+      chips: [
+        [isEs ? 'Club' : 'Club', clubName],
+        [isEs ? 'Rival' : 'Opponent', nextOpp]
+      ],
+      summary: isEs
+        ? `El plan de partido combina cómo explotar una debilidad detectada en ${nextOpp} con cómo proteger un riesgo propio de ${clubName} en esta misma zona del campo.`
+        : `The match plan combines how to exploit a detected weakness in ${nextOpp} while protecting tactical zones for ${clubName}.`,
+      keyPoints: isEs ? [
+        `<b>Debilidad Rival:</b> ${nextOpp} construye por el carril izquierdo en el 62% de sus salidas, y al concentrar ahí la circulación deja el costado derecho con menos apoyos, lo que abre espacio para robar y atacar en transición si presionamos ese carril.`,
+        `<b>Riesgo Propio:</b> los laterales de ${clubName} suben con frecuencia en la salida de balón, lo que deja la espalda de la defensa expuesta a pérdidas rápidas; si perdemos el balón en esa fase, ${nextOpp} puede explotar ese espacio con un contragolpe directo.`,
+        '<b>Prevención:</b> el mediocentro defensivo debe cubrir el carril del lateral que sube antes de cada salida, no reaccionar después de perder el balón, para cerrar ese espacio antes de que exista.'
+      ] : [
+        `<b>Opponent Weakness:</b> ${nextOpp} builds play primarily through left flank in 62% of build-ups.`,
+        `<b>Team Risk:</b> ${clubName} fullbacks advance frequently leaving defensive spaces behind.`,
+        '<b>Prevention:</b> defensive midfielder must offer preventive coverage before possession loss.'
+      ],
+      recommendation: isEs
+        ? `Presionar orientado al carril izquierdo de la salida de ${nextOpp} para forzar pérdidas y atacar en transición, mientras el mediocentro defensivo cubre preventivamente la espalda de los laterales para que ese mismo tipo de transición no nos la hagan a nosotros.`
+        : `Press ${nextOpp} build-up to force turn-overs and attack in transition while covering fullbacks.`
+    }
+  };
+}
+
+async function openAlertModal(kind, contextData) {
   const modal = document.getElementById('player-modal');
   const modalBody = document.getElementById('modal-body');
   if (!modal || !modalBody) return;
@@ -8642,48 +8804,83 @@ async function openAlertModal(alertTitle, alertType, contextData) {
   modal.style.display = 'flex';
   
   // Bind close events
-  document.getElementById('modal-close').onclick = closeModal;
-  document.getElementById('player-modal').onclick = (e) => {
-    if (e.target === document.getElementById('player-modal')) closeModal();
+  const closeBtn = document.getElementById('modal-close');
+  if (closeBtn) closeBtn.onclick = closeModal;
+  modal.onclick = (e) => {
+    if (e.target === modal) closeModal();
   };
 
-  // Render final structure immediately to avoid a blank loading screen
+  const isEs = currentLang === 'es';
+  const reportsDict = getDynamicAlertReports(contextData, isEs);
+  const r = reportsDict[kind] || reportsDict.warning;
+  const chipsHtml = r.chips.map(c => `<span class="db-alert-modal-chip"><strong>${c[0]}:</strong> ${c[1]}</span>`).join('');
+
+  // 1. Render ONLY the FUTBOLAI Loader Screen inside modalBody (no header/chips leaked)
   modalBody.innerHTML = `
-    <div style="padding: 20px;">
-      <h3 style="color: var(--accent); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 1.2rem;">
-        <span>📋</span> ${alertTitle}
-      </h3>
-      <div id="alert-markdown-content" class="markdown-content" style="line-height: 1.6; font-size: 0.95rem; text-align: justify; opacity: 0.7;">
-        <span class="blinking-cursor">Analizando datos y redactando informe ejecutivo...</span>
+    <div class="apl-content" style="padding: 70px 20px; min-height: 420px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;">
+      <div class="apl-ball-wrap">
+        <div class="apl-ball">⚽</div>
+        <div class="apl-ring apl-ring-1"></div>
+        <div class="apl-ring apl-ring-2"></div>
       </div>
+      <div class="apl-brand"><span class="apl-brand-accent">FUTBOL</span>AI</div>
+      <div class="apl-progress-wrap" style="width: 220px;">
+        <div class="apl-progress-bar" style="height: 4px;"><div class="apl-progress-fill" id="alert-modal-fill" style="width: 30%;"></div></div>
+      </div>
+      <div class="apl-text" id="alert-modal-text">${isEs ? 'Cargando informe...' : 'Loading report...'}</div>
     </div>
   `;
 
-  try {
-    const res = await fetchWithAuth(`${API}/alert/expand`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ alertType, contextData, lang: currentLang })
-    });
+  let currentPct = 30;
+  const progressInterval = setInterval(() => {
+    currentPct = Math.min(currentPct + 20, 90);
+    const fillEl = document.getElementById('alert-modal-fill');
+    if (fillEl) fillEl.style.width = `${currentPct}%`;
+  }, 300);
 
-    if (!res.ok) throw new Error('Error al conectar con la IA');
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Error from server');
-    
-    // Inject the final content directly into the already-rendered structure
-    const contentDiv = document.getElementById('alert-markdown-content');
-    if (contentDiv) {
-      contentDiv.style.opacity = '1';
-      contentDiv.innerHTML = markdownToHtml(data.report);
-    }
-  } catch (err) {
-    const contentDiv = document.getElementById('alert-markdown-content');
-    if (contentDiv) {
-      contentDiv.style.opacity = '1';
-      contentDiv.innerHTML = `<span style="color:#ff5555;">⚠️ Error al generar el análisis: ${err.message}</span>`;
-    }
-  }
+  const renderCompleteModal = (customSectionsHtml = null) => {
+    clearInterval(progressInterval);
+    const fillEl = document.getElementById('alert-modal-fill');
+    if (fillEl) fillEl.style.width = '100%';
+
+    setTimeout(() => {
+      const defaultSections = `
+        <div class="db-alert-section">
+          <h5 class="db-alert-section-title">📊 ${isEs ? 'RESUMEN EJECUTIVO' : 'EXECUTIVE SUMMARY'}</h5>
+          <p class="db-alert-section-text">${r.summary}</p>
+        </div>
+        <div class="db-alert-section">
+          <h5 class="db-alert-section-title">🔎 ${isEs ? 'PUNTOS CLAVE DEL ANÁLISIS' : 'KEY ANALYSIS POINTS'}</h5>
+          <ul class="db-alert-keypoints">
+            ${r.keyPoints.map(k => `<li>• ${k}</li>`).join('')}
+          </ul>
+        </div>
+        <div class="db-alert-section db-alert-section-reco">
+          <h5 class="db-alert-section-title">✅ ${isEs ? 'RECOMENDACIÓN' : 'RECOMMENDATION'}</h5>
+          <p class="db-alert-section-text">${r.recommendation}</p>
+        </div>
+      `;
+
+      modalBody.innerHTML = `
+        <div class="db-alert-modal-header ${r.kind}">
+          <div class="db-alert-icon-wrap ${r.kind}" style="width:36px;height:36px;font-size:16px;">${r.icon}</div>
+          <div class="db-alert-modal-headtext">
+            <span class="db-alert-category ${r.kind}">${r.category}</span>
+            <h3 class="db-alert-modal-title">${r.title}</h3>
+          </div>
+          <span class="db-alert-severity-badge ${r.kind}">${r.severity}</span>
+        </div>
+        <div class="db-alert-modal-chips">${chipsHtml}</div>
+        <div class="db-alert-modal-sections">
+          ${customSectionsHtml || defaultSections}
+        </div>
+      `;
+    }, 250);
+  };
+
+  renderCompleteModal(null);
 }
+window.openAlertModal = openAlertModal;
 
 async function renderMyClubDashboard() {
   const user = JSON.parse(localStorage.getItem('scout_ai_user') || 'null');
@@ -9780,7 +9977,7 @@ function updateDailyLimitsBadges(user) {
     if (isGratis || isPro || isPlus) {
       const alertsList = document.getElementById('db-alerts-list');
       if (alertsList) {
-        alertsList.innerHTML = `<div style="padding: 15px; text-align: center; color: rgba(255,255,255,0.6); font-size: 0.85rem;">Las Alertas IA están reservadas para los planes Local y Enterprise.</div>`;
+        alertsList.innerHTML = `<div style="padding: 15px; text-align: center; color: rgba(255,255,255,0.6); font-size: 0.85rem;">Las Notificaciones IA están reservadas para los planes Local y Enterprise.</div>`;
       }
     }
   }
@@ -9885,6 +10082,7 @@ function goToSection(name) {
   if (name === 'my-players') window.renderMyPlayersModule();
   if (name === 'my-club') renderMyClubDashboard();
   if (name === 'players') renderPlayers();
+  if (name === 'compare') window.resetCompareModule();
   if (name === 'predictions' && !predictionsLoaded) loadPredictions();
   if (name === 'profile') renderProfile();
   if (name === 'simulations') initSimulationsSection();
@@ -12652,11 +12850,11 @@ window.getDevicePasskeyInfo = () => {
   const screenWidth = window.screen ? window.screen.width : 0;
   const screenHeight = window.screen ? window.screen.height : 0;
 
-  // 🍎 iOS Identification (iPhones 2023+)
+  // 🍎 iOS Identification (iPhones / iPads)
   if (/iphone|ipad|ipod/i.test(ua)) {
     if (/ipad/i.test(ua)) {
       if (/M4/i.test(ua) || (screenWidth >= 1024 && screenHeight >= 1366)) return 'Apple iPad Pro M4 / Air (2024+)';
-      return 'Apple iPad (iOS)';
+      return 'Apple iPad (iPadOS)';
     }
     const ratio = window.devicePixelRatio || 1;
     const maxDim = Math.max(screenWidth, screenHeight);
@@ -12667,9 +12865,8 @@ window.getDevicePasskeyInfo = () => {
     return 'Apple iPhone (iOS)';
   }
 
-  // 📱 Samsung Galaxy Model Mapping Complete (Lanzamientos 2023 - 2026)
+  // 📱 Samsung Galaxy Model Mapping
   if (/samsung|galaxy|SM-/i.test(ua)) {
-    // S-Series Flagships (2023 - 2026)
     if (/SM-S938/i.test(ua)) return 'Samsung Galaxy S25 Ultra';
     if (/SM-S936/i.test(ua)) return 'Samsung Galaxy S25+';
     if (/SM-S931/i.test(ua)) return 'Samsung Galaxy S25';
@@ -12684,14 +12881,12 @@ window.getDevicePasskeyInfo = () => {
     if (/SM-S911/i.test(ua)) return 'Samsung Galaxy S23';
     if (/SM-S711/i.test(ua)) return 'Samsung Galaxy S23 FE';
 
-    // Z-Series Plegables (2023 - 2025)
     if (/SM-F958/i.test(ua)) return 'Samsung Galaxy Z Fold Special Edition';
     if (/SM-F956/i.test(ua)) return 'Samsung Galaxy Z Fold6';
     if (/SM-F741/i.test(ua)) return 'Samsung Galaxy Z Flip6';
     if (/SM-F946/i.test(ua)) return 'Samsung Galaxy Z Fold5';
     if (/SM-F731/i.test(ua)) return 'Samsung Galaxy Z Flip5';
 
-    // A-Series (2023 - 2025)
     if (/SM-A566/i.test(ua)) return 'Samsung Galaxy A56 5G';
     if (/SM-A556/i.test(ua)) return 'Samsung Galaxy A55 5G';
     if (/SM-A546/i.test(ua)) return 'Samsung Galaxy A54 5G';
@@ -12713,7 +12908,6 @@ window.getDevicePasskeyInfo = () => {
     if (/SM-A055/i.test(ua)) return 'Samsung Galaxy A05';
     if (/SM-A042/i.test(ua)) return 'Samsung Galaxy A04e';
 
-    // M-Series & F-Series (2023 - 2025)
     if (/SM-M556/i.test(ua) || /SM-F556/i.test(ua)) return 'Samsung Galaxy M55 / F55 5G';
     if (/SM-M546/i.test(ua) || /SM-F546/i.test(ua)) return 'Samsung Galaxy M54 / F54 5G';
     if (/SM-M356/i.test(ua) || /SM-F346/i.test(ua)) return 'Samsung Galaxy M35 / F34 5G';
@@ -12722,11 +12916,9 @@ window.getDevicePasskeyInfo = () => {
     if (/SM-M146/i.test(ua) || /SM-F146/i.test(ua)) return 'Samsung Galaxy M14 / F14 5G';
     if (/SM-M055/i.test(ua) || /SM-F055/i.test(ua)) return 'Samsung Galaxy M05 / F05';
 
-    // XCover Rugged (2023 - 2024)
     if (/SM-G556/i.test(ua)) return 'Samsung Galaxy XCover 7';
     if (/SM-G736/i.test(ua)) return 'Samsung Galaxy XCover 6 Pro';
 
-    // Tab-Series Tablets (2023 - 2025)
     if (/SM-X926|SM-X920/i.test(ua)) return 'Samsung Galaxy Tab S10 Ultra';
     if (/SM-X826|SM-X820/i.test(ua)) return 'Samsung Galaxy Tab S10+';
     if (/SM-X916|SM-X910/i.test(ua)) return 'Samsung Galaxy Tab S9 Ultra';
@@ -12735,13 +12927,12 @@ window.getDevicePasskeyInfo = () => {
     if (/SM-X616|SM-X516/i.test(ua)) return 'Samsung Galaxy Tab S9 FE';
     if (/SM-X216|SM-X115/i.test(ua)) return 'Samsung Galaxy Tab A9+ / A9';
 
-    // Fallback Samsung con número de modelo
     const modelMatch = ua.match(/SM-[A-Z0-9]+/i);
     if (modelMatch) return `Samsung Galaxy (${modelMatch[0]})`;
     return 'Samsung Galaxy (Android)';
   }
 
-  // 🤖 Google Pixel Series (2023-2025)
+  // 🤖 Google Pixel Series
   if (/pixel/i.test(ua)) {
     if (/Pixel 9 Pro XL/i.test(ua)) return 'Google Pixel 9 Pro XL';
     if (/Pixel 9 Pro Fold/i.test(ua)) return 'Google Pixel 9 Pro Fold';
@@ -12755,7 +12946,7 @@ window.getDevicePasskeyInfo = () => {
     return 'Google Pixel (Android)';
   }
 
-  // 📱 Xiaomi / Redmi / POCO (2023-2025)
+  // 📱 Xiaomi / Redmi / POCO
   if (/xiaomi|redmi|poco/i.test(ua)) {
     if (/14 Ultra/i.test(ua)) return 'Xiaomi 14 Ultra';
     if (/14 Pro/i.test(ua)) return 'Xiaomi 14 Pro';
@@ -12767,7 +12958,33 @@ window.getDevicePasskeyInfo = () => {
     if (/POCO F5/i.test(ua)) return 'POCO F5';
     if (/Redmi Note 13/i.test(ua)) return 'Redmi Note 13 Pro 5G';
     if (/Redmi Note 12/i.test(ua)) return 'Redmi Note 12 Pro';
-    return 'Dispositivo Xiaomi / Redmi';
+    return 'Dispositivo Xiaomi / Redmi (Android)';
+  }
+
+  // 📱 Motorola / Moto / Razr
+  if (/moto|motorola|razr/i.test(ua)) {
+    const motoMatch = ua.match(/(moto\s+[^\s;\)]+|edge\s+\d+[^\s;\)]*|razr[^\s;\)]*)/i);
+    if (motoMatch) return `Motorola ${motoMatch[0]}`;
+    return 'Motorola Moto (Android)';
+  }
+
+  // 📱 Huawei / Honor
+  if (/huawei|honor/i.test(ua)) {
+    const hwMatch = ua.match(/(p[0-9]+|mate\s+[0-9]+|nova\s+[0-9]+|magic[0-9]*)/i);
+    if (hwMatch) return `Huawei/Honor (${hwMatch[0]})`;
+    return 'Dispositivo Huawei / Honor';
+  }
+
+  // 📱 OPPO / OnePlus / Realme / Vivo / iQOO
+  if (/oppo|oneplus|realme|vivo|iqoo/i.test(ua)) {
+    const oppoMatch = ua.match(/(oneplus\s+[^\s;\)]+|find\s+x[0-9]*|reno[0-9]*|realme[^\s;\)]*|iqoo[^\s;\)]*)/i);
+    if (oppoMatch) return `Dispositivo ${oppoMatch[0]}`;
+    return 'Dispositivo Móvil (OPPO/OnePlus/Realme/Vivo)';
+  }
+
+  // 📱 Infinix / TECNO / Itel / Sony / ASUS
+  if (/infinix|tecno|itel|sony|xperia|asus|zenfone|rog/i.test(ua)) {
+    return 'Dispositivo Móvil Android';
   }
 
   // Extracción genérica de modelo Android
@@ -12779,14 +12996,15 @@ window.getDevicePasskeyInfo = () => {
         return `Dispositivo Android (${rawModel})`;
       }
     }
-    return 'Dispositivo Móvil Android';
+    return 'Celular / Tablet Android';
   }
 
-  // Identificación de Escritorio / Laptops
+  // 💻 Identificación de Computadoras de Escritorio / Laptops
   if (/macintosh|mac os x/i.test(ua)) return 'Equipo Mac (macOS)';
   if (/windows nt 10\.0/i.test(ua)) return 'Equipo PC (Windows 10/11)';
   if (/windows/i.test(ua)) return 'Equipo PC (Windows)';
-  if (/linux/i.test(ua)) return 'Dispositivo Linux';
+  if (/cros/i.test(ua)) return 'Chromebook (ChromeOS)';
+  if (/linux/i.test(ua)) return 'Computadora Linux';
 
   return 'Dispositivo de Acceso Registrado';
 };
@@ -12835,7 +13053,7 @@ window.renderSecurityPasskeyUser = (user) => {
     if (!hasAnyPasskey) {
       deviceIconEl.textContent = '🔒';
     } else {
-      const isMobile = /android|iphone|ipad|mobile|samsung|galaxy|pixel|xiaomi|redmi|poco/i.test(mainDeviceName) || /android|iphone|ipad|mobile/i.test(navigator.userAgent);
+      const isMobile = /android|iphone|ipad|mobile|samsung|galaxy|pixel|xiaomi|redmi|poco|moto|motorola|huawei|honor|oppo|oneplus|realme|vivo/i.test(mainDeviceName) || /android|iphone|ipad|mobile/i.test(navigator.userAgent);
       deviceIconEl.textContent = isMobile ? '📱' : '💻';
     }
   }
@@ -12845,7 +13063,7 @@ window.renderSecurityPasskeyUser = (user) => {
     statusEl.innerHTML = '<span style="display: inline-block; width: 8px; height: 8px; background: #00f0ff; border-radius: 50%; box-shadow: 0 0 8px #00f0ff;"></span> Passkey Configurada y Activa (Biometría + PIN de Respaldo)';
     statusEl.style.color = '#00f0ff';
   } else if (hasWebAuthn) {
-    statusEl.innerHTML = '<span style="display: inline-block; width: 8px; height: 8px; background: #00f0ff; border-radius: 50%; box-shadow: 0 0 8px #00f0ff;"></span> Passkey Configurada y Activa (Biometría / Windows Hello)';
+    statusEl.innerHTML = '<span style="display: inline-block; width: 8px; height: 8px; background: #00f0ff; border-radius: 50%; box-shadow: 0 0 8px #00f0ff;"></span> Passkey Configurada y Activa (Biometría: Celular / Computadora)';
     statusEl.style.color = '#00f0ff';
   } else if (hasPin) {
     statusEl.innerHTML = '<span style="display: inline-block; width: 8px; height: 8px; background: #00f0ff; border-radius: 50%; box-shadow: 0 0 8px #00f0ff;"></span> Passkey Configurada y Activa (PIN de Respaldo)';
@@ -12861,14 +13079,20 @@ window.renderSecurityPasskeyUser = (user) => {
       <div style="font-size: 0.85rem; font-weight: 700; color: rgba(255,255,255,0.9); margin-bottom: 4px;">Medios de Autenticación Passkey Registrados:</div>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px;">
         <div style="background: ${hasWebAuthn ? 'rgba(0, 240, 255, 0.08)' : 'rgba(255, 255, 255, 0.02)'}; border: 1px solid ${hasWebAuthn ? 'rgba(0, 240, 255, 0.3)' : 'rgba(255, 255, 255, 0.08)'}; border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between;">
-          <div style="font-weight: 700; font-size: 0.88rem; color: #fff;">Biometría / Windows Hello</div>
+          <div>
+            <div style="font-weight: 700; font-size: 0.88rem; color: #fff;">Biometría (Celulares & Computadoras)</div>
+            <div style="font-size: 0.75rem; color: var(--cyan); margin-top: 3px;">${hasWebAuthn ? (webauthnDevice || 'Dispositivo biométrico registrado') : 'No configurado'}</div>
+          </div>
           <span style="font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 10px; ${hasWebAuthn ? 'background: rgba(0, 240, 255, 0.2); color: #00f0ff; border: 1px solid #00f0ff;' : 'background: rgba(255, 170, 0, 0.15); color: #ffaa00; border: 1px solid #ffaa00;'}">
             ${hasWebAuthn ? 'ACTIVO' : 'PENDIENTE'}
           </span>
         </div>
 
         <div style="background: ${hasPin ? 'rgba(0, 240, 255, 0.08)' : 'rgba(255, 255, 255, 0.02)'}; border: 1px solid ${hasPin ? 'rgba(0, 240, 255, 0.3)' : 'rgba(255, 255, 255, 0.08)'}; border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between;">
-          <div style="font-weight: 700; font-size: 0.88rem; color: #fff;">PIN Passkey de Respaldo</div>
+          <div>
+            <div style="font-weight: 700; font-size: 0.88rem; color: #fff;">PIN Passkey de Respaldo</div>
+            <div style="font-size: 0.75rem; color: var(--cyan); margin-top: 3px;">${hasPin ? (pinDevice || 'Dispositivo PIN registrado') : 'No configurado'}</div>
+          </div>
           <span style="font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 10px; ${hasPin ? 'background: rgba(0, 240, 255, 0.2); color: #00f0ff; border: 1px solid #00f0ff;' : 'background: rgba(255, 170, 0, 0.15); color: #ffaa00; border: 1px solid #ffaa00;'}">
             ${hasPin ? 'ACTIVO' : 'PENDIENTE'}
           </span>
@@ -13092,7 +13316,7 @@ window.updatePasskeyWebAuthn = async () => {
   const token = localStorage.getItem('scout_ai_token');
   if (!token) return;
 
-  window.showPasskeyModal('loading', 'Vinculación Biométrica Passkey', 'Por favor realiza la autenticación en tu dispositivo (Windows Hello, huella dactilar o rostro)...');
+  window.showPasskeyModal('loading', 'Vinculación Biométrica Passkey', 'Por favor realiza la autenticación en tu dispositivo (huella dactilar, Face ID, Touch ID, Windows Hello o clave del equipo)...');
 
   try {
     const optRes = await fetch('/api/auth/passkey/register-options', {
@@ -13199,7 +13423,7 @@ window.removePasskeyMethod = async (method) => {
   const token = localStorage.getItem('scout_ai_token');
   if (!token) return;
 
-  const methodName = method === 'webauthn' ? 'Biometría / Windows Hello' : 'PIN de Respaldo';
+  const methodName = method === 'webauthn' ? 'Biometría (Celulares & Computadoras)' : 'PIN de Respaldo';
   if (!confirm(`¿Estás seguro de que deseas desvincular el método de Passkey (${methodName})?`)) {
     return;
   }
@@ -13779,6 +14003,8 @@ window.renderMyPlayersModule = async (skipFetch = false) => {
                        (user.role || '').toLowerCase() === 'local' || 
                        (user.role || '').toLowerCase() === 'entrenador local';
 
+  const players = typeof window.getLocalPlayersList === 'function' ? window.getLocalPlayersList() : [];
+
   // Profile Tab elements (if present)
   const emptyEl = document.getElementById('local-players-empty');
   const upgradeNoticeEl = document.getElementById('local-players-upgrade-notice');
@@ -13787,16 +14013,21 @@ window.renderMyPlayersModule = async (skipFetch = false) => {
   const totalEl = document.getElementById('local-roster-total');
   const availEl = document.getElementById('local-roster-available');
   const totalValEl = document.getElementById('local-roster-total-value');
-    if (totalValEl) {
-      const totalVal = players.reduce((sum, p) => sum + (Number(p.marketValue) || 5000000), 0);
-      totalValEl.textContent = formatContractValue(totalVal);
-    }
-  if (avgRatingMainEl) avgRatingMainEl.textContent = avgRating;
-  if (topCatEl) topCatEl.textContent = domCat;
-  if (topCatMainEl) topCatMainEl.textContent = domCat;
 
-  window.filterLocalPlayers();
-  window.filterLocalPlayersMain();
+  if (badgeEl) badgeEl.textContent = players.length;
+  if (totalEl) totalEl.textContent = players.length;
+  if (availEl) {
+    const availCount = players.filter(p => (p.medicalStatus || 'Disponible') === 'Disponible').length;
+    availEl.textContent = availCount;
+  }
+
+  if (totalValEl) {
+    const totalVal = players.reduce((sum, p) => sum + (Number(p.marketValue) || 5000000), 0);
+    totalValEl.textContent = typeof formatContractValue === 'function' ? formatContractValue(totalVal) : `€${(totalVal / 1000000).toFixed(1)}M`;
+  }
+
+  if (typeof window.filterLocalPlayers === 'function') window.filterLocalPlayers();
+  if (typeof window.filterLocalPlayersMain === 'function') window.filterLocalPlayersMain();
 };
 
 window.filterLocalPlayersMain = () => {
@@ -16772,7 +17003,6 @@ function openPlayerModal(playerOrId) {
     <div class="modal-tabs">
       <button class="modal-tab active" onclick="switchModalTab(this, 'season')">${t('tab_season')}</button>
       ${!isProspect ? `<button class="modal-tab" onclick="switchModalTab(this, 'competition')">${t('tab_competition')}</button>` : ''}
-      ${!isProspect ? `<button class="modal-tab" onclick="switchModalTab(this, 'vs-team')">${t('tab_vs_team')}</button>` : ''}
       <button class="modal-tab" onclick="switchModalTab(this, 'global')">${t('tab_global')}</button>
       <button class="modal-tab" onclick="switchModalTab(this, 'injuries')">${t('tab_injuries')}</button>
       ${showLegalTab ? `<button class="modal-tab" onclick="switchModalTab(this, 'legal-contact')">${currentLang === 'es' ? 'Contacto legal' : 'Legal Contact'}</button>` : ''}
@@ -16873,17 +17103,6 @@ function openPlayerModal(playerOrId) {
        </div>
     </div>` : ''}
 
-    ${!isProspect ? `
-    <!-- PANE: VS TEAM -->
-    <div id="pane-vs-team" class="modal-pane">
-       <div class="modal-section">
-          <h4>${currentLang === 'es' ? 'Historial vs Equipos' : 'History vs Teams'}</h4>
-          <p style="color:var(--text-2); font-size:14px;">${currentLang === 'es' ? 'Rendimiento histórico del jugador contra equipos específicos.' : 'Historical performance of the player against specific teams.'}</p>
-          <div style="height:150px; display:flex; align-items:center; justify-content:center; color:var(--text-2); border:1px solid var(--border); border-radius:8px; margin-top:20px;">
-             ${currentLang === 'es' ? 'No hay datos suficientes para esta comparación.' : 'Not enough data for this comparison.'}
-          </div>
-       </div>
-    </div>` : ''}
 
     <!-- PANE: GLOBAL -->
     <div id="pane-global" class="modal-pane">
@@ -16959,14 +17178,6 @@ function openPlayerModal(playerOrId) {
             </div>
 
             <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(0,240,255,0.15); border-radius: 10px; padding: 12px 14px;">
-              <div style="font-size: 11px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 4px;">Identificación / Documento</div>
-              <div style="font-size: 13.5px; font-weight: 700; color: #00f0ff; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
-                <span>${docTypeDisplay}: ${p.docNumber || '—'}</span>
-                ${p.docFileUrl ? `<a href="${p.docFileUrl}" target="_blank" style="font-size: 11px; background: rgba(0,240,255,0.15); border: 1px solid #00f0ff; color: #00f0ff; padding: 2px 8px; border-radius: 6px; text-decoration: none;" title="Ver Documento Adjunto">📎 Ver</a>` : ''}
-              </div>
-            </div>
-
-            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(0,240,255,0.15); border-radius: 10px; padding: 12px 14px;">
               <div style="font-size: 11px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 4px;">Dorsal / Camiseta</div>
               <div style="font-size: 13.5px; font-weight: 700; color: #ffaa00;">${p.jerseyNumber ? `#${p.jerseyNumber}` : '—'}</div>
             </div>
@@ -16984,11 +17195,6 @@ function openPlayerModal(playerOrId) {
             <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(0,240,255,0.15); border-radius: 10px; padding: 12px 14px;">
               <div style="font-size: 11px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 4px;">Estatura & Peso</div>
               <div style="font-size: 13.5px; font-weight: 600; color: var(--text-1);">${p.height ? `${p.height} cm` : '—'} · ${p.weight ? `${p.weight} kg` : '—'}</div>
-            </div>
-
-            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(0,240,255,0.15); border-radius: 10px; padding: 12px 14px;">
-              <div style="font-size: 11px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 4px;">Categoría</div>
-              <div style="font-size: 13.5px; font-weight: 600; color: var(--text-1);">${p.category || 'Local'}</div>
             </div>
 
           </div>
@@ -18454,16 +18660,16 @@ function selectComparePlayer(num, player) {
   card.innerHTML = `
     <div class="sel-player-info">
       <div class="sel-player-top">
-        <span class="sel-flag">${player.flag}</span>
+        <span class="sel-flag">${player.flag || '⚽'}</span>
         <div>
           <div class="sel-name">${player.name}</div>
-          <div class="sel-team">${player.currentTeam} · ${player.league}</div>
+          <div class="sel-team">${player.currentTeam || 'Local'} · ${player.league || 'Liga'}</div>
         </div>
       </div>
       <div class="sel-stats">
-        <div class="sel-stat"><span class="sel-stat-num">${Number(player.overallRating).toFixed(1)}</span><span class="sel-stat-label">OVR</span></div>
-        <div class="sel-stat"><span class="sel-stat-num">${player.stats.goals}</span><span class="sel-stat-label">Goals</span></div>
-        <div class="sel-stat"><span class="sel-stat-num">${player.stats.assists}</span><span class="sel-stat-label">Assists</span></div>
+        <div class="sel-stat"><span class="sel-stat-num" style="font-size:13px">${formatContractValue(player.marketValue)}</span><span class="sel-stat-label">${currentLang === 'es' ? 'VALOR' : 'VALUE'}</span></div>
+        <div class="sel-stat"><span class="sel-stat-num">${player.stats?.goals ?? 0}</span><span class="sel-stat-label">${currentLang === 'es' ? 'Goles' : 'Goals'}</span></div>
+        <div class="sel-stat"><span class="sel-stat-num">${player.stats?.assists ?? 0}</span><span class="sel-stat-label">${currentLang === 'es' ? 'Asistencias' : 'Assists'}</span></div>
       </div>
     </div>
   `;
@@ -18474,16 +18680,65 @@ function selectComparePlayer(num, player) {
   document.getElementById('compare-result').style.display = 'none';
 }
 
+window.resetCompareModule = function() {
+  selectedPlayer1 = null;
+  selectedPlayer2 = null;
+
+  const input1 = document.getElementById('compare-search-1');
+  if (input1) input1.value = '';
+  const input2 = document.getElementById('compare-search-2');
+  if (input2) input2.value = '';
+
+  const results1 = document.getElementById('selector-results-1');
+  if (results1) { results1.classList.remove('open'); results1.innerHTML = ''; }
+  const results2 = document.getElementById('selector-results-2');
+  if (results2) { results2.classList.remove('open'); results2.innerHTML = ''; }
+
+  const emptyText = (typeof currentLang !== 'undefined' && currentLang === 'es') ? 'Selecciona un jugador' : 'Select a player';
+
+  const card1 = document.getElementById('selected-card-1');
+  if (card1) {
+    card1.classList.remove('filled');
+    card1.innerHTML = `<div class="empty-player" data-i18n="select_player">${emptyText}</div>`;
+  }
+
+  const card2 = document.getElementById('selected-card-2');
+  if (card2) {
+    card2.classList.remove('filled');
+    card2.innerHTML = `<div class="empty-player" data-i18n="select_player">${emptyText}</div>`;
+  }
+
+  const btn = document.getElementById('btn-compare');
+  if (btn) {
+    btn.disabled = true;
+    if (typeof t === 'function') {
+      btn.textContent = t('btn_analyze');
+    } else {
+      btn.textContent = '🤖 Analizar con IA';
+    }
+  }
+
+  const resultEl = document.getElementById('compare-result');
+  if (resultEl) resultEl.style.display = 'none';
+
+  const bodyEl = document.getElementById('compare-result-body');
+  if (bodyEl) bodyEl.innerHTML = '';
+};
+
 window.clearCompareSlot = function(num) {
   if (num === 1) selectedPlayer1 = null;
   else selectedPlayer2 = null;
   
   const card = document.getElementById(`selected-card-${num}`);
-  card.classList.remove('filled');
-  card.innerHTML = `<div class="empty-player" data-i18n="select_player">` + (currentLang === 'es' ? 'Selecciona un jugador' : 'Select a player') + `</div>`;
+  if (card) {
+    card.classList.remove('filled');
+    card.innerHTML = `<div class="empty-player" data-i18n="select_player">` + (currentLang === 'es' ? 'Selecciona un jugador' : 'Select a player') + `</div>`;
+  }
   
-  document.getElementById('btn-compare').disabled = true;
-  document.getElementById('compare-result').style.display = 'none';
+  const btn = document.getElementById('btn-compare');
+  if (btn) btn.disabled = true;
+  const resultEl = document.getElementById('compare-result');
+  if (resultEl) resultEl.style.display = 'none';
 };
 
 function closeComparison() {
@@ -18730,9 +18985,11 @@ function fillH2HBars(p1, p2) {
 }
 
 function getPlayerChartData(player) {
-  // Convert 1-10 rating to 10-100 base for chart calculations
-  const base = player.overallRating > 10 ? player.overallRating : player.overallRating * 10;
-  const seed = player.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  // Convert rating to 10-100 base for chart calculations
+  const ovrVal = Number(player.overallRating);
+  const base = (!isNaN(ovrVal) && ovrVal > 0) ? (ovrVal > 10 ? ovrVal : ovrVal * 10) : 75;
+  const pId = String(player.id || player.name || '0');
+  const seed = pId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
   const pseudoRand = (offset) => ((seed + offset) % 15) - 7;
 
   const stats = {
@@ -18905,36 +19162,63 @@ async function loadPredictions() {
 // ──────────────────────────────────────────
 function markdownToHtml(md) {
   if (!md) return '';
-  return md
+  let html = md
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/&lt;img(.+?)&gt;/g, '<img$1>') // Allow img tags
+    .replace(/&lt;img(.+?)&gt;/g, '<img$1>')
     .replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2" alt="$1" style="max-width:100%;border-radius:8px;margin-top:10px;">')
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
     .replace(/`(.+?)`/g, '<code>$1</code>')
     .replace(/^### (.+)$/gm, '<h3>$1</h3>')
     .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-    .replace(/^# (.+)$/gm, '<h2>$1</h2>')
-    .replace(/^\|?(.+)\|?$/gm, (match, row) => {
-      if (!match.includes('|')) return match;
-      const cells = row.split('|').map(c => c.trim()).filter(c => c !== '');
-      if (cells.length === 0) return match;
-      const isHeader = cells.some(c => c.match(/^-+$/));
-      if (isHeader) return '';
-      return `<tr>${cells.map(c => `<td>${c}</td>`).join('')}</tr>`;
-    })
-    .replace(/(<tr>[\s\S]+?<\/tr>)/g, (match) => {
-      const rows = match.match(/<tr>[\s\S]*?<\/tr>/g) || [];
-      const firstRow = rows[0]?.replace(/<td>/g, '<th>').replace(/<\/td>/g, '</th>');
-      const rest = rows.slice(1).join('');
-      return `<table><thead>${firstRow}</thead><tbody>${rest}</tbody></table>`;
-    })
-    .replace(/^[-*] (.+)$/gm, '<li>$1</li>')
-    .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
-    .replace(/\n{2,}/g, '</p><p>')
-    .replace(/^(?!<[hultpc])(.+)$/gm, (line) => line ? line : '')
-    .replace(/\n/g, '<br />')
-    .replace(/(<br \/>){3,}/g, '<br /><br />');
+    .replace(/^# (.+)$/gm, '<h2>$1</h2>');
+
+  html = html.replace(/^\|?(.+)\|?$/gm, (match, row) => {
+    if (!match.includes('|')) return match;
+    const cells = row.split('|').map(c => c.trim()).filter(c => c !== '');
+    if (cells.length === 0) return match;
+    const isHeader = cells.some(c => c.match(/^-+$/));
+    if (isHeader) return '';
+    return `<tr>${cells.map((c, i) => {
+      let style = '';
+      if (i === 3) {
+        if (c === 'Empate' || c === 'Tie' || c === 'Draw') {
+          style = ' style="color: rgba(255,255,255,0.45); font-weight: 500;"';
+        } else {
+          style = ' style="color: #00f0ff; font-weight: 700;"';
+        }
+      }
+      return `<td${style}>${c}</td>`;
+    }).join('')}</tr>`;
+  });
+
+  html = html.replace(/(<tr>[\s\S]+?<\/tr>)/g, (match) => {
+    const rows = match.match(/<tr>[\s\S]*?<\/tr>/g) || [];
+    const firstRow = rows[0]?.replace(/<td>/g, '<th>').replace(/<\/td>/g, '</th>');
+    const rest = rows.slice(1).join('');
+    return `<table><thead>${firstRow}</thead><tbody>${rest}</tbody></table>`;
+  });
+
+  html = html.replace(/^[-*] (.+)$/gm, '<li>$1</li>');
+  html = html.replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>');
+
+  // Split into blocks by double newlines
+  const blocks = html.split(/\n{2,}/);
+  html = blocks.map(block => {
+    block = block.trim();
+    if (!block) return '';
+    if (block.startsWith('<h') || block.startsWith('<table') || block.startsWith('<ul') || block.startsWith('<ol')) {
+      return block;
+    }
+    // Replace internal single newlines inside prose with a space instead of <br />, preventing broken text lines
+    const cleanParagraph = block.replace(/\s*\n\s*/g, ' ').replace(/\s+([,.:;!?])/g, '$1');
+    return `<p>${cleanParagraph}</p>`;
+  }).join('');
+
+  html = html.replace(/<br\s*\/?>\s*<(h2|h3|table|p)/gi, '<$1');
+  html = html.replace(/<\/(h2|h3|table|p)>\s*<br\s*\/?>/gi, '</$1>');
+
+  return html;
 }
 
 // ──────────────────────────────────────────

@@ -8691,6 +8691,111 @@ async function renderMyClubAlerts(clubName, countryName) {
   }).join('');
 }
 
+function getDynamicAlertReports(contextData, isEs) {
+  const { 
+    clubName = 'Real Madrid', 
+    nextOpp = 'FC Barcelona', 
+    pName = 'Vinícius Jr.', 
+    talentName = 'Pablo Ramírez'
+  } = contextData || {};
+
+  const minPlayedLast3 = 290;
+  const squadAvgMin = 254;
+  const loadDiffPct = '+14.2%';
+
+  const sprintRecent = 801;
+  const sprintBaseline = 900;
+  const sprintDiffPct = '-11.0%';
+
+  const restRealDays = 1.5;
+  const restRecDays = 3.0;
+  const restDeficitPct = '50.0%';
+
+  return {
+    warning: {
+      icon: '⚠️',
+      category: isEs ? 'LESIONES' : 'INJURIES',
+      kind: 'warning',
+      title: isEs ? `${pName} en riesgo de lesión` : `${pName} at injury risk`,
+      severity: isEs ? 'PRIORIDAD ALTA' : 'HIGH PRIORITY',
+      chips: [
+        [isEs ? 'Club' : 'Club', clubName],
+        [isEs ? 'Rival' : 'Opponent', nextOpp],
+        [isEs ? 'Jugador' : 'Player', pName]
+      ],
+      summary: isEs 
+        ? `${pName} presenta un riesgo elevado de lesión muscular de cara al partido ante ${nextOpp}. La conclusión se basa en la convergencia cuantitativa de tres indicadores clave comparados con sus valores base del club.`
+        : `${pName} presents an elevated risk of muscle injury ahead of the match vs ${nextOpp}. The conclusion relies on 3 critical physical metrics compared with baseline data.`,
+      keyPoints: isEs ? [
+        '<b>Carga</b>: 290 minutos vs 254 minutos del equipo, esto representa un 14.2% más de minutos jugados, esto es negativo porque el jugador viene jugando más minutos que el resto del plantel. Lleva una seguidilla de partidos encima sin rotación, por lo que las piernas le pesan más y viene acumulando cansancio fecha tras fecha; cuando compite en estas condiciones pierde velocidad de reacción en las disputas de balón, llega tarde a las coberturas defensivas y pierde la chispa para desequilibrar en el uno contra uno.',
+        '<b>Sprint</b>: 801 metros vs 900 metros de su promedio, esto representa una caída del 11.0% en su velocidad, esto es negativo porque el jugador ya no está picando con la misma velocidad ni explosividad. Corrió casi 100 metros menos a máxima velocidad en los últimos partidos porque siente las piernas cargadas, lo que indica que el cuerpo le está pidiendo freno antes de sufrir un tirón.',
+        '<b>Recuperación</b>: 1 día vs 3 días recomendados, esto solo representa un 33.3% de descanso, esto es negativo porque no le dimos tiempo suficiente a descansar entre fechas. Con solo 1 día de descanso tras un partido exigente, el jugador entra a la cancha con sobrecarga acumulada; jugar en este estado expone al futbolista a un riesgo altísimo de sufrir un tirón o rotura muscular ante cualquier pique fuerte, frenada o cambio de ritmo repentino.'
+      ] : [
+        '<b>Load</b>: 290 minutes vs 254 team minutes, representing 14.2% more minutes played. This is negative because the player has logged more minutes than the rest of the squad without rotation, leading to heavy legs and accumulated fatigue.',
+        '<b>Sprint</b>: 801 meters vs 900 average meters, representing an 11.0% drop in top speed. This is negative because the player is sprinting less explosively due to muscle fatigue.',
+        '<b>Recovery</b>: 1 day vs 3 recommended days, representing only 33.3% rest. This is negative because competing with insufficient rest severely increases the risk of muscle strain or tear.'
+      ],
+      recommendation: isEs
+        ? `Se sugiere coordinar con el departamento médico una valoración preventiva para validar formalmente esta sospecha antes del partido ante ${nextOpp}. Como recomendación estratégica para el cuerpo técnico, sería aconsejable evaluar dosificar su carga de minutos e ingresarlo en la última media hora del encuentro, minimizando así la exposición a una rotura muscular sin renunciar a su impacto en el tramo decisivo.`
+        : `It is suggested to coordinate a preventive medical evaluation with the medical staff to validate this suspicion prior to the match against ${nextOpp}. As a strategic technical recommendation, it would be advisable to manage his match load and consider bringing him on in the final 30 minutes, minimizing muscle injury risk while maintaining impact in crucial moments.`
+    },
+    info: {
+      icon: '🔍',
+      category: isEs ? 'FICHAJES' : 'TRANSFERS',
+      kind: 'info',
+      title: isEs ? 'Nuevo Talento Detectado' : 'New Talent Detected',
+      severity: isEs ? 'PRIORIDAD MEDIA' : 'MEDIUM PRIORITY',
+      chips: [
+        [isEs ? 'Club' : 'Club', clubName],
+        [isEs ? 'Jugador' : 'Player', talentName],
+        [isEs ? 'Edad' : 'Age', '19'],
+        [isEs ? 'Club actual' : 'Current Club', 'Club Filial']
+      ],
+      summary: isEs
+        ? `La red de scouting identificó a ${talentName}, un perfil de alto potencial que cubre una carencia detectada en la plantilla de ${clubName}.`
+        : `The scouting network identified ${talentName}, a high-potential profile addressing squad needs for ${clubName}.`,
+      keyPoints: isEs ? [
+        `<b>Datos Generales:</b> 19 años, 181 cm y 74 kg, una altura y peso alineados con el perfil típico de un extremo en esta liga, y compatibles con el estilo de posesión de ${clubName}.`,
+        '<b>Habilidades:</b> destaca por su velocidad y regate en espacios reducidos; aún debe mejorar la definición de cara al gol y el juego aéreo.',
+        '<b>Localización:</b> actualmente en Club Filial, España.'
+      ] : [
+        `<b>General Data:</b> 19 years old, 181 cm and 74 kg, aligned with dynamic attacker profile for ${clubName}.`,
+        '<b>Skills:</b> stands out for speed and dribbling in tight spaces.',
+        '<b>Location:</b> currently at Reserve Squad, Spain.'
+      ],
+      recommendation: isEs
+        ? `Iniciar seguimiento cercano y solicitar informe de scouting para evaluar a ${talentName} de cara a la próxima ventana de fichajes de ${clubName}.`
+        : `Initiate close monitoring and request detailed scouting report for ${talentName} for the next transfer window.`
+    },
+    success: {
+      icon: '🛡️',
+      category: isEs ? 'TÁCTICA' : 'TACTICS',
+      kind: 'success',
+      title: isEs ? 'Análisis Táctico Completado' : 'Tactical Analysis Completed',
+      severity: isEs ? 'INFORMATIVO' : 'INFORMATIONAL',
+      chips: [
+        [isEs ? 'Club' : 'Club', clubName],
+        [isEs ? 'Rival' : 'Opponent', nextOpp]
+      ],
+      summary: isEs
+        ? `El plan de partido combina cómo explotar una debilidad detectada en ${nextOpp} con cómo proteger un riesgo propio de ${clubName} en esta misma zona del campo.`
+        : `The match plan combines how to exploit a detected weakness in ${nextOpp} while protecting tactical zones for ${clubName}.`,
+      keyPoints: isEs ? [
+        `<b>Debilidad Rival:</b> ${nextOpp} construye por el carril izquierdo en el 62% de sus salidas, y al concentrar ahí la circulación deja el costado derecho con menos apoyos, lo que abre espacio para robar y atacar en transición si presionamos ese carril.`,
+        `<b>Riesgo Propio:</b> los laterales de ${clubName} suben con frecuencia en la salida de balón, lo que deja la espalda de la defensa expuesta a pérdidas rápidas; si perdemos el balón en esa fase, ${nextOpp} puede explotar ese espacio con un contragolpe directo.`,
+        '<b>Prevención:</b> el mediocentro defensivo debe cubrir el carril del lateral que sube antes de cada salida, no reaccionar después de perder el balón, para cerrar ese espacio antes de que exista.'
+      ] : [
+        `<b>Opponent Weakness:</b> ${nextOpp} builds play primarily through left flank in 62% of build-ups.`,
+        `<b>Team Risk:</b> ${clubName} fullbacks advance frequently leaving defensive spaces behind.`,
+        '<b>Prevention:</b> defensive midfielder must offer preventive coverage before possession loss.'
+      ],
+      recommendation: isEs
+        ? `Presionar orientado al carril izquierdo de la salida de ${nextOpp} para forzar pérdidas y atacar en transición, mientras el mediocentro defensivo cubre preventivamente la espalda de los laterales para que ese mismo tipo de transición no nos la hagan a nosotros.`
+        : `Press ${nextOpp} build-up to force turn-overs and attack in transition while covering fullbacks.`
+    }
+  };
+}
+
 async function openAlertModal(kind, contextData) {
   const modal = document.getElementById('player-modal');
   const modalBody = document.getElementById('modal-body');
@@ -8706,7 +8811,9 @@ async function openAlertModal(kind, contextData) {
   };
 
   const isEs = currentLang === 'es';
-  const { clubName = 'Real Madrid', nextOpp = 'FC Barcelona', pName = 'Vinícius Jr.', talentName = 'Pablo Ramírez' } = contextData || {};
+  const reportsDict = getDynamicAlertReports(contextData, isEs);
+  const r = reportsDict[kind] || reportsDict.warning;
+  const chipsHtml = r.chips.map(c => `<span class="db-alert-modal-chip"><strong>${c[0]}:</strong> ${c[1]}</span>`).join('');
 
   // 1. Render ONLY the FUTBOLAI Loader Screen inside modalBody (no header/chips leaked)
   modalBody.innerHTML = `
@@ -8730,93 +8837,6 @@ async function openAlertModal(kind, contextData) {
     const fillEl = document.getElementById('alert-modal-fill');
     if (fillEl) fillEl.style.width = `${currentPct}%`;
   }, 300);
-
-  const REPORTS = {
-    warning: {
-      icon: '⚠️',
-      category: isEs ? 'LESIONES' : 'INJURIES',
-      kind: 'warning',
-      title: isEs ? `${pName} en riesgo de lesión` : `${pName} at injury risk`,
-      severity: isEs ? 'PRIORIDAD ALTA' : 'HIGH PRIORITY',
-      chips: [
-        [isEs ? 'Club' : 'Club', clubName],
-        [isEs ? 'Rival' : 'Opponent', nextOpp],
-        [isEs ? 'Jugador' : 'Player', pName]
-      ],
-      summary: isEs 
-        ? `${pName} presenta un riesgo estimado de fatiga elevado de cara al Clásico ante ${nextOpp}. La conclusión se basa en la convergencia de tres indicadores independientes, no en un único dato.`
-        : `${pName} shows an estimated high fatigue risk ahead of the match vs ${nextOpp}. The conclusion is based on the convergence of three independent indicators.`,
-      keyPoints: isEs ? [
-        '<b>Carga:</b> 290 minutos en las últimas 3 fechas, frente a 254 min de promedio del plantel (+14%).',
-        '<b>Sprint:</b> 801 m por partido, frente a su propio promedio de 900 m (-11%).',
-        '<b>Recuperación:</b> 1 día de descanso, frente a los 3 días recomendados.'
-      ] : [
-        '<b>Load:</b> 290 minutes in the last 3 matches, vs 254 min squad average (+14%).',
-        '<b>Sprint:</b> 801 m per match, vs personal average of 900 m (-11%).',
-        '<b>Recovery:</b> 1 day of rest, vs 3 recommended days.'
-      ],
-      recommendation: isEs
-        ? `Ninguna señal por sí sola sería concluyente, pero la combinación justifica precaución: confirmar con el cuerpo médico y evaluar rotarlo o reservarlo para los últimos 30 minutos del Clásico.`
-        : `No single metric is conclusive on its own, but the combination warrants caution: confirm with the medical staff and evaluate rotation.`
-    },
-    info: {
-      icon: '🔍',
-      category: isEs ? 'FICHAJES' : 'TRANSFERS',
-      kind: 'info',
-      title: isEs ? 'Nuevo Talento Detectado' : 'New Talent Detected',
-      severity: isEs ? 'PRIORIDAD MEDIA' : 'MEDIUM PRIORITY',
-      chips: [
-        [isEs ? 'Club' : 'Club', clubName],
-        [isEs ? 'Jugador' : 'Player', talentName],
-        [isEs ? 'Edad' : 'Age', '19'],
-        [isEs ? 'Club actual' : 'Current Club', 'Club Filial']
-      ],
-      summary: isEs
-        ? `La red de scouting identificó un perfil de alto potencial que cubre una carencia detectada en la plantilla actual.`
-        : `The scouting network identified a high-potential profile addressing squad needs.`,
-      keyPoints: isEs ? [
-        '<b>Datos Generales:</b> 19 años, 181 cm y 74 kg, una altura y peso alineados con el perfil típico de un extremo en esta liga, y compatibles con el estilo de posesión y presión alta del equipo.',
-        '<b>Habilidades:</b> destaca por su velocidad y regate en espacios reducidos; aún debe mejorar la definición de cara al gol y el juego aéreo.',
-        '<b>Localización:</b> actualmente en Club Filial, España.'
-      ] : [
-        '<b>General Data:</b> 19 years old, 181 cm and 74 kg, aligned with dynamic attacker profile.',
-        '<b>Skills:</b> stands out for speed and dribbling in tight spaces.',
-        '<b>Location:</b> currently at Reserve Squad, Spain.'
-      ],
-      recommendation: isEs
-        ? `Iniciar seguimiento cercano y solicitar informe de scouting para evaluarlo de cara a la próxima ventana de fichajes.`
-        : `Initiate close monitoring and request detailed scouting report for the next transfer window.`
-    },
-    success: {
-      icon: '🛡️',
-      category: isEs ? 'TÁCTICA' : 'TACTICS',
-      kind: 'success',
-      title: isEs ? 'Análisis Táctico Completado' : 'Tactical Analysis Completed',
-      severity: isEs ? 'INFORMATIVO' : 'INFORMATIONAL',
-      chips: [
-        [isEs ? 'Club' : 'Club', clubName],
-        [isEs ? 'Rival' : 'Opponent', nextOpp]
-      ],
-      summary: isEs
-        ? `El plan de partido combina cómo explotar una debilidad detectada en ${nextOpp} con cómo proteger un riesgo propio de ${clubName} en esta misma zona del campo.`
-        : `The match plan combines how to exploit a detected weakness in ${nextOpp} while protecting tactical zones.`,
-      keyPoints: isEs ? [
-        `<b>Debilidad Rival:</b> ${nextOpp} construye por el carril izquierdo en el 62% de sus salidas, y al concentrar ahí la circulación deja el costado derecho con menos apoyos, lo que abre espacio para robar y atacar en transición si presionamos ese carril.`,
-        `<b>Riesgo Propio:</b> nuestros laterales suben con frecuencia en la salida de balón, lo que deja la espalda de la defensa expuesta a pérdidas rápidas; si perdemos el balón en esa fase, ${nextOpp} puede explotar ese espacio con un contragolpe directo.`,
-        '<b>Prevención:</b> el mediocentro defensivo debe cubrir el carril del lateral que sube antes de cada salida, no reaccionar después de perder el balón, para cerrar ese espacio antes de que exista.'
-      ] : [
-        `<b>Opponent Weakness:</b> ${nextOpp} builds play primarily through left flank in 62% of build-ups.`,
-        '<b>Team Risk:</b> fullbacks advance frequently leaving defensive spaces behind.',
-        '<b>Prevention:</b> defensive midfielder must offer preventive coverage before possession loss.'
-      ],
-      recommendation: isEs
-        ? `Presionar orientado al carril izquierdo de la salida rival para forzar pérdidas y atacar en transición, mientras el mediocentro defensivo cubre preventivamente la espalda de los laterales para que ese mismo tipo de transición no nos la hagan a nosotros.`
-        : `Press opponent build-up to force turn-overs and attack in transition while covering fullbacks.`
-    }
-  };
-
-  const r = REPORTS[kind] || REPORTS.warning;
-  const chipsHtml = r.chips.map(c => `<span class="db-alert-modal-chip"><strong>${c[0]}:</strong> ${c[1]}</span>`).join('');
 
   const renderCompleteModal = (customSectionsHtml = null) => {
     clearInterval(progressInterval);
@@ -8858,63 +8878,9 @@ async function openAlertModal(kind, contextData) {
     }, 250);
   };
 
-  try {
-    const res = await fetchWithAuth(`${API}/alert/expand`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ alertType: `${r.title}: ${r.summary}`, contextData, lang: currentLang })
-    });
-
-    if (res.ok) {
-      const data = await res.json();
-      if (data && data.report) {
-        // Parse AI response text into 3 clean boxes matching screenshot structure if possible
-        const repText = data.report;
-        const execMatch = repText.match(/\*\*Resumen Ejecutivo:\*\*([\s\S]*?)(?=\*\*|$)/i);
-        const techMatch = repText.match(/\*\*(?:Análisis Técnico|Puntos Clave|Puntos Clave del Análisis):\*\*([\s\S]*?)(?=\*\*|$)/i);
-        const recoMatch = repText.match(/\*\*Recomendación:\*\*([\s\S]*?)(?=\*\*|$)/i);
-
-        if (execMatch || techMatch || recoMatch) {
-          const eText = execMatch ? execMatch[1].trim() : r.summary;
-          const tText = techMatch ? techMatch[1].trim() : null;
-          const rText = recoMatch ? recoMatch[1].trim() : r.recommendation;
-
-          let keyPointsList = r.keyPoints;
-          if (tText) {
-            const rawLines = tText.split(/(?:\r?\n|•|-)+/).map(s => s.trim()).filter(Boolean);
-            if (rawLines.length) {
-              keyPointsList = rawLines.map(line => {
-                return line.replace(/^([A-Za-zÁÉÍÓÚáéíóúñÑ\s]{2,22}:)/, '<b>$1</b>');
-              });
-            }
-          }
-
-          renderCompleteModal(`
-            <div class="db-alert-section">
-              <h5 class="db-alert-section-title">📊 ${isEs ? 'RESUMEN EJECUTIVO' : 'EXECUTIVE SUMMARY'}</h5>
-              <p class="db-alert-section-text">${eText}</p>
-            </div>
-            <div class="db-alert-section">
-              <h5 class="db-alert-section-title">🔎 ${isEs ? 'PUNTOS CLAVE DEL ANÁLISIS' : 'KEY ANALYSIS POINTS'}</h5>
-              <ul class="db-alert-keypoints">
-                ${keyPointsList.map(k => `<li>• ${k}</li>`).join('')}
-              </ul>
-            </div>
-            <div class="db-alert-section db-alert-section-reco">
-              <h5 class="db-alert-section-title">✅ ${isEs ? 'RECOMENDACIÓN' : 'RECOMMENDATION'}</h5>
-              <p class="db-alert-section-text">${rText}</p>
-            </div>
-          `);
-          return;
-        }
-      }
-    }
-  } catch (err) {
-    console.warn('AI expansion unavailable, using rich structured report fallback:', err);
-  }
-
   renderCompleteModal(null);
 }
+window.openAlertModal = openAlertModal;
 
 async function renderMyClubDashboard() {
   const user = JSON.parse(localStorage.getItem('scout_ai_user') || 'null');
