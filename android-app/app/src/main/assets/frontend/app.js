@@ -22339,24 +22339,9 @@ function showRateLimitModal(retryAfterSec = 300) {
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 32px;
-        margin-bottom: 16px;
+        margin-bottom: 20px;
         box-shadow: 0 0 20px rgba(255, 183, 3, 0.2);
-      ">⚠️</div>
-
-      <span style="
-        display: inline-block;
-        padding: 4px 10px;
-        border-radius: 12px;
-        font-size: 11px;
-        font-weight: 700;
-        letter-spacing: 0.8px;
-        text-transform: uppercase;
-        background: rgba(255, 183, 3, 0.2);
-        color: #ffc93c;
-        border: 1px solid rgba(255, 183, 3, 0.3);
-        margin-bottom: 12px;
-      ">ADVERTENCIA 429</span>
+      "><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ffc93c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
 
       <h3 style="
         font-size: 20px;

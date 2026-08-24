@@ -254,15 +254,13 @@
     modal.className = `app-error-modal ${type}`;
 
     if (type === 'warning') {
-      iconEl.textContent = '⚠️';
-      badgeEl.textContent = status ? `ADVERTENCIA ${status}` : 'ADVERTENCIA';
+      iconEl.innerHTML = `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ffc93c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
     } else if (type === 'info') {
-      iconEl.textContent = 'ℹ️';
-      badgeEl.textContent = status ? `ESTADO ${status}` : 'INFORMACIÓN';
+      iconEl.innerHTML = `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#00f0ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
     } else {
-      iconEl.textContent = '🚨';
-      badgeEl.textContent = status ? `ERROR ${status}` : 'ERROR DE APLICACIÓN';
+      iconEl.innerHTML = `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ff4a4e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
     }
+    badgeEl.style.display = 'none';
 
     titleEl.textContent = title;
     msgEl.textContent = message;

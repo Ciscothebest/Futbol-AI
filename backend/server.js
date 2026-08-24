@@ -781,7 +781,7 @@ app.post('/api/compare', authenticate, productionAiRateLimiter, async (req, res)
 });
 
 // ─── Simulations Consumable Limit ─────────────────────────────────
-app.post('/api/simulations/consume', authenticate, async (req, res) => {
+app.post('/api/simulations/consume', authenticate, productionAiRateLimiter, async (req, res) => {
   try {
     let dbUser = await User.findByPk(req.user.id);
     if (!dbUser) return res.status(404).json({ error: 'Usuario no encontrado' });
