@@ -92,7 +92,13 @@ class FootballAgent {
   }
 
   async callDeepSeek(prompt, systemInstruction = SYSTEM_PROMPT) {
-    const apiKey = this.deepseekApiKey || process.env.GEMINI_API_KEY;
+    if (!this.isProduction) {
+      throw new Error('DeepSeek API sólo está disponible en entorno de producción (NODE_ENV=production)');
+    }
+    const apiKey = this.deepseekApiKey;
+    if (!apiKey || apiKey === 'your_deepseek_api_key_here') {
+      throw new Error('DEEPSEEK_API_KEY no está configurada o es inválida');
+    }
     const model = this.deepseekModel;
 
     const response = await fetch('https://api.deepseek.com/chat/completions', {
@@ -143,22 +149,14 @@ class FootballAgent {
         }
       }
     } else {
-      // In Local: Gemini primary -> DeepSeek fallback
+      // In Local: Gemini only
       if (this.geminiModel) {
         try {
           console.log(`🤖 [LOCAL] Generando con Gemini API (${this.model})...`);
           const result = await this.geminiModel.generateContent(prompt);
           return result.response.text();
         } catch (err) {
-          console.warn('⚠️ [LOCAL] Error en Gemini API, intentando DeepSeek fallback:', err.message);
-        }
-      }
-      if (this.deepseekApiKey) {
-        try {
-          console.log(`🤖 [LOCAL Fallback] Generando con DeepSeek API (${this.deepseekModel})...`);
-          return await this.callDeepSeek(prompt, systemInstruction);
-        } catch (err) {
-          console.warn('⚠️ [LOCAL] Error en DeepSeek API fallback:', err.message);
+          console.warn('⚠️ [LOCAL] Error en Gemini API:', err.message);
         }
       }
     }
@@ -514,7 +512,7 @@ Player 2: ${JSON.stringify(p2)}`;
       return this._demoComparison(p1, p2, criteria);
     }
 
-    if (this.deepseekApiKey) {
+    if (this.isProduction && this.deepseekApiKey) {
       try {
         console.log(`🤖 Generando análisis comparativo con DeepSeek API (${this.deepseekModel})...`);
         return await this.callDeepSeek(prompt, SYSTEM_PROMPT);
@@ -546,7 +544,7 @@ Player 2: ${JSON.stringify(p2)}`;
       return this._demoPredictions();
     }
 
-    if (this.deepseekApiKey) {
+    if (this.isProduction && this.deepseekApiKey) {
       try {
         return await this.callDeepSeek(prompt, SYSTEM_PROMPT);
       } catch (err) {
@@ -603,7 +601,7 @@ Use EXACTLY these three bold headers:
 - Tone: Serious, highly analytical, data-driven, persuasive, suitable for a Sporting Director.`;
 
     if (!this.demoMode) {
-      if (this.deepseekApiKey) {
+      if (this.isProduction && this.deepseekApiKey) {
         try {
           console.log(`🤖 Generando reporte de alerta con DeepSeek API (${this.deepseekModel})...`);
           return await this.callDeepSeek(prompt, SYSTEM_PROMPT);

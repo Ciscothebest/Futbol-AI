@@ -18378,6 +18378,14 @@ async function sendMessage(text) {
     });
     clearTimeout(timeoutId);
 
+    if (res.status === 429) {
+      thinking.remove();
+      const errData = await res.json().catch(() => ({}));
+      showRateLimitModal(errData.retryAfterSec || 300);
+      document.getElementById('send-btn').disabled = false;
+      return;
+    }
+
     if (!res.ok) throw new Error('Error al conectar con la IA');
 
     const reader = res.body.getReader();
@@ -18499,6 +18507,15 @@ async function sendAudioMessage(audioBase64, mimeType, audioBlob, durationSec) {
       signal: controller.signal
     });
     clearTimeout(timeoutId);
+
+    if (res.status === 429) {
+      thinking.remove();
+      const errData = await res.json().catch(() => ({}));
+      showRateLimitModal(errData.retryAfterSec || 300);
+      document.getElementById('send-btn').disabled = false;
+      document.getElementById('record-btn').disabled = false;
+      return;
+    }
 
     if (!res.ok) throw new Error('Error al procesar audio');
 
@@ -22236,6 +22253,151 @@ window.openFindUserModal = openFindUserModal;
 window.closeFindUserModal = closeFindUserModal;
 window.handleFindUserSearchKeyup = handleFindUserSearchKeyup;
 window.startChatWithUser = startChatWithUser;
+
+// ─── RATE LIMIT MODAL POPUP ───────────────────────────────────────
+let rateLimitTimerInterval = null;
+
+function showRateLimitModal(retryAfterSec = 300) {
+  let modalOverlay = document.getElementById('rate-limit-modal-overlay');
+  if (!modalOverlay) {
+    modalOverlay = document.createElement('div');
+    modalOverlay.id = 'rate-limit-modal-overlay';
+    modalOverlay.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(10, 15, 29, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999999;
+      opacity: 0;
+      transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    `;
+    document.body.appendChild(modalOverlay);
+  }
+
+  let remainingSec = parseInt(retryAfterSec, 10) || 300;
+
+  const formatCountdown = (totalSec) => {
+    if (totalSec <= 0) return '0 segundos (¡Ya puedes consultar!)';
+    const m = Math.floor(totalSec / 60);
+    const s = totalSec % 60;
+    if (m > 0) {
+      return `${m} minuto(s) y ${s < 10 ? '0' : ''}${s} segundo(s)`;
+    }
+    return `${s} segundo(s)`;
+  };
+
+  modalOverlay.innerHTML = `
+    <div style="
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(30, 41, 59, 0.98));
+      border: 1px solid rgba(0, 230, 118, 0.4);
+      box-shadow: 0 0 35px rgba(0, 230, 118, 0.25), 0 20px 60px rgba(0, 0, 0, 0.85);
+      border-radius: 20px;
+      padding: 32px 28px;
+      max-width: 450px;
+      width: 90%;
+      text-align: center;
+      position: relative;
+      color: #ffffff;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      transform: scale(0.92);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    " id="rate-limit-modal-card">
+      <div style="
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 16px auto;
+        background: rgba(0, 230, 118, 0.12);
+        border: 1px solid rgba(0, 230, 118, 0.4);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        box-shadow: 0 0 20px rgba(0, 230, 118, 0.25);
+      ">⏳</div>
+      <h3 style="
+        margin: 0 0 12px 0;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #ffffff;
+        letter-spacing: -0.5px;
+      ">Límite de Consultas IA</h3>
+      <p style="
+        margin: 0 0 24px 0;
+        color: #cbd5e1;
+        font-size: 0.98rem;
+        line-height: 1.6;
+      ">
+        Has hecho muchas preguntas en tan período de tiempo, puedes volver a preguntar en <strong id="rl-timer-countdown-text" style="color: #00E676; font-weight: 700;">${formatCountdown(remainingSec)}</strong>.
+      </p>
+      <button id="rate-limit-modal-close-btn" style="
+        background: linear-gradient(135deg, #00E676 0%, #00B0FF 100%);
+        color: #0f172a;
+        font-weight: 700;
+        border: none;
+        padding: 13px 32px;
+        border-radius: 12px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 15px rgba(0, 230, 118, 0.35);
+        width: 100%;
+      ">Entendido</button>
+    </div>
+  `;
+
+  const closeBtn = document.getElementById('rate-limit-modal-close-btn');
+  if (closeBtn) {
+    closeBtn.onclick = () => closeRateLimitModal();
+  }
+
+  modalOverlay.style.display = 'flex';
+  setTimeout(() => {
+    modalOverlay.style.opacity = '1';
+    const card = document.getElementById('rate-limit-modal-card');
+    if (card) card.style.transform = 'scale(1)';
+  }, 10);
+
+  if (rateLimitTimerInterval) clearInterval(rateLimitTimerInterval);
+  rateLimitTimerInterval = setInterval(() => {
+    remainingSec--;
+    const timerText = document.getElementById('rl-timer-countdown-text');
+    if (remainingSec <= 0) {
+      if (timerText) timerText.innerText = '0 segundos (¡Ya puedes consultar!)';
+      clearInterval(rateLimitTimerInterval);
+    } else {
+      if (timerText) timerText.innerText = formatCountdown(remainingSec);
+    }
+  }, 1000);
+
+  modalOverlay.onclick = (e) => {
+    if (e.target === modalOverlay) closeRateLimitModal();
+  };
+}
+
+function closeRateLimitModal() {
+  const modalOverlay = document.getElementById('rate-limit-modal-overlay');
+  if (modalOverlay) {
+    modalOverlay.style.opacity = '0';
+    setTimeout(() => {
+      modalOverlay.style.display = 'none';
+    }, 300);
+  }
+  if (rateLimitTimerInterval) {
+    clearInterval(rateLimitTimerInterval);
+    rateLimitTimerInterval = null;
+  }
+}
+
+window.showRateLimitModal = showRateLimitModal;
+window.closeRateLimitModal = closeRateLimitModal;
 
 
 

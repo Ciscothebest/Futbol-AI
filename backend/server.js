@@ -94,7 +94,7 @@ app.get('/api/health', async (req, res) => {
     res.json({
       status: 'ok',
       demoMode: agent.demoMode,
-      model: process.env.GEMINI_MODEL || 'deepseek-chat',
+      model: agent.isProduction ? agent.deepseekModel : agent.model,
       players: playerCount,
       db: 'connected'
     });
@@ -458,8 +458,68 @@ app.get('/api/team-logo-image/:id', (req, res) => {
   });
 });
 
+// ─── Production AI Rate Limiter (Max 2 requests every 5 minutes) ───
+const aiRateLimitMap = new Map();
+
+function productionAiRateLimiter(req, res, next) {
+  if (process.env.NODE_ENV !== 'production') {
+    return next();
+  }
+
+  const key = (req.user && req.user.id) 
+    ? `user_${req.user.id}` 
+    : `ip_${req.ip || req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown'}`;
+  
+  const NOW = Date.now();
+  const WINDOW_MS = 5 * 60 * 1000; // 5 minutes
+  const MAX_REQUESTS = 2;
+
+  const timestamps = (aiRateLimitMap.get(key) || []).filter(ts => NOW - ts < WINDOW_MS);
+
+  if (timestamps.length >= MAX_REQUESTS) {
+    const oldest = timestamps[0];
+    const retryAfterMs = WINDOW_MS - (NOW - oldest);
+    const retryAfterSec = Math.ceil(retryAfterMs / 1000);
+    const retryAfterMin = Math.ceil(retryAfterSec / 60);
+
+    const message = `Has alcanzado el límite en producción de máximo 2 peticiones a la IA cada 5 minutos. Por favor reintenta en ${retryAfterMin} minuto(s).`;
+
+    const isStream = req.path === '/stream' || req.originalUrl?.includes('/stream');
+    if (isStream) {
+      res.setHeader('Content-Type', 'text/event-stream');
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('Connection', 'keep-alive');
+      res.write(`data: ${JSON.stringify({ error: message, rateLimit: true, retryAfterSec })}\n\n`);
+      return res.end();
+    }
+
+    return res.status(429).json({
+      error: 'rate_limit_exceeded',
+      message,
+      retryAfterSec
+    });
+  }
+
+  timestamps.push(NOW);
+  aiRateLimitMap.set(key, timestamps);
+  next();
+}
+
+setInterval(() => {
+  const NOW = Date.now();
+  const WINDOW_MS = 5 * 60 * 1000;
+  for (const [key, timestamps] of aiRateLimitMap.entries()) {
+    const valid = timestamps.filter(ts => NOW - ts < WINDOW_MS);
+    if (valid.length === 0) {
+      aiRateLimitMap.delete(key);
+    } else {
+      aiRateLimitMap.set(key, valid);
+    }
+  }
+}, 10 * 60 * 1000);
+
 // ─── Chat ─────────────────────────────────────────────────────────
-app.post('/api/chat', authenticate, async (req, res) => {
+app.post('/api/chat', authenticate, productionAiRateLimiter, async (req, res) => {
   const { message, audioBase64, mimeType, sessionId, lang } = req.body;
   if (!message && !audioBase64) return res.status(400).json({ error: 'Message or audio is required' });
 
@@ -527,7 +587,7 @@ app.post('/api/chat', authenticate, async (req, res) => {
   }
 });
 
-app.post('/api/chat/stream', authenticate, async (req, res) => {
+app.post('/api/chat/stream', authenticate, productionAiRateLimiter, async (req, res) => {
   const { message, sessionId, lang, audioBase64, mimeType, clubContext, clubRoster } = req.body;
   const sid = sessionId || uuidv4();
 
@@ -637,7 +697,7 @@ app.delete('/api/chat/:sessionId', authenticate, (req, res) => {
 });
 
 // ─── AI Alert Expansion ───────────────────────────────────────────
-app.post('/api/alert/expand', authenticate, async (req, res) => {
+app.post('/api/alert/expand', authenticate, productionAiRateLimiter, async (req, res) => {
   const { alertType, contextData, lang } = req.body;
   if (!alertType || !contextData) {
     return res.status(400).json({ error: 'Missing alertType or contextData' });
@@ -653,7 +713,7 @@ app.post('/api/alert/expand', authenticate, async (req, res) => {
 });
 
 // ─── Compare ──────────────────────────────────────────────────────
-app.post('/api/compare', authenticate, async (req, res) => {
+app.post('/api/compare', authenticate, productionAiRateLimiter, async (req, res) => {
   const { player1Id, player2Id, lang } = req.body;
   if (!player1Id || !player2Id) {
     return res.status(400).json({ error: 'Two player IDs required' });
@@ -767,7 +827,7 @@ app.post('/api/simulations/consume', authenticate, async (req, res) => {
 });
 
 // ─── Predictions ──────────────────────────────────────────────────
-app.get('/api/predictions', authenticate, async (req, res) => {
+app.get('/api/predictions', authenticate, productionAiRateLimiter, async (req, res) => {
   const lang = req.query.lang || 'es';
   try {
     const predictions = await agent.getPredictions(lang);
