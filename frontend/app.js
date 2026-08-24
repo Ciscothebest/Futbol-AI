@@ -10083,7 +10083,6 @@ function goToSection(name) {
   if (name === 'my-club') renderMyClubDashboard();
   if (name === 'players') renderPlayers();
   if (name === 'compare') window.resetCompareModule();
-  if (name === 'predictions' && !predictionsLoaded) loadPredictions();
   if (name === 'profile') renderProfile();
   if (name === 'simulations') initSimulationsSection();
   if (name === 'my-chats') renderMyChatsSection();
