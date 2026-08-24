@@ -324,7 +324,7 @@ class FootballAgent {
         const userHistoryPart = { role: 'user', parts: [{ text: userMessage || '[Audio]' }] };
         history.push(userHistoryPart);
         history.push({ role: 'model', parts: [{ text: fullResponse }] });
-        if (history.length > 40) this.sessions.set(sessionId, history.slice(-40));
+        if (history.length > 6) this.sessions.set(sessionId, history.slice(-6));
 
         onDone(fullResponse);
         return;
