@@ -1115,25 +1115,25 @@ function setupOnboarding() {
   // --- PREMIUM SUBSCRIPTION TIERS LOCK & PAYMENT MODAL LOGIC ---
   const tierDetails = {
     'Pro': {
-      price: '$9.99',
+      price: '$25.00/mes',
       desc: 'Accede a capacidades avanzadas de descubrimiento y evaluación de talentos locales e internacionales con nuestra IA en tiempo real. Analiza fichajes potenciales con total precisión.',
       icon: '🔍',
       color: '#00f0ff'
     },
     'Local': {
-      price: '$40.00',
-      desc: 'Destinado para entrenador local. Acceso completo a herramientas de gestión, análisis táctico y visualización de entrenamientos locales por un precio único.',
+      price: '$75.00/año',
+      desc: 'Destinado para entrenador local. Acceso completo a herramientas de gestión, análisis táctico y visualización de entrenamientos locales por una suscripción anual.',
       icon: '🧢',
       color: '#39ff14'
     },
     'Plus': {
-      price: '$19.99',
-      desc: 'Métricas avanzadas de scouting, mapas de calor (heatmaps) dinámicos de rendimiento y reportes tácticos ejecutivos automatizados de Gemini IA en formato profesional.',
+      price: '$50.00/mes',
+      desc: 'Métricas avanzadas de scouting, mapas de calor (heatmaps) dinámicos de rendimiento y reportes tácticos ejecutivos automatizados de IA en formato profesional.',
       icon: '📊',
       color: '#f0bc42'
     },
     'Enterprise': {
-      price: '$49.99',
+      price: '$100.00/mes',
       desc: 'Gestión completa de plantillas federadas, integración API en tiempo real con mercados de fichajes internacionales, y soporte técnico de scout prioritario 24/7.',
       icon: '🤝',
       color: '#c8102e'

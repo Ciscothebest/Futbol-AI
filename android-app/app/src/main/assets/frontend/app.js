@@ -19282,10 +19282,10 @@ window.pendingPaymentCard = null;
 // Prices map
 const TIER_PRICES = {
   'Gratis': 0.00,
-  'Pro': 9.99,
-  'Local': 40.00,
-  'Plus': 19.99,
-  'Enterprise': 49.99
+  'Pro': 25.00,
+  'Plus': 50.00,
+  'Local': 75.00,
+  'Enterprise': 100.00
 };
 
 const TIER_RANKS = {
@@ -19555,16 +19555,18 @@ window.showPaymentModal = (tierName, price, cardElement, isUpgrade = false) => {
 
   let numericPrice = parseFloat(String(price).replace(/[^0-9\.]/g, ''));
   if (isNaN(numericPrice)) {
-    numericPrice = TIER_PRICES[tierName] || 9.99;
+    numericPrice = TIER_PRICES[tierName] || 25.00;
   }
   window.pendingPaymentAmount = numericPrice;
 
+  const periodText = tierName === 'Local' ? '/ año' : '/ mes';
+
   if (isUpgrade) {
     document.getElementById('payment-modal-title').textContent = `Mejorar Plan a ${tierName}`;
-    document.getElementById('payment-modal-price').innerHTML = `$${numericPrice.toFixed(2)} <span style="font-size: 13px; color: rgba(255,255,255,0.4); font-weight: 400;">(Diferencia única, luego $${(TIER_PRICES[tierName] || 0).toFixed(2)}/mes)</span>`;
+    document.getElementById('payment-modal-price').innerHTML = `$${numericPrice.toFixed(2)} <span style="font-size: 13px; color: rgba(255,255,255,0.4); font-weight: 400;">(Diferencia única, luego $${(TIER_PRICES[tierName] || 0).toFixed(2)}${periodText})</span>`;
   } else {
     document.getElementById('payment-modal-title').textContent = `Activar Plan ${tierName}`;
-    document.getElementById('payment-modal-price').innerHTML = `$${numericPrice.toFixed(2)} <span style="font-size: 13px; color: rgba(255,255,255,0.4); font-weight: 400;">/ mes</span>`;
+    document.getElementById('payment-modal-price').innerHTML = `$${numericPrice.toFixed(2)} <span style="font-size: 13px; color: rgba(255,255,255,0.4); font-weight: 400;">${periodText}</span>`;
   }
 
   modal.style.display = 'flex';

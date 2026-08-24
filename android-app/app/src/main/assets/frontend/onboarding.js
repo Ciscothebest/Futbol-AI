@@ -2,31 +2,41 @@ let _onboardingMap = null;
 
 function setupOnboarding() {
   const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
-  const isExisting = user.onboardingComplete || !!user.localCoachData || !!user.selectedClub;
+  const isLocalPlan = (user.selectedTier || '').toLowerCase() === 'local';
+  const hasLocalData = !!user.localCoachData;
+  const hasValidProTeam = !!user.selectedClub && user.selectedClub !== 'Club Local' && user.selectedClub !== '' && !!user.selectedCountry && user.selectedCountry !== 'Local';
 
-  if (isExisting) {
-    const localScreen = document.getElementById('local-coach-onboarding-screen');
+  const localScreen = document.getElementById('local-coach-onboarding-screen');
+  const onboarding = document.getElementById('onboarding-screen');
+
+  if (isLocalPlan) {
+    if (onboarding) onboarding.style.display = 'none';
+    if (!hasLocalData) {
+      if (localScreen) {
+        document.body.style.overflow = 'hidden';
+        document.body.style.height = '100vh';
+        localScreen.style.display = 'flex';
+      }
+    } else {
+      if (localScreen) localScreen.style.display = 'none';
+      document.body.style.overflow = '';
+      document.body.style.height = '';
+    }
+    return;
+  }
+
+  // Para planes no-locales: Si ya cuenta con equipo profesional válido seleccionado, ocultar overlays
+  if (hasValidProTeam) {
     if (localScreen) localScreen.style.display = 'none';
-    const onboarding = document.getElementById('onboarding-screen');
     if (onboarding) onboarding.style.display = 'none';
     document.body.style.overflow = '';
     document.body.style.height = '';
     return;
   }
 
-  if (user.selectedTier === 'Local') {
-    const localScreen = document.getElementById('local-coach-onboarding-screen');
-    if (localScreen) {
-      document.body.style.overflow = 'hidden';
-      document.body.style.height = '100vh';
-      localScreen.style.display = 'flex';
-      return;
-    }
-  }
-
-  const onboarding = document.getElementById('onboarding-screen');
   if (!onboarding) return;
   
+  if (localScreen) localScreen.style.display = 'none';
   // Bloqueo total de scroll en el body
   document.body.style.overflow = 'hidden';
   document.body.style.height = '100vh';
@@ -1029,8 +1039,13 @@ function setupOnboarding() {
     const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
     user.onboardingComplete = true;
     user.selectedCountry = selectedCountries.length ? selectedCountries.join(', ') : 'Local';
-    user.selectedClub = selectedClub || 'Club Local';
+    user.selectedClub = (selectedTier === 'Local') ? 'Club Local' : (selectedClub || 'Club Local');
     user.selectedTier = selectedTier;
+    if (selectedTier !== 'Local' && selectedClub && selectedClub !== 'Club Local') {
+      user.previousStandardClub = selectedClub;
+      user.previousStandardCountry = selectedCountries.join(', ');
+      user.standardOnboardingCompleted = true;
+    }
     localStorage.setItem('scout_ai_user', JSON.stringify(user));
     localStorage.removeItem('scout_ai_swaps'); // Clear custom swaps on club change!
     localStorage.removeItem('scout_ai_benched'); // Clear benched players list on club change!
@@ -1100,25 +1115,25 @@ function setupOnboarding() {
   // --- PREMIUM SUBSCRIPTION TIERS LOCK & PAYMENT MODAL LOGIC ---
   const tierDetails = {
     'Pro': {
-      price: '$9.99',
+      price: '$25.00/mes',
       desc: 'Accede a capacidades avanzadas de descubrimiento y evaluación de talentos locales e internacionales con nuestra IA en tiempo real. Analiza fichajes potenciales con total precisión.',
       icon: '🔍',
       color: '#00f0ff'
     },
     'Local': {
-      price: '$40.00',
-      desc: 'Destinado para entrenador local. Acceso completo a herramientas de gestión, análisis táctico y visualización de entrenamientos locales por un precio único.',
+      price: '$75.00/año',
+      desc: 'Destinado para entrenador local. Acceso completo a herramientas de gestión, análisis táctico y visualización de entrenamientos locales por una suscripción anual.',
       icon: '🧢',
       color: '#39ff14'
     },
     'Plus': {
-      price: '$19.99',
-      desc: 'Métricas avanzadas de scouting, mapas de calor (heatmaps) dinámicos de rendimiento y reportes tácticos ejecutivos automatizados de Gemini IA en formato profesional.',
+      price: '$50.00/mes',
+      desc: 'Métricas avanzadas de scouting, mapas de calor (heatmaps) dinámicos de rendimiento y reportes tácticos ejecutivos automatizados de IA en formato profesional.',
       icon: '📊',
       color: '#f0bc42'
     },
     'Enterprise': {
-      price: '$49.99',
+      price: '$100.00/mes',
       desc: 'Gestión completa de plantillas federadas, integración API en tiempo real con mercados de fichajes internacionales, y soporte técnico de scout prioritario 24/7.',
       icon: '🤝',
       color: '#c8102e'
