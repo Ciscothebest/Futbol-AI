@@ -61,7 +61,7 @@ async function findRelevantPlayers(message, limit = 5) {
 class FootballAgent {
   constructor() {
     this.deepseekApiKey = process.env.DEEPSEEK_API_KEY;
-    this.deepseekModel = process.env.DEEPSEEK_MODEL || 'deepseek-chat';
+    this.deepseekModel = process.env.DEEPSEEK_MODEL || 'deepseek-v4-pro';
     this.geminiApiKey = process.env.GEMINI_API_KEY;
     this.model = process.env.GEMINI_MODEL || 'gemini-2.5-flash-lite';
     this.sessions = new Map(); // sessionId -> history[]
