@@ -3,7 +3,12 @@ const { Player } = require('./database');
 const { Op } = require('sequelize');
 
 // Compact system prompt — no player data injected here (keeps token count low)
-const SYSTEM_PROMPT = `You are FutbolAI ⚽ — a world-class football intelligence assistant with deep expertise in global football. You are bilingual: always detect the language the user writes in (Spanish or English) and respond in that same language. If the message is ambiguous, respond in Spanish.
+const SYSTEM_PROMPT = `You are FutbolAI — a world-class football intelligence assistant with deep expertise in global football. You are bilingual: always detect the language the user writes in (Spanish or English) and respond in that same language. If the message is ambiguous, respond in Spanish.
+
+STRICT FORMATTING AND CONTENT RULES:
+1. NO EMOJIS ALLOWED: Do NOT use any emojis, emoticons, flag symbols, or decorative icons anywhere in your response. Keep all text completely emoji-free.
+2. NO RATINGS ALLOWED: Do NOT include, mention, or calculate numeric "ratings", "overall ratings", or video-game style scores (e.g. NEVER write "Rating: 90/100" or "Overall: 88").
+Always describe players qualitatively and strictly through their real-life statistics (goals, assists, matches), tactical qualities, skills, performance, position, and achievements.
 
 You can:
 - Answer detailed questions about any player's stats, career, playing style, strengths and weaknesses
@@ -12,17 +17,13 @@ You can:
 - Discuss tactics, formations, and how specific players fit into systems
 - Talk about historical achievements, transfer history, and trophies
 
-IMPORTANT RULE — NO RATINGS:
-Do NOT include, mention, or calculate numeric "ratings" or video-game style scores (e.g. NEVER write "Rating: 90/100" or "Overall: 88").
-Always describe players qualitatively and strictly through their real-life statistics (goals, assists, matches), tactical qualities, skills, performance, and achievements.
-
 PREMIER LEAGUE CONTEXT (2024-25 Season):
 The Premier League has 20 clubs. Current teams:
 Arsenal, Aston Villa, Bournemouth, Brentford, Brighton & Hove Albion, Burnley, Chelsea, Crystal Palace, Everton, Fulham, Leeds United, Liverpool, Manchester City, Manchester United, Newcastle United, Nottingham Forest, Sunderland, Tottenham Hotspur, West Ham United, Wolverhampton Wanderers.
 
 Key facts: 38-game season, top 4 qualify for Champions League, 5th/6th for Europa League, 7th for Conference League, bottom 3 relegated. Current champions: Manchester City (multiple consecutive titles). Premier League is widely considered the most competitive and watched league in the world.
 
-Be passionate, engaging, and expert. Use football terminology naturally.
+Be professional, engaging, and expert. Use football terminology naturally.
 If player data is provided in the user message, use it. If not, use your broad football knowledge.`;
 
 async function findRelevantPlayers(message, limit = 5) {
@@ -676,7 +677,7 @@ Use EXACTLY these three bold headers:
   async _demoResponse(message) {
     const msg = (message || '').toLowerCase();
     const allPlayers = await Player.findAll({
-      attributes: ['id', 'name', 'flag', 'currentTeam', 'league', 'position', 'positionEs', 'overallRating', 'stats', 'bio', 'trophies']
+      attributes: ['id', 'name', 'currentTeam', 'league', 'position', 'positionEs', 'stats', 'bio', 'trophies']
     });
 
     const isTopList = msg.includes('top') || msg.includes('mejores') || msg.includes('mencioname') || msg.includes('dame') || msg.includes('lista') || msg.includes('jugadores');
@@ -701,15 +702,14 @@ Use EXACTLY these three bold headers:
       if (positionFilter) {
         filtered = allPlayers.filter(p => positionFilter.some(pos => (p.position || '').toUpperCase().includes(pos) || (p.positionEs || '').toLowerCase().includes(pos.toLowerCase())));
       }
-      filtered.sort((a, b) => (b.overallRating || 0) - (a.overallRating || 0));
       const topList = filtered.slice(0, 10);
 
       if (topList.length > 0) {
         const titlePos = positionFilter ? 'Top Jugadores en la posición solicitada' : 'Top 10 Jugadores Destacados';
-        let resText = `⚽ **${titlePos} (Base de Datos FutbolAI):**\n\n`;
+        let resText = `**${titlePos} (Base de Datos FutbolAI):**\n\n`;
         topList.forEach((p, idx) => {
-          const statsStr = p.stats ? ` (⚽ ${p.stats.goals || 0} goles, 🎯 ${p.stats.assists || 0} asistencias)` : '';
-          resText += `**${idx + 1}. ${p.name}** ${p.flag || ''} — *${p.currentTeam}* | Posición: ${p.positionEs || p.position}${statsStr}\n`;
+          const statsStr = p.stats ? ` (Goles: ${p.stats.goals || 0}, Asistencias: ${p.stats.assists || 0})` : '';
+          resText += `**${idx + 1}. ${p.name}** — *${p.currentTeam}* | Posición: ${p.positionEs || p.position}${statsStr}\n`;
         });
         return resText;
       }
@@ -721,11 +721,11 @@ Use EXACTLY these three bold headers:
     );
 
     if (found) {
-      return `**${found.name}** ${found.flag || ''}\n\n📍 **Club:** ${found.currentTeam} (${found.league})\n🎯 **Posición:** ${found.positionEs || found.position}\n\n📊 **Estadísticas 2024-25:**\n- Goles: ${found.stats?.goals || 0} en ${found.stats?.matches || 0} partidos\n- Asistencias: ${found.stats?.assists || 0}\n\n📝 ${found.bio || 'Jugador destacado en el fútbol mundial.'}\n\n🏆 **Palmarés:** ${(found.trophies || []).slice(0, 3).join(', ') || 'N/A'}`;
+      return `**${found.name}**\n\n- **Club:** ${found.currentTeam} (${found.league})\n- **Posición:** ${found.positionEs || found.position}\n\n**Estadísticas 2024-25:**\n- Goles: ${found.stats?.goals || 0} en ${found.stats?.matches || 0} partidos\n- Asistencias: ${found.stats?.assists || 0}\n\n**Descripción:** ${found.bio || 'Jugador destacado en el fútbol mundial.'}\n\n**Palmarés:** ${(found.trophies || []).slice(0, 3).join(', ') || 'N/A'}`;
     }
 
-    const top5 = [...allPlayers].sort((a,b) => (b.overallRating||0) - (a.overallRating||0)).slice(0, 5);
-    let generalRes = `¡Hola! Soy **FutbolAI** ⚽ — tu asistente inteligente de fútbol mundial.\n\nAquí tienes algunos de los jugadores más destacados de nuestra base de datos:\n\n`;
+    const top5 = [...allPlayers].slice(0, 5);
+    let generalRes = `Hola, soy FutbolAI — tu asistente inteligente de fútbol mundial.\n\nAquí tienes algunos de los jugadores más destacados de nuestra base de datos:\n\n`;
     top5.forEach((p, i) => {
       generalRes += `**${i+1}. ${p.name}** (${p.currentTeam}) — Posición: ${p.positionEs || p.position}\n`;
     });
