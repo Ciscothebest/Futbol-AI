@@ -447,5 +447,53 @@ async function enableRLSIfPostgres() {
   }
 }
 
-module.exports = { sequelize, Player, Prospect, User, League, Team, QueryLog, ComparisonLog, FavoriteLog, Payment, PaymentMethod, DirectMessage, UserContact, enableRLSIfPostgres };
+const AiApiLog = sequelize.define('ai_api_log', {
+  id: {
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
+    primaryKey: true
+  },
+  endpoint: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  scenario: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  userMessage: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  provider: {
+    type: DataTypes.STRING,
+    defaultValue: 'DeepSeek'
+  },
+  model: {
+    type: DataTypes.STRING,
+    defaultValue: 'deepseek-chat'
+  },
+  status: {
+    type: DataTypes.INTEGER,
+    defaultValue: 200
+  },
+  tokensEstimated: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0
+  },
+  costUSD: {
+    type: DataTypes.FLOAT,
+    defaultValue: 0.0
+  },
+  userEmail: {
+    type: DataTypes.STRING,
+    allowNull: true
+  }
+}, {
+  tableName: 'ai_api_logs',
+  timestamps: true,
+  updatedAt: false
+});
+
+module.exports = { sequelize, Player, Prospect, User, League, Team, QueryLog, ComparisonLog, FavoriteLog, Payment, PaymentMethod, DirectMessage, UserContact, AiApiLog, enableRLSIfPostgres };
 

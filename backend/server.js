@@ -9,7 +9,7 @@ const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
 const jwt = require('jsonwebtoken');
 const FootballAgent = require('./agent');
-const { Player, Prospect, User, League, Team, sequelize, QueryLog, ComparisonLog, FavoriteLog, Payment, PaymentMethod, DirectMessage, UserContact, enableRLSIfPostgres } = require('./database');
+const { Player, Prospect, User, League, Team, sequelize, QueryLog, ComparisonLog, FavoriteLog, Payment, PaymentMethod, DirectMessage, UserContact, AiApiLog, enableRLSIfPostgres } = require('./database');
 
 const seedLeaguesAndTeams = require('./seed-db-onboarding');
 const seedDemoUsers = require('./seed-demo-users');
@@ -484,6 +484,16 @@ function productionAiRateLimiter(req, res, next) {
 
     const message = `Has alcanzado el límite en producción de máximo 2 peticiones a la IA cada 5 minutos. Por favor reintenta en ${retryAfterMin} minuto(s).`;
 
+    recordAiCall({
+      endpoint: req.originalUrl || req.path,
+      scenario: req.path.includes('compare') ? 'Comparación de Jugadores' : (req.path.includes('simulations') ? 'Simulador de Fichajes / Partidos' : (req.path.includes('alert') ? 'Ampliar Alerta Mi Club' : 'Chat IA')),
+      userMessage: req.body?.message || req.body?.alertType || 'Petición bloqueada por límite de tasa (429)',
+      status: 429,
+      tokensEstimated: 0,
+      costUSD: 0.0,
+      userEmail: req.user?.email || 'Usuario'
+    });
+
     return res.status(429).json({
       error: 'rate_limit_exceeded',
       message,
@@ -508,6 +518,24 @@ setInterval(() => {
     }
   }
 }, 10 * 60 * 1000);
+
+async function recordAiCall({ endpoint, scenario, userMessage, provider, model, status, tokensEstimated, costUSD, userEmail }) {
+  try {
+    await AiApiLog.create({
+      endpoint: endpoint || '/api/chat/stream',
+      scenario: scenario || 'Chat IA',
+      userMessage: userMessage ? String(userMessage).substring(0, 500) : 'Consulta a la IA',
+      provider: provider || 'DeepSeek',
+      model: model || 'deepseek-chat',
+      status: status || 200,
+      tokensEstimated: tokensEstimated || 1200,
+      costUSD: costUSD !== undefined ? costUSD : 0.0003,
+      userEmail: userEmail || 'Usuario Anónimo'
+    });
+  } catch (e) {
+    console.warn('Error registrando log de IA:', e.message);
+  }
+}
 
 // ─── Chat ─────────────────────────────────────────────────────────
 app.post('/api/chat', authenticate, productionAiRateLimiter, async (req, res) => {
@@ -671,6 +699,17 @@ app.post('/api/chat/stream', authenticate, productionAiRateLimiter, async (req, 
         if (!res.writableEnded) {
           res.write(`data: ${JSON.stringify({ done: true, sessionId: sid, user: dbUser ? dbUser.toPublicJSON() : null })}\n\n`);
           res.end();
+          recordAiCall({
+            endpoint: '/api/chat/stream',
+            scenario: 'Chat IA (Stream)',
+            userMessage: message || 'Mensaje de voz',
+            provider: 'DeepSeek',
+            model: 'deepseek-chat',
+            status: 200,
+            tokensEstimated: Math.max(800, (full || '').length * 2),
+            costUSD: Math.max(0.0002, (full || '').length * 0.0000005),
+            userEmail: req.user?.email || (dbUser ? dbUser.email : 'Usuario')
+          });
         }
       },
       (err) => {
@@ -705,6 +744,17 @@ app.post('/api/alert/expand', authenticate, productionAiRateLimiter, async (req,
 
   try {
     const report = await agent.expandAlert(alertType, contextData, lang || 'es');
+    recordAiCall({
+      endpoint: '/api/alert/expand',
+      scenario: 'Ampliar Alerta Mi Club',
+      userMessage: `Alerta: ${alertType} (${contextData?.pName || contextData?.clubName || 'Jugador'})`,
+      provider: 'DeepSeek',
+      model: 'deepseek-chat',
+      status: 200,
+      tokensEstimated: 1100,
+      costUSD: 0.0003,
+      userEmail: req.user?.email || 'Usuario'
+    });
     res.json({ report });
   } catch (err) {
     console.error('Alert expand error:', err.message);
@@ -773,6 +823,17 @@ app.post('/api/compare', authenticate, productionAiRateLimiter, async (req, res)
     const analysis = await agent.comparePlayers(player1Id, player2Id, lang || 'es');
     const p1 = await Player.findByPk(player1Id);
     const p2 = await Player.findByPk(player2Id);
+    recordAiCall({
+      endpoint: '/api/compare',
+      scenario: 'Comparación de Jugadores',
+      userMessage: `Comparación: ${p1?.name || player1Id} vs ${p2?.name || player2Id}`,
+      provider: 'DeepSeek',
+      model: 'deepseek-chat',
+      status: 200,
+      tokensEstimated: 1800,
+      costUSD: 0.0005,
+      userEmail: req.user?.email || 'Usuario'
+    });
     res.json({ analysis, player1: p1, player2: p2, user: dbUser ? dbUser.toPublicJSON() : null });
   } catch (err) {
     console.error('Compare error:', err.message);
@@ -819,11 +880,58 @@ app.post('/api/simulations/consume', authenticate, productionAiRateLimiter, asyn
       await dbUser.save();
     }
 
+    recordAiCall({
+      endpoint: '/api/simulations/consume',
+      scenario: 'Simulador de Fichajes / Partidos',
+      userMessage: `Simulación ejecutada por usuario plan ${tier}`,
+      provider: 'DeepSeek',
+      model: 'deepseek-chat',
+      status: 200,
+      tokensEstimated: 1400,
+      costUSD: 0.0004,
+      userEmail: dbUser.email
+    });
+
     res.json({ success: true, user: dbUser.toPublicJSON() });
   } catch (err) {
     console.error('Error in /api/simulations/consume:', err);
     res.status(500).json({ error: err.message });
   }
+});
+
+// ─── ADMIN AI LOGS MONITORING ENDPOINTS ──────────────────────────────
+app.get('/api/admin/ai-logs', async (req, res) => {
+  try {
+    const logs = await AiApiLog.findAll({
+      order: [['createdAt', 'DESC']],
+      limit: 150
+    });
+    const totalCalls = await AiApiLog.count();
+    const successCalls = await AiApiLog.count({ where: { status: 200 } });
+    const rateLimitedCalls = await AiApiLog.count({ where: { status: 429 } });
+    const errorCalls = await AiApiLog.count({ where: { status: 500 } });
+    const totalTokens = (await AiApiLog.sum('tokensEstimated')) || 0;
+    const totalCost = (await AiApiLog.sum('costUSD')) || 0.0;
+
+    res.json({
+      success: true,
+      stats: {
+        totalCalls,
+        successCalls,
+        rateLimitedCalls,
+        errorCalls,
+        totalTokens,
+        totalCostUSD: parseFloat(totalCost.toFixed(4))
+      },
+      logs
+    });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+app.get('/admin/ai-monitor', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/ai-monitor.html'));
 });
 
 // ─── Predictions ──────────────────────────────────────────────────
