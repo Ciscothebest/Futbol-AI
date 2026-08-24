@@ -18385,7 +18385,10 @@ async function sendMessage(text) {
       return;
     }
 
-    if (!res.ok) throw new Error('Error al conectar con la IA');
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.error || errData.message || errData.details || `Error del servidor (${res.status})`);
+    }
 
     const reader = res.body.getReader();
     const decoder = new TextDecoder();

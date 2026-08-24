@@ -290,7 +290,7 @@ class FootballAgent {
     }
   }
 
-  async chatStream(sessionId, userMessage, language = 'es', clubContext = null, clubRoster = null, onChunk, onDone, onError) {
+  async chatStream(sessionId, userMessage, language = 'es', audioBase64 = null, mimeType = null, clubContext = null, clubRoster = null, userContext = null, onChunk, onDone, onError) {
     if (this.demoMode) {
       const resp = await this._demoResponse(userMessage || "audio_message");
       onChunk(resp);
