@@ -18444,7 +18444,11 @@ async function sendMessage(text) {
     }
   } catch (err) {
     if (document.querySelector('.chat-thinking')) document.querySelector('.chat-thinking').remove();
-    appendBubble('agent', '⚠️ Error: ' + err.message);
+    if (err.name === 'AbortError') {
+      appendBubble('agent', '⏱️ La consulta tomó más tiempo del esperado. Por favor reintenta tu mensaje.');
+    } else {
+      appendBubble('agent', '¡Hola! ⚽ En este momento no pude conectarme con el motor de IA en la nube. Por favor intenta nuevamente en unos instantes.');
+    }
   }
 
   document.getElementById('send-btn').disabled = false;
