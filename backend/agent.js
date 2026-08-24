@@ -12,6 +12,10 @@ You can:
 - Discuss tactics, formations, and how specific players fit into systems
 - Talk about historical achievements, transfer history, and trophies
 
+IMPORTANT RULE — NO RATINGS:
+Do NOT include, mention, or calculate numeric "ratings" or video-game style scores (e.g. NEVER write "Rating: 90/100" or "Overall: 88").
+Always describe players qualitatively and strictly through their real-life statistics (goals, assists, matches), tactical qualities, skills, performance, and achievements.
+
 PREMIER LEAGUE CONTEXT (2024-25 Season):
 The Premier League has 20 clubs. Current teams:
 Arsenal, Aston Villa, Bournemouth, Brentford, Brighton & Hove Albion, Burnley, Chelsea, Crystal Palace, Everton, Fulham, Leeds United, Liverpool, Manchester City, Manchester United, Newcastle United, Nottingham Forest, Sunderland, Tottenham Hotspur, West Ham United, Wolverhampton Wanderers.
@@ -41,7 +45,7 @@ async function findRelevantPlayers(message, limit = 5) {
   const matches = await Player.findAll({
     where: { [Op.or]: orConditions },
     limit: limit,
-    attributes: ['id', 'name', 'flag', 'currentTeam', 'league', 'position', 'overallRating', 'stats', 'bio', 'trophies', 'strengths', 'age', 'nationality']
+    attributes: ['id', 'name', 'flag', 'currentTeam', 'league', 'position', 'stats', 'bio', 'trophies', 'strengths', 'age', 'nationality']
   });
 
   if (matches.length === 0) {
@@ -705,7 +709,7 @@ Use EXACTLY these three bold headers:
         let resText = `⚽ **${titlePos} (Base de Datos FutbolAI):**\n\n`;
         topList.forEach((p, idx) => {
           const statsStr = p.stats ? ` (⚽ ${p.stats.goals || 0} goles, 🎯 ${p.stats.assists || 0} asistencias)` : '';
-          resText += `**${idx + 1}. ${p.name}** ${p.flag || ''} — *${p.currentTeam}* | **Rating:** ${p.overallRating}/100 | Posición: ${p.positionEs || p.position}${statsStr}\n`;
+          resText += `**${idx + 1}. ${p.name}** ${p.flag || ''} — *${p.currentTeam}* | Posición: ${p.positionEs || p.position}${statsStr}\n`;
         });
         return resText;
       }
@@ -717,13 +721,13 @@ Use EXACTLY these three bold headers:
     );
 
     if (found) {
-      return `**${found.name}** ${found.flag || ''}\n\n📍 **Club:** ${found.currentTeam} (${found.league})\n🎯 **Posición:** ${found.positionEs || found.position}\n⭐ **Rating:** ${found.overallRating}/100\n\n📊 **Estadísticas 2024-25:**\n- Goles: ${found.stats?.goals || 0} en ${found.stats?.matches || 0} partidos\n- Asistencias: ${found.stats?.assists || 0}\n\n📝 ${found.bio || 'Jugador destacado en el fútbol mundial.'}\n\n🏆 **Palmarés:** ${(found.trophies || []).slice(0, 3).join(', ') || 'N/A'}`;
+      return `**${found.name}** ${found.flag || ''}\n\n📍 **Club:** ${found.currentTeam} (${found.league})\n🎯 **Posición:** ${found.positionEs || found.position}\n\n📊 **Estadísticas 2024-25:**\n- Goles: ${found.stats?.goals || 0} en ${found.stats?.matches || 0} partidos\n- Asistencias: ${found.stats?.assists || 0}\n\n📝 ${found.bio || 'Jugador destacado en el fútbol mundial.'}\n\n🏆 **Palmarés:** ${(found.trophies || []).slice(0, 3).join(', ') || 'N/A'}`;
     }
 
     const top5 = [...allPlayers].sort((a,b) => (b.overallRating||0) - (a.overallRating||0)).slice(0, 5);
     let generalRes = `¡Hola! Soy **FutbolAI** ⚽ — tu asistente inteligente de fútbol mundial.\n\nAquí tienes algunos de los jugadores más destacados de nuestra base de datos:\n\n`;
     top5.forEach((p, i) => {
-      generalRes += `**${i+1}. ${p.name}** (${p.currentTeam}) — Rating: ${p.overallRating}/100\n`;
+      generalRes += `**${i+1}. ${p.name}** (${p.currentTeam}) — Posición: ${p.positionEs || p.position}\n`;
     });
     generalRes += `\n*Puedes preguntarme sobre cualquier jugador, equipo o posición de fútbol.*`;
     return generalRes;
