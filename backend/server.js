@@ -827,7 +827,7 @@ app.post('/api/simulations/consume', authenticate, productionAiRateLimiter, asyn
 });
 
 // ─── Predictions ──────────────────────────────────────────────────
-app.get('/api/predictions', authenticate, productionAiRateLimiter, async (req, res) => {
+app.get('/api/predictions', authenticate, async (req, res) => {
   const lang = req.query.lang || 'es';
   try {
     const predictions = await agent.getPredictions(lang);
