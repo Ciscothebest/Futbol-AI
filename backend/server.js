@@ -484,15 +484,6 @@ function productionAiRateLimiter(req, res, next) {
 
     const message = `Has alcanzado el límite en producción de máximo 2 peticiones a la IA cada 5 minutos. Por favor reintenta en ${retryAfterMin} minuto(s).`;
 
-    const isStream = req.path === '/stream' || req.originalUrl?.includes('/stream');
-    if (isStream) {
-      res.setHeader('Content-Type', 'text/event-stream');
-      res.setHeader('Cache-Control', 'no-cache');
-      res.setHeader('Connection', 'keep-alive');
-      res.write(`data: ${JSON.stringify({ error: message, rateLimit: true, retryAfterSec })}\n\n`);
-      return res.end();
-    }
-
     return res.status(429).json({
       error: 'rate_limit_exceeded',
       message,
