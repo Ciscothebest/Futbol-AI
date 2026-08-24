@@ -22295,68 +22295,109 @@ function showRateLimitModal(retryAfterSec = 300) {
 
   modalOverlay.innerHTML = `
     <div style="
-      background: linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(30, 41, 59, 0.98));
-      border: 1px solid rgba(0, 230, 118, 0.4);
-      box-shadow: 0 0 35px rgba(0, 230, 118, 0.25), 0 20px 60px rgba(0, 0, 0, 0.85);
-      border-radius: 20px;
-      padding: 32px 28px;
-      max-width: 450px;
+      max-width: 480px;
       width: 90%;
+      background: linear-gradient(145deg, rgba(12, 18, 34, 0.98), rgba(8, 12, 22, 0.99));
+      border: 1.5px solid #ffb703;
+      border-radius: 20px;
+      padding: 28px 24px;
+      box-shadow: 0 0 50px rgba(255, 183, 3, 0.35), 0 10px 30px rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(20px);
       text-align: center;
       position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       color: #ffffff;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       transform: scale(0.92);
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     " id="rate-limit-modal-card">
-      <div style="
-        width: 64px;
-        height: 64px;
-        margin: 0 auto 16px auto;
-        background: rgba(0, 230, 118, 0.12);
-        border: 1px solid rgba(0, 230, 118, 0.4);
+      <button id="rate-limit-modal-x-btn" style="
+        position: absolute;
+        top: 14px;
+        right: 16px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 18px;
         border-radius: 50%;
+        width: 32px;
+        height: 32px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 28px;
-        box-shadow: 0 0 20px rgba(0, 230, 118, 0.25);
-      ">⏳</div>
-      <h3 style="
-        margin: 0 0 12px 0;
-        font-size: 1.4rem;
-        font-weight: 700;
-        color: #ffffff;
-        letter-spacing: -0.5px;
-      ">Límite de Consultas IA</h3>
-      <p style="
-        margin: 0 0 24px 0;
-        color: #cbd5e1;
-        font-size: 0.98rem;
-        line-height: 1.6;
-      ">
-        Has hecho muchas preguntas en tan período de tiempo, puedes volver a preguntar en <strong id="rl-timer-countdown-text" style="color: #00E676; font-weight: 700;">${formatCountdown(remainingSec)}</strong>.
-      </p>
-      <button id="rate-limit-modal-close-btn" style="
-        background: linear-gradient(135deg, #00E676 0%, #00B0FF 100%);
-        color: #0f172a;
-        font-weight: 700;
-        border: none;
-        padding: 13px 32px;
-        border-radius: 12px;
-        font-size: 1rem;
         cursor: pointer;
-        transition: all 0.2s ease;
-        box-shadow: 0 4px 15px rgba(0, 230, 118, 0.35);
+        transition: all 0.2s;
+      ">✕</button>
+
+      <div style="
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: rgba(255, 183, 3, 0.12);
+        border: 1px solid rgba(255, 183, 3, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        margin-bottom: 16px;
+        box-shadow: 0 0 20px rgba(255, 183, 3, 0.2);
+      ">⚠️</div>
+
+      <span style="
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+        background: rgba(255, 183, 3, 0.2);
+        color: #ffc93c;
+        border: 1px solid rgba(255, 183, 3, 0.3);
+        margin-bottom: 12px;
+      ">ADVERTENCIA 429</span>
+
+      <h3 style="
+        font-size: 20px;
+        font-weight: 800;
+        color: #ffffff;
+        margin: 0 0 10px 0;
+        line-height: 1.3;
+      ">Exceso de intentos</h3>
+
+      <p style="
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.85);
+        line-height: 1.55;
+        margin: 0 0 22px 0;
+        word-break: break-word;
+      ">
+        Has hecho muchas preguntas en tan período de tiempo, puedes volver a preguntar en <strong id="rl-timer-countdown-text" style="color: #ffc93c; font-weight: 700;">${formatCountdown(remainingSec)}</strong>.
+      </p>
+
+      <button id="rate-limit-modal-close-btn" style="
         width: 100%;
+        padding: 12px 20px;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 700;
+        background: linear-gradient(135deg, #ffb703 0%, #fb8500 100%);
+        color: #080e1a;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(255, 183, 3, 0.4);
+        transition: all 0.2s ease-in-out;
       ">Entendido</button>
     </div>
   `;
 
   const closeBtn = document.getElementById('rate-limit-modal-close-btn');
-  if (closeBtn) {
-    closeBtn.onclick = () => closeRateLimitModal();
-  }
+  if (closeBtn) closeBtn.onclick = () => closeRateLimitModal();
+
+  const xBtn = document.getElementById('rate-limit-modal-x-btn');
+  if (xBtn) xBtn.onclick = () => closeRateLimitModal();
 
   modalOverlay.style.display = 'flex';
   setTimeout(() => {
