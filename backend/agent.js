@@ -575,59 +575,6 @@ Player 2: ${JSON.stringify(p2)}`;
   }
 
   async getPredictions(language = 'es') {
-    if (this.demoMode) {
-      return this._demoPredictions();
-    }
-
-    const NOW = Date.now();
-    const CACHE_TTL = 60 * 60 * 1000; // 1 hora de caché
-    const cached = this.predictionsCache.get(language);
-    if (cached && (NOW - cached.timestamp < CACHE_TTL)) {
-      console.log(`⚡ [CACHÉ] Retornando predicciones (${language}) sin consumir API`);
-      return cached.data;
-    }
-
-    const langInstruction = language === 'en'
-      ? 'Respond entirely in English.'
-      : 'Responde completamente en español.';
-
-    const prompt = `${langInstruction} Based on the current football season and the player database provided, generate 5 exciting football predictions for the rest of the 2024-25 season. Include: top scorer race, Ballon d\'Or front-runners, surprise performer, transfer rumor prediction, and a bold upset prediction. Be engaging and use real data from the database.`;
-
-    let resultText = null;
-
-    if (this.primaryProvider === 'deepseek' && this.isProduction && this.deepseekApiKey) {
-      try {
-        console.log(`🤖 Generando predicciones con DeepSeek API (${this.deepseekModel})...`);
-        resultText = await this.callDeepSeek(prompt, SYSTEM_PROMPT);
-      } catch (err) {
-        console.warn('⚠️ DeepSeek API error en predicciones, intentando Gemini fallback:', err.message);
-      }
-    }
-
-    if (!resultText && this.geminiModel) {
-      try {
-        console.log(`🤖 Generando predicciones con Gemini API (${this.model})...`);
-        const result = await this.geminiModel.generateContent(prompt);
-        resultText = result.response.text();
-      } catch (err) {
-        console.warn('⚠️ Gemini API error en predicciones:', err.message);
-      }
-    }
-
-    if (!resultText && this.primaryProvider === 'gemini' && this.isProduction && this.deepseekApiKey) {
-      try {
-        console.log(`🤖 Generando predicciones con DeepSeek API fallback (${this.deepseekModel})...`);
-        resultText = await this.callDeepSeek(prompt, SYSTEM_PROMPT);
-      } catch (err) {
-        console.warn('⚠️ DeepSeek API fallback error en predicciones:', err.message);
-      }
-    }
-
-    if (resultText) {
-      this.predictionsCache.set(language, { data: resultText, timestamp: NOW });
-      return resultText;
-    }
-
     return this._demoPredictions();
   }
 
