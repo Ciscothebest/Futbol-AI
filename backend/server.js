@@ -9,7 +9,7 @@ const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
 const jwt = require('jsonwebtoken');
 const FootballAgent = require('./agent');
-const { Player, Prospect, User, League, Team, sequelize, QueryLog, ComparisonLog, FavoriteLog, Payment, PaymentMethod, DirectMessage, UserContact, enableRLSIfPostgres } = require('./database');
+const { Player, Prospect, User, League, Team, sequelize, QueryLog, ComparisonLog, FavoriteLog, Payment, PaymentMethod, DirectMessage, UserContact, AiApiLog, enableRLSIfPostgres } = require('./database');
 
 const seedLeaguesAndTeams = require('./seed-db-onboarding');
 const seedDemoUsers = require('./seed-demo-users');
@@ -509,6 +509,66 @@ setInterval(() => {
   }
 }, 10 * 60 * 1000);
 
+async function recordAiCall({ endpoint, scenario, userMessage, provider, model, status, tokensEstimated, costUSD, userEmail }) {
+  try {
+    await AiApiLog.create({
+      endpoint: endpoint || '/api/chat/stream',
+      scenario: scenario || 'Chat IA',
+      userMessage: userMessage ? String(userMessage).substring(0, 500) : 'Consulta a la IA',
+      provider: provider || 'DeepSeek',
+      model: model || 'deepseek-chat',
+      status: status || 200,
+      tokensEstimated: tokensEstimated || 1200,
+      costUSD: costUSD !== undefined ? costUSD : 0.0003,
+      userEmail: userEmail || 'Usuario Anónimo'
+    });
+  } catch (e) {
+    console.warn('Error registrando log de IA:', e.message);
+  }
+}
+
+function checkAdminSecret(req, res, next) {
+  const secret = req.query.secret || req.headers['x-admin-secret'];
+  if (!secret || secret.trim() !== JWT_SECRET.trim()) {
+    return res.status(404).send('<!DOCTYPE html><html><head><title>404 Not Found</title></head><body><h1>404 Not Found</h1></body></html>');
+  }
+  next();
+}
+
+app.get('/api/admin/ai-logs', checkAdminSecret, async (req, res) => {
+  try {
+    const logs = await AiApiLog.findAll({
+      order: [['createdAt', 'DESC']],
+      limit: 150
+    });
+    const totalCalls = await AiApiLog.count();
+    const successCalls = await AiApiLog.count({ where: { status: 200 } });
+    const rateLimitedCalls = await AiApiLog.count({ where: { status: 429 } });
+    const errorCalls = await AiApiLog.count({ where: { status: 500 } });
+    const totalTokens = (await AiApiLog.sum('tokensEstimated')) || 0;
+    const totalCost = (await AiApiLog.sum('costUSD')) || 0.0;
+
+    res.json({
+      success: true,
+      stats: {
+        totalCalls,
+        successCalls,
+        rateLimitedCalls,
+        errorCalls,
+        totalTokens,
+        totalCostUSD: parseFloat(totalCost.toFixed(4))
+      },
+      logs
+    });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+app.get('/admin/ai-monitor', checkAdminSecret, (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/ai-monitor.html'));
+});
+
 // ─── Chat ─────────────────────────────────────────────────────────
 app.post('/api/chat', authenticate, productionAiRateLimiter, async (req, res) => {
   const { message, audioBase64, mimeType, sessionId, lang } = req.body;
@@ -581,6 +641,18 @@ app.post('/api/chat', authenticate, productionAiRateLimiter, async (req, res) =>
 app.post('/api/chat/stream', authenticate, productionAiRateLimiter, async (req, res) => {
   const { message, sessionId, lang, audioBase64, mimeType, clubContext, clubRoster } = req.body;
   const sid = sessionId || uuidv4();
+
+  recordAiCall({
+    endpoint: '/api/chat/stream',
+    scenario: 'Chat IA (Stream)',
+    userMessage: message || 'Mensaje de voz',
+    provider: 'DeepSeek',
+    model: 'deepseek-chat',
+    status: 200,
+    tokensEstimated: 1200,
+    costUSD: 0.0003,
+    userEmail: req.user?.email || 'Usuario'
+  });
 
   let dbUser = null;
   if (req.user && req.user.id) {
