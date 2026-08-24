@@ -66,6 +66,11 @@ class FootballAgent {
     this.model = process.env.GEMINI_MODEL || 'gemini-2.5-flash-lite';
     this.sessions = new Map(); // sessionId -> history[]
     
+    // In-memory TTL caches for expensive AI operations
+    this.predictionsCache = new Map(); // language -> { data, timestamp }
+    this.comparisonCache = new Map();  // key -> { data, timestamp }
+    this.alertCache = new Map();       // key -> { data, timestamp }
+    
     this.isProduction = process.env.NODE_ENV === 'production';
     
     if (this.geminiApiKey && this.geminiApiKey !== 'your_gemini_api_key_here') {
@@ -83,10 +88,23 @@ class FootballAgent {
     const hasKeys = !!(this.geminiApiKey || this.deepseekApiKey);
     this.demoMode = !hasKeys || (this.geminiApiKey === 'your_gemini_api_key_here' && this.deepseekApiKey === 'your_deepseek_api_key_here');
 
+    // Provider preference: 'gemini' or 'deepseek'
+    const prefProvider = (process.env.AI_PROVIDER || process.env.PRIMARY_AI_PROVIDER || '').toLowerCase();
+    if (prefProvider === 'gemini') {
+      this.primaryProvider = 'gemini';
+    } else if (prefProvider === 'deepseek') {
+      this.primaryProvider = 'deepseek';
+    } else {
+      // Default: Prefer Gemini if Gemini API key is available, else DeepSeek
+      this.primaryProvider = (this.geminiApiKey && this.geminiApiKey !== 'your_gemini_api_key_here')
+        ? 'gemini'
+        : 'deepseek';
+    }
+
     console.log(this.demoMode
       ? '⚠️  Demo mode active (no valid API key). Using SQLite database.'
       : (this.isProduction
-        ? `🚀 [PRODUCCIÓN] DeepSeek API primario (${this.deepseekModel})`
+        ? `🚀 [PRODUCCIÓN] Proveedor primario IA: ${this.primaryProvider.toUpperCase()} (${this.primaryProvider === 'deepseek' ? this.deepseekModel : this.model})`
         : `💻 [LOCAL] Gemini AI primario (${this.model})`)
     );
   }
@@ -509,67 +527,131 @@ Player 2: ${JSON.stringify(p2)}`;
       return this._demoComparison(p1, p2, criteria);
     }
 
-    if (this.isProduction && this.deepseekApiKey) {
+    const cacheKey = `${p1.id}_${p2.id}_${language}`;
+    const NOW = Date.now();
+    const CACHE_TTL = 60 * 60 * 1000; // 1 hora de caché
+    const cached = this.comparisonCache.get(cacheKey);
+    if (cached && (NOW - cached.timestamp < CACHE_TTL)) {
+      console.log(`⚡ [CACHÉ] Retornando comparación (${cacheKey}) sin consumir API`);
+      return cached.data;
+    }
+
+    let resultText = null;
+
+    if (this.primaryProvider === 'deepseek' && this.isProduction && this.deepseekApiKey) {
       try {
         console.log(`🤖 Generando análisis comparativo con DeepSeek API (${this.deepseekModel})...`);
-        return await this.callDeepSeek(prompt, SYSTEM_PROMPT);
+        resultText = await this.callDeepSeek(prompt, SYSTEM_PROMPT);
       } catch (err) {
-        console.warn('⚠️ DeepSeek API error en comparación, intentando fallback:', err.message);
+        console.warn('⚠️ DeepSeek API error en comparación, intentando Gemini fallback:', err.message);
       }
     }
 
-    if (this.geminiModel) {
+    if (!resultText && this.geminiModel) {
       try {
+        console.log(`🤖 Generando análisis comparativo con Gemini API (${this.model})...`);
         const result = await this.geminiModel.generateContent(prompt);
-        return result.response.text();
+        resultText = result.response.text();
       } catch (err) {
-        return this._demoComparison(p1, p2, criteria) + '\n\n*⚠️ AI Analysis unavailable due to API rate limits.*';
+        console.warn('⚠️ Gemini API error en comparación:', err.message);
       }
+    }
+
+    if (!resultText && this.primaryProvider === 'gemini' && this.isProduction && this.deepseekApiKey) {
+      try {
+        console.log(`🤖 Generando análisis comparativo con DeepSeek API fallback (${this.deepseekModel})...`);
+        resultText = await this.callDeepSeek(prompt, SYSTEM_PROMPT);
+      } catch (err) {
+        console.warn('⚠️ DeepSeek API fallback error en comparación:', err.message);
+      }
+    }
+
+    if (resultText) {
+      this.comparisonCache.set(cacheKey, { data: resultText, timestamp: NOW });
+      return resultText;
     }
 
     return this._demoComparison(p1, p2, criteria);
   }
 
   async getPredictions(language = 'es') {
+    if (this.demoMode) {
+      return this._demoPredictions();
+    }
+
+    const NOW = Date.now();
+    const CACHE_TTL = 60 * 60 * 1000; // 1 hora de caché
+    const cached = this.predictionsCache.get(language);
+    if (cached && (NOW - cached.timestamp < CACHE_TTL)) {
+      console.log(`⚡ [CACHÉ] Retornando predicciones (${language}) sin consumir API`);
+      return cached.data;
+    }
+
     const langInstruction = language === 'en'
       ? 'Respond entirely in English.'
       : 'Responde completamente en español.';
 
     const prompt = `${langInstruction} Based on the current football season and the player database provided, generate 5 exciting football predictions for the rest of the 2024-25 season. Include: top scorer race, Ballon d\'Or front-runners, surprise performer, transfer rumor prediction, and a bold upset prediction. Be engaging and use real data from the database.`;
 
-    if (this.demoMode) {
-      return this._demoPredictions();
-    }
+    let resultText = null;
 
-    if (this.isProduction && this.deepseekApiKey) {
+    if (this.primaryProvider === 'deepseek' && this.isProduction && this.deepseekApiKey) {
       try {
-        return await this.callDeepSeek(prompt, SYSTEM_PROMPT);
+        console.log(`🤖 Generando predicciones con DeepSeek API (${this.deepseekModel})...`);
+        resultText = await this.callDeepSeek(prompt, SYSTEM_PROMPT);
       } catch (err) {
-        console.warn('⚠️ DeepSeek API error en predicciones, intentando fallback:', err.message);
+        console.warn('⚠️ DeepSeek API error en predicciones, intentando Gemini fallback:', err.message);
       }
     }
 
-    if (this.geminiModel) {
+    if (!resultText && this.geminiModel) {
       try {
+        console.log(`🤖 Generando predicciones con Gemini API (${this.model})...`);
         const result = await this.geminiModel.generateContent(prompt);
-        return result.response.text();
+        resultText = result.response.text();
       } catch (err) {
-        return this._demoPredictions() + '\n\n*⚠️ AI Predictions unavailable due to API rate limits.*';
+        console.warn('⚠️ Gemini API error en predicciones:', err.message);
       }
+    }
+
+    if (!resultText && this.primaryProvider === 'gemini' && this.isProduction && this.deepseekApiKey) {
+      try {
+        console.log(`🤖 Generando predicciones con DeepSeek API fallback (${this.deepseekModel})...`);
+        resultText = await this.callDeepSeek(prompt, SYSTEM_PROMPT);
+      } catch (err) {
+        console.warn('⚠️ DeepSeek API fallback error en predicciones:', err.message);
+      }
+    }
+
+    if (resultText) {
+      this.predictionsCache.set(language, { data: resultText, timestamp: NOW });
+      return resultText;
     }
 
     return this._demoPredictions();
   }
 
   async expandAlert(alertType, contextData, language = 'es') {
+    if (this.demoMode) {
+      return 'Reporte en modo demo.';
+    }
+
+    const clubName = (contextData && contextData.clubName) || 'el equipo';
+    const pName = (contextData && contextData.pName) || 'el jugador';
+    const cacheKey = `${alertType}_${pName}_${clubName}_${language}`;
+    const NOW = Date.now();
+    const CACHE_TTL = 60 * 60 * 1000; // 1 hora de caché
+    const cached = this.alertCache.get(cacheKey);
+    if (cached && (NOW - cached.timestamp < CACHE_TTL)) {
+      console.log(`⚡ [CACHÉ] Retornando reporte de alerta sin consumir API`);
+      return cached.data;
+    }
+
     const langInstruction = language === 'en'
       ? 'Respond entirely in English.'
       : 'Responde completamente en español.';
 
-    const clubName = (contextData && contextData.clubName) || 'el equipo';
     const nextOpp = (contextData && contextData.nextOpp) || 'el rival';
-    const pName = (contextData && contextData.pName) || 'el jugador';
-    const talentName = (contextData && contextData.talentName) || 'el talento';
 
     const prompt = `${langInstruction} 
 Act as a Senior Sporting Director / Chief Analyst for ${clubName}. 
@@ -597,31 +679,42 @@ Use EXACTLY these three bold headers:
 - DO NOT invent fake data. Use the exact player name, opponent, and club name provided.
 - Tone: Serious, highly analytical, data-driven, persuasive, suitable for a Sporting Director.`;
 
-    if (!this.demoMode) {
-      if (this.isProduction && this.deepseekApiKey) {
-        try {
-          console.log(`🤖 Generando reporte de alerta con DeepSeek API (${this.deepseekModel})...`);
-          return await this.callDeepSeek(prompt, SYSTEM_PROMPT);
-        } catch (err) {
-          console.warn('⚠️ DeepSeek API error en expandAlert, intentando fallback:', err.message);
-        }
-      }
+    let resultText = null;
 
-      if (this.geminiModel) {
-        try {
-          console.log(`🤖 Generando reporte de alerta con Gemini API...`);
-          const result = await this.geminiModel.generateContent(prompt);
-          return result.response.text();
-        } catch (err) {
-          console.warn('⚠️ Gemini API error en expandAlert:', err.message);
-        }
+    if (this.primaryProvider === 'deepseek' && this.isProduction && this.deepseekApiKey) {
+      try {
+        console.log(`🤖 Generando reporte de alerta con DeepSeek API (${this.deepseekModel})...`);
+        resultText = await this.callDeepSeek(prompt, SYSTEM_PROMPT);
+      } catch (err) {
+        console.warn('⚠️ DeepSeek API error en expandAlert, intentando Gemini fallback:', err.message);
       }
     }
 
-    const isEs = language !== 'en';
-    return isEs
-      ? `**Resumen Ejecutivo:**\nSe realizó un análisis exhaustivo para ${clubName} respecto a la notificación de "${alertType}". El informe consolida métricas físicas y tácticas para la toma de decisiones.\n\n**Puntos Clave del Análisis:**\n- Carga: 290 minutos vs 254 minutos del equipo, esto representa un 14.2% más de minutos jugados, esto es negativo porque el jugador viene jugando más minutos que el resto del plantel. Lleva una seguidilla de partidos encima sin rotación, por lo que las piernas le pesan más y viene acumulando cansancio fecha tras fecha; cuando compite en estas condiciones pierde velocidad de reacción en las disputas de balón, llega tarde a las coberturas defensivas y pierde la chispa para desequilibrar en el uno contra uno.\n- Sprint: 801 metros vs 900 metros de su promedio, esto representa una caída del 11.0% en su velocidad, esto es negativo porque el jugador ya no está picando con la misma velocidad ni explosividad. Corrió casi 100 metros menos a máxima velocidad en los últimos partidos porque siente las piernas cargadas, lo que indica que el cuerpo le está pidiendo freno antes de sufrir un tirón.\n- Recuperación: 1 día vs 3 días recomendados, esto solo representa un 33.3% de descanso, esto es negativo porque no le dimos tiempo suficiente a descansar entre fechas. Con solo 1 día de descanso tras un partido exigente, el jugador entra a la cancha con sobrecarga acumulada; jugar en este estado expone al futbolista a un riesgo altísimo de sufrir un tirón o rotura muscular ante cualquier pique fuerte, frenada o cambio de ritmo repentino.\n\n**Recomendación:**\nMantener monitoreo preventivo con el cuerpo técnico y médico, optimizando la distribución de minutos y ajustando la planificación estratégica.`
-      : `**Executive Summary:**\nDetailed analysis completed for ${clubName} regarding "${alertType}". The report consolidates physical and tactical metrics for decision making.\n\n**Key Analysis Points:**\n- Load: 290 minutes vs 254 team minutes, representing 14.2% more minutes played. This is negative because the player has logged more minutes than the rest of the squad without rotation, leading to heavy legs and accumulated fatigue.\n- Sprint: 801 meters vs 900 average meters, representing an 11.0% drop in top speed. This is negative because the player is sprinting less explosively due to muscle fatigue.\n- Recovery: 1 day vs 3 recommended days, representing only 33.3% rest. This is negative because competing with insufficient rest severely increases the risk of muscle strain or tear.\n\n**Recommendation:**\nMaintain preventive monitoring with medical and technical staff to optimize player workload.`;
+    if (!resultText && this.geminiModel) {
+      try {
+        console.log(`🤖 Generando reporte de alerta con Gemini API...`);
+        const result = await this.geminiModel.generateContent(prompt);
+        resultText = result.response.text();
+      } catch (err) {
+        console.warn('⚠️ Gemini API error en expandAlert:', err.message);
+      }
+    }
+
+    if (!resultText && this.primaryProvider === 'gemini' && this.isProduction && this.deepseekApiKey) {
+      try {
+        console.log(`🤖 Generando reporte de alerta con DeepSeek API fallback (${this.deepseekModel})...`);
+        resultText = await this.callDeepSeek(prompt, SYSTEM_PROMPT);
+      } catch (err) {
+        console.warn('⚠️ DeepSeek API fallback error en expandAlert:', err.message);
+      }
+    }
+
+    if (resultText) {
+      this.alertCache.set(cacheKey, { data: resultText, timestamp: NOW });
+      return resultText;
+    }
+
+    return 'Análisis en proceso. Por favor reintenta en unos instantes.';
   }
 
   clearSession(sessionId) {
