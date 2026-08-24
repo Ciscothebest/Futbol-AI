@@ -663,22 +663,31 @@ app.post('/api/chat/stream', authenticate, productionAiRateLimiter, async (req, 
   }
 
   try {
-    agent.chatStream(sid, message, lang, audioBase64, mimeType, clubContext, clubRoster, userContext,
+    await agent.chatStream(sid, message, lang, audioBase64, mimeType, clubContext, clubRoster, userContext,
       (chunk) => {
-        res.write(`data: ${JSON.stringify({ chunk })}\n\n`);
+        if (!res.writableEnded) res.write(`data: ${JSON.stringify({ chunk })}\n\n`);
       },
       (full) => {
-        res.write(`data: ${JSON.stringify({ done: true, sessionId: sid, user: dbUser ? dbUser.toPublicJSON() : null })}\n\n`);
-        res.end();
+        if (!res.writableEnded) {
+          res.write(`data: ${JSON.stringify({ done: true, sessionId: sid, user: dbUser ? dbUser.toPublicJSON() : null })}\n\n`);
+          res.end();
+        }
       },
       (err) => {
-        res.write(`data: ${JSON.stringify({ error: err.message })}\n\n`);
-        res.end();
+        if (!res.writableEnded) {
+          res.write(`data: ${JSON.stringify({ error: err.message })}\n\n`);
+          res.end();
+        }
       }
     );
   } catch (err) {
-    res.write(`data: ${JSON.stringify({ error: err.message })}\n\n`);
-    res.end();
+    console.error('ChatStream error:', err.message);
+    if (!res.headersSent) {
+      res.status(500).json({ error: err.message });
+    } else if (!res.writableEnded) {
+      res.write(`data: ${JSON.stringify({ error: err.message })}\n\n`);
+      res.end();
+    }
   }
 });
 
