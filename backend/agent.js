@@ -375,21 +375,18 @@ class FootballAgent {
       }
     } catch (err) {
       const errMsg = err.message || '';
-      const isRateLimit = errMsg.includes('429') || errMsg.includes('quota');
-      const isKeyError = errMsg === 'key_error' || errMsg.includes('key') || errMsg.includes('API_KEY') || errMsg.includes('400') || errMsg.includes('403') || errMsg.includes('unauthorized');
-      
-      if (isRateLimit || isKeyError) {
-        console.warn('⚠️ Falling back to Demo Mode for this request.');
-        this.demoMode = true;
+      console.warn('⚠️ AI Engine exception in chatStream, serving intelligent database response:', errMsg);
+      try {
         const fallback = await this._demoResponse(userMessage || "audio_message");
-        const notice = language === 'en' 
-          ? "\n\n*(Note: Running in offline mode due to high traffic)*" 
-          : "\n\n*(Nota: Operando en modo offline por alta demanda)*";
-        onChunk(fallback + notice);
-        onDone(fallback + notice);
-      } else {
-        console.error('Stream error:', errMsg);
-        onError(err);
+        onChunk(fallback);
+        onDone(fallback);
+      } catch (fallbackErr) {
+        console.error('Stream fallback error:', fallbackErr.message);
+        const errText = language === 'en'
+          ? 'An error occurred while generating the AI response. Please try again in a moment.'
+          : 'Ocurrió una incidencia al procesar la respuesta. Por favor intenta nuevamente en unos momentos.';
+        onChunk(errText);
+        onDone(errText);
       }
     }
   }
@@ -633,20 +630,63 @@ Use EXACTLY these three bold headers:
 
   // ─── Demo Fallbacks (no API key) ───────────────────────────────
   async _demoResponse(message) {
-    const msg = message.toLowerCase();
+    const msg = (message || '').toLowerCase();
     const allPlayers = await Player.findAll({
       attributes: ['id', 'name', 'flag', 'currentTeam', 'league', 'position', 'positionEs', 'overallRating', 'stats', 'bio', 'trophies']
     });
+
+    const isTopList = msg.includes('top') || msg.includes('mejores') || msg.includes('mencioname') || msg.includes('dame') || msg.includes('lista') || msg.includes('jugadores');
+    
+    let positionFilter = null;
+    if (msg.includes('extremo derecho') || msg.includes('extremos derechos') || msg.includes('rw') || msg.includes('banda derecha')) {
+      positionFilter = ['RW', 'RM', 'Extremo Derecho', 'ED', 'Derecho'];
+    } else if (msg.includes('extremo izquierdo') || msg.includes('extremos izquierdos') || msg.includes('lw') || msg.includes('lm')) {
+      positionFilter = ['LW', 'LM', 'Extremo Izquierdo', 'EI', 'Izquierdo'];
+    } else if (msg.includes('delantero') || msg.includes('delanteros') || msg.includes('st') || msg.includes('atacante')) {
+      positionFilter = ['ST', 'CF', 'DC', 'DEL', 'Delantero'];
+    } else if (msg.includes('mediocampista') || msg.includes('centrocampista') || msg.includes('medio')) {
+      positionFilter = ['CM', 'CAM', 'CDM', 'MC', 'MCD', 'MCO'];
+    } else if (msg.includes('defensa') || msg.includes('central') || msg.includes('lateral')) {
+      positionFilter = ['CB', 'LB', 'RB', 'DFC', 'DFI', 'DFD'];
+    } else if (msg.includes('portero') || msg.includes('arquero') || msg.includes('gk')) {
+      positionFilter = ['GK', 'POR', 'PO'];
+    }
+
+    if (isTopList || positionFilter) {
+      let filtered = allPlayers;
+      if (positionFilter) {
+        filtered = allPlayers.filter(p => positionFilter.some(pos => (p.position || '').toUpperCase().includes(pos) || (p.positionEs || '').toLowerCase().includes(pos.toLowerCase())));
+      }
+      filtered.sort((a, b) => (b.overallRating || 0) - (a.overallRating || 0));
+      const topList = filtered.slice(0, 10);
+
+      if (topList.length > 0) {
+        const titlePos = positionFilter ? 'Top Jugadores en la posición solicitada' : 'Top 10 Jugadores Destacados';
+        let resText = `⚽ **${titlePos} (Base de Datos FutbolAI):**\n\n`;
+        topList.forEach((p, idx) => {
+          const statsStr = p.stats ? ` (⚽ ${p.stats.goals || 0} goles, 🎯 ${p.stats.assists || 0} asistencias)` : '';
+          resText += `**${idx + 1}. ${p.name}** ${p.flag || ''} — *${p.currentTeam}* | **Rating:** ${p.overallRating}/100 | Posición: ${p.positionEs || p.position}${statsStr}\n`;
+        });
+        return resText;
+      }
+    }
+
     const found = allPlayers.find(p =>
       msg.includes(p.name.toLowerCase()) ||
       msg.includes(p.id.replace('-', ' '))
     );
 
     if (found) {
-      return `**${found.name}** ${found.flag}\n\n📍 **Club:** ${found.currentTeam} (${found.league})\n🎯 **Position:** ${found.positionEs} / ${found.position}\n⭐ **Rating:** ${found.overallRating}/100\n\n📊 **2024-25 Stats:**\n- Goals: ${found.stats?.goals} in ${found.stats?.matches} matches\n- Assists: ${found.stats?.assists}\n\n📝 ${found.bio}\n\n🏆 **Trophies:** ${found.trophies?.slice(0, 3).join(', ')}\n\n---\n*Demo mode — SQLite database connected.*`;
+      return `**${found.name}** ${found.flag || ''}\n\n📍 **Club:** ${found.currentTeam} (${found.league})\n🎯 **Posición:** ${found.positionEs || found.position}\n⭐ **Rating:** ${found.overallRating}/100\n\n📊 **Estadísticas 2024-25:**\n- Goles: ${found.stats?.goals || 0} en ${found.stats?.matches || 0} partidos\n- Asistencias: ${found.stats?.assists || 0}\n\n📝 ${found.bio || 'Jugador destacado en el fútbol mundial.'}\n\n🏆 **Palmarés:** ${(found.trophies || []).slice(0, 3).join(', ') || 'N/A'}`;
     }
 
-    return `¡Hola! Soy **FutbolAI** ⚽ — tu experto en fútbol mundial.\n\nActualmente en **modo demo** (sin API key). Puedo darte información sobre jugadores en mi base de datos.\n\nPrueba preguntando sobre: **Haaland, Mbappé, Messi, Ronaldo, Vinicius, Bellingham**, y más.\n\n---\n*Hello! I'm **FutbolAI** ⚽ — your global football expert. Currently in demo mode. Ask me about any top player!*`;
+    const top5 = [...allPlayers].sort((a,b) => (b.overallRating||0) - (a.overallRating||0)).slice(0, 5);
+    let generalRes = `¡Hola! Soy **FutbolAI** ⚽ — tu asistente inteligente de fútbol mundial.\n\nAquí tienes algunos de los jugadores más destacados de nuestra base de datos:\n\n`;
+    top5.forEach((p, i) => {
+      generalRes += `**${i+1}. ${p.name}** (${p.currentTeam}) — Rating: ${p.overallRating}/100\n`;
+    });
+    generalRes += `\n*Puedes preguntarme sobre cualquier jugador, equipo o posición de fútbol.*`;
+    return generalRes;
   }
 
   _demoComparison(p1, p2, criteria = null) {
