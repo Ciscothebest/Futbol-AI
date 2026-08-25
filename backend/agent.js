@@ -114,7 +114,7 @@ class FootballAgent {
     );
   }
 
-  async callDeepSeek(prompt, systemInstruction = SYSTEM_PROMPT) {
+  async callDeepSeek(prompt, systemInstruction = SYSTEM_PROMPT, scenario = 'DeepSeek API Call', userEmail = null) {
     if (!this.isProduction) {
       throw new Error('DeepSeek API sólo está disponible en entorno de producción (NODE_ENV=production)');
     }
@@ -124,29 +124,80 @@ class FootballAgent {
     }
     const model = this.deepseekModel;
 
-    const response = await fetch('https://api.deepseek.com/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
-      },
-      body: JSON.stringify({
-        model: model,
-        messages: [
-          { role: 'system', content: systemInstruction },
-          { role: 'user', content: prompt }
-        ],
-        temperature: 0.6
-      })
-    });
+    let status = 200;
+    let resultText = '';
 
-    if (!response.ok) {
-      const errText = await response.text();
-      throw new Error(`DeepSeek API error ${response.status}: ${errText}`);
+    try {
+      const response = await fetch('https://api.deepseek.com/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model: model,
+          messages: [
+            { role: 'system', content: systemInstruction },
+            { role: 'user', content: prompt }
+          ],
+          temperature: 0.6
+        })
+      });
+
+      status = response.status;
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`DeepSeek API error ${response.status}: ${errText}`);
+      }
+
+      const data = await response.json();
+      resultText = data.choices?.[0]?.message?.content || '';
+
+      // Auto-record every DeepSeek API call to AiApiLog
+      try {
+        const { AiApiLog } = require('./database');
+        if (AiApiLog) {
+          const inputChars = (systemInstruction || '').length + (prompt || '').length;
+          const outputChars = (resultText || '').length;
+          const tokensEstimated = Math.ceil((inputChars + outputChars) / 4);
+          const costUSD = (tokensEstimated / 1000000) * 0.28;
+
+          await AiApiLog.create({
+            endpoint: '/api/deepseek/call',
+            scenario: scenario || 'DeepSeek API Call',
+            userMessage: prompt ? String(prompt).substring(0, 500) : 'Consulta a la IA',
+            provider: 'DeepSeek',
+            model: model,
+            status: status,
+            tokensEstimated: tokensEstimated || 1200,
+            costUSD: costUSD || 0.0003,
+            userEmail: userEmail || 'Sistema / Agente'
+          });
+        }
+      } catch (logErr) {
+        console.warn('⚠️ Could not record DeepSeek API call in database:', logErr.message);
+      }
+
+      return resultText;
+    } catch (err) {
+      try {
+        const { AiApiLog } = require('./database');
+        if (AiApiLog) {
+          await AiApiLog.create({
+            endpoint: '/api/deepseek/call',
+            scenario: (scenario || 'DeepSeek API Call') + ' (Error)',
+            userMessage: prompt ? String(prompt).substring(0, 500) : 'Consulta a la IA',
+            provider: 'DeepSeek',
+            model: model,
+            status: status !== 200 ? status : 500,
+            tokensEstimated: 0,
+            costUSD: 0,
+            userEmail: userEmail || 'Sistema / Agente'
+          });
+        }
+      } catch (logErr) {}
+      throw err;
     }
-
-    const data = await response.json();
-    return data.choices?.[0]?.message?.content || '';
   }
 
   async generateText(prompt, systemInstruction = SYSTEM_PROMPT) {
