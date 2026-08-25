@@ -576,6 +576,18 @@ app.post('/api/chat', authenticate, productionAiRateLimiter, async (req, res) =>
 
   const sid = sessionId || uuidv4();
 
+  recordAiCall({
+    endpoint: '/api/chat',
+    scenario: 'Chat IA (Standard)',
+    userMessage: message || 'Mensaje de voz',
+    provider: 'DeepSeek',
+    model: 'deepseek-chat',
+    status: 200,
+    tokensEstimated: 1200,
+    costUSD: 0.0003,
+    userEmail: req.user?.email || 'Usuario'
+  });
+
   try {
     let dbUser = await User.findByPk(req.user.id);
     if (dbUser) {
