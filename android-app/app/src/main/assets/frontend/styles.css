@@ -1163,6 +1163,48 @@ body {
   align-items: center;
 }
 
+.tactical-currency-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.btn-currency-toggle {
+  background: rgba(0, 240, 255, 0.08);
+  border: 1px solid var(--cyan);
+  color: var(--cyan);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.25s ease;
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.15);
+  user-select: none;
+}
+
+.btn-currency-toggle:hover {
+  background: rgba(0, 240, 255, 0.2);
+  border-color: #00f0ff;
+  box-shadow: 0 0 14px rgba(0, 240, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-currency-toggle.usd-active {
+  background: rgba(255, 190, 16, 0.12);
+  border-color: #ffbe10;
+  color: #ffbe10;
+  box-shadow: 0 0 12px rgba(255, 190, 16, 0.3);
+}
+
+.btn-currency-toggle.usd-active:hover {
+  background: rgba(255, 190, 16, 0.25);
+  box-shadow: 0 0 18px rgba(255, 190, 16, 0.5);
+}
+
 .sort-select {
   background: transparent;
   border: none;
