@@ -40647,22 +40647,23 @@ window.saveLocalPlayer = async (event) => {
 
     const data = await res.json();
     if (data.success) {
+      const savedPlayer = data.player || data.savedPlayer || data.data || null;
       if (typeof showToast === 'function') {
         showToast(playerId ? `✅ Jugador "${name}" actualizado con éxito.` : `🎉 ¡Jugador "${name}" añadido a la plantilla local!`, 'success');
       }
       window.closeLocalPlayerFormModal();
       await window.loadLocalPlayers();
-      window.renderMyPlayersModule(true);
+      if (typeof window.renderMyPlayersModule === 'function') window.renderMyPlayersModule(true);
+      if (typeof window.renderProspectsModule === 'function') window.renderProspectsModule();
+      if (savedPlayer && typeof openPlayerModal === 'function') {
+        openPlayerModal(savedPlayer);
+      }
     } else {
       if (typeof showToast === 'function') showToast(`❌ Error: ${data.error}`, 'error');
     }
   } catch (err) {
     console.error('Error saving local player:', err);
     if (typeof showToast === 'function') showToast('❌ Error de red al guardar el jugador.', 'error');
-  }
-
-  if (player && typeof openPlayerModal === 'function') {
-    openPlayerModal(player);
   }
 };
 
