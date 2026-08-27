@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+  let currentTempToken = null;
   const loginModal = document.getElementById('login-modal');
   const registerModal = document.getElementById('register-modal');
   const otpModal = document.getElementById('otp-modal');
@@ -40,6 +41,58 @@ document.addEventListener('DOMContentLoaded', () => {
   // Validation
   const isAlphanumeric = (str) => /^[a-zA-Z0-9]+$/.test(str);
 
+  // Show Premium Server Error Modal (500/504)
+  const showErrorModal = (message) => {
+    const modal = document.getElementById('server-error-modal');
+    const msgEl = document.getElementById('server-error-msg');
+    const titleEl = document.getElementById('server-error-title');
+    const descEl = document.getElementById('server-error-desc');
+    const symbolEl = document.getElementById('server-error-icon-symbol');
+
+    if (modal && msgEl) {
+      msgEl.textContent = message || 'Fallo de conexión en el backend.';
+      
+      const is504 = message && (message.includes('504') || message.toLowerCase().includes('timeout'));
+      if (is504) {
+        if (titleEl) {
+          titleEl.textContent = 'Tiempo de Espera Agotado (504)';
+          titleEl.style.background = 'linear-gradient(135deg, #ff8a00, #ffb800)';
+          titleEl.style.webkitBackgroundClip = 'text';
+          titleEl.style.webkitTextFillColor = 'transparent';
+        }
+        if (descEl) {
+          descEl.textContent = 'El servidor proxy excedió el tiempo de respuesta del backend en Render. Esto suele ocurrir si la instancia gratuita de Render se encuentra en reposo y tarda en reactivarse o hay sobrecarga.';
+        }
+        if (symbolEl) {
+          symbolEl.textContent = '⏳';
+        }
+      } else {
+        if (titleEl) {
+          titleEl.textContent = 'Error de Infraestructura 500';
+          titleEl.style.background = 'linear-gradient(135deg, #ff4a4a, #ff8a00)';
+          titleEl.style.webkitBackgroundClip = 'text';
+          titleEl.style.webkitTextFillColor = 'transparent';
+        }
+        if (descEl) {
+          descEl.textContent = 'El servidor de Render no pudo procesar tu solicitud. Esto ocurre habitualmente cuando las variables de envío de correo SMTP no están configuradas en el panel de Render.';
+        }
+        if (symbolEl) {
+          symbolEl.textContent = '⚠️';
+        }
+      }
+
+      modal.style.display = 'flex';
+      
+      // Cerrar modales que pudieran estar abiertos para no empalmar
+      const loginModal = document.getElementById('login-modal');
+      const registerModal = document.getElementById('register-modal');
+      const otpModal = document.getElementById('otp-modal');
+      if (loginModal) loginModal.style.display = 'none';
+      if (registerModal) registerModal.style.display = 'none';
+      if (otpModal) otpModal.style.display = 'none';
+    }
+  };
+
   // Handle Auth
   const API_BASE = (() => {
     if (window.location.protocol === 'file:') {
@@ -76,7 +129,15 @@ document.addEventListener('DOMContentLoaded', () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
       });
-      const result = await res.json();
+      
+      let result;
+      const contentType = res.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        result = await res.json();
+      } else {
+        const errorText = await res.text();
+        throw new Error(errorText.substring(0, 120) || `El servidor de Render devolvió un error ${res.status} sin formato JSON.`);
+      }
 
       if (!res.ok) {
         if (result.error === 'needs_verification') {
@@ -149,12 +210,28 @@ document.addEventListener('DOMContentLoaded', () => {
         throw new Error((result.details ? `${result.error} (${result.details})` : null) || result.error || 'Error al iniciar sesión');
       }
 
+      if (result.requiresPasskey) {
+        currentTempToken = result.tempToken;
+        closeModal(loginModal);
+        if (result.passkeyStep === 'create') {
+          const passkeyCreateModal = document.getElementById('passkey-create-modal');
+          if (passkeyCreateModal) passkeyCreateModal.style.display = 'flex';
+        } else {
+          const passkeyVerifyModal = document.getElementById('passkey-verify-modal');
+          if (passkeyVerifyModal) passkeyVerifyModal.style.display = 'flex';
+        }
+        return;
+      }
+
       localStorage.setItem('scout_ai_token', result.token);
       localStorage.setItem('scout_ai_user', JSON.stringify(result.user));
       window.location.href = 'index.html';
     } catch (err) {
       console.error('Login error detail:', err);
       errorEl.textContent = `Error: ${err.message}`;
+      if (err.message.includes('500') || err.message.includes('502') || err.message.includes('504') || err.message.includes('sin formato JSON')) {
+        showErrorModal(err.message);
+      }
     } finally {
       spinner.style.display = 'none';
       btnText.style.display = 'inline-block';
@@ -397,7 +474,15 @@ document.addEventListener('DOMContentLoaded', () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password, nombres, apellidos, telefono, email })
       });
-      const result = await res.json();
+      
+      let result;
+      const contentType = res.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        result = await res.json();
+      } else {
+        const errorText = await res.text();
+        throw new Error(errorText.substring(0, 120) || `El servidor de Render devolvió un error ${res.status} sin formato JSON.`);
+      }
 
       if (!res.ok) throw new Error((result.details ? `${result.error} (${result.details})` : null) || result.error || 'Error al registrarse');
 
@@ -420,6 +505,9 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
       console.error('Register error detail:', err);
       errorEl.textContent = `Error: ${err.message}`;
+      if (err.message.includes('500') || err.message.includes('502') || err.message.includes('504') || err.message.includes('sin formato JSON')) {
+        showErrorModal(err.message);
+      }
     } finally {
       spinner.style.display = 'none';
       btnText.style.display = 'inline-block';
@@ -461,6 +549,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (!res.ok) throw new Error(result.error || 'Error al verificar el código');
 
+      if (result.requiresPasskey) {
+        currentTempToken = result.tempToken;
+        successEl.textContent = '¡Cuenta verificada con éxito! Configura tu Passkey obligatoria.';
+        successEl.style.display = 'block';
+        setTimeout(() => {
+          closeModal(otpModal);
+          const passkeyCreateModal = document.getElementById('passkey-create-modal');
+          if (passkeyCreateModal) passkeyCreateModal.style.display = 'flex';
+        }, 1200);
+        return;
+      }
+
       successEl.textContent = '¡Cuenta verificada con éxito! Iniciando sesión...';
       successEl.style.display = 'block';
 
@@ -474,6 +574,9 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
       console.error('OTP verification error:', err);
       errorEl.textContent = err.message;
+      if (err.message.includes('500') || err.message.includes('502') || err.message.includes('504') || err.message.includes('sin formato JSON')) {
+        showErrorModal(err.message);
+      }
     } finally {
       spinner.style.display = 'none';
       btnText.style.display = 'inline-block';
@@ -542,6 +645,9 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
       console.error('Resend OTP error:', err);
       errorEl.textContent = err.message;
+      if (err.message.includes('500') || err.message.includes('502') || err.message.includes('504') || err.message.includes('sin formato JSON')) {
+        showErrorModal(err.message);
+      }
       
       if (resendTimer) clearInterval(resendTimer);
       resendCooldown = false;
@@ -551,6 +657,314 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.style.opacity = '1';
         btn.textContent = 'Reenviar código';
       }
+    }
+  });
+
+  // ─── PASSKEY WEBAUTHN & PIN HELPERS ────────────────────────────
+  const bufferToBase64Url = (buffer) => {
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    for (let i = 0; i < bytes.byteLength; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+  };
+
+  const base64UrlToBuffer = (base64url) => {
+    let padding = '='.repeat((4 - base64url.length % 4) % 4);
+    let base64 = (base64url + padding).replace(/-/g, '+').replace(/_/g, '/');
+    let rawData = window.atob(base64);
+    let outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; ++i) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray.buffer;
+  };
+
+  const btnPasskeyCreateWebAuthn = document.getElementById('btn-passkey-create-webauthn');
+  const btnPasskeyVerifyWebAuthn = document.getElementById('btn-passkey-verify-webauthn');
+  const passkeyPinCreateForm = document.getElementById('passkey-pin-create-form');
+  const passkeyPinVerifyForm = document.getElementById('passkey-pin-verify-form');
+
+  // 1. Create Passkey via WebAuthn
+  btnPasskeyCreateWebAuthn?.addEventListener('click', async () => {
+    const errorEl = document.getElementById('passkey-create-error');
+    const successEl = document.getElementById('passkey-create-success');
+    if (errorEl) errorEl.textContent = '';
+    if (successEl) successEl.style.display = 'none';
+
+    if (!currentTempToken) {
+      if (errorEl) errorEl.textContent = 'Sesión expirada. Por favor vuelve a iniciar sesión.';
+      return;
+    }
+
+    try {
+      btnPasskeyCreateWebAuthn.disabled = true;
+      btnPasskeyCreateWebAuthn.innerHTML = '<span>Configurando Passkey...</span>';
+
+      const optRes = await fetch(`${API_BASE}/auth/passkey/register-options`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${currentTempToken}`
+        }
+      });
+      const options = await optRes.json();
+      if (!optRes.ok) throw new Error(options.error || 'Error al obtener opciones del servidor');
+
+      if (!window.PublicKeyCredential || !window.isSecureContext) {
+        throw new Error('WebAuthn (Passkey) requiere conexión HTTPS o acceder mediante http://localhost:3001');
+      }
+
+      options.challenge = base64UrlToBuffer(options.challenge);
+      options.user.id = base64UrlToBuffer(options.user.id);
+
+      const credential = await navigator.credentials.create({ publicKey: options });
+      
+      const credentialPayload = {
+        id: credential.id,
+        rawId: bufferToBase64Url(credential.rawId),
+        type: credential.type,
+        response: {
+          clientDataJSON: bufferToBase64Url(credential.response.clientDataJSON),
+          attestationObject: bufferToBase64Url(credential.response.attestationObject)
+        }
+      };
+
+      const verifyRes = await fetch(`${API_BASE}/auth/passkey/register-verify`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${currentTempToken}`
+        },
+        body: JSON.stringify({ credential: credentialPayload })
+      });
+      const verifyResult = await verifyRes.json();
+      if (!verifyRes.ok) throw new Error(verifyResult.error || 'Error al verificar Passkey creada');
+
+      if (successEl) {
+        successEl.textContent = '¡Passkey registrada con éxito! Redirigiendo...';
+        successEl.style.display = 'block';
+      }
+
+      localStorage.setItem('scout_ai_token', verifyResult.token);
+      localStorage.setItem('scout_ai_user', JSON.stringify(verifyResult.user));
+
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 1200);
+
+    } catch (err) {
+      console.error('Passkey creation error:', err);
+      if (err.name === 'NotAllowedError' || err.name === 'AbortError') {
+        const cancelledModal = document.getElementById('passkey-cancelled-modal');
+        if (cancelledModal) cancelledModal.style.display = 'flex';
+      } else {
+        if (errorEl) {
+          errorEl.textContent = err.message || 'Error al configurar Passkey';
+          errorEl.style.display = 'block';
+        }
+      }
+    } finally {
+      if (btnPasskeyCreateWebAuthn) {
+        btnPasskeyCreateWebAuthn.disabled = false;
+        btnPasskeyCreateWebAuthn.innerHTML = '<span>CONFIGURAR PASSKEY</span>';
+      }
+    }
+  });
+
+  // 2. Create Passkey via PIN Fallback
+  passkeyPinCreateForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const pinInput = document.getElementById('passkey-pin-create-input');
+    const errorEl = document.getElementById('passkey-create-error');
+    const successEl = document.getElementById('passkey-create-success');
+    const pin = pinInput?.value.trim();
+
+    if (!pin || !/^\d{6}$/.test(pin)) {
+      if (errorEl) errorEl.textContent = 'El PIN debe ser exactamente de 6 dígitos numéricos';
+      return;
+    }
+
+    if (!currentTempToken) {
+      if (errorEl) errorEl.textContent = 'Sesión expirada. Vuelve a iniciar sesión.';
+      return;
+    }
+
+    if (errorEl) errorEl.textContent = '';
+    if (successEl) successEl.style.display = 'none';
+
+    try {
+      const verifyRes = await fetch(`${API_BASE}/auth/passkey/register-verify`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${currentTempToken}`
+        },
+        body: JSON.stringify({ pin })
+      });
+      const verifyResult = await verifyRes.json();
+      if (!verifyRes.ok) throw new Error(verifyResult.error || 'Error al guardar PIN Passkey');
+
+      if (successEl) {
+        successEl.textContent = '¡PIN Passkey guardado con éxito! Redirigiendo...';
+        successEl.style.display = 'block';
+      }
+
+      localStorage.setItem('scout_ai_token', verifyResult.token);
+      localStorage.setItem('scout_ai_user', JSON.stringify(verifyResult.user));
+
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 1200);
+    } catch (err) {
+      console.error('PIN Passkey create error:', err);
+      if (errorEl) errorEl.textContent = err.message;
+    }
+  });
+
+  // 3. Verify Passkey via WebAuthn
+  btnPasskeyVerifyWebAuthn?.addEventListener('click', async () => {
+    const errorEl = document.getElementById('passkey-verify-error');
+    const successEl = document.getElementById('passkey-verify-success');
+    if (errorEl) errorEl.textContent = '';
+    if (successEl) successEl.style.display = 'none';
+
+    if (!currentTempToken) {
+      if (errorEl) errorEl.textContent = 'Sesión expirada. Por favor vuelve a iniciar sesión.';
+      return;
+    }
+
+    try {
+      btnPasskeyVerifyWebAuthn.disabled = true;
+      btnPasskeyVerifyWebAuthn.innerHTML = '<span>Verificando Passkey...</span>';
+
+      const optRes = await fetch(`${API_BASE}/auth/passkey/login-options`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${currentTempToken}`
+        }
+      });
+      const options = await optRes.json();
+      if (!optRes.ok) throw new Error(options.error || 'Error al obtener desafío del servidor');
+
+      if (!window.PublicKeyCredential || !window.isSecureContext) {
+        throw new Error('WebAuthn (Passkey) requiere conexión HTTPS o acceder mediante http://localhost:3001');
+      }
+
+      options.challenge = base64UrlToBuffer(options.challenge);
+      if (options.allowCredentials && options.allowCredentials.length > 0) {
+        options.allowCredentials = options.allowCredentials.map(c => ({
+          ...c,
+          id: base64UrlToBuffer(c.id)
+        }));
+      } else {
+        delete options.allowCredentials;
+      }
+
+      const assertion = await navigator.credentials.get({ publicKey: options });
+
+      const assertionPayload = {
+        id: assertion.id,
+        rawId: bufferToBase64Url(assertion.rawId),
+        type: assertion.type,
+        response: {
+          clientDataJSON: bufferToBase64Url(assertion.response.clientDataJSON),
+          authenticatorData: bufferToBase64Url(assertion.response.authenticatorData),
+          signature: bufferToBase64Url(assertion.response.signature)
+        }
+      };
+
+      const verifyRes = await fetch(`${API_BASE}/auth/passkey/login-verify`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${currentTempToken}`
+        },
+        body: JSON.stringify({ credential: assertionPayload })
+      });
+      const verifyResult = await verifyRes.json();
+      if (!verifyRes.ok) throw new Error(verifyResult.error || 'Error al autenticar Passkey');
+
+      if (successEl) {
+        successEl.textContent = '¡Autenticación Passkey exitosa! Redirigiendo...';
+        successEl.style.display = 'block';
+      }
+
+      localStorage.setItem('scout_ai_token', verifyResult.token);
+      localStorage.setItem('scout_ai_user', JSON.stringify(verifyResult.user));
+
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 1200);
+
+    } catch (err) {
+      console.error('Passkey verify error:', err);
+      if (err.name === 'NotAllowedError' || err.name === 'AbortError') {
+        const cancelledModal = document.getElementById('passkey-cancelled-modal');
+        if (cancelledModal) cancelledModal.style.display = 'flex';
+      } else {
+        if (errorEl) {
+          errorEl.textContent = err.message || 'Error al autenticar Passkey';
+          errorEl.style.display = 'block';
+        }
+      }
+    } finally {
+      if (btnPasskeyVerifyWebAuthn) {
+        btnPasskeyVerifyWebAuthn.disabled = false;
+        btnPasskeyVerifyWebAuthn.innerHTML = '<span>AUTENTICAR CON PASSKEY</span>';
+      }
+    }
+  });
+
+  // 4. Verify Passkey via PIN
+  passkeyPinVerifyForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const pinInput = document.getElementById('passkey-pin-verify-input');
+    const errorEl = document.getElementById('passkey-verify-error');
+    const successEl = document.getElementById('passkey-verify-success');
+    const pin = pinInput?.value.trim();
+
+    if (!pin || !/^\d{6}$/.test(pin)) {
+      if (errorEl) errorEl.textContent = 'Ingresa los 6 dígitos numéricos de tu PIN Passkey';
+      return;
+    }
+
+    if (!currentTempToken) {
+      if (errorEl) errorEl.textContent = 'Sesión expirada. Vuelve a iniciar sesión.';
+      return;
+    }
+
+    if (errorEl) errorEl.textContent = '';
+    if (successEl) successEl.style.display = 'none';
+
+    try {
+      const verifyRes = await fetch(`${API_BASE}/auth/passkey/login-verify`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${currentTempToken}`
+        },
+        body: JSON.stringify({ pin })
+      });
+      const verifyResult = await verifyRes.json();
+      if (!verifyRes.ok) throw new Error(verifyResult.error || 'Error al verificar PIN Passkey');
+
+      if (successEl) {
+        successEl.textContent = '¡PIN verificado con éxito! Accediendo a Futbol AI Local...';
+        successEl.style.display = 'block';
+      }
+
+      localStorage.setItem('scout_ai_token', verifyResult.token);
+      localStorage.setItem('scout_ai_user', JSON.stringify(verifyResult.user));
+
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 1200);
+    } catch (err) {
+      console.error('PIN Passkey verify error:', err);
+      if (errorEl) errorEl.textContent = err.message;
     }
   });
 

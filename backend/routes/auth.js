@@ -508,10 +508,19 @@ module.exports = ({ User, JWT_SECRET }) => {
       const userAgent = req.headers['user-agent'] || '';
       let detectedDevice = deviceInfo;
       if (!detectedDevice) {
-        if (/android/i.test(userAgent)) detectedDevice = 'Dispositivo Móvil Android';
-        else if (/iphone|ipad|ipod/i.test(userAgent)) detectedDevice = 'Dispositivo iOS (iPhone/iPad)';
+        if (/samsung|galaxy/i.test(userAgent)) detectedDevice = 'Samsung Galaxy (Android)';
+        else if (/pixel/i.test(userAgent)) detectedDevice = 'Google Pixel (Android)';
+        else if (/xiaomi|redmi|poco/i.test(userAgent)) detectedDevice = 'Dispositivo Xiaomi/Redmi (Android)';
+        else if (/moto|motorola/i.test(userAgent)) detectedDevice = 'Dispositivo Motorola (Android)';
+        else if (/huawei|honor/i.test(userAgent)) detectedDevice = 'Dispositivo Huawei/Honor';
+        else if (/oppo|oneplus|realme|vivo/i.test(userAgent)) detectedDevice = 'Dispositivo Móvil (Android)';
+        else if (/android/i.test(userAgent)) detectedDevice = 'Celular / Tablet Android';
+        else if (/iphone/i.test(userAgent)) detectedDevice = 'Apple iPhone (iOS)';
+        else if (/ipad/i.test(userAgent)) detectedDevice = 'Apple iPad (iPadOS)';
         else if (/macintosh|mac os x/i.test(userAgent)) detectedDevice = 'Equipo Mac (macOS)';
         else if (/windows/i.test(userAgent)) detectedDevice = 'Equipo PC (Windows)';
+        else if (/cros/i.test(userAgent)) detectedDevice = 'Chromebook (ChromeOS)';
+        else if (/linux/i.test(userAgent)) detectedDevice = 'Computadora Linux';
         else detectedDevice = 'Dispositivo de Acceso Registrado';
       }
 
