@@ -1,15 +1,46 @@
+window.currentCurrency = 'USD';
+const EUR_TO_USD = 1.17;
+
 function formatContractValue(val) {
-  if (!val || isNaN(val) || val <= 0) return '€5M';
-  const num = Number(val);
+  if (!val || isNaN(val) || val <= 0) val = 5000000;
+  let num = Number(val);
+  let symbol = '€';
+  if (window.currentCurrency === 'USD') {
+    num = num * EUR_TO_USD;
+    symbol = '$';
+  }
   if (num >= 1000000) {
-    const millions = (num / 1000000).toFixed(num % 1000000 === 0 ? 0 : 1);
-    return `€${millions}M`;
+    const mVal = num / 1000000;
+    const formatted = (mVal % 1 === 0) ? mVal.toFixed(0) : mVal.toFixed(1);
+    return symbol + formatted + 'M';
   } else if (num >= 1000) {
-    return `€${(num / 1000).toFixed(0)}K`;
+    return symbol + (num / 1000).toFixed(0) + 'K';
   } else {
-    return `€${num}`;
+    return symbol + Math.round(num);
   }
 }
+
+function toggleCurrency() {
+  window.currentCurrency = (window.currentCurrency === 'USD') ? 'EUR' : 'USD';
+  const btn = document.getElementById('currency-toggle-btn');
+  if (btn) {
+    if (window.currentCurrency === 'USD') {
+      btn.innerHTML = '<span class="currency-label">USD ($)</span>';
+      btn.classList.add('usd-active');
+    } else {
+      btn.innerHTML = '<span class="currency-label">EUR (€)</span>';
+      btn.classList.remove('usd-active');
+    }
+  }
+  const displays = document.querySelectorAll('.player-value-display');
+  displays.forEach(el => {
+    const raw = el.getAttribute('data-market-value');
+    if (raw !== null) {
+      el.textContent = formatContractValue(raw);
+    }
+  });
+}
+window.toggleCurrency = toggleCurrency;
 
 /* ══════════════════════════════════════════
    FUTBOLAI — Main Application Logic
@@ -40788,7 +40819,10 @@ function renderFeaturedPlayers() {
 currentPage = 1;
 const PLAYERS_PER_PAGE = 24;
 
-function renderPlayers(playersToRender) {
+function renderPlayers(playersToRender, preservePage = false) {
+  if (!preservePage && typeof currentPage !== 'undefined' && !window._isChangingPage) {
+    currentPage = 1;
+  }
   const list = playersToRender || allPlayers || [];
   const grid = document.getElementById('players-grid');
   const countTag = document.getElementById('players-count-tag');
@@ -40849,9 +40883,9 @@ function prevPage() {
   if (currentPage > 1) {
     currentPage--;
     if (typeof window.applyAppFilters === 'function') {
-      window.applyAppFilters();
+      window.applyAppFilters(true);
     } else {
-      renderPlayers();
+      renderPlayers(null, true);
     }
   }
 }
@@ -40859,11 +40893,13 @@ function prevPage() {
 function nextPage() {
   currentPage++;
   if (typeof window.applyAppFilters === 'function') {
-    window.applyAppFilters();
+    window.applyAppFilters(true);
   } else {
-    renderPlayers();
+    renderPlayers(null, true);
   }
 }
+window.prevPage = prevPage;
+window.nextPage = nextPage;
 
 function getPlayerCareerAverageRating(p) {
   if (!p) return '7.0';
@@ -40938,7 +40974,7 @@ function createPlayerCard(p) {
 
       <div class="player-rating-star">
         <span class="star" style="display:inline-flex; align-items:center;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#00f0ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 22 8.5 12 22 2 8.5 12 2"></polygon></svg></span>
-        <span>${formatContractValue(p.marketValue)}</span>
+        <span class="player-value-display" data-market-value="${p.marketValue || 0}">${formatContractValue(p.marketValue)}</span>
       </div>
     </div>
     
@@ -41020,7 +41056,14 @@ function setupFilters() {
   const leagueSelect = document.getElementById('filter-league');
   const teamSelect = document.getElementById('filter-team');
 
-  const applyFilters = () => {
+  let userChangedSort = false;
+  if (sortSelect) {
+    sortSelect.addEventListener('change', () => {
+      userChangedSort = true;
+    });
+  }
+
+  const applyFilters = (preservePage = false) => {
     const query = search ? search.value.toLowerCase() : '';
     const activeChip = document.querySelector('.chip.active');
     const pos = activeChip ? activeChip.dataset.pos : '';
@@ -41054,23 +41097,23 @@ function setupFilters() {
       return matchSearch && matchPos && matchLeague && matchTeam;
     });
 
-    // Sorting
-    const sortVal = sortSelect ? sortSelect.value : 'default';
+    // Sorting: Default to Mayor a Menor (market value descending) when no sort filter is manually selected
+    const sortVal = (sortSelect && userChangedSort) ? sortSelect.value : 'salary_desc';
     filtered.sort((a, b) => {
       switch (sortVal) {
-        case 'name_asc': return a.name.localeCompare(b.name);
-        case 'name_desc': return b.name.localeCompare(a.name);
-        case 'salary_desc': return b.marketValue - a.marketValue; // Proportional
-        case 'salary_asc': return a.marketValue - b.marketValue;
+        case 'name_asc': return (a.name || '').localeCompare(b.name || '');
+        case 'name_desc': return (b.name || '').localeCompare(a.name || '');
+        case 'salary_desc': return (b.marketValue || 0) - (a.marketValue || 0);
+        case 'salary_asc': return (a.marketValue || 0) - (b.marketValue || 0);
         case 'contract_asc': 
           return getEstimatedContract(a) - getEstimatedContract(b);
         case 'contract_desc': 
           return getEstimatedContract(b) - getEstimatedContract(a);
-        default: return 0;
+        default: return (b.marketValue || 0) - (a.marketValue || 0);
       }
     });
 
-    renderPlayers(filtered);
+    renderPlayers(filtered, preservePage);
   };
 
   if (search) search.addEventListener('input', applyFilters);
@@ -47345,6 +47388,3 @@ function closeRateLimitModal() {
 
 window.showRateLimitModal = showRateLimitModal;
 window.closeRateLimitModal = closeRateLimitModal;
-
-
-
