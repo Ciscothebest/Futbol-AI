@@ -72,7 +72,7 @@ module.exports = ({ User, DirectMessage, UserContact }) => {
 
       let user = null;
       if (req.user.id) {
-        user = await User.findByPk(req.user.id);
+        user = await User.findByPk(req.user.id).catch(() => null);
       }
       if (!user && req.user.username) {
         user = await User.findOne({ where: { username: req.user.username } });
@@ -84,11 +84,8 @@ module.exports = ({ User, DirectMessage, UserContact }) => {
       const isLocal = tier.includes('local') || role.includes('local') || role.includes('entrenador local');
       const isEnterprise = tier.includes('enterprise') || role.includes('enterprise') || role.includes('scout');
 
-      if (!isLocal && !isEnterprise) {
-        return res.status(403).json({
-          error: 'El módulo Mis Chats solo está disponible para usuarios con los planes Local y Enterprise.'
-        });
-      }
+      // Permitir acceso a todos los usuarios autenticados
+      // if (!isLocal && !isEnterprise) { ... }
 
       // Asegurar que req.user.id apunte al ID correcto de la base de datos
       if (user) {
@@ -140,7 +137,7 @@ module.exports = ({ User, DirectMessage, UserContact }) => {
         return res.json({ success: true, contacts: [] });
       }
 
-      const currentUser = await User.findByPk(currentUserId);
+      const currentUser = await User.findByPk(currentUserId).catch(() => null);
       const usersList = await User.findAll({
         where: { id: { [Op.in]: allContactIds } }
       });
@@ -218,7 +215,7 @@ module.exports = ({ User, DirectMessage, UserContact }) => {
         conditions.push({ id: { [Op.ne]: currentUserId } });
       }
 
-      const currentUser = currentUserId ? await User.findByPk(currentUserId) : null;
+      const currentUser = currentUserId ? await User.findByPk(currentUserId).catch(() => null) : null;
       const currentCat = getUserTierCategory(currentUser);
 
       if (currentCat === 'local') {
@@ -290,8 +287,8 @@ module.exports = ({ User, DirectMessage, UserContact }) => {
         return res.status(400).json({ error: 'No puedes agregarte a ti mismo como contacto' });
       }
 
-      const currentUser = await User.findByPk(currentUserId);
-      const targetUser = await User.findByPk(contactUserId);
+      const currentUser = await User.findByPk(currentUserId).catch(() => null);
+      const targetUser = await User.findByPk(contactUserId).catch(() => null);
       if (!targetUser) {
         return res.status(404).json({ error: 'Usuario objetivo no encontrado' });
       }
@@ -349,7 +346,7 @@ module.exports = ({ User, DirectMessage, UserContact }) => {
       const currentUserId = req.user.id;
       const { contactUserId } = req.params;
 
-      const contactUser = await User.findByPk(contactUserId);
+      const contactUser = await User.findByPk(contactUserId).catch(() => null);
       if (!contactUser) {
         return res.status(404).json({ error: 'Contacto no encontrado' });
       }
@@ -397,8 +394,8 @@ module.exports = ({ User, DirectMessage, UserContact }) => {
         return res.status(400).json({ error: 'El destinatario y el mensaje son requeridos' });
       }
 
-      const currentUser = await User.findByPk(currentUserId);
-      const receiver = await User.findByPk(receiverId);
+      const currentUser = await User.findByPk(currentUserId).catch(() => null);
+      const receiver = await User.findByPk(receiverId).catch(() => null);
       if (!receiver) {
         return res.status(404).json({ error: 'El destinatario no existe' });
       }

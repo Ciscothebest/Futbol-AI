@@ -247,7 +247,7 @@ module.exports = ({ User, JWT_SECRET }) => {
       req.user = jwt.verify(token, JWT_SECRET);
 
       if (req.user && req.user.id) {
-        let dbUser = await User.findByPk(req.user.id);
+        let dbUser = await User.findByPk(req.user.id).catch(() => null);
         if (!dbUser && req.user.username) {
           dbUser = await User.findOne({ where: { username: req.user.username } });
         }
@@ -462,7 +462,7 @@ module.exports = ({ User, JWT_SECRET }) => {
 
   router.post('/passkey/register-options', authenticate, async (req, res) => {
     try {
-      const user = await User.findByPk(req.user.id);
+      const user = await User.findByPk(req.user.id).catch(() => null);
       if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
 
       const challenge = crypto.randomBytes(32).toString('base64url');
@@ -502,7 +502,7 @@ module.exports = ({ User, JWT_SECRET }) => {
   router.post('/passkey/register-verify', authenticate, async (req, res) => {
     try {
       const { credential, pin, deviceInfo } = req.body;
-      const user = await User.findByPk(req.user.id);
+      const user = await User.findByPk(req.user.id).catch(() => null);
       if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
 
       const userAgent = req.headers['user-agent'] || '';
@@ -573,7 +573,7 @@ module.exports = ({ User, JWT_SECRET }) => {
   router.post('/passkey/remove-method', authenticate, async (req, res) => {
     try {
       const { method } = req.body;
-      const user = await User.findByPk(req.user.id);
+      const user = await User.findByPk(req.user.id).catch(() => null);
       if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
 
       let newPasskeyCredentialId = user.passkeyCredentialId;
@@ -621,7 +621,7 @@ module.exports = ({ User, JWT_SECRET }) => {
   router.post('/passkey/update-device', authenticate, async (req, res) => {
     try {
       const { deviceInfo } = req.body;
-      const user = await User.findByPk(req.user.id);
+      const user = await User.findByPk(req.user.id).catch(() => null);
       if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
 
       if (!deviceInfo || !deviceInfo.trim()) {
@@ -652,7 +652,7 @@ module.exports = ({ User, JWT_SECRET }) => {
 
   router.post('/passkey/login-options', authenticate, async (req, res) => {
     try {
-      const user = await User.findByPk(req.user.id);
+      const user = await User.findByPk(req.user.id).catch(() => null);
       if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
 
       const challenge = crypto.randomBytes(32).toString('base64url');
@@ -679,7 +679,7 @@ module.exports = ({ User, JWT_SECRET }) => {
   router.post('/passkey/login-verify', authenticate, async (req, res) => {
     try {
       const { credential, pin } = req.body;
-      const user = await User.findByPk(req.user.id);
+      const user = await User.findByPk(req.user.id).catch(() => null);
       if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
 
       if (credential && credential.id) {
@@ -801,7 +801,7 @@ module.exports = ({ User, JWT_SECRET }) => {
 
   router.get('/me', authenticate, async (req, res) => {
     try {
-      let user = await User.findByPk(req.user.id);
+      let user = await User.findByPk(req.user.id).catch(() => null);
       if (!user && req.user.username) {
         user = await User.findOne({ where: { username: req.user.username } });
       }
@@ -819,7 +819,7 @@ module.exports = ({ User, JWT_SECRET }) => {
     try {
       const { selectedCountries, selectedClub, preferredFormation, preferredStyle, selectedTier, localCoachData } = req.body;
       const selectedCountry = req.body.selectedCountry !== undefined ? req.body.selectedCountry : selectedCountries;
-      let user = await User.findByPk(req.user.id);
+      let user = await User.findByPk(req.user.id).catch(() => null);
       if (!user && req.user.username) {
         user = await User.findOne({ where: { username: req.user.username } });
       }
@@ -881,7 +881,7 @@ module.exports = ({ User, JWT_SECRET }) => {
 
   router.post('/unsubscribe', authenticate, async (req, res) => {
     try {
-      const user = await User.findByPk(req.user.id);
+      const user = await User.findByPk(req.user.id).catch(() => null);
       if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
 
       await user.update({ autoRenew: false });
@@ -894,7 +894,7 @@ module.exports = ({ User, JWT_SECRET }) => {
 
   router.get('/local-players', authenticate, async (req, res) => {
     try {
-      const user = await User.findByPk(req.user.id);
+      const user = await User.findByPk(req.user.id).catch(() => null);
       if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
       let data = {};
       if (user.localCoachData) {
@@ -916,7 +916,7 @@ module.exports = ({ User, JWT_SECRET }) => {
       if (!Array.isArray(players)) {
         return res.status(400).json({ error: 'players debe ser un arreglo de jugadores' });
       }
-      const user = await User.findByPk(req.user.id);
+      const user = await User.findByPk(req.user.id).catch(() => null);
       if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
       
       let data = {};
@@ -948,7 +948,7 @@ module.exports = ({ User, JWT_SECRET }) => {
         return res.status(400).json({ error: `Número de teléfono: ${telValidation.message}` });
       }
 
-      const user = await User.findByPk(req.user.id);
+      const user = await User.findByPk(req.user.id).catch(() => null);
       if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
 
       await user.update({
@@ -1008,7 +1008,7 @@ module.exports = ({ User, JWT_SECRET }) => {
 
       const avatarUrl = `/uploads/${fileName}`;
 
-      const user = await User.findByPk(req.user.id);
+      const user = await User.findByPk(req.user.id).catch(() => null);
       if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
 
       await user.update({ avatarUrl });
@@ -1023,7 +1023,7 @@ module.exports = ({ User, JWT_SECRET }) => {
   // ─── SECURITY QUESTIONS ENDPOINTS ────────────────────────────────
   router.get('/security-questions', authenticate, async (req, res) => {
     try {
-      const user = await User.findByPk(req.user.id);
+      const user = await User.findByPk(req.user.id).catch(() => null);
       if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
 
       let questions = [];
@@ -1076,7 +1076,7 @@ module.exports = ({ User, JWT_SECRET }) => {
         });
       }
 
-      const user = await User.findByPk(req.user.id);
+      const user = await User.findByPk(req.user.id).catch(() => null);
       if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
 
       await user.update({

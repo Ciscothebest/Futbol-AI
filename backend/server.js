@@ -59,9 +59,9 @@ const authenticate = async (req, res, next) => {
     req.user = jwt.verify(token, JWT_SECRET);
 
     if (req.user && (req.user.id || req.user.username)) {
-      let dbUser = req.user.id ? await User.findByPk(req.user.id) : null;
+      let dbUser = req.user.id ? await User.findByPk(req.user.id).catch(() => null) : null;
       if (!dbUser && req.user.username) {
-        dbUser = await User.findOne({ where: { username: req.user.username } });
+        dbUser = await User.findOne({ where: { username: req.user.username } }).catch(() => null);
       }
       if (dbUser) {
         const userData = dbUser.toJSON ? dbUser.toJSON() : dbUser;
@@ -326,9 +326,9 @@ app.get('/api/all-prospects', authenticate, async (req, res) => {
 app.get('/api/players/:id', async (req, res) => {
 
   try {
-    let player = await Player.findByPk(req.params.id);
+    let player = await Player.findByPk(req.params.id).catch(() => null);
     if (!player && req.params.id && req.params.id.startsWith('loc-player-')) {
-      player = await Prospect.findByPk(req.params.id);
+      player = await Prospect.findByPk(req.params.id).catch(() => null);
     }
     if (!player) return res.status(404).json({ error: 'Player not found' });
     
