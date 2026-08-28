@@ -34935,10 +34935,11 @@ function applyPlanPermissions() {
   const isPlus = tier === 'plus';
   const isLocal = tier === 'local' || role === 'local' || role === 'entrenador local';
   const isEnterprise = tier === 'enterprise' || role.includes('enterprise') || role.includes('gerente') || role.includes('director') || role.includes('scout');
-  const restrictedInLocal = ['players', 'my-club', 'compare', 'predictions', 'simulations', 'prospects'];
+  const restrictedInLocal = ['players', 'my-club', 'compare', 'predictions', 'simulations'];
 
   document.querySelectorAll('.nav-item').forEach(btn => {
     const section = btn.dataset.section;
+    if (section === 'prospects') { btn.style.display = 'none'; return; }
     if (isGratis || isPro) {
       if (['my-club', 'players', 'compare', 'chat'].includes(section)) {
         btn.style.display = 'flex';
@@ -34967,7 +34968,7 @@ function applyPlanPermissions() {
         btn.style.display = 'flex';
       }
     } else {
-      if (section === 'my-players' || section === 'prospects' || section === 'predictions') {
+      if (section === 'my-players' || section === 'predictions') {
         btn.style.display = 'none';
       } else {
         btn.style.display = 'flex';
@@ -34987,9 +34988,7 @@ function applyPlanPermissions() {
     goToSection('my-players');
   } else if (!isLocal && currentSection === 'my-players') {
     goToSection('players');
-  } else if (!isEnterprise && !isLocal && currentSection === 'prospects') {
-    goToSection('players');
-  }
+  } 
 
   updateDailyLimitsBadges(user);
 }
@@ -35023,6 +35022,7 @@ function goToSection(name) {
   document.getElementById(`section-${name}`)?.classList.add('active');
 
   if (name === 'my-players') window.renderMyPlayersModule();
+  if (name === 'prospects') window.renderProspectsModule();
   if (name === 'my-club') renderMyClubDashboard();
   if (name === 'players') renderPlayers();
   if (name === 'compare') window.resetCompareModule();
@@ -39186,8 +39186,8 @@ window.renderProspectsModule = async () => {
   const isLocal = tier === 'local' || role === 'local' || role === 'entrenador local';
   const isEnterprise = tier === 'enterprise' || role.includes('enterprise') || role.includes('gerente') || role.includes('director') || role.includes('scout');
 
-  // Sólo accesible para Enterprise
-  if (isLocal || !isEnterprise) return;
+  // Accesible para todos los usuarios
+  // // if (isLocal || !isEnterprise) return;
 
 
   const container = document.getElementById('prospects-grid');
@@ -39198,20 +39198,17 @@ window.renderProspectsModule = async () => {
   // Enterprise: ver TODOS los prospectos de todos los coaches locales
   // Otros planes (Plus, Pro): ver solo sus propios prospectos (si los tienen)
   let rawProspects = [];
-  if (isEnterprise) {
-    try {
-      const token = localStorage.getItem('scout_ai_token');
-      const res = await fetch('/api/all-prospects', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await res.json();
-      if (data.success && Array.isArray(data.players)) {
-        rawProspects = data.players;
-      }
-    } catch (e) {
-      console.error('Error loading all prospects:', e);
+  try {
+    const token = localStorage.getItem('scout_ai_token');
+    const res = await fetch('/api/all-prospects', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (data.success && Array.isArray(data.players)) {
+      rawProspects = data.players;
     }
-  } else {
+  } catch (e) {
+    console.error('Error loading all prospects:', e);
     rawProspects = await window.loadLocalPlayers();
   }
 

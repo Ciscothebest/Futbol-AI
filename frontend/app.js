@@ -34935,39 +34935,33 @@ function applyPlanPermissions() {
   const isPlus = tier === 'plus';
   const isLocal = tier === 'local' || role === 'local' || role === 'entrenador local';
   const isEnterprise = tier === 'enterprise' || role.includes('enterprise') || role.includes('gerente') || role.includes('director') || role.includes('scout');
-  const restrictedInLocal = ['players', 'my-club', 'compare', 'predictions', 'simulations', 'prospects'];
+  const restrictedInLocal = ['players', 'my-club', 'compare', 'predictions', 'simulations'];
 
   document.querySelectorAll('.nav-item').forEach(btn => {
     const section = btn.dataset.section;
+    if (section === 'prospects') { btn.style.display = 'none'; return; }
     if (isGratis || isPro) {
-      if (['my-club', 'players', 'compare', 'chat'].includes(section)) {
+      if (['my-club', 'players', 'compare', 'chat', 'prospects'].includes(section)) {
         btn.style.display = 'flex';
       } else {
         btn.style.display = 'none';
       }
     } else if (isPlus) {
-      if (['my-club', 'players', 'compare', 'chat', 'simulations'].includes(section)) {
+      if (['my-club', 'players', 'compare', 'chat', 'simulations', 'prospects'].includes(section)) {
         btn.style.display = 'flex';
       } else {
         btn.style.display = 'none';
       }
     } else if (isLocal) {
-      if (section === 'my-players') {
+      if (section === 'my-players' || section === 'prospects') {
         btn.style.display = 'flex';
       } else if (restrictedInLocal.includes(section)) {
         btn.style.display = 'none';
       } else {
         btn.style.display = 'flex';
       }
-    } else if (isEnterprise) {
-      // Enterprise: Acceso a todos sus módulos excluyendo únicamente "my-players" (Mis Jugadores)
-      if (section === 'my-players' || section === 'predictions') {
-        btn.style.display = 'none';
-      } else {
-        btn.style.display = 'flex';
-      }
     } else {
-      if (section === 'my-players' || section === 'prospects' || section === 'predictions') {
+      if (section === 'my-players' || section === 'predictions') {
         btn.style.display = 'none';
       } else {
         btn.style.display = 'flex';
@@ -34977,17 +34971,15 @@ function applyPlanPermissions() {
 
   const activeBtn = document.querySelector('.nav-item.active');
   const currentSection = activeBtn ? activeBtn.dataset.section : 'players';
-  if ((isGratis || isPro) && !['my-club', 'players', 'compare', 'chat', 'profile', 'requirements'].includes(currentSection)) {
+  if ((isGratis || isPro) && !['my-club', 'players', 'compare', 'chat', 'prospects', 'profile', 'requirements'].includes(currentSection)) {
     goToSection('players');
-  } else if (isPlus && !['my-club', 'players', 'compare', 'chat', 'simulations', 'profile', 'requirements'].includes(currentSection)) {
+  } else if (isPlus && !['my-club', 'players', 'compare', 'chat', 'simulations', 'prospects', 'profile', 'requirements'].includes(currentSection)) {
     goToSection('players');
   } else if (isEnterprise && !['my-club', 'players', 'compare', 'chat', 'simulations', 'prospects', 'profile', 'requirements'].includes(currentSection)) {
     goToSection('players');
   } else if (isLocal && (restrictedInLocal.includes(currentSection) || currentSection === 'home')) {
     goToSection('my-players');
   } else if (!isLocal && currentSection === 'my-players') {
-    goToSection('players');
-  } else if (!isEnterprise && !isLocal && currentSection === 'prospects') {
     goToSection('players');
   }
 
@@ -35012,8 +35004,6 @@ function goToSection(name) {
 
   if (isLocal && (restricted.includes(name) || name === 'home')) {
     name = 'my-players';
-  } else if (!isLocal && name === 'my-players') {
-    name = 'players';
   }
 
   document.querySelectorAll('.nav-item').forEach(b => {
@@ -35023,6 +35013,7 @@ function goToSection(name) {
   document.getElementById(`section-${name}`)?.classList.add('active');
 
   if (name === 'my-players') window.renderMyPlayersModule();
+  if (name === 'prospects') window.renderProspectsModule();
   if (name === 'my-club') renderMyClubDashboard();
   if (name === 'players') renderPlayers();
   if (name === 'compare') window.resetCompareModule();
@@ -39186,8 +39177,8 @@ window.renderProspectsModule = async () => {
   const isLocal = tier === 'local' || role === 'local' || role === 'entrenador local';
   const isEnterprise = tier === 'enterprise' || role.includes('enterprise') || role.includes('gerente') || role.includes('director') || role.includes('scout');
 
-  // Sólo accesible para Enterprise
-  if (isLocal || !isEnterprise) return;
+  // Accesible para todos los usuarios
+  // // if (isLocal || !isEnterprise) return;
 
 
   const container = document.getElementById('prospects-grid');
@@ -39198,20 +39189,17 @@ window.renderProspectsModule = async () => {
   // Enterprise: ver TODOS los prospectos de todos los coaches locales
   // Otros planes (Plus, Pro): ver solo sus propios prospectos (si los tienen)
   let rawProspects = [];
-  if (isEnterprise) {
-    try {
-      const token = localStorage.getItem('scout_ai_token');
-      const res = await fetch('/api/all-prospects', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await res.json();
-      if (data.success && Array.isArray(data.players)) {
-        rawProspects = data.players;
-      }
-    } catch (e) {
-      console.error('Error loading all prospects:', e);
+  try {
+    const token = localStorage.getItem('scout_ai_token');
+    const res = await fetch('/api/all-prospects', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (data.success && Array.isArray(data.players)) {
+      rawProspects = data.players;
     }
-  } else {
+  } catch (e) {
+    console.error('Error loading all prospects:', e);
     rawProspects = await window.loadLocalPlayers();
   }
 

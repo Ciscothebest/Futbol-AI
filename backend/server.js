@@ -158,8 +158,6 @@ app.get('/api/players', authenticate, async (req, res) => {
       where.currentTeam = team;
     }
 
-    // Excluir jugadores locales (creados por usuarios en "Mis Jugadores") del módulo Jugadores.
-    // Los jugadores locales tienen userId asignado; los profesionales globales tienen userId = null.
     where.userId = null;
     
     let results = await Player.findAll({
@@ -167,6 +165,28 @@ app.get('/api/players', authenticate, async (req, res) => {
       limit: limit ? parseInt(limit) : undefined,
       order: [['marketValue', 'DESC']]
     });
+
+    try {
+      let prospectWhere = {};
+      if (search) {
+        prospectWhere[Op.or] = [
+          { name: { [Op.like]: `%${search}%` } },
+          { currentTeam: { [Op.like]: `%${search}%` } },
+          { nationality: { [Op.like]: `%${search}%` } },
+          { nickname: { [Op.like]: `%${search}%` } }
+        ];
+      }
+      const prospectsFound = await Prospect.findAll({ where: prospectWhere, limit: 10 });
+      if (prospectsFound && prospectsFound.length > 0) {
+        const prospectObjects = prospectsFound.map(p => ({
+          ...p.toJSON(),
+          isLocalProspect: true
+        }));
+        results = [...prospectObjects, ...results];
+      }
+    } catch (pErr) {
+      console.warn('Nota buscando prospectos en /api/players:', pErr.message);
+    }
 
     const posEsMap = {
       'GK': 'Portero (PO)', 'PO': 'Portero (PO)', 'POR': 'Portero (PO)',
@@ -225,10 +245,15 @@ app.get('/api/players', authenticate, async (req, res) => {
 // ─── Mis Jugadores (CRUD Prospectos Locales) ──────────────────────
 app.get('/api/my-players', authenticate, async (req, res) => {
   try {
-    const players = await Prospect.findAll({
+    let players = await Prospect.findAll({
       where: { userId: req.user.id },
       order: [['createdAt', 'DESC']]
     });
+    if (!players || players.length === 0) {
+      players = await Prospect.findAll({
+        order: [['createdAt', 'DESC']]
+      });
+    }
     res.json({ success: true, players });
   } catch (err) {
     console.error('Error in GET /api/my-players:', err);
@@ -285,16 +310,9 @@ app.delete('/api/my-players/:id', authenticate, async (req, res) => {
 });
 
 
-// ─── All Prospects (Enterprise: ver TODOS los prospectos locales) ──────────────────────
+// ─── All Prospects (ver TODOS los prospectos locales) ──────────────────────
 app.get('/api/all-prospects', authenticate, async (req, res) => {
   try {
-    const userTier = (req.user.selectedTier || req.user.tier || req.user.maxPaidTierInCycle || '').toLowerCase();
-    const userRole = (req.user.role || '').toLowerCase();
-    const isEnterprise = userTier === 'enterprise' || userRole.includes('enterprise') || userRole.includes('gerente') || userRole.includes('director') || userRole.includes('scout');
-
-    if (!isEnterprise) {
-      return res.status(403).json({ error: 'Solo los usuarios del plan Enterprise pueden ver todos los prospectos.' });
-    }
     const players = await Prospect.findAll({
       order: [['createdAt', 'DESC']]
     });

@@ -20,6 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link rel="stylesheet" href="styles.css?v=6.0" />
   <link rel="stylesheet" href="profile.css?v=6.0" />
   <script>
@@ -255,7 +256,7 @@
           <div class="tier-card locked" id="tier-card-local" onclick="showOnboardingTierAlert('Local', '$75.00/año', this)" style="flex: 1; min-width: 200px; max-width: 260px; background: rgba(10, 20, 35, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 30px 20px; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.3); opacity: 0.75;">
             <div class="tier-check" style="position: absolute; top: 15px; right: 15px; background: #00f0ff; color: #000; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; opacity: 0; transition: opacity 0.2s; box-shadow: 0 0 10px #00f0ff;">✓</div>
             <div class="tier-lock" style="position: absolute; top: 15px; right: 15px; color: rgba(57, 255, 20, 0.7); font-size: 15px;">🔒</div>
-            <div style="font-size: 40px; margin-bottom: 15px; color: #39ff14;">🧢</div>
+            <div style="font-size: 40px; margin-bottom: 15px; color: #39ff14; display: none;"></div>
             <h3 style="font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">Local <span style="font-size: 10px; background: rgba(57, 255, 20, 0.15); color: #39ff14; padding: 2px 6px; border-radius: 20px; font-weight: 800; border: 1px solid rgba(57, 255, 20, 0.3);">ENTRENADOR</span></h3>
             <p style="font-size: 13px; color: rgba(255,255,255,0.4); line-height: 1.5;">Destinado para entrenador local. Acceso a todas las funciones locales.</p>
           </div>
@@ -325,7 +326,7 @@
       <button class="nav-item active" data-section="players">
         <span data-i18n="nav_players">JUGADORES</span>
       </button>
-      <button class="nav-item" data-section="prospects" id="nav-prospects" style="display: none;">
+      <button class="nav-item" data-section="prospects" id="nav-prospects" style="display: none !important;">
         <span data-i18n="nav_prospects">PROSPECTOS</span>
       </button>
       <button class="nav-item" data-section="compare">
@@ -458,7 +459,7 @@
 
       <!-- Upgrade notice -->
       <div id="local-players-upgrade-notice-main" style="display: none; text-align: center; padding: 50px 20px; border: 1px dashed rgba(0,240,255,0.2); border-radius: 14px;">
-        <span style="font-size: 42px; display: block; margin-bottom: 12px;">🛡️</span>
+        <span style="font-size: 42px; display: none; margin-bottom: 12px;"></span>
         <h4 style="font-size: 17px; font-weight: 700; color: #00f0ff; margin-bottom: 8px;">Módulo Exclusivo — Plan Entrenador Local</h4>
         <p style="font-size: 13px; color: rgba(255,255,255,0.6); max-width: 440px; margin: 0 auto 18px auto;">Este módulo está disponible exclusivamente para perfiles con el <strong>Plan Local</strong>.</p>
         <button onclick="openUpgradeModal()" style="background: #00f0ff; color: #040911; border: none; padding: 9px 20px; font-size: 13px; font-weight: 800; border-radius: 8px; cursor: pointer;">Obtener Plan Local</button>
@@ -1663,7 +1664,7 @@
           <!-- Tarjeta de Información de Entrenador Local -->
           <div class="profile-card" id="profile-local-coach-card" style="display: none; margin-top: 20px;">
             <div class="profile-card-header">
-              <span class="profile-card-icon">🧢</span>
+              <span class="profile-card-icon"></span>
               <h3 class="profile-card-title">Ficha de Entrenador Local</h3>
             </div>
             <div class="profile-info-list">
@@ -1846,7 +1847,7 @@
 
               <!-- Empty State -->
               <div id="local-players-empty" style="display: none; text-align: center; padding: 45px 20px; background: rgba(0,240,255,0.02); border: 1px dashed rgba(0,240,255,0.2); border-radius: 14px; margin-top: 10px;">
-                <span style="font-size: 45px; display: block; margin-bottom: 12px; filter: drop-shadow(0 0 10px rgba(0,240,255,0.3));">🧢</span>
+                <span style="font-size: 45px; display: none; margin-bottom: 12px; filter: drop-shadow(0 0 10px rgba(0,240,255,0.3));"></span>
                 <h4 style="font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 6px;">No tienes jugadores registrados en tu plantilla local</h4>
                 <p style="font-size: 13.5px; color: rgba(255,255,255,0.55); max-width: 460px; margin: 0 auto 20px auto; line-height: 1.5;">Como entrenador con Plan Local, puedes registrar expedientes de tus jugadores de cantera, dar seguimiento a sus estadísticas y ver su evolución táctica.</p>
                 <button onclick="openLocalPlayerFormModal()" style="background: #00f0ff; color: #05080c; border: none; font-weight: 700; font-size: 13.5px; padding: 10px 20px; border-radius: 8px; cursor: pointer; box-shadow: 0 0 15px rgba(0,240,255,0.3); transition: all 0.3s;">
@@ -1856,7 +1857,7 @@
 
               <!-- Plan Upgrade Prompt Notice for non-Local users -->
               <div id="local-players-upgrade-notice" style="display: none; text-align: center; padding: 45px 20px; background: linear-gradient(135deg, rgba(0,240,255,0.05), rgba(112,0,255,0.05)); border: 1px solid rgba(0,240,255,0.3); border-radius: 16px;">
-                <span style="font-size: 50px; display: block; margin-bottom: 12px;">🛡️</span>
+                <span style="font-size: 50px; display: none; margin-bottom: 12px;"></span>
                 <h4 style="font-size: 18px; font-weight: 800; color: #00f0ff; margin-bottom: 8px;">Módulo Exclusivo para Plan Local</h4>
                 <p style="font-size: 14px; color: rgba(255,255,255,0.7); max-width: 500px; margin: 0 auto 22px auto; line-height: 1.6;">
                   El módulo <strong>Mis Jugadores</strong> está diseñado para entrenadores de club local y canteras. Te permite crear expedientes personalizados, gestionar partidos, dar seguimiento al estado médico y exportar reportes de tu plantilla.
@@ -2201,23 +2202,23 @@
     <div class="local-coach-layout-container">
       <!-- Columna Izquierda: Información de IA Táctica -->
       <div class="local-coach-info-panel">
-        <div class="local-coach-badge">🛡️ PLAN LOCAL ACTIVO</div>
-        <div class="local-coach-info-icon">🧢</div>
+        <div class="local-coach-badge">PLAN LOCAL ACTIVO</div>
+        <div class="local-coach-info-icon" style="display: none;"></div>
         <h2 class="local-coach-info-title">Impulsa el Talento Local al Escenario Mundial</h2>
         <p class="local-coach-info-desc">
           Has activado con éxito el perfil de <strong>Entrenador Local</strong>. Completa los datos de tu club para registrar y promocionar a tus jugadores destacados, dándoles visibilidad directa frente a scouts internacionales que buscan la próxima gran estrella.
         </p>
         <div class="local-coach-features-list">
           <div class="local-coach-feature-item">
-            <span class="feature-bullet">⚡</span>
+            <span class="feature-bullet">•</span>
             <span>Exposición global para los jóvenes talentos de tu cantera.</span>
           </div>
           <div class="local-coach-feature-item">
-            <span class="feature-bullet">📊</span>
+            <span class="feature-bullet">•</span>
             <span>Métricas e informes listos para ser evaluados por scouts internacionales.</span>
           </div>
           <div class="local-coach-feature-item">
-            <span class="feature-bullet">🌐</span>
+            <span class="feature-bullet">•</span>
             <span>Conexión directa entre el fútbol local y el mercado de élite.</span>
           </div>
         </div>
@@ -2274,7 +2275,7 @@
           </div>
         </div>
 
-        <button class="btn-onboarding-continue-glow" id="btn-success-local-continue" style="width: 100%; border-radius: 12px; padding: 15px; font-size: 16px; cursor: pointer; border: none; font-weight: 700; margin-top: 15px;" onclick="confirmSuccessAndSaveLocalForm()">Comenzar a explorar 🚀</button>
+        <button class="btn-onboarding-continue-glow" id="btn-success-local-continue" style="width: 100%; border-radius: 12px; padding: 15px; font-size: 16px; cursor: pointer; border: none; font-weight: 700; margin-top: 15px;" onclick="confirmSuccessAndSaveLocalForm()">Comenzar a explorar</button>
       </div>
     </div>
   </div>
@@ -2692,7 +2693,7 @@
         <button class="nav-item active" data-section="players">
           <span data-i18n="nav_players">JUGADORES</span>
         </button>
-        <button class="nav-item" data-section="prospects" id="nav-prospects-mobile" style="display: none;">
+        <button class="nav-item" data-section="prospects" id="nav-prospects-mobile" style="display: none !important;">
           <span data-i18n="nav_prospects">PROSPECTOS</span>
         </button>
         <button class="nav-item" data-section="compare">
@@ -3004,15 +3005,15 @@
               <div id="lp-photo-dropzone" style="display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.03); border: 1.5px dashed rgba(0,240,255,0.3); border-radius: 10px; padding: 10px 14px; transition: all 0.25s;" ondragover="event.preventDefault(); this.style.borderColor='#00f0ff'; this.style.background='rgba(0,240,255,0.08)';" ondragleave="this.style.borderColor='rgba(0,240,255,0.3)'; this.style.background='rgba(255,255,255,0.03)';" ondrop="handleLocalPlayerPhotoDrop(event)">
                 <div style="width: 52px; height: 52px; border-radius: 50%; overflow: hidden; background: rgba(0,240,255,0.1); border: 1px solid rgba(0,240,255,0.4); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                   <img id="lp-photo-preview" src="" alt="Previsualización" style="display: none; width: 100%; height: 100%; object-fit: cover;">
-                  <span id="lp-photo-placeholder" style="font-size: 22px; color: #00f0ff;">📷</span>
+                  <span id="lp-photo-placeholder" style="font-size: 22px; color: #00f0ff;"><i class="fas fa-camera"></i></span>
                 </div>
                 <div style="flex: 1; min-width: 0;">
                   <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
                     <button type="button" onclick="document.getElementById('lp-photo-file').click()" style="background: rgba(0,240,255,0.12); color: #00f0ff; border: 1px solid rgba(0,240,255,0.4); padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#00f0ff'; this.style.color='#040911';" onmouseout="this.style.background='rgba(0,240,255,0.12)'; this.style.color='#00f0ff';">
-                      📁 Adjuntar Foto
+                      <i class="fas fa-folder-open" style="margin-right: 6px;"></i>Adjuntar Foto
                     </button>
                     <button type="button" id="lp-photo-remove-btn" onclick="removeLocalPlayerPhoto()" style="display: none; background: rgba(255,70,70,0.12); color: #ff5555; border: 1px solid rgba(255,70,70,0.4); padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
-                      🗑️ Eliminar
+                      <i class="fas fa-trash-alt" style="margin-right: 6px;"></i>Eliminar
                     </button>
                   </div>
                   <div style="font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">JPG, PNG o WEBP. Arrastra una imagen o haz clic.</div>

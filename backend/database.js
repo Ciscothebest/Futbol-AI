@@ -382,7 +382,7 @@ UserContact.belongsTo(User, { foreignKey: 'contactUserId', as: 'contactUser' });
 async function enableRLSIfPostgres() {
   if (sequelize.options.dialect === 'postgres') {
     console.log('🔒 Enabling Row Level Security (RLS) on public tables...');
-    const tables = ['users', 'Players', 'payments', 'payment_methods', 'query_logs', 'comparison_logs', 'favorite_logs', 'leagues', 'teams', 'direct_messages', 'user_contacts'];
+    const tables = ['users', 'Players', 'Prospects', 'payments', 'payment_methods', 'query_logs', 'comparison_logs', 'favorite_logs', 'leagues', 'teams', 'direct_messages', 'user_contacts'];
     for (const table of tables) {
       try {
         await sequelize.query(`ALTER TABLE "${table}" ENABLE ROW LEVEL SECURITY;`);
@@ -392,7 +392,7 @@ async function enableRLSIfPostgres() {
       }
     }
 
-    console.log('🛡️ Applying standard RLS policies...');
+    console.log('🛡️ Applying standard RLS policies with optimized initplan...');
     const policies = [
       'DROP POLICY IF EXISTS "Allow public read access" ON "Players";',
       'CREATE POLICY "Allow public read access" ON "Players" FOR SELECT TO public USING (true);',
@@ -400,24 +400,52 @@ async function enableRLSIfPostgres() {
       'CREATE POLICY "Allow public read access" ON "leagues" FOR SELECT TO public USING (true);',
       'DROP POLICY IF EXISTS "Allow public read access" ON "teams";',
       'CREATE POLICY "Allow public read access" ON "teams" FOR SELECT TO public USING (true);',
+      
+      // Prospects
+      'DROP POLICY IF EXISTS "Allow users to manage their own prospects" ON "Prospects";',
+      'CREATE POLICY "Allow users to manage their own prospects" ON "Prospects" FOR ALL TO authenticated USING ((select auth.uid()) = "userId") WITH CHECK ((select auth.uid()) = "userId");',
+
+      // direct_messages
+      'DROP POLICY IF EXISTS "Allow users to view their own messages" ON "direct_messages";',
+      'CREATE POLICY "Allow users to view their own messages" ON "direct_messages" FOR SELECT TO authenticated USING ((select auth.uid()) = "senderId" OR (select auth.uid()) = "receiverId");',
+      'DROP POLICY IF EXISTS "Allow users to send messages" ON "direct_messages";',
+      'CREATE POLICY "Allow users to send messages" ON "direct_messages" FOR INSERT TO authenticated WITH CHECK ((select auth.uid()) = "senderId");',
+
+      // user_contacts
+      'DROP POLICY IF EXISTS "Allow users to manage their own contacts" ON "user_contacts";',
+      'CREATE POLICY "Allow users to manage their own contacts" ON "user_contacts" FOR ALL TO authenticated USING ((select auth.uid()) = "userId" OR (select auth.uid()) = "contactUserId") WITH CHECK ((select auth.uid()) = "userId");',
+
+      // users
       'DROP POLICY IF EXISTS "Allow users to view their own profile" ON "users";',
-      'CREATE POLICY "Allow users to view their own profile" ON "users" FOR SELECT TO authenticated USING (auth.uid() = id);',
+      'CREATE POLICY "Allow users to view their own profile" ON "users" FOR SELECT TO authenticated USING ((select auth.uid()) = id);',
       'DROP POLICY IF EXISTS "Allow users to update their own profile" ON "users";',
-      'CREATE POLICY "Allow users to update their own profile" ON "users" FOR UPDATE TO authenticated USING (auth.uid() = id) WITH CHECK (auth.uid() = id);',
+      'CREATE POLICY "Allow users to update their own profile" ON "users" FOR UPDATE TO authenticated USING ((select auth.uid()) = id) WITH CHECK ((select auth.uid()) = id);',
+
+      // payments
       'DROP POLICY IF EXISTS "Allow users to view their own payments" ON "payments";',
-      'CREATE POLICY "Allow users to view their own payments" ON "payments" FOR SELECT TO authenticated USING (auth.uid() = "userId");',
+      'CREATE POLICY "Allow users to view their own payments" ON "payments" FOR SELECT TO authenticated USING ((select auth.uid()) = "userId");',
+      'DROP POLICY IF EXISTS "Allow users to insert their own payments" ON "payments";',
+      'CREATE POLICY "Allow users to insert their own payments" ON "payments" FOR INSERT TO authenticated WITH CHECK ((select auth.uid()) = "userId");',
+
+      // payment_methods
       'DROP POLICY IF EXISTS "Allow users to manage their own payment methods" ON "payment_methods";',
-      'CREATE POLICY "Allow users to manage their own payment methods" ON "payment_methods" FOR ALL TO authenticated USING (auth.uid() = "userId") WITH CHECK (auth.uid() = "userId");',
+      'CREATE POLICY "Allow users to manage their own payment methods" ON "payment_methods" FOR ALL TO authenticated USING ((select auth.uid()) = "userId") WITH CHECK ((select auth.uid()) = "userId");',
+
+      // query_logs
       'DROP POLICY IF EXISTS "Allow users to view their own query logs" ON "query_logs";',
-      'CREATE POLICY "Allow users to view their own query logs" ON "query_logs" FOR SELECT TO authenticated USING (auth.uid() = "userId");',
+      'CREATE POLICY "Allow users to view their own query logs" ON "query_logs" FOR SELECT TO authenticated USING ((select auth.uid()) = "userId");',
       'DROP POLICY IF EXISTS "Allow users to insert their own query logs" ON "query_logs";',
-      'CREATE POLICY "Allow users to insert their own query logs" ON "query_logs" FOR INSERT TO authenticated WITH CHECK (auth.uid() = "userId");',
+      'CREATE POLICY "Allow users to insert their own query logs" ON "query_logs" FOR INSERT TO authenticated WITH CHECK ((select auth.uid()) = "userId");',
+
+      // comparison_logs
       'DROP POLICY IF EXISTS "Allow users to view their own comparison logs" ON "comparison_logs";',
-      'CREATE POLICY "Allow users to view their own comparison logs" ON "comparison_logs" FOR SELECT TO authenticated USING (auth.uid() = "userId");',
+      'CREATE POLICY "Allow users to view their own comparison logs" ON "comparison_logs" FOR SELECT TO authenticated USING ((select auth.uid()) = "userId");',
       'DROP POLICY IF EXISTS "Allow users to insert their own comparison logs" ON "comparison_logs";',
-      'CREATE POLICY "Allow users to insert their own comparison logs" ON "comparison_logs" FOR INSERT TO authenticated WITH CHECK (auth.uid() = "userId");',
+      'CREATE POLICY "Allow users to insert their own comparison logs" ON "comparison_logs" FOR INSERT TO authenticated WITH CHECK ((select auth.uid()) = "userId");',
+
+      // favorite_logs
       'DROP POLICY IF EXISTS "Allow users to manage their own favorite logs" ON "favorite_logs";',
-      'CREATE POLICY "Allow users to manage their own favorite logs" ON "favorite_logs" FOR ALL TO authenticated USING (auth.uid() = "userId") WITH CHECK (auth.uid() = "userId");'
+      'CREATE POLICY "Allow users to manage their own favorite logs" ON "favorite_logs" FOR ALL TO authenticated USING ((select auth.uid()) = "userId") WITH CHECK ((select auth.uid()) = "userId");'
     ];
 
     for (const policySql of policies) {
@@ -428,6 +456,24 @@ async function enableRLSIfPostgres() {
       }
     }
     console.log('  - All RLS policies configured successfully.');
+
+    // Cleaning up duplicate indexes and constraints on payments
+    try {
+      await sequelize.query(`
+        DO $$
+        DECLARE
+            i INT;
+        BEGIN
+            FOR i IN 1..98 LOOP
+                EXECUTE format('ALTER TABLE public.payments DROP CONSTRAINT IF EXISTS %I;', 'payments_transactionId_key' || i);
+                EXECUTE format('DROP INDEX IF EXISTS public.%I;', 'payments_transactionId_key' || i);
+            END LOOP;
+        END $$;
+      `);
+      console.log('  - Cleaned duplicate payments indexes payments_transactionId_key1..98');
+    } catch (err) {
+      console.warn('  ⚠️ Could not cleanup duplicate indexes:', err.message);
+    }
 
     // Ensure private schema exists and move rls_auto_enable function to it to hide it from public PostgREST API
     try {
