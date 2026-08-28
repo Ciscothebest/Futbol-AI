@@ -3358,15 +3358,21 @@ function parseFixtureDate(dateStr) {
 
 
 function getFullSeasonFixtures(clubName) {
-  if (!clubName) return null;
-  const isEs = currentLang === 'es';
-  let rawList = REAL_2026_27_FIXTURES[clubName];
+  if (!clubName || clubName === 'undefined' || clubName === 'null') {
+    const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+    clubName = user.selectedClub || user.selectedTeam || user.club || user.team || 'Real Madrid';
+  }
+  if (typeof getReal202425Fixtures === 'function') {
+    getReal202425Fixtures(clubName);
+  }
+  const fixturesObj = window.REAL_2026_27_FIXTURES || {};
+  let rawList = fixturesObj[clubName];
   if (!rawList) {
-    const norm = clubName.toLowerCase().replace(/[^a-z0-9]/g, '');
-    for (const k of Object.keys(REAL_2026_27_FIXTURES)) {
+    const norm = (clubName || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    for (const k of Object.keys(fixturesObj)) {
       const kNorm = k.toLowerCase().replace(/[^a-z0-9]/g, '');
       if (norm.length >= 4 && (norm === kNorm || norm.includes(kNorm) || kNorm.includes(norm))) {
-        rawList = REAL_2026_27_FIXTURES[k];
+        rawList = fixturesObj[k];
         break;
       }
     }
@@ -3380,7 +3386,14 @@ function getFullSeasonFixtures(clubName) {
 }
 
 function openFullCalendarModal(clubName) {
-  const isEs = currentLang === 'es';
+  if (!clubName || clubName === 'undefined' || clubName === 'null') {
+    const user = JSON.parse(localStorage.getItem('scout_ai_user') || '{}');
+    clubName = user.selectedClub || user.selectedTeam || user.club || user.team || 'Real Madrid';
+  }
+  const isEs = typeof currentLang !== 'undefined' ? currentLang === 'es' : true;
+  if (typeof getReal202425Fixtures === 'function') {
+    getReal202425Fixtures(clubName);
+  }
   const allMatches = getFullSeasonFixtures(clubName);
   
   if (!allMatches || allMatches.length === 0) {
@@ -3494,7 +3507,7 @@ window.filterCalendarTab = filterCalendarTab;
 function getReal202425Fixtures(clubName) {
   if (!clubName) return null;
   const isEs = currentLang === 'es';
-            const REAL_2026_27_FIXTURES = {
+            window.REAL_2026_27_FIXTURES = {
     "Real Madrid": [
       { opponent: "Real Sociedad", date: isEs ? "26 Ago 2026" : "Aug 26, 2026", competition: "La Liga", home: true },
       { opponent: "RCD Espanyol", date: isEs ? "22 Ago 2026" : "Aug 22, 2026", competition: "La Liga", home: false },
