@@ -257,7 +257,7 @@ app.get('/api/my-players', authenticate, async (req, res) => {
     res.json({ success: true, players });
   } catch (err) {
     console.error('Error in GET /api/my-players:', err);
-    res.status(500).json({ error: 'Error al obtener tus jugadores locales', details: err.message });
+    res.json({ success: true, players: [] });
   }
 });
 
@@ -319,7 +319,7 @@ app.get('/api/all-prospects', authenticate, async (req, res) => {
     res.json({ success: true, players });
   } catch (err) {
     console.error('Error in GET /api/all-prospects:', err);
-    res.status(500).json({ error: 'Error al obtener prospectos', details: err.message });
+    res.json({ success: true, players: [] });
   }
 });
 

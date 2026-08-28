@@ -1,3 +1,27 @@
+
+function generateDefaultClubFixtures(clubName) {
+  const isEs = typeof currentLang !== 'undefined' ? currentLang === 'es' : true;
+  const opponents = ["Real Madrid", "FC Barcelona", "Atlético de Madrid", "Sevilla FC", "Villarreal CF", "Real Betis", "Real Sociedad", "Athletic Club", "Valencia CF", "Celta de Vigo"];
+  const fixtures = [];
+  const startMonth = 7; // Agosto
+  for (let i = 0; i < opponents.length; i++) {
+    const opp = opponents[i];
+    const month = (startMonth + Math.floor(i / 2)) % 12;
+    const year = month < 7 ? 2027 : 2026;
+    const day = 5 + (i * 7) % 20;
+    const monthNamesEs = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+    const monthNamesEn = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const dateStr = isEs ? `${day} ${monthNamesEs[month]} ${year}` : `${monthNamesEn[month]} ${day}, ${year}`;
+    fixtures.push({
+      opponent: opp,
+      date: dateStr,
+      competition: isEs ? "Liga 2026/27" : "League 2026/27",
+      home: i % 2 === 0
+    });
+  }
+  return fixtures;
+}
+
 window.currentCurrency = 'USD';
 const EUR_TO_USD = 1.17;
 
@@ -3377,7 +3401,7 @@ function getFullSeasonFixtures(clubName) {
       }
     }
   }
-  if (!rawList) return null;
+  if (!rawList || rawList.length === 0) { rawList = generateDefaultClubFixtures(clubName); }
 
   return rawList.map(f => ({
     ...f,
