@@ -166,27 +166,7 @@ app.get('/api/players', authenticate, async (req, res) => {
       order: [['marketValue', 'DESC']]
     });
 
-    try {
-      let prospectWhere = {};
-      if (search) {
-        prospectWhere[Op.or] = [
-          { name: { [Op.like]: `%${search}%` } },
-          { currentTeam: { [Op.like]: `%${search}%` } },
-          { nationality: { [Op.like]: `%${search}%` } },
-          { nickname: { [Op.like]: `%${search}%` } }
-        ];
-      }
-      const prospectsFound = await Prospect.findAll({ where: prospectWhere, limit: 10 });
-      if (prospectsFound && prospectsFound.length > 0) {
-        const prospectObjects = prospectsFound.map(p => ({
-          ...p.toJSON(),
-          isLocalProspect: true
-        }));
-        results = [...prospectObjects, ...results];
-      }
-    } catch (pErr) {
-      console.warn('Nota buscando prospectos en /api/players:', pErr.message);
-    }
+    
 
     const posEsMap = {
       'GK': 'Portero (PO)', 'PO': 'Portero (PO)', 'POR': 'Portero (PO)',
